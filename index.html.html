@@ -236,6 +236,134 @@
   .daily-activity strong { font-size: 0.9rem; display: block; }
   .daily-activity span { font-size: 0.78rem; color: #7a6a55; }
 
+  /* ── TRANSLATE ── */
+  .lang-tab.active-translate { color: #b5600a; border-bottom-color: #b5600a; background: white; font-weight: 700; }
+
+  .translate-header {
+    background: linear-gradient(135deg, #fef3e8, #fde8d0);
+    border-radius: 16px; padding: 28px 32px; margin-bottom: 32px;
+    border: 1px solid #f0c898;
+  }
+  .translate-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #b5600a; margin-bottom: 6px; }
+  .translate-header p { font-size: 0.85rem; color: #8a5a30; }
+
+  .translate-box {
+    background: white; border-radius: 14px; border: 1px solid #f0c898;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; margin-bottom: 32px;
+  }
+
+  .translate-top {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 0;
+    border-bottom: 1px solid #f0e8dc;
+  }
+
+  .translate-pane { padding: 20px; }
+  .translate-pane-label {
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .translate-pane-label.greek { color: var(--greek-blue); }
+  .translate-pane-label.english { color: var(--terracotta); }
+
+  .translate-textarea {
+    width: 100%; min-height: 100px; padding: 12px;
+    border: 1px solid #e0d5c5; border-radius: 8px;
+    font-family: 'Lato', sans-serif; font-size: 1rem;
+    color: var(--dark); background: var(--white);
+    resize: vertical; outline: none; transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+  .translate-textarea:focus { border-color: #b5600a; }
+  .translate-textarea.output {
+    background: #fdfaf6; color: #1e2a35;
+    font-size: 1.05rem; font-weight: 500;
+    cursor: default;
+  }
+
+  .translate-divider {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 20px 10px; gap: 8px;
+    border-left: 1px solid #f0e8dc; border-right: 1px solid #f0e8dc;
+    background: #fdfaf6;
+  }
+
+  .translate-direction-btn {
+    background: #b5600a; color: white; border: none;
+    border-radius: 50%; width: 36px; height: 36px;
+    font-size: 1rem; cursor: pointer; transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .translate-direction-btn:hover { background: #8a4508; }
+
+  .translate-dir-label {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #9a8a75; text-align: center; line-height: 1.4;
+  }
+
+  .translate-actions {
+    padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+    border-top: 1px solid #f0e8dc; flex-wrap: wrap;
+  }
+
+  .btn-translate {
+    padding: 10px 28px; background: #b5600a; color: white;
+    border: none; border-radius: 8px; font-family: 'Lato', sans-serif;
+    font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    transition: background 0.2s; letter-spacing: 0.04em;
+  }
+  .btn-translate:hover { background: #8a4508; }
+  .btn-translate:disabled { background: #c0a890; cursor: not-allowed; }
+
+  .btn-save-translate {
+    padding: 10px 20px; background: white; color: var(--olive);
+    border: 1px solid var(--olive); border-radius: 8px;
+    font-family: 'Lato', sans-serif; font-size: 0.88rem;
+    font-weight: 700; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-save-translate:hover { background: var(--olive); color: white; }
+  .btn-clear-translate {
+    padding: 10px 16px; background: white; color: #9a8a75;
+    border: 1px solid #d4c5b0; border-radius: 8px;
+    font-family: 'Lato', sans-serif; font-size: 0.88rem;
+    cursor: pointer; transition: all 0.2s; margin-left: auto;
+  }
+  .btn-clear-translate:hover { background: #f0e8dc; }
+
+  .translate-status {
+    font-size: 0.78rem; color: #9a8a75; font-style: italic;
+  }
+
+  .translate-history { margin-bottom: 32px; }
+  .translate-history h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.2rem;
+    color: #b5600a; margin-bottom: 16px; padding-bottom: 8px;
+    border-bottom: 2px solid #b5600a;
+  }
+
+  .history-entry {
+    background: white; border-radius: 12px; border: 1px solid #f0c898;
+    padding: 14px 18px; margin-bottom: 10px;
+    display: grid; grid-template-columns: 1fr auto 1fr auto;
+    gap: 12px; align-items: center;
+  }
+  .history-source { font-weight: 700; font-size: 0.88rem; }
+  .history-arrow { color: #b5600a; font-size: 1rem; }
+  .history-result { font-size: 0.88rem; color: #5a4a3a; font-style: italic; }
+  .history-empty { text-align: center; padding: 32px; color: #b0a090; font-style: italic; font-size: 0.9rem; }
+
+  .translate-note {
+    background: #fff8f0; border-left: 3px solid #b5600a;
+    border-radius: 0 8px 8px 0; padding: 12px 16px;
+    font-size: 0.82rem; color: #8a5a30; margin-bottom: 32px; line-height: 1.5;
+  }
+
+  @media (max-width: 650px) {
+    .translate-top { grid-template-columns: 1fr; }
+    .translate-divider { flex-direction: row; border: none; border-top: 1px solid #f0e8dc; border-bottom: 1px solid #f0e8dc; padding: 12px 20px; }
+    .history-entry { grid-template-columns: 1fr auto; }
+    .history-result { grid-column: 1; }
+  }
+
   footer { text-align: center; padding: 32px; background: var(--tile); color: #9a8a75; font-size: 0.78rem; border-top: 1px solid #d4c5b0; font-style: italic; }
 
   /* VOCAB BUILDER */
@@ -373,7 +501,7 @@
 
   .vocab-table-head {
     display: grid;
-    grid-template-columns: 1fr 1fr 130px 100px 40px;
+    grid-template-columns: 1fr 1fr 130px 100px 60px 40px;
     padding: 10px 20px;
     background: var(--tile);
     font-size: 0.7rem;
@@ -386,7 +514,7 @@
 
   .vocab-entry {
     display: grid;
-    grid-template-columns: 1fr 1fr 130px 100px 40px;
+    grid-template-columns: 1fr 1fr 130px 100px 60px 40px;
     padding: 12px 20px;
     border-bottom: 1px solid #f0e8dc;
     align-items: center;
@@ -396,9 +524,37 @@
 
   .vocab-entry:last-child { border-bottom: none; }
   .vocab-entry:hover { background: #fdfaf6; }
+  .vocab-entry.editing { background: #f4f8ff; border-bottom-color: #c0d4f0; }
 
   .entry-word { font-weight: 700; font-size: 0.9rem; }
   .entry-translation { color: #7a6a55; font-style: italic; font-size: 0.88rem; }
+
+  .entry-edit-input {
+    width: 100%; padding: 5px 8px; border: 1px solid #a0c0e8;
+    border-radius: 6px; font-family: 'Lato', sans-serif; font-size: 0.88rem;
+    color: var(--dark); background: white; outline: none;
+  }
+  .entry-edit-input:focus { border-color: var(--greek-blue); }
+
+  .btn-edit {
+    background: none; border: none; cursor: pointer;
+    color: #a0b8d0; font-size: 0.85rem; transition: color 0.15s;
+    padding: 4px; border-radius: 4px;
+  }
+  .btn-edit:hover { color: var(--greek-blue); }
+  .btn-save-edit {
+    background: var(--greek-blue); color: white; border: none;
+    border-radius: 6px; padding: 4px 10px; font-size: 0.75rem;
+    font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn-save-edit:hover { background: #0a3d6e; }
+  .btn-cancel-edit {
+    background: none; color: #9a8a75; border: 1px solid #d4c5b0;
+    border-radius: 6px; padding: 4px 8px; font-size: 0.75rem;
+    cursor: pointer; font-family: 'Lato', sans-serif;
+  }
+  .edit-actions { display: flex; gap: 4px; align-items: center; }
 
   .entry-tag {
     font-size: 0.7rem;
@@ -450,7 +606,7 @@
 
   @media (max-width: 700px) {
     .form-row { grid-template-columns: 1fr 1fr; }
-    .vocab-table-head, .vocab-entry { grid-template-columns: 1fr 1fr 40px; }
+    .vocab-table-head, .vocab-entry { grid-template-columns: 1fr 1fr 40px 40px; }
     .vocab-table-head .col-lang, .vocab-table-head .col-topic,
     .vocab-entry .entry-lang, .vocab-entry .entry-topic { display: none; }
   }
@@ -749,6 +905,7 @@
   <button class="lang-tab" onclick="switchLang('vocab')">📓 My Vocab</button>
   <button class="lang-tab" onclick="switchLang('dad')">👨 Practice w/ Dad</button>
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
+  <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
 </div>
 
 <!-- GREEK PANEL -->
@@ -1555,6 +1712,7 @@
         <span>Translation</span>
         <span class="col-lang">Language</span>
         <span class="col-topic">Topic</span>
+        <span style="text-align:center;">Edit</span>
         <span></span>
       </div>
       <div id="vocab-entries"></div>
@@ -1563,11 +1721,62 @@
   </div>
 </div>
 
+<!-- TRANSLATE PANEL -->
+<div class="lang-panel" id="panel-translate">
+  <div class="container">
+
+    <div class="translate-header">
+      <h2>🔤 Translate</h2>
+      <p>Translate between Greek and English instantly. Save translations directly to your vocab list.</p>
+    </div>
+
+    <div class="translate-note">
+      💡 This uses Google Translate via a link — click <strong>Translate</strong> and it opens in a new tab with your text pre-filled. You can also type Greek characters using your keyboard's Greek language input, or paste from Google Translate and save to your vocab list below.
+    </div>
+
+    <div class="translate-box">
+      <div class="translate-top">
+        <div class="translate-pane">
+          <div class="translate-pane-label" id="input-lang-label">
+            <span id="input-flag">🇬🇷</span>
+            <span id="input-lang-name">Greek</span>
+          </div>
+          <textarea class="translate-textarea" id="translate-input" placeholder="Type a word or phrase here…"></textarea>
+        </div>
+
+        <div class="translate-divider">
+          <button class="translate-direction-btn" onclick="swapTranslate()" title="Swap direction">⇄</button>
+          <div class="translate-dir-label" id="dir-label">Greek<br>→ English</div>
+        </div>
+
+        <div class="translate-pane">
+          <div class="translate-pane-label english">
+            <span id="output-flag">🇺🇸</span>
+            <span id="output-lang-name">English</span>
+          </div>
+          <textarea class="translate-textarea output" id="translate-output" placeholder="Translation appears here…" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="translate-actions">
+        <button class="btn-translate" onclick="doTranslate()">Translate ↗</button>
+        <button class="btn-save-translate" onclick="saveTranslationToVocab()">+ Save to Vocab</button>
+        <span class="translate-status" id="translate-status"></span>
+        <button class="btn-clear-translate" onclick="clearTranslate()">Clear</button>
+      </div>
+    </div>
+
+    <div class="translate-history">
+      <h3>📋 Translation History</h3>
+      <div id="translate-history-list"></div>
+    </div>
+
+  </div>
+</div>
+
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
-
-<script>
   // ── TAB SWITCHING ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
@@ -1686,16 +1895,70 @@
     }
 
     container.innerHTML = filtered.map(v => `
-      <div class="vocab-entry">
+      <div class="vocab-entry" id="ventry-${v.id}">
         <span class="entry-word">${escHtml(v.word)}</span>
         <span class="entry-translation">${escHtml(v.translation)}</span>
         <span class="entry-lang col-lang">
           <span class="entry-tag entry-lang-${v.lang}">${v.lang === 'greek' ? '🇬🇷 Greek' : '🇪🇸 Spanish'}</span>
         </span>
         <span class="entry-topic col-topic">${escHtml(v.topic)}</span>
+        <button class="btn-edit" onclick="editVocabEntry(${v.id})" title="Edit">✏️</button>
         <button class="btn-delete" onclick="deleteVocabEntry(${v.id})" title="Delete">✕</button>
       </div>
     `).join('');
+  }
+
+  function editVocabEntry(id) {
+    const vocab = loadVocab();
+    const v = vocab.find(x => x.id === id);
+    if (!v) return;
+    const row = document.getElementById('ventry-' + id);
+    if (!row) return;
+    row.classList.add('editing');
+    row.innerHTML = `
+      <input class="entry-edit-input" id="edit-word-${id}" value="${escHtml(v.word)}" placeholder="Word / phrase" />
+      <input class="entry-edit-input" id="edit-trans-${id}" value="${escHtml(v.translation)}" placeholder="Translation" />
+      <span class="entry-lang col-lang">
+        <select class="entry-edit-input" id="edit-lang-${id}" style="padding:4px 6px;">
+          <option value="greek" ${v.lang==='greek'?'selected':''}>🇬🇷 Greek</option>
+          <option value="spanish" ${v.lang==='spanish'?'selected':''}>🇪🇸 Spanish</option>
+        </select>
+      </span>
+      <span class="entry-topic col-topic">
+        <select class="entry-edit-input" id="edit-topic-${id}" style="padding:4px 6px;">
+          <option value="Restaurant" ${v.topic==='Restaurant'?'selected':''}>🍽 Restaurant</option>
+          <option value="Greetings" ${v.topic==='Greetings'?'selected':''}>👋 Greetings</option>
+          <option value="Transport" ${v.topic==='Transport'?'selected':''}>🚌 Transport</option>
+          <option value="Survival" ${v.topic==='Survival'?'selected':''}>🆘 Survival</option>
+          <option value="Shopping" ${v.topic==='Shopping'?'selected':''}>🛍 Shopping</option>
+          <option value="Numbers" ${v.topic==='Numbers'?'selected':''}>🔢 Numbers</option>
+          <option value="Other" ${v.topic==='Other'?'selected':''}>📌 Other</option>
+        </select>
+      </span>
+      <div class="edit-actions">
+        <button class="btn-save-edit" onclick="saveVocabEdit(${id})">✓</button>
+        <button class="btn-cancel-edit" onclick="renderVocab()">✕</button>
+      </div>
+      <span></span>
+    `;
+    document.getElementById('edit-word-' + id).focus();
+    // Save on Enter
+    [document.getElementById('edit-word-' + id), document.getElementById('edit-trans-' + id)].forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') saveVocabEdit(id); if (e.key === 'Escape') renderVocab(); });
+    });
+  }
+
+  function saveVocabEdit(id) {
+    const word = document.getElementById('edit-word-' + id)?.value.trim();
+    const translation = document.getElementById('edit-trans-' + id)?.value.trim();
+    const lang = document.getElementById('edit-lang-' + id)?.value;
+    const topic = document.getElementById('edit-topic-' + id)?.value;
+    if (!word || !translation) return;
+    const vocab = loadVocab();
+    const idx = vocab.findIndex(v => v.id === id);
+    if (idx !== -1) { vocab[idx] = { ...vocab[idx], word, translation, lang, topic }; }
+    saveVocab(vocab);
+    renderVocab();
   }
 
   function escHtml(s) {
@@ -1705,14 +1968,15 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-translate'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, translate:5};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
+    if (lang === 'translate') renderTransHistory();
   }
 
   // ── DAD PRACTICE ──
@@ -2162,9 +2426,97 @@
     updateLessonProgress();
   }
 
+  // ── TRANSLATE ──
+  const TRANS_KEY = 'langHub_trans_v1';
+  let translateDir = 'el-en'; // el = Greek, en = English
+
+  function loadTransHistory() { try { return JSON.parse(localStorage.getItem(TRANS_KEY)) || []; } catch { return []; } }
+  function saveTransHistory(h) { try { localStorage.setItem(TRANS_KEY, JSON.stringify(h)); } catch {} }
+
+  function swapTranslate() {
+    translateDir = translateDir === 'el-en' ? 'en-el' : 'el-en';
+    const isGreekToEn = translateDir === 'el-en';
+    document.getElementById('input-flag').textContent = isGreekToEn ? '🇬🇷' : '🇺🇸';
+    document.getElementById('input-lang-name').textContent = isGreekToEn ? 'Greek' : 'English';
+    document.getElementById('output-flag').textContent = isGreekToEn ? '🇺🇸' : '🇬🇷';
+    document.getElementById('output-lang-name').textContent = isGreekToEn ? 'English' : 'Greek';
+    document.getElementById('dir-label').innerHTML = isGreekToEn ? 'Greek<br>→ English' : 'English<br>→ Greek';
+    document.getElementById('input-lang-label').className = 'translate-pane-label ' + (isGreekToEn ? 'greek' : 'english');
+    // Swap textarea contents
+    const inp = document.getElementById('translate-input').value;
+    const out = document.getElementById('translate-output').value;
+    document.getElementById('translate-input').value = out;
+    document.getElementById('translate-output').value = inp;
+  }
+
+  function doTranslate() {
+    const text = document.getElementById('translate-input').value.trim();
+    if (!text) return;
+    const [sl, tl] = translateDir === 'el-en' ? ['el','en'] : ['en','el'];
+    const url = `https://translate.google.com/?sl=${sl}&tl=${tl}&text=${encodeURIComponent(text)}&op=translate`;
+    window.open(url, '_blank');
+    document.getElementById('translate-status').textContent = 'Opened in Google Translate — paste result back here to save.';
+  }
+
+  function clearTranslate() {
+    document.getElementById('translate-input').value = '';
+    document.getElementById('translate-output').value = '';
+    document.getElementById('translate-status').textContent = '';
+  }
+
+  function saveTranslationToVocab() {
+    const input = document.getElementById('translate-input').value.trim();
+    const output = document.getElementById('translate-output').value.trim();
+    if (!input || !output) {
+      document.getElementById('translate-status').textContent = 'Enter both the original and translation first.';
+      return;
+    }
+    const isGreekToEn = translateDir === 'el-en';
+    const greek = isGreekToEn ? input : output;
+    const english = isGreekToEn ? output : input;
+
+    // Save to vocab
+    const vocab = loadVocab();
+    vocab.unshift({ id: Date.now(), word: greek, translation: english, lang: 'greek', topic: 'Other' });
+    saveVocab(vocab);
+
+    // Save to translate history
+    const history = loadTransHistory();
+    history.unshift({ id: Date.now(), source: input, result: output, dir: translateDir });
+    if (history.length > 50) history.pop();
+    saveTransHistory(history);
+
+    document.getElementById('translate-status').textContent = '✓ Saved to your vocab list!';
+    setTimeout(() => document.getElementById('translate-status').textContent = '', 2500);
+    renderTransHistory();
+  }
+
+  function deleteTransEntry(id) {
+    saveTransHistory(loadTransHistory().filter(h => h.id !== id));
+    renderTransHistory();
+  }
+
+  function renderTransHistory() {
+    const history = loadTransHistory();
+    const el = document.getElementById('translate-history-list');
+    if (!el) return;
+    if (history.length === 0) {
+      el.innerHTML = '<div class="history-empty">No translations saved yet — translate something and save it to vocab to see it here.</div>';
+      return;
+    }
+    el.innerHTML = history.map(h => `
+      <div class="history-entry">
+        <span class="history-source">${escHtml(h.source)}</span>
+        <span class="history-arrow">${h.dir === 'el-en' ? '🇬🇷→🇺🇸' : '🇺🇸→🇬🇷'}</span>
+        <span class="history-result">${escHtml(h.result)}</span>
+        <button class="btn-delete" onclick="deleteTransEntry(${h.id})" title="Delete">✕</button>
+      </div>`).join('');
+  }
+
   // ── INIT ──
   renderAll();
   initPimsleur();
+  renderTransHistory();
   const nd = document.getElementById('note-date');
   if (nd) nd.value = new Date().toISOString().slice(0,10);
 </script>
