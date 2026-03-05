@@ -1777,18 +1777,8 @@
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
-  // ── TAB SWITCHING ──
-  function switchLang(lang) {
-    document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab'));
-    document.getElementById('panel-' + lang).classList.add('active');
-    const tabs = document.querySelectorAll('.lang-tab');
-    if (lang === 'greek') tabs[0].classList.add('active-greek');
-    else if (lang === 'spanish') tabs[1].classList.add('active-spanish');
-    else if (lang === 'vocab') tabs[2].classList.add('active-vocab');
-    if (lang === 'vocab') renderVocab();
-  }
 
+<script>
   // ── PROGRESS TRACKING ──
   const STATE_KEY = 'langHub_v1';
   function loadState() { try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; } catch { return {}; } }
