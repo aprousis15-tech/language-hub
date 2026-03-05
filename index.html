@@ -888,6 +888,88 @@
     .progress-overview { flex-direction: column; align-items: flex-start; }
     .lang-tab { padding: 12px 20px; font-size: 0.9rem; }
   }
+  /* ── NOTES ── */
+  .lang-tab.active-notes { color: #2e7d32; border-bottom-color: #2e7d32; background: white; font-weight: 700; }
+
+  .notes-header {
+    background: linear-gradient(135deg, #f1f8f1, #e0f2e0);
+    border-radius: 16px; padding: 28px 32px; margin-bottom: 28px;
+    border: 1px solid #b8dbb8;
+  }
+  .notes-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #2e7d32; margin-bottom: 6px; }
+  .notes-header p { font-size: 0.85rem; color: #4a7a4a; }
+
+  .notes-compose {
+    background: white; border-radius: 14px; border: 1px solid #b8dbb8;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05); padding: 22px 24px; margin-bottom: 28px;
+  }
+  .notes-compose input {
+    width: 100%; padding: 10px 12px; border: 1px solid #c8ddc8;
+    border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.95rem;
+    color: var(--dark); margin-bottom: 12px; outline: none;
+  }
+  .notes-compose input:focus { border-color: #2e7d32; }
+  .notes-compose textarea {
+    width: 100%; min-height: 120px; padding: 10px 12px;
+    border: 1px solid #c8ddc8; border-radius: 8px;
+    font-family: 'Lato', sans-serif; font-size: 0.9rem;
+    color: var(--dark); resize: vertical; outline: none; line-height: 1.6;
+  }
+  .notes-compose textarea:focus { border-color: #2e7d32; }
+  .notes-compose-actions { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+  .btn-add-note {
+    padding: 10px 28px; background: #2e7d32; color: white;
+    border: none; border-radius: 8px; font-family: 'Lato', sans-serif;
+    font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-add-note:hover { background: #1b5e20; }
+  .btn-add-note:disabled { background: #90c090; cursor: not-allowed; }
+  .notes-add-msg { font-size: 0.78rem; color: #2e7d32; display: none; }
+
+  .notes-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .note-card {
+    background: white; border-radius: 12px; border: 1px solid #c8ddc8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 18px 20px;
+    transition: box-shadow 0.15s;
+  }
+  .note-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .note-card-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 10px; gap: 12px;
+  }
+  .note-title {
+    font-family: 'Playfair Display', serif; font-size: 1rem;
+    color: #2e7d32; font-weight: 700;
+  }
+  .note-title-untitled { color: #90a890; font-style: italic; }
+  .note-date { font-size: 0.72rem; color: #9a8a75; white-space: nowrap; }
+  .note-body { font-size: 0.88rem; color: #4a4a3a; line-height: 1.65; white-space: pre-wrap; }
+  .note-actions { display: flex; gap: 6px; margin-top: 12px; }
+
+  .btn-edit-note {
+    background: none; border: 1px solid #c8ddc8; border-radius: 6px;
+    padding: 4px 10px; font-size: 0.75rem; color: #4a7a4a;
+    cursor: pointer; font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .btn-edit-note:hover { background: #e0f2e0; }
+
+  .note-card.editing .note-edit-input,
+  .note-card.editing .note-edit-textarea { display: block; }
+  .note-edit-input {
+    display: none; width: 100%; padding: 8px 10px;
+    border: 1px solid #2e7d32; border-radius: 6px;
+    font-family: 'Lato', sans-serif; font-size: 0.95rem;
+    margin-bottom: 8px; outline: none;
+  }
+  .note-edit-textarea {
+    display: none; width: 100%; min-height: 100px; padding: 8px 10px;
+    border: 1px solid #2e7d32; border-radius: 6px;
+    font-family: 'Lato', sans-serif; font-size: 0.88rem;
+    resize: vertical; outline: none; line-height: 1.6;
+  }
+  .notes-empty { text-align: center; padding: 40px; color: #90a890; font-style: italic; }
+
 </style>
 </head>
 <body>
@@ -906,6 +988,7 @@
   <button class="lang-tab" onclick="switchLang('dad')">👨 Practice w/ Dad</button>
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
+  <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
 </div>
 
 <!-- GREEK PANEL -->
@@ -1774,9 +1857,42 @@
   </div>
 </div>
 
+<!-- NOTES PANEL -->
+<div class="lang-panel" id="panel-notes">
+  <div class="container">
+
+    <div class="notes-header">
+      <h2>📝 Notes</h2>
+      <p>Progress checks, observations, reminders — anything you want to remember. Saved permanently.</p>
+    </div>
+
+    <div class="notes-compose">
+      <input type="text" id="note-title-input" placeholder="Title (optional)" />
+      <textarea id="note-body-input" placeholder="Write your note here…"></textarea>
+      <div class="notes-compose-actions">
+        <button class="btn-add-note" onclick="addNote()">Save Note</button>
+        <span class="notes-add-msg" id="notes-add-msg">✓ Saved!</span>
+      </div>
+    </div>
+
+    <div class="notes-list" id="notes-list"></div>
+
+  </div>
+</div>
+
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  window._supabase = createClient(
+    'https://bdfjddzwvudqictvuvtr.supabase.co',
+    'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj'
+  );
+  window._supabaseReady = true;
+  document.dispatchEvent(new Event('supabase-ready'));
+</script>
 
 <script>
   // ── PROGRESS TRACKING ──
@@ -1810,10 +1926,65 @@
     if (el) el.className = 'week-check' + (done ? (' done-' + lang) : '');
   }
 
-  // ── VOCAB BUILDER ──
-  const VOCAB_KEY = 'langHub_vocab_v1';
-  function loadVocab() { try { return JSON.parse(localStorage.getItem(VOCAB_KEY)) || []; } catch { return []; } }
-  function saveVocab(v) { try { localStorage.setItem(VOCAB_KEY, JSON.stringify(v)); } catch {} }
+  // ── VOCAB BUILDER (Supabase-backed) ──
+  const VOCAB_KEY = 'langHub_vocab_v1'; // kept for migration only
+
+  async function loadVocab() {
+    if (window._supabase) {
+      const { data, error } = await window._supabase
+        .from('vocab')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error && data) return data;
+    }
+    // fallback to localStorage
+    try { return JSON.parse(localStorage.getItem(VOCAB_KEY)) || []; } catch { return []; }
+  }
+
+  async function saveVocabEntry(entry) {
+    if (window._supabase) {
+      const { data, error } = await window._supabase
+        .from('vocab')
+        .insert([{ word: entry.word, translation: entry.translation, lang: entry.lang, topic: entry.topic }])
+        .select()
+        .single();
+      if (!error) return data;
+    }
+    // fallback: localStorage
+    const vocab = JSON.parse(localStorage.getItem(VOCAB_KEY) || '[]');
+    const newEntry = { ...entry, id: Date.now() };
+    vocab.unshift(newEntry);
+    localStorage.setItem(VOCAB_KEY, JSON.stringify(vocab));
+    return newEntry;
+  }
+
+  async function updateVocabEntry(id, fields) {
+    if (window._supabase) {
+      const { error } = await window._supabase
+        .from('vocab')
+        .update(fields)
+        .eq('id', id);
+      if (error) console.error('Update error:', error);
+    } else {
+      const vocab = JSON.parse(localStorage.getItem(VOCAB_KEY) || '[]');
+      const idx = vocab.findIndex(v => v.id === id);
+      if (idx !== -1) vocab[idx] = { ...vocab[idx], ...fields };
+      localStorage.setItem(VOCAB_KEY, JSON.stringify(vocab));
+    }
+  }
+
+  async function deleteVocabEntryById(id) {
+    if (window._supabase) {
+      const { error } = await window._supabase
+        .from('vocab')
+        .delete()
+        .eq('id', id);
+      if (error) console.error('Delete error:', error);
+    } else {
+      const vocab = JSON.parse(localStorage.getItem(VOCAB_KEY) || '[]');
+      localStorage.setItem(VOCAB_KEY, JSON.stringify(vocab.filter(v => v.id !== id)));
+    }
+  }
 
   let vocabFilter = 'all';
 
@@ -1824,16 +1995,17 @@
     renderVocab();
   }
 
-  function addVocabEntry() {
+  async function addVocabEntry() {
     const word = document.getElementById('input-word').value.trim();
     const translation = document.getElementById('input-translation').value.trim();
     const lang = document.getElementById('input-lang').value;
     const topic = document.getElementById('input-topic').value;
     if (!word || !translation) return;
 
-    const vocab = loadVocab();
-    vocab.unshift({ id: Date.now(), word, translation, lang, topic });
-    saveVocab(vocab);
+    const btn = document.querySelector('.btn-add');
+    if (btn) btn.disabled = true;
+
+    await saveVocabEntry({ word, translation, lang, topic });
 
     document.getElementById('input-word').value = '';
     document.getElementById('input-translation').value = '';
@@ -1842,6 +2014,7 @@
     msg.style.display = 'block';
     setTimeout(() => msg.style.display = 'none', 1800);
 
+    if (btn) btn.disabled = false;
     renderVocab();
   }
 
@@ -1852,19 +2025,20 @@
     }
   });
 
-  function deleteVocabEntry(id) {
-    let vocab = loadVocab();
-    vocab = vocab.filter(v => v.id !== id);
-    saveVocab(vocab);
+  async function deleteVocabEntry(id) {
+    await deleteVocabEntryById(id);
     renderVocab();
   }
 
-  function renderVocab() {
-    const vocab = loadVocab();
+  async function renderVocab() {
     const search = (document.getElementById('vocab-search')?.value || '').toLowerCase();
     const container = document.getElementById('vocab-entries');
     const stats = document.getElementById('vocab-stats');
     if (!container) return;
+
+    container.innerHTML = '<div class="vocab-empty"><p>Loading…</p></div>';
+
+    const vocab = await loadVocab();
 
     let filtered = vocab.filter(v => {
       const matchFilter = vocabFilter === 'all' || v.lang === vocabFilter || v.topic === vocabFilter;
@@ -1874,7 +2048,7 @@
 
     const greekCount = vocab.filter(v => v.lang === 'greek').length;
     const spanishCount = vocab.filter(v => v.lang === 'spanish').length;
-    stats.innerHTML = `<strong>${vocab.length}</strong> total entries &nbsp;·&nbsp; <strong>${greekCount}</strong> Greek &nbsp;·&nbsp; <strong>${spanishCount}</strong> Spanish`;
+    if (stats) stats.innerHTML = `<strong>${vocab.length}</strong> total entries &nbsp;·&nbsp; <strong>${greekCount}</strong> Greek &nbsp;·&nbsp; <strong>${spanishCount}</strong> Spanish`;
 
     if (filtered.length === 0) {
       container.innerHTML = `<div class="vocab-empty">
@@ -1892,41 +2066,44 @@
           <span class="entry-tag entry-lang-${v.lang}">${v.lang === 'greek' ? '🇬🇷 Greek' : '🇪🇸 Spanish'}</span>
         </span>
         <span class="entry-topic col-topic">${escHtml(v.topic)}</span>
-        <button class="btn-edit" onclick="editVocabEntry(${v.id})" title="Edit">✏️</button>
-        <button class="btn-delete" onclick="deleteVocabEntry(${v.id})" title="Delete">✕</button>
+        <button class="btn-edit" onclick="editVocabEntry('${v.id}')" title="Edit">✏️</button>
+        <button class="btn-delete" onclick="deleteVocabEntry('${v.id}')" title="Delete">✕</button>
       </div>
     `).join('');
   }
 
   function editVocabEntry(id) {
-    const vocab = loadVocab();
-    const v = vocab.find(x => x.id === id);
-    if (!v) return;
     const row = document.getElementById('ventry-' + id);
     if (!row) return;
+    // Read current values from the rendered DOM
+    const word = row.querySelector('.entry-word')?.textContent || '';
+    const translation = row.querySelector('.entry-translation')?.textContent || '';
+    const langTag = row.querySelector('.entry-tag');
+    const lang = langTag?.classList.contains('entry-lang-greek') ? 'greek' : 'spanish';
+    const topic = row.querySelector('.entry-topic')?.textContent || 'Other';
     row.classList.add('editing');
     row.innerHTML = `
-      <input class="entry-edit-input" id="edit-word-${id}" value="${escHtml(v.word)}" placeholder="Word / phrase" />
-      <input class="entry-edit-input" id="edit-trans-${id}" value="${escHtml(v.translation)}" placeholder="Translation" />
+      <input class="entry-edit-input" id="edit-word-${id}" value="${escHtml(word)}" placeholder="Word / phrase" />
+      <input class="entry-edit-input" id="edit-trans-${id}" value="${escHtml(translation)}" placeholder="Translation" />
       <span class="entry-lang col-lang">
         <select class="entry-edit-input" id="edit-lang-${id}" style="padding:4px 6px;">
-          <option value="greek" ${v.lang==='greek'?'selected':''}>🇬🇷 Greek</option>
-          <option value="spanish" ${v.lang==='spanish'?'selected':''}>🇪🇸 Spanish</option>
+          <option value="greek" ${lang==='greek'?'selected':''}>🇬🇷 Greek</option>
+          <option value="spanish" ${lang==='spanish'?'selected':''}>🇪🇸 Spanish</option>
         </select>
       </span>
       <span class="entry-topic col-topic">
         <select class="entry-edit-input" id="edit-topic-${id}" style="padding:4px 6px;">
-          <option value="Restaurant" ${v.topic==='Restaurant'?'selected':''}>🍽 Restaurant</option>
-          <option value="Greetings" ${v.topic==='Greetings'?'selected':''}>👋 Greetings</option>
-          <option value="Transport" ${v.topic==='Transport'?'selected':''}>🚌 Transport</option>
-          <option value="Survival" ${v.topic==='Survival'?'selected':''}>🆘 Survival</option>
-          <option value="Shopping" ${v.topic==='Shopping'?'selected':''}>🛍 Shopping</option>
-          <option value="Numbers" ${v.topic==='Numbers'?'selected':''}>🔢 Numbers</option>
-          <option value="Other" ${v.topic==='Other'?'selected':''}>📌 Other</option>
+          <option value="Restaurant" ${topic==='Restaurant'?'selected':''}>🍽 Restaurant</option>
+          <option value="Greetings" ${topic==='Greetings'?'selected':''}>👋 Greetings</option>
+          <option value="Transport" ${topic==='Transport'?'selected':''}>🚌 Transport</option>
+          <option value="Survival" ${topic==='Survival'?'selected':''}>🆘 Survival</option>
+          <option value="Shopping" ${topic==='Shopping'?'selected':''}>🛍 Shopping</option>
+          <option value="Numbers" ${topic==='Numbers'?'selected':''}>🔢 Numbers</option>
+          <option value="Other" ${topic==='Other'?'selected':''}>📌 Other</option>
         </select>
       </span>
       <div class="edit-actions">
-        <button class="btn-save-edit" onclick="saveVocabEdit(${id})">✓</button>
+        <button class="btn-save-edit" onclick="saveVocabEdit('${id}')">✓</button>
         <button class="btn-cancel-edit" onclick="renderVocab()">✕</button>
       </div>
       <span></span>
@@ -1938,16 +2115,13 @@
     });
   }
 
-  function saveVocabEdit(id) {
+  async function saveVocabEdit(id) {
     const word = document.getElementById('edit-word-' + id)?.value.trim();
     const translation = document.getElementById('edit-trans-' + id)?.value.trim();
     const lang = document.getElementById('edit-lang-' + id)?.value;
     const topic = document.getElementById('edit-topic-' + id)?.value;
     if (!word || !translation) return;
-    const vocab = loadVocab();
-    const idx = vocab.findIndex(v => v.id === id);
-    if (idx !== -1) { vocab[idx] = { ...vocab[idx], word, translation, lang, topic }; }
-    saveVocab(vocab);
+    await updateVocabEntry(id, { word, translation, lang, topic });
     renderVocab();
   }
 
@@ -1958,15 +2132,16 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-translate'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-translate','active-notes'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, translate:5};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, translate:5, notes:6};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
     if (lang === 'translate') renderTransHistory();
+    if (lang === 'notes') renderNotes();
   }
 
   // ── DAD PRACTICE ──
@@ -2454,7 +2629,7 @@
     document.getElementById('translate-status').textContent = '';
   }
 
-  function saveTranslationToVocab() {
+  async function saveTranslationToVocab() {
     const input = document.getElementById('translate-input').value.trim();
     const output = document.getElementById('translate-output').value.trim();
     if (!input || !output) {
@@ -2465,10 +2640,7 @@
     const greek = isGreekToEn ? input : output;
     const english = isGreekToEn ? output : input;
 
-    // Save to vocab
-    const vocab = loadVocab();
-    vocab.unshift({ id: Date.now(), word: greek, translation: english, lang: 'greek', topic: 'Other' });
-    saveVocab(vocab);
+    await saveVocabEntry({ word: greek, translation: english, lang: 'greek', topic: 'Other' });
 
     // Save to translate history
     const history = loadTransHistory();
@@ -2503,12 +2675,155 @@
       </div>`).join('');
   }
 
+  // ── NOTES (Supabase-backed) ──
+  async function loadNotes() {
+    if (window._supabase) {
+      const { data, error } = await window._supabase
+        .from('notes')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error && data) return data;
+    }
+    try { return JSON.parse(localStorage.getItem('langHub_notes_sb_v1') || '[]'); } catch { return []; }
+  }
+
+  async function saveNote(title, body) {
+    if (window._supabase) {
+      const { data, error } = await window._supabase
+        .from('notes')
+        .insert([{ title: title || null, body: body || null }])
+        .select().single();
+      if (!error) return data;
+    }
+    const notes = JSON.parse(localStorage.getItem('langHub_notes_sb_v1') || '[]');
+    const n = { id: Date.now().toString(), title, body, created_at: new Date().toISOString() };
+    notes.unshift(n);
+    localStorage.setItem('langHub_notes_sb_v1', JSON.stringify(notes));
+    return n;
+  }
+
+  async function updateNote(id, title, body) {
+    if (window._supabase) {
+      const { error } = await window._supabase
+        .from('notes').update({ title: title || null, body: body || null }).eq('id', id);
+      if (error) console.error('Note update error:', error);
+    } else {
+      const notes = JSON.parse(localStorage.getItem('langHub_notes_sb_v1') || '[]');
+      const idx = notes.findIndex(n => n.id === id);
+      if (idx !== -1) notes[idx] = { ...notes[idx], title, body };
+      localStorage.setItem('langHub_notes_sb_v1', JSON.stringify(notes));
+    }
+  }
+
+  async function deleteNote(id) {
+    if (window._supabase) {
+      const { error } = await window._supabase
+        .from('notes').delete().eq('id', id);
+      if (error) console.error('Note delete error:', error);
+    } else {
+      const notes = JSON.parse(localStorage.getItem('langHub_notes_sb_v1') || '[]');
+      localStorage.setItem('langHub_notes_sb_v1', JSON.stringify(notes.filter(n => n.id !== id)));
+    }
+    renderNotes();
+  }
+
+  async function addNote() {
+    const title = document.getElementById('note-title-input').value.trim();
+    const body = document.getElementById('note-body-input').value.trim();
+    if (!body && !title) return;
+    const btn = document.querySelector('.btn-add-note');
+    if (btn) btn.disabled = true;
+    await saveNote(title, body);
+    document.getElementById('note-title-input').value = '';
+    document.getElementById('note-body-input').value = '';
+    const msg = document.getElementById('notes-add-msg');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 1800);
+    if (btn) btn.disabled = false;
+    renderNotes();
+  }
+
+  function editNote(id) {
+    const card = document.getElementById('ncard-' + id);
+    if (!card) return;
+    const titleEl = card.querySelector('.note-title');
+    const bodyEl = card.querySelector('.note-body');
+    const currentTitle = titleEl?.dataset.raw || '';
+    const currentBody = bodyEl?.dataset.raw || '';
+    card.classList.add('editing');
+    card.innerHTML = `
+      <input class="note-edit-input" id="nedit-title-${id}" value="${escHtml(currentTitle)}" placeholder="Title (optional)" style="display:block;" />
+      <textarea class="note-edit-textarea" id="nedit-body-${id}" placeholder="Note…" style="display:block;">${escHtml(currentBody)}</textarea>
+      <div class="note-actions">
+        <button class="btn-edit-note" onclick="saveNoteEdit('${id}')">✓ Save</button>
+        <button class="btn-edit-note" onclick="renderNotes()">Cancel</button>
+        <button class="btn-delete" onclick="deleteNote('${id}')" style="margin-left:auto;">✕</button>
+      </div>`;
+    document.getElementById('nedit-body-' + id).focus();
+  }
+
+  async function saveNoteEdit(id) {
+    const title = document.getElementById('nedit-title-' + id)?.value.trim();
+    const body = document.getElementById('nedit-body-' + id)?.value.trim();
+    await updateNote(id, title, body);
+    renderNotes();
+  }
+
+  async function renderNotes() {
+    const container = document.getElementById('notes-list');
+    if (!container) return;
+    container.innerHTML = '<div class="notes-empty">Loading…</div>';
+    const notes = await loadNotes();
+    if (notes.length === 0) {
+      container.innerHTML = '<div class="notes-empty">No notes yet — write your first one above ↑</div>';
+      return;
+    }
+    container.innerHTML = notes.map(n => {
+      const dateStr = new Date(n.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `
+      <div class="note-card" id="ncard-${n.id}">
+        <div class="note-card-head">
+          <span class="note-title ${!n.title ? 'note-title-untitled' : ''}" data-raw="${escHtml(n.title || '')}">
+            ${n.title ? escHtml(n.title) : 'Untitled'}
+          </span>
+          <span class="note-date">${dateStr}</span>
+        </div>
+        <div class="note-body" data-raw="${escHtml(n.body || '')}">${escHtml(n.body || '')}</div>
+        <div class="note-actions">
+          <button class="btn-edit-note" onclick="editNote('${n.id}')">✏️ Edit</button>
+          <button class="btn-delete" onclick="deleteNote('${n.id}')" style="margin-left:auto;">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
   // ── INIT ──
   renderAll();
   initPimsleur();
   renderTransHistory();
   const nd = document.getElementById('note-date');
   if (nd) nd.value = new Date().toISOString().slice(0,10);
+
+  // Vocab must wait for Supabase module to initialise before rendering.
+  // The module script sets window._supabaseReady and dispatches 'supabase-ready'.
+  // If this script runs after the module (normal case), _supabaseReady is already true.
+  // If this script runs first (edge case), we wait for the event.
+  function initVocab() {
+    if (document.getElementById('panel-vocab').classList.contains('active')) {
+      renderVocab();
+    }
+  }
+  if (window._supabaseReady) {
+    initVocab();
+  } else {
+    document.addEventListener('supabase-ready', initVocab, { once: true });
+    setTimeout(function() {
+      if (!window._supabaseReady) {
+        console.warn('Supabase did not initialise in time — falling back to localStorage');
+        initVocab();
+      }
+    }, 5000);
+  }
 </script>
 </body>
 </html>
