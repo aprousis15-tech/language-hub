@@ -179,6 +179,17 @@
   .month-header { padding: 16px 20px; color: white; font-family: 'Playfair Display', serif; }
   .month-header.greek { background: var(--greek-blue); }
   .month-header.spanish { background: var(--spanish-red); }
+  .month-header.setup { background: var(--terracotta); }
+  .month-card--setup { border: 1px dashed var(--terracotta); }
+  .setup-badge { font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; background: rgba(255,255,255,0.2); padding: 2px 7px; border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+  .week-dates { font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600; color: #8a7460; background: var(--sand); padding: 1px 6px; border-radius: 3px; margin-left: 6px; letter-spacing: 0.02em; }
+  .week-item--current { background: #f3f8fd; box-shadow: inset 3px 0 0 var(--greek-blue); }
+  .week-item--current .week-info strong::after { content: '← you are here'; font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; color: var(--greek-blue); background: #dde9f5; padding: 1px 6px; border-radius: 3px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+  .week-item--past .week-check { opacity: 0.55; }
+  .phase-banner { margin: 8px 0 0; padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; background: #f3f8fd; color: var(--greek-blue); border-left: 3px solid var(--greek-blue); }
+  .phase-banner.setup { background: #fbefe4; color: var(--terracotta); border-left-color: var(--terracotta); }
+  .phase-banner.polish { background: #fff6e0; color: #8a6d1a; border-left-color: #d4a017; }
+  .phase-banner.trip { background: #e8f5e8; color: #2a6a3a; border-left-color: #2a6a3a; }
   .month-header h3 { font-size: 1.1rem; }
   .month-header p { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
 
@@ -978,7 +989,7 @@
   <div class="header-pattern"></div>
   <h1>🌊 My Language Journey</h1>
   <p>Greek &amp; Spanish · 30–45 min/day</p>
-  <div class="trip-badge">✈️ Greece Trip · 3 Months Away</div>
+  <div class="trip-badge" id="trip-badge">✈️ Greece Trip · <span id="trip-countdown">…</span></div>
 </header>
 
 <div class="lang-tabs">
@@ -1004,13 +1015,14 @@
         <div class="progress-center"><span id="greek-pct">0%</span><small>done</small></div>
       </div>
       <div class="progress-info">
-        <h3>3-Month Greek Plan</h3>
+        <h3>8-Week Greek Sprint</h3>
         <p style="font-size:0.82rem;color:#7a6a55;">Check off weeks as you complete them</p>
+        <div class="phase-banner" id="phase-banner" hidden></div>
         <div class="progress-bar-wrap"><div class="progress-bar-fill greek" id="greek-bar" style="width:0%"></div></div>
         <div class="progress-stats">
           <div class="stat"><strong id="greek-weeks-done">0</strong><small>Weeks Done</small></div>
-          <div class="stat"><strong>12</strong><small>Total Weeks</small></div>
-          <div class="stat"><strong>~5.5h</strong><small>Per Week</small></div>
+          <div class="stat"><strong>8</strong><small>Total Weeks</small></div>
+          <div class="stat"><strong>~6.5h</strong><small>Per Week</small></div>
         </div>
       </div>
     </div>
@@ -1035,47 +1047,65 @@
       <div class="daily-row">
         <div class="daily-time">Weekly</div>
         <div class="daily-dot dot-greek"></div>
-        <div class="daily-activity"><strong>italki (1–2× per week)</strong><span>Month 1: introductions. Month 2: role-play scenarios. Month 3: free conversation only in Greek.</span></div>
+        <div class="daily-activity"><strong>italki (2–3× per week)</strong><span>Month 1: introductions & survival → restaurants. Month 2: transport, relational, full immersion scenarios.</span></div>
       </div>
     </div>
 
-    <h2 class="section-title greek-accent">📚 12-Week Curriculum</h2>
+    <h2 class="section-title greek-accent">📚 8-Week Curriculum</h2>
     <div class="months-grid">
+
+      <div class="month-card month-card--setup">
+        <div class="month-header setup">
+          <h3>Week 0 — Setup <span class="setup-badge"><span data-setup-dates>…</span></span></h3>
+          <p>System build · Tutor booked · Ambient exposure begins</p>
+        </div>
+        <div class="week-list">
+          <div class="week-item" data-week-num="0" onclick="toggleWeek('g0')">
+            <div class="week-check" id="check-g0"></div>
+            <div class="week-info">
+              <strong>Setup week <span class="week-dates" data-week-dates="0"></span></strong>
+              <span>Build the Sessions tab. Book italki trial session. Flash through alphabet in the Alphabet Drill tab. Flip phone OS → Greek. Greek music/podcast in background. <em>No formal curriculum yet.</em></span>
+              <div class="milestone">🎯 System ready · Tutor on calendar</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="month-card">
         <div class="month-header greek">
-          <h3>Month 1 — Foundation</h3>
-          <p>Alphabet · Numbers · Survival Phrases</p>
+          <h3>Month 1 — Foundation &amp; Survival</h3>
+          <p><span data-month-dates="1"></span> · Alphabet → Restaurants</p>
         </div>
         <div class="week-list">
-          <div class="week-item" onclick="toggleWeek('g1')">
+          <div class="week-item" data-week-num="1" onclick="toggleWeek('g1')">
             <div class="week-check" id="check-g1"></div>
             <div class="week-info">
-              <strong>Week 1 — Alphabet &amp; Sounds</strong>
-              <span>Learn the Greek alphabet phonetically. Focus on letters you'll see on signs &amp; menus.</span>
+              <strong>Week 1 — Alphabet, Greetings &amp; Intro <span class="week-dates" data-week-dates="1"></span></strong>
+              <span>Greek alphabet phonetically. Γεια σας, με λένε…, where you're from. First full italki session.</span>
               <div class="milestone">🎯 Read a menu phonetically</div>
             </div>
           </div>
-          <div class="week-item" onclick="toggleWeek('g2')">
+          <div class="week-item" data-week-num="2" onclick="toggleWeek('g2')">
             <div class="week-check" id="check-g2"></div>
             <div class="week-info">
-              <strong>Week 2 — Greetings &amp; Introductions</strong>
-              <span>Γεια σας, με λένε… How are you, where are you from, nice to meet you.</span>
+              <strong>Week 2 — Numbers, Time &amp; Survival Phrases <span class="week-dates" data-week-dates="2"></span></strong>
+              <span>Count to 100, tell time, please/thank you/excuse me, "I don't understand."</span>
+              <div class="milestone">🎯 Handle price transactions</div>
             </div>
           </div>
-          <div class="week-item" onclick="toggleWeek('g3')">
+          <div class="week-item" data-week-num="3" onclick="toggleWeek('g3')">
             <div class="week-check" id="check-g3"></div>
             <div class="week-info">
-              <strong>Week 3 — Numbers &amp; Time</strong>
-              <span>Count to 100, tell time, days of the week, handle prices confidently.</span>
-              <div class="milestone">🎯 Handle any price transaction</div>
+              <strong>Week 3 — Restaurants: Ordering <span class="week-dates" data-week-dates="3"></span></strong>
+              <span>Menu reading, ordering food &amp; drinks, asking what something is, dietary needs.</span>
             </div>
           </div>
-          <div class="week-item" onclick="toggleWeek('g4')">
+          <div class="week-item" data-week-num="4" onclick="toggleWeek('g4')">
             <div class="week-check" id="check-g4"></div>
             <div class="week-info">
-              <strong>Week 4 — Politeness &amp; Survival</strong>
-              <span>Please, thank you, sorry, excuse me, I don't understand, can you help me?</span>
+              <strong>Week 4 — Restaurants: Connecting <span class="week-dates" data-week-dates="4"></span></strong>
+              <span>Paying, compliments, asking for recommendations.</span>
+              <div class="milestone">🎯 Order full meal end-to-end</div>
             </div>
           </div>
         </div>
@@ -1083,77 +1113,39 @@
 
       <div class="month-card">
         <div class="month-header greek">
-          <h3>Month 2 — Situational Fluency</h3>
-          <p>Restaurants · Transport · Getting Around</p>
+          <h3>Month 2 — Connection &amp; Polish</h3>
+          <p><span data-month-dates="2"></span> · Transport → Free Conversation</p>
         </div>
         <div class="week-list">
-          <div class="week-item" onclick="toggleWeek('g5')">
+          <div class="week-item" data-week-num="5" onclick="toggleWeek('g5')">
             <div class="week-check" id="check-g5"></div>
             <div class="week-info">
-              <strong>Week 5 — Restaurants I</strong>
-              <span>Ordering food and drinks, asking what something is, dietary needs.</span>
-            </div>
-          </div>
-          <div class="week-item" onclick="toggleWeek('g6')">
-            <div class="week-check" id="check-g6"></div>
-            <div class="week-info">
-              <strong>Week 6 — Restaurants II</strong>
-              <span>Paying the bill, complimenting food, asking for recommendations.</span>
-              <div class="milestone">🎯 Order a full meal, end to end</div>
-            </div>
-          </div>
-          <div class="week-item" onclick="toggleWeek('g7')">
-            <div class="week-check" id="check-g7"></div>
-            <div class="week-info">
-              <strong>Week 7 — Getting Around I</strong>
-              <span>Asking directions, metro/bus phrases, "where is…", "how far is…"</span>
-            </div>
-          </div>
-          <div class="week-item" onclick="toggleWeek('g8')">
-            <div class="week-check" id="check-g8"></div>
-            <div class="week-info">
-              <strong>Week 8 — Getting Around II</strong>
-              <span>Taxis, airports, check-in, handling when you're lost.</span>
+              <strong>Week 5 — Directions &amp; Transport <span class="week-dates" data-week-dates="5"></span></strong>
+              <span>"Where is…?", left/right/straight, metro/bus/taxi, handling being lost, airport phrases.</span>
               <div class="milestone">🎯 Navigate transport independently</div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="month-card">
-        <div class="month-header greek">
-          <h3>Month 3 — Connection &amp; Polish</h3>
-          <p>Small Talk · Real Conversations</p>
-        </div>
-        <div class="week-list">
-          <div class="week-item" onclick="toggleWeek('g9')">
-            <div class="week-check" id="check-g9"></div>
+          <div class="week-item" data-week-num="6" onclick="toggleWeek('g6')">
+            <div class="week-check" id="check-g6"></div>
             <div class="week-info">
-              <strong>Week 9 — Talking About Yourself</strong>
-              <span>Job, family, why you came to Greece, what you love about it.</span>
+              <strong>Week 6 — About Yourself + Past Tense Basics <span class="week-dates" data-week-dates="6"></span></strong>
+              <span>Job, family, trip purpose. "I went / I saw / I liked." Shift from transactional to relational.</span>
             </div>
           </div>
-          <div class="week-item" onclick="toggleWeek('g10')">
-            <div class="week-check" id="check-g10"></div>
+          <div class="week-item" data-week-num="7" onclick="toggleWeek('g7')">
+            <div class="week-check" id="check-g7"></div>
             <div class="week-info">
-              <strong>Week 10 — Asking About Locals</strong>
-              <span>Their recommendations, opinions, life. Greeks love to share!</span>
-              <div class="milestone">🎯 Have a real 3-min conversation</div>
+              <strong>Week 7 — Talking to Locals + Follow-up Questions <span class="week-dates" data-week-dates="7"></span></strong>
+              <span>Their recommendations, opinions, life. Asking follow-ups. Compliments (πολύ ωραίο!).</span>
+              <div class="milestone">🎯 Real 3-min conversation</div>
             </div>
           </div>
-          <div class="week-item" onclick="toggleWeek('g11')">
-            <div class="week-check" id="check-g11"></div>
+          <div class="week-item" data-week-num="8" onclick="toggleWeek('g8')">
+            <div class="week-check" id="check-g8"></div>
             <div class="week-info">
-              <strong>Week 11 — Compliments &amp; Reactions</strong>
-              <span>Πολύ ωραίο! Expressing awe, enthusiasm, gratitude. Make people smile.</span>
-            </div>
-          </div>
-          <div class="week-item" onclick="toggleWeek('g12')">
-            <div class="week-check" id="check-g12"></div>
-            <div class="week-info">
-              <strong>Week 12 — Final Polish</strong>
-              <span>Free conversation only. Handle confusion gracefully. Full italki immersion.</span>
-              <div class="milestone">🏆 Trip ready!</div>
+              <strong>Week 8 — Scenario Marathon + Free Conversation <span class="week-dates" data-week-dates="8"></span></strong>
+              <span>Drill all 20 scenarios. No new material. Full italki immersion. <span data-trip-tail></span></span>
+              <div class="milestone">🏆 Trip-ready!</div>
             </div>
           </div>
         </div>
@@ -1291,8 +1283,8 @@
       <a class="resource-card" href="https://www.youtube.com/@LearnGreekwithLina" target="_blank">
         <div class="resource-icon">▶️</div>
         <div class="resource-name">Learn Greek with Lina</div>
-        <div class="resource-desc">YouTube channel. Great for Month 3 listening practice and natural conversation patterns.</div>
-        <div class="resource-tag tag-greek">Month 3 · Greek</div>
+        <div class="resource-desc">YouTube channel. Great for Weeks 6–8 listening practice and natural conversation patterns.</div>
+        <div class="resource-tag tag-greek">Weeks 6–8 · Greek</div>
       </a>
       <a class="resource-card" href="https://translate.google.com" target="_blank">
         <div class="resource-icon">🗣</div>
@@ -1904,12 +1896,13 @@
   function toggleWeek(id) { state[id] = !state[id]; saveState(state); renderAll(); }
 
   function renderAll() {
-    const gWeeks = ['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12'];
+    const gWeeks = ['g1','g2','g3','g4','g5','g6','g7','g8'];
     const sWeeks = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12'];
-    updateProgress('greek', gWeeks.filter(w => state[w]).length, 12);
+    updateProgress('greek', gWeeks.filter(w => state[w]).length, 8);
     updateProgress('spanish', sWeeks.filter(w => state[w]).length, 12);
     gWeeks.forEach(w => updateCheck(w, state[w], 'greek'));
     sWeeks.forEach(w => updateCheck(w, state[w], 'spanish'));
+    updateCheck('g0', state['g0'], 'greek');
   }
 
   function updateProgress(lang, done, total) {
@@ -2797,7 +2790,148 @@
     }).join('');
   }
 
+  // ── TRIP SCHEDULE ENGINE ──
+  // Single source of truth. Move the trip and every date, the current-week
+  // highlight, the countdown, the phase banner — everything re-derives.
+  // Constants:
+  //   - Learning sprint is always 8 weeks (Mon–Sun) ending the Sunday before
+  //     the Mon–Fri polish buffer of the trip's week.
+  //   - Week 0 is the Mon–Sun setup week immediately before Week 1.
+  const TRIP_DATE = new Date('2026-06-27T00:00:00');
+
+  const MS_DAY = 86400000;
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+  function daysBetween(a, b) { return Math.round((startOfDay(b) - startOfDay(a)) / MS_DAY); }
+  function fmtRange(start, end) {
+    const opts = { month: 'short', day: 'numeric' };
+    return start.toLocaleDateString('en-US', opts) + ' – ' + end.toLocaleDateString('en-US', opts);
+  }
+  function fmtBadge(start, end) {
+    const sM = start.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    const eM = end.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    return 'SETUP · ' + (sM === eM
+      ? sM + ' ' + start.getDate() + ' – ' + end.getDate()
+      : sM + ' ' + start.getDate() + ' – ' + eM + ' ' + end.getDate());
+  }
+
+  function buildSchedule(tripDate) {
+    const trip = startOfDay(tripDate);
+    const daysFromMon = (trip.getDay() + 6) % 7; // 0=Mon..6=Sun
+    const polishStart = addDays(trip, -daysFromMon);         // Mon of trip week
+    const polishEnd = addDays(trip, -1);                     // day before trip
+    const week8End = addDays(polishStart, -1);               // Sun before polish
+    const weeks = [];
+    for (let i = 8; i >= 1; i--) {
+      const end = addDays(week8End, -(8 - i) * 7);
+      const start = addDays(end, -6);
+      weeks.unshift({ n: i, start, end });
+    }
+    const week0 = { n: 0, start: addDays(weeks[0].start, -7), end: addDays(weeks[0].start, -1) };
+    return { week0, weeks, polishStart, polishEnd, trip };
+  }
+
+  function getCurrentPhase(today, sch) {
+    const t = startOfDay(today);
+    if (t < sch.week0.start) return { phase: 'pre-setup', weekNum: null };
+    if (t <= sch.week0.end) return { phase: 'setup', weekNum: 0 };
+    for (const w of sch.weeks) {
+      if (t >= w.start && t <= w.end) return { phase: 'learning', weekNum: w.n };
+    }
+    if (t >= sch.polishStart && t <= sch.polishEnd) return { phase: 'polish', weekNum: null };
+    if (+t === +sch.trip) return { phase: 'trip-day', weekNum: null };
+    if (t > sch.trip) return { phase: 'after', weekNum: null };
+    return { phase: 'gap', weekNum: null };
+  }
+
+  function renderCountdown(sch) {
+    const el = document.getElementById('trip-countdown');
+    if (!el) return;
+    const days = daysBetween(new Date(), sch.trip);
+    if (days < 0) { el.textContent = 'Trip Complete 🏆'; return; }
+    if (days === 0) { el.textContent = 'Today! ✈️'; return; }
+    if (days < 14) { el.textContent = days + (days === 1 ? ' Day Away' : ' Days Away'); return; }
+    const w = Math.floor(days / 7), d = days % 7;
+    const wLabel = w + (w === 1 ? ' Week' : ' Weeks');
+    const dLabel = d === 0 ? '' : ', ' + d + (d === 1 ? ' Day' : ' Days');
+    el.textContent = wLabel + dLabel + ' Away';
+  }
+
+  function renderPhaseBanner(sch, phase) {
+    const el = document.getElementById('phase-banner');
+    if (!el) return;
+    el.className = 'phase-banner';
+    el.hidden = false;
+    if (phase.phase === 'setup') {
+      el.classList.add('setup');
+      el.textContent = '🛠 Setup week — book tutor, ambient exposure, no curriculum yet';
+    } else if (phase.phase === 'learning') {
+      const w = sch.weeks[phase.weekNum - 1];
+      el.textContent = '📍 You are in Week ' + phase.weekNum + ' of 8 (' + fmtRange(w.start, w.end) + ')';
+    } else if (phase.phase === 'polish') {
+      el.classList.add('polish');
+      el.textContent = '✨ Polish buffer — drill weakest scenarios, pack, final italki';
+    } else if (phase.phase === 'trip-day') {
+      el.classList.add('trip');
+      el.textContent = '✈️ Trip day — καλό ταξίδι!';
+    } else if (phase.phase === 'after') {
+      el.classList.add('trip');
+      el.textContent = '🏆 Trip complete — update the curriculum for the next language';
+    } else if (phase.phase === 'pre-setup') {
+      el.classList.add('setup');
+      el.textContent = '🕐 Sprint starts ' + sch.week0.start.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    } else {
+      el.hidden = true;
+    }
+  }
+
+  function renderScheduleDates(sch) {
+    document.querySelectorAll('[data-week-dates]').forEach(el => {
+      const n = parseInt(el.dataset.weekDates, 10);
+      const w = n === 0 ? sch.week0 : sch.weeks.find(w => w.n === n);
+      if (w) el.textContent = fmtRange(w.start, w.end);
+    });
+    const setupBadge = document.querySelector('[data-setup-dates]');
+    if (setupBadge) setupBadge.textContent = fmtBadge(sch.week0.start, sch.week0.end);
+    const monthRanges = {
+      1: [sch.weeks[0].start, sch.weeks[3].end],
+      2: [sch.weeks[4].start, sch.weeks[7].end]
+    };
+    document.querySelectorAll('[data-month-dates]').forEach(el => {
+      const r = monthRanges[parseInt(el.dataset.monthDates, 10)];
+      if (r) el.textContent = fmtRange(r[0], r[1]);
+    });
+    const tail = document.querySelector('[data-trip-tail]');
+    if (tail) {
+      tail.textContent = 'Polish buffer ' + fmtRange(sch.polishStart, sch.polishEnd)
+        + ', depart ' + sch.trip.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '.';
+    }
+  }
+
+  function highlightCurrentWeek(phase, sch) {
+    const today = startOfDay(new Date());
+    document.querySelectorAll('.week-item[data-week-num]').forEach(el => {
+      el.classList.remove('week-item--current', 'week-item--past');
+      const n = parseInt(el.dataset.weekNum, 10);
+      const w = n === 0 ? sch.week0 : sch.weeks.find(w => w.n === n);
+      if (!w) return;
+      if (n === phase.weekNum) el.classList.add('week-item--current');
+      else if (today > w.end) el.classList.add('week-item--past');
+    });
+  }
+
+  function renderTripSchedule() {
+    const sch = buildSchedule(TRIP_DATE);
+    const phase = getCurrentPhase(new Date(), sch);
+    renderScheduleDates(sch);
+    renderCountdown(sch);
+    renderPhaseBanner(sch, phase);
+    highlightCurrentWeek(phase, sch);
+  }
+
   // ── INIT ──
+  renderTripSchedule();
+  setInterval(renderTripSchedule, 60 * 60 * 1000); // refresh hourly — rolls over at midnight without reload
   renderAll();
   initPimsleur();
   renderTransHistory();
