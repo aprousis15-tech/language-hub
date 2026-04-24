@@ -981,6 +981,71 @@
   }
   .notes-empty { text-align: center; padding: 40px; color: #90a890; font-style: italic; }
 
+  /* ── SESSIONS TAB ── */
+  :root { --sessions-teal: #0b7fa3; }
+  .lang-tab.active-sessions { color: var(--sessions-teal); border-bottom-color: var(--sessions-teal); background: white; font-weight: 700; }
+  .sessions-accent { color: var(--sessions-teal); }
+  .sessions-header { background: linear-gradient(135deg, #e3f1f7, #cfe6f0); border-radius: 16px; padding: 28px 32px; margin-bottom: 32px; border: 1px solid #a8cfdd; }
+  .sessions-header h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--sessions-teal); margin-bottom: 6px; }
+  .sessions-header p { font-size: 0.88rem; color: #4a6670; }
+  .sessions-panel { background: white; border-radius: 14px; border: 1px solid #e0d5c5; padding: 24px 28px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+  .sessions-panel h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 14px; color: var(--sessions-teal); display: flex; align-items: center; gap: 8px; }
+  .sessions-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; align-items: end; }
+  .sessions-row label { display: flex; flex-direction: column; gap: 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #7a6a55; font-weight: 700; }
+  .sessions-row select, .sessions-row input[type=number], .sessions-row input[type=text] { padding: 8px 10px; border: 1px solid #e0d5c5; border-radius: 6px; background: var(--white); font-family: 'Lato', sans-serif; font-size: 0.88rem; min-width: 140px; }
+  .sessions-row select:focus, .sessions-row input:focus { outline: none; border-color: var(--sessions-teal); }
+  .sessions-textarea { width: 100%; min-height: 140px; padding: 12px; border: 1px solid #e0d5c5; border-radius: 8px; font-family: 'Lato', sans-serif; font-size: 0.95rem; line-height: 1.5; resize: vertical; outline: none; }
+  .sessions-textarea:focus { border-color: var(--sessions-teal); }
+  .sessions-btn { background: var(--sessions-teal); color: white; border: none; border-radius: 6px; padding: 9px 18px; font-family: 'Lato', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+  .sessions-btn:hover { background: #086684; }
+  .sessions-btn:disabled { background: #aaa; cursor: not-allowed; }
+  .sessions-btn.secondary { background: transparent; color: var(--sessions-teal); border: 1px solid var(--sessions-teal); }
+  .sessions-btn.secondary:hover { background: #e3f1f7; }
+  .sessions-status { font-size: 0.82rem; color: #7a6a55; margin-left: 10px; }
+  .sessions-status.error { color: #c41e3a; font-weight: 600; }
+  .sessions-status.success { color: #2e7d32; font-weight: 600; }
+  .plan-box { background: #fafdff; border: 1px solid #cfe6f0; border-radius: 8px; padding: 16px 18px; margin-top: 14px; font-size: 0.88rem; line-height: 1.5; }
+  .plan-box h4 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--sessions-teal); margin-top: 12px; margin-bottom: 6px; }
+  .plan-box h4:first-child { margin-top: 0; }
+  .plan-box ul { margin-left: 18px; }
+  .plan-box li { margin-bottom: 4px; }
+  .plan-box .greek-phrase { font-weight: 700; color: var(--greek-blue); }
+  .plan-box .translit { color: #7a6a55; font-style: italic; font-size: 0.82rem; }
+  .plan-exchange { margin: 4px 0; padding-left: 12px; border-left: 2px solid #cfe6f0; }
+  .plan-exchange .speaker { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #7a6a55; font-weight: 700; }
+  .analysis-box { background: #fafdff; border: 1px solid #cfe6f0; border-radius: 8px; padding: 18px 20px; margin-top: 14px; }
+  .analysis-score { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .analysis-score .big { font-size: 2.2rem; font-weight: 700; color: var(--sessions-teal); font-family: 'Playfair Display', serif; }
+  .analysis-score .scale { color: #7a6a55; font-size: 0.85rem; }
+  .analysis-box h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sessions-teal); margin-top: 12px; margin-bottom: 6px; font-weight: 700; }
+  .vocab-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .vocab-chip { background: white; border: 1px solid #cfe6f0; border-radius: 4px; padding: 3px 8px; font-size: 0.78rem; }
+  .vocab-chip .greek { font-weight: 700; color: var(--greek-blue); }
+  .vocab-chip .en { color: #7a6a55; margin-left: 4px; }
+  .recent-sessions { margin-top: 18px; padding-top: 14px; border-top: 1px solid #f0e8dc; }
+  .recent-sessions h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #7a6a55; margin-bottom: 8px; font-weight: 700; }
+  .recent-list { display: flex; flex-direction: column; gap: 6px; }
+  .recent-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; padding: 6px 0; border-bottom: 1px dashed #f0e8dc; }
+  .recent-row:last-child { border-bottom: none; }
+  .recent-row .date { color: #9a8a75; font-size: 0.72rem; width: 80px; flex-shrink: 0; }
+  .recent-row .scenario { flex: 1; }
+  .recent-row .score-pill { background: var(--sand); color: var(--terracotta); border-radius: 99px; padding: 2px 10px; font-size: 0.72rem; font-weight: 700; }
+  .recent-row .score-pill.high { background: #e8f5e8; color: #2e7d32; }
+  .recent-row .score-pill.mid { background: #fff6e0; color: #8a6d1a; }
+  .readiness-stat { text-align: center; padding: 18px; background: linear-gradient(135deg, #e3f1f7, #cfe6f0); border-radius: 10px; margin-bottom: 18px; }
+  .readiness-stat .big { font-size: 2.6rem; font-weight: 700; color: var(--sessions-teal); font-family: 'Playfair Display', serif; display: block; line-height: 1; }
+  .readiness-stat .label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #4a6670; margin-top: 4px; }
+  .scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; margin-bottom: 20px; }
+  .scenario-cell { background: white; border: 1px solid #e0d5c5; border-radius: 6px; padding: 8px 10px; font-size: 0.74rem; display: flex; align-items: center; gap: 6px; }
+  .scenario-cell.covered { background: #e8f5e8; border-color: #81c784; color: #1b5e20; font-weight: 600; }
+  .scenario-cell.attempted { background: #fff6e0; border-color: #ffd54f; color: #8a6d1a; }
+  .scenario-cell .dot { width: 8px; height: 8px; border-radius: 50%; background: #d4c5b0; flex-shrink: 0; }
+  .scenario-cell.covered .dot { background: #2e7d32; }
+  .scenario-cell.attempted .dot { background: #d4a017; }
+  .fluency-chart { width: 100%; height: 180px; background: #fafdff; border: 1px solid #cfe6f0; border-radius: 8px; padding: 10px; margin-bottom: 18px; }
+  .fluency-chart-empty { text-align: center; color: #9a8a75; font-style: italic; padding: 60px 20px; }
+  .sessions-empty { text-align: center; padding: 30px; color: #9a8a75; font-style: italic; font-size: 0.88rem; }
+
 </style>
 </head>
 <body>
@@ -1000,6 +1065,7 @@
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
+  <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
 </div>
 
 <!-- GREEK PANEL -->
@@ -1872,6 +1938,85 @@
   </div>
 </div>
 
+<!-- SESSIONS PANEL -->
+<div class="lang-panel" id="panel-sessions">
+  <div class="container">
+
+    <div class="sessions-header">
+      <h2>🎯 Sessions</h2>
+      <p>Plan → practice → analyze → compound. Every session feeds the next plan.</p>
+    </div>
+
+    <!-- PANEL 1: UPCOMING (plan generator) -->
+    <div class="sessions-panel">
+      <h3>📝 Plan the next session</h3>
+      <div class="sessions-row">
+        <label>Scenario
+          <select id="plan-scenario"></select>
+        </label>
+        <label>Type
+          <select id="plan-type">
+            <option value="italki">italki</option>
+            <option value="dad">Dad</option>
+            <option value="self">Self (shadowing / drill)</option>
+          </select>
+        </label>
+        <button class="sessions-btn" id="plan-generate-btn" onclick="generatePlan()">Generate plan</button>
+        <span class="sessions-status" id="plan-status"></span>
+      </div>
+      <div id="plan-output"></div>
+      <div class="recent-sessions">
+        <h4>Last 3 sessions (context for the planner)</h4>
+        <div class="recent-list" id="plan-recent-list"></div>
+      </div>
+    </div>
+
+    <!-- PANEL 2: TODAY (log + analyze) -->
+    <div class="sessions-panel">
+      <h3>🎙 Log today's session</h3>
+      <div class="sessions-row">
+        <label>Type
+          <select id="log-type">
+            <option value="italki">italki</option>
+            <option value="dad">Dad</option>
+            <option value="self">Self</option>
+            <option value="shadowing">Shadowing</option>
+          </select>
+        </label>
+        <label>Scenario
+          <select id="log-scenario"></select>
+        </label>
+        <label>Duration (min)
+          <input type="number" id="log-duration" min="5" max="180" step="5" value="30">
+        </label>
+      </div>
+      <label style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:#7a6a55;font-weight:700;display:block;margin-bottom:4px;">Transcript (paste or type what happened — key exchanges are enough)</label>
+      <textarea class="sessions-textarea" id="log-transcript" placeholder="E.g. 'I ordered a coffee. The waiter asked what size. I said medium but couldn't remember the word for large. Switched to English twice…'"></textarea>
+      <div class="sessions-row" style="margin-top:12px;">
+        <button class="sessions-btn" id="log-analyze-btn" onclick="saveAndAnalyze()">Save &amp; analyze</button>
+        <span class="sessions-status" id="log-status"></span>
+      </div>
+      <div id="analysis-output"></div>
+    </div>
+
+    <!-- PANEL 3: METRICS -->
+    <div class="sessions-panel">
+      <h3>📊 Readiness metrics</h3>
+      <div class="readiness-stat">
+        <span class="big" id="readiness-big">0 / 20</span>
+        <div class="label" id="readiness-label">scenarios at trip-ready level (score ≥ 7)</div>
+      </div>
+      <h4 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--sessions-teal);margin-bottom:8px;font-weight:700;">Fluency trend</h4>
+      <div class="fluency-chart" id="fluency-chart">
+        <div class="fluency-chart-empty">No sessions logged yet — chart fills in once you analyze your first session.</div>
+      </div>
+      <h4 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--sessions-teal);margin-bottom:8px;font-weight:700;">Scenario coverage</h4>
+      <div class="scenario-grid" id="scenario-grid"></div>
+    </div>
+
+  </div>
+</div>
+
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
@@ -2125,9 +2270,9 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-translate','active-notes'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-translate','active-notes','active-sessions'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, translate:5, notes:6};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, translate:5, notes:6, sessions:7};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -2135,6 +2280,7 @@
     if (lang === 'alphabet') { buildAlphaTable(); }
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
+    if (lang === 'sessions') renderSessions();
   }
 
   // ── DAD PRACTICE ──
@@ -2957,6 +3103,408 @@
         initVocab();
       }
     }, 5000);
+  }
+
+  // ── SESSIONS TAB ──
+  // 20 trip scenarios from the brief (Section 9.3)
+  const SCENARIOS = [
+    { id: 'airport_arrival', label: 'Airport arrival' },
+    { id: 'airbnb_checkin', label: 'Airbnb check-in' },
+    { id: 'taxi_negotiation', label: 'Taxi negotiation' },
+    { id: 'ordering_coffee', label: 'Ordering coffee' },
+    { id: 'taverna_ordering', label: 'Taverna: ordering' },
+    { id: 'taverna_paying', label: 'Taverna: paying' },
+    { id: 'bakery_pastry', label: 'Bakery / pastry' },
+    { id: 'grocery_shopping', label: 'Grocery shopping' },
+    { id: 'asking_directions', label: 'Asking directions' },
+    { id: 'bus_metro_purchase', label: 'Bus / metro purchase' },
+    { id: 'pharmacy_request', label: 'Pharmacy request' },
+    { id: 'doctor_minor_emergency', label: 'Doctor / minor emergency' },
+    { id: 'ferry_booking', label: 'Ferry booking' },
+    { id: 'hotel_complaint', label: 'Hotel complaint' },
+    { id: 'museum_entry', label: 'Museum entry' },
+    { id: 'tour_booking', label: 'Tour booking' },
+    { id: 'beach_rental', label: 'Beach rental' },
+    { id: 'market_haggling', label: 'Market haggling' },
+    { id: 'bar_introductions', label: 'Bar introductions' },
+    { id: 'asking_local_history', label: 'Asking local history' },
+  ];
+
+  const SESSIONS_PENDING_KEY = 'langHub_sessions_pending_v1';
+  let sessionsCache = [];
+  let lastPlanOutput = null;
+
+  function loadPendingSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_PENDING_KEY)) || []; } catch { return []; } }
+  function savePendingSessions(arr) { try { localStorage.setItem(SESSIONS_PENDING_KEY, JSON.stringify(arr)); } catch {} }
+
+  async function fetchSessions() {
+    if (!window._supabase) return [];
+    const { data, error } = await window._supabase
+      .from('sessions')
+      .select('*')
+      .eq('language', 'greek')
+      .order('date', { ascending: false });
+    if (error) { console.warn('sessions fetch error', error); return []; }
+    return data || [];
+  }
+
+  async function insertSession(row) {
+    // Try Supabase first; on any failure, queue to localStorage and return a synthetic id so UI keeps flowing.
+    if (window._supabase) {
+      try {
+        const { data, error } = await window._supabase.from('sessions').insert(row).select('*').single();
+        if (!error && data) return { id: data.id, synced: true, row: data };
+      } catch (e) { console.warn('insertSession threw', e); }
+    }
+    const pending = loadPendingSessions();
+    const localRow = { ...row, id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2,8), _pending: true };
+    pending.push(localRow);
+    savePendingSessions(pending);
+    return { id: localRow.id, synced: false, row: localRow };
+  }
+
+  async function updateSession(id, patch) {
+    if (!window._supabase || typeof id !== 'string' || id.startsWith('local-')) return false;
+    try {
+      const { error } = await window._supabase.from('sessions').update(patch).eq('id', id);
+      return !error;
+    } catch (e) { console.warn('updateSession threw', e); return false; }
+  }
+
+  async function flushPendingSessions() {
+    const pending = loadPendingSessions();
+    if (!pending.length || !window._supabase) return;
+    const remaining = [];
+    for (const row of pending) {
+      const { _pending, id, ...clean } = row;
+      try {
+        const { error } = await window._supabase.from('sessions').insert(clean);
+        if (error) remaining.push(row);
+      } catch { remaining.push(row); }
+    }
+    savePendingSessions(remaining);
+    if (remaining.length < pending.length) {
+      console.log('flushed ' + (pending.length - remaining.length) + ' pending sessions');
+    }
+  }
+
+  function populateScenarioSelects() {
+    const plan = document.getElementById('plan-scenario');
+    const log = document.getElementById('log-scenario');
+    if (!plan || !log || plan.options.length > 0) return;
+    for (const s of SCENARIOS) {
+      plan.insertAdjacentHTML('beforeend', '<option value="' + s.id + '">' + escHtml(s.label) + '</option>');
+      log.insertAdjacentHTML('beforeend', '<option value="' + s.id + '">' + escHtml(s.label) + '</option>');
+    }
+  }
+
+  function scenarioLabel(id) {
+    const s = SCENARIOS.find(x => x.id === id);
+    return s ? s.label : (id || '—');
+  }
+
+  async function renderSessions() {
+    populateScenarioSelects();
+    sessionsCache = [...loadPendingSessions(), ...(await fetchSessions())];
+    // Sort newest first by date (created_at fallback)
+    sessionsCache.sort((a,b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at));
+    renderRecentSessions();
+    renderMetrics();
+  }
+
+  function renderRecentSessions() {
+    const el = document.getElementById('plan-recent-list');
+    if (!el) return;
+    const recent = sessionsCache.slice(0, 3);
+    if (!recent.length) { el.innerHTML = '<div class="sessions-empty" style="padding:12px;">No sessions yet — log your first one below.</div>'; return; }
+    el.innerHTML = recent.map(r => {
+      const d = new Date(r.date || r.created_at);
+      const dstr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const score = r.fluency_score;
+      const pillClass = score >= 7 ? 'high' : (score >= 4 ? 'mid' : '');
+      const pill = score != null ? '<span class="score-pill ' + pillClass + '">' + score + '/10</span>' : '<span class="score-pill" style="opacity:0.5;">—</span>';
+      return '<div class="recent-row"><span class="date">' + escHtml(dstr) + '</span><span class="scenario">' + escHtml(scenarioLabel(r.scenario)) + ' <small style="color:#9a8a75;">· ' + escHtml(r.type || '') + '</small></span>' + pill + '</div>';
+    }).join('');
+  }
+
+  function buildPlanPayload(targetScenario, sessionType) {
+    const last3 = sessionsCache.slice(0, 3).map(s => ({
+      scenario: s.scenario,
+      type: s.type,
+      fluency_score: s.fluency_score || null,
+      weaknesses: s.weaknesses_json || null
+    }));
+    return {
+      target_scenario: targetScenario,
+      session_type: sessionType,
+      last_3_sessions: last3,
+      scenarios_list: SCENARIOS.map(s => s.id),
+    };
+  }
+
+  async function generatePlan() {
+    const btn = document.getElementById('plan-generate-btn');
+    const status = document.getElementById('plan-status');
+    const out = document.getElementById('plan-output');
+    const scenario = document.getElementById('plan-scenario').value;
+    const type = document.getElementById('plan-type').value;
+    btn.disabled = true;
+    status.className = 'sessions-status';
+    status.textContent = 'Generating… (Claude Opus, ~15s)';
+    out.innerHTML = '';
+    try {
+      const res = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'generate_plan', payload: buildPlanPayload(scenario, type) }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        status.className = 'sessions-status error';
+        status.textContent = '✗ ' + data.error + (data.hint ? ' — ' + data.hint : '');
+        if (data.raw) out.innerHTML = '<div class="plan-box"><h4>Raw response</h4><pre style="white-space:pre-wrap;font-size:0.78rem;">' + escHtml(data.raw) + '</pre></div>';
+        return;
+      }
+      lastPlanOutput = data.data;
+      renderPlan(data.data);
+      status.className = 'sessions-status success';
+      status.textContent = '✓ Plan ready';
+    } catch (e) {
+      status.className = 'sessions-status error';
+      status.textContent = '✗ ' + (e.message || e);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function renderPlan(plan) {
+    const out = document.getElementById('plan-output');
+    const vocabHtml = (plan.vocab || []).map(v =>
+      '<li><span class="greek-phrase">' + escHtml(v.greek || '') + '</span> — ' + escHtml(v.english || '') +
+      ' <span class="translit">[' + escHtml(v.translit || '') + ']</span>' +
+      (v.example ? '<br><small style="color:#7a6a55;">e.g. ' + escHtml(v.example) + '</small>' : '') + '</li>'
+    ).join('');
+    const grammarHtml = (plan.grammar || []).map(g =>
+      '<li><strong>' + escHtml(g.point || '') + '</strong> — <em>' + escHtml(g.example || '') + '</em></li>'
+    ).join('');
+    const exchangesHtml = ((plan.roleplay && plan.roleplay.exchanges) || []).map(x =>
+      '<div class="plan-exchange"><span class="speaker">' + escHtml(x.speaker || '') + '</span><br><span class="greek-phrase">' + escHtml(x.greek || '') + '</span><br><small>' + escHtml(x.english || '') + '</small></div>'
+    ).join('');
+    out.innerHTML =
+      '<div class="plan-box">' +
+      '<h4>🎯 Target: ' + escHtml(scenarioLabel(plan.target_scenario)) + ' · ' + (plan.duration_minutes || 30) + ' min</h4>' +
+      '<h4>Vocab (' + (plan.vocab || []).length + ')</h4><ul>' + vocabHtml + '</ul>' +
+      '<h4>Grammar</h4><ul>' + grammarHtml + '</ul>' +
+      '<h4>Role-play</h4><p><em>' + escHtml((plan.roleplay && plan.roleplay.setup) || '') + '</em></p>' + exchangesHtml +
+      '<div style="margin-top:14px;"><button class="sessions-btn secondary" onclick="copyPlan()">📋 Copy for tutor / Dad</button></div>' +
+      '</div>';
+  }
+
+  function copyPlan() {
+    if (!lastPlanOutput) return;
+    const p = lastPlanOutput;
+    const lines = [];
+    lines.push('Target scenario: ' + scenarioLabel(p.target_scenario));
+    lines.push('Duration: ' + (p.duration_minutes || 30) + ' min');
+    lines.push('');
+    lines.push('VOCAB:');
+    for (const v of (p.vocab || [])) lines.push('  • ' + v.greek + ' [' + v.translit + '] — ' + v.english + (v.example ? ' — e.g. ' + v.example : ''));
+    lines.push('');
+    lines.push('GRAMMAR:');
+    for (const g of (p.grammar || [])) lines.push('  • ' + g.point + ' — ' + g.example);
+    lines.push('');
+    lines.push('ROLE-PLAY: ' + ((p.roleplay && p.roleplay.setup) || ''));
+    for (const x of ((p.roleplay && p.roleplay.exchanges) || [])) lines.push('  ' + x.speaker + ': ' + x.greek + ' (' + x.english + ')');
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      const status = document.getElementById('plan-status');
+      status.className = 'sessions-status success';
+      status.textContent = '✓ Copied to clipboard';
+    }).catch(() => {});
+  }
+
+  async function saveAndAnalyze() {
+    const btn = document.getElementById('log-analyze-btn');
+    const status = document.getElementById('log-status');
+    const out = document.getElementById('analysis-output');
+    const type = document.getElementById('log-type').value;
+    const scenario = document.getElementById('log-scenario').value;
+    const duration = parseInt(document.getElementById('log-duration').value, 10) || 30;
+    const transcript = document.getElementById('log-transcript').value.trim();
+
+    if (!transcript) {
+      status.className = 'sessions-status error';
+      status.textContent = '✗ Transcript is required';
+      return;
+    }
+
+    btn.disabled = true;
+    status.className = 'sessions-status';
+    status.textContent = 'Saving session…';
+    out.innerHTML = '';
+
+    const row = {
+      language: 'greek',
+      type: type,
+      scenario: scenario,
+      duration_minutes: duration,
+      transcript: transcript,
+    };
+    const saved = await insertSession(row);
+    const sessionId = saved.id;
+    status.textContent = saved.synced ? 'Saved · analyzing with Claude Opus (~20s)…' : 'DB offline — saved locally · analyzing…';
+    if (!saved.synced) status.className = 'sessions-status error';
+
+    try {
+      const res = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'analyze_session',
+          payload: {
+            scenario: scenario,
+            type: type,
+            duration_minutes: duration,
+            transcript: transcript,
+            scenarios_list: SCENARIOS.map(s => s.id),
+            last_3_sessions: sessionsCache.slice(0, 3).map(s => ({
+              scenario: s.scenario,
+              fluency_score: s.fluency_score || null,
+            })),
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        status.className = 'sessions-status error';
+        status.textContent = '✗ ' + data.error + (data.hint ? ' — ' + data.hint : '');
+        if (data.raw) out.innerHTML = '<div class="analysis-box"><h4>Raw response</h4><pre style="white-space:pre-wrap;font-size:0.78rem;">' + escHtml(data.raw) + '</pre></div>';
+        return;
+      }
+      const analysis = data.data;
+      await updateSession(sessionId, {
+        fluency_score: analysis.fluency_score,
+        weaknesses_json: analysis.weaknesses,
+      });
+      renderAnalysis(analysis, sessionId);
+      await renderSessions(); // refresh recent + metrics
+      status.className = 'sessions-status success';
+      status.textContent = '✓ Analyzed';
+    } catch (e) {
+      status.className = 'sessions-status error';
+      status.textContent = '✗ ' + (e.message || e);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function renderAnalysis(a, sessionId) {
+    const out = document.getElementById('analysis-output');
+    const w = a.weaknesses || {};
+    const newVocabHtml = (a.new_vocab || []).map((v, i) =>
+      '<span class="vocab-chip" data-idx="' + i + '"><span class="greek">' + escHtml(v.greek || '') + '</span><span class="en">' + escHtml(v.english || '') + '</span></span>'
+    ).join('');
+    window._pendingNewVocab = a.new_vocab || [];
+    window._pendingSessionId = sessionId;
+
+    out.innerHTML =
+      '<div class="analysis-box">' +
+      '<div class="analysis-score"><span class="big">' + (a.fluency_score || '?') + '</span><span class="scale">/ 10 fluency</span></div>' +
+      (w.summary ? '<p style="font-size:0.88rem;color:#4a6670;margin-bottom:12px;">' + escHtml(w.summary) + '</p>' : '') +
+      (w.vocab_gaps && w.vocab_gaps.length ? '<h4>Vocab gaps</h4><div>' + w.vocab_gaps.map(g => '<span class="vocab-chip">' + escHtml(g) + '</span>').join('') + '</div>' : '') +
+      (w.grammar_errors && w.grammar_errors.length ? '<h4>Grammar errors</h4><ul style="margin-left:18px;font-size:0.85rem;">' + w.grammar_errors.map(g => '<li><strong>' + escHtml(g.pattern || '') + '</strong> — ' + escHtml(g.example || '') + '</li>').join('') + '</ul>' : '') +
+      (w.pronunciation_issues && w.pronunciation_issues.length ? '<h4>Pronunciation</h4><div>' + w.pronunciation_issues.map(p => '<span class="vocab-chip">' + escHtml(p) + '</span>').join('') + '</div>' : '') +
+      (w.english_switches && w.english_switches.length ? '<h4>Switched to English</h4><ul style="margin-left:18px;font-size:0.85rem;">' + w.english_switches.map(e => '<li>' + escHtml(e.context || '') + ' <small>(×' + (e.count || 1) + ')</small></li>').join('') + '</ul>' : '') +
+      (a.new_vocab && a.new_vocab.length ? '<h4>New vocab (' + a.new_vocab.length + ')</h4><div class="vocab-preview">' + newVocabHtml + '</div><div style="margin-top:10px;"><button class="sessions-btn" onclick="acceptVocab()">✓ Add all to My Vocab</button></div>' : '') +
+      (a.next_scenario ? '<h4 style="margin-top:14px;">Suggested next scenario</h4><p style="font-size:0.88rem;">→ <strong>' + escHtml(scenarioLabel(a.next_scenario)) + '</strong></p>' : '') +
+      '</div>';
+  }
+
+  async function acceptVocab() {
+    const items = window._pendingNewVocab || [];
+    const sessionId = window._pendingSessionId;
+    if (!items.length || !window._supabase) return;
+    const rows = items.map(v => ({
+      word: v.greek || v.english || '',
+      translation: v.english || '',
+      lang: 'greek',
+      topic: v.topic || 'Other',
+    }));
+    try {
+      const { data, error } = await window._supabase.from('vocab').insert(rows).select('id');
+      if (error) { alert('Vocab insert failed: ' + error.message); return; }
+      if (sessionId && typeof sessionId === 'string' && !sessionId.startsWith('local-')) {
+        await updateSession(sessionId, { new_vocab_ids: (data || []).map(d => d.id) });
+      }
+      const btn = document.querySelector('#analysis-output button[onclick="acceptVocab()"]');
+      if (btn) { btn.disabled = true; btn.textContent = '✓ Added ' + rows.length + ' to vocab'; }
+    } catch (e) { alert('acceptVocab threw: ' + e.message); }
+  }
+
+  function renderMetrics() {
+    renderFluencyChart();
+    renderScenarioGrid();
+    renderReadinessStat();
+  }
+
+  function renderReadinessStat() {
+    const covered = new Set();
+    for (const s of sessionsCache) {
+      if (s.fluency_score != null && s.fluency_score >= 7 && s.scenario) covered.add(s.scenario);
+    }
+    const big = document.getElementById('readiness-big');
+    if (big) big.textContent = covered.size + ' / 20';
+  }
+
+  function renderFluencyChart() {
+    const chart = document.getElementById('fluency-chart');
+    if (!chart) return;
+    const scored = sessionsCache.filter(s => s.fluency_score != null).slice().reverse(); // oldest → newest
+    if (!scored.length) {
+      chart.innerHTML = '<div class="fluency-chart-empty">No sessions logged yet — chart fills in once you analyze your first session.</div>';
+      return;
+    }
+    const W = 800, H = 160, P = 24;
+    const xs = scored.length > 1
+      ? scored.map((_, i) => P + (i * (W - 2*P)) / (scored.length - 1))
+      : [W/2];
+    const ys = scored.map(s => H - P - ((s.fluency_score - 1) / 9) * (H - 2*P));
+    const linePath = xs.map((x,i) => (i === 0 ? 'M' : 'L') + x + ',' + ys[i]).join(' ');
+    const dots = xs.map((x,i) => '<circle cx="' + x + '" cy="' + ys[i] + '" r="4" fill="#0b7fa3"/>').join('');
+    const gridlines = [1, 3, 5, 7, 10].map(v => {
+      const y = H - P - ((v - 1) / 9) * (H - 2*P);
+      return '<line x1="' + P + '" y1="' + y + '" x2="' + (W-P) + '" y2="' + y + '" stroke="#e8dcc8" stroke-dasharray="2,3"/>' +
+             '<text x="' + (P - 4) + '" y="' + (y + 3) + '" text-anchor="end" font-size="9" fill="#9a8a75">' + v + '</text>';
+    }).join('');
+    chart.innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" style="width:100%;height:100%;">' +
+      gridlines +
+      '<path d="' + linePath + '" stroke="#0b7fa3" stroke-width="2" fill="none"/>' +
+      dots +
+      '</svg>';
+  }
+
+  function renderScenarioGrid() {
+    const grid = document.getElementById('scenario-grid');
+    if (!grid) return;
+    const bestByScenario = {};
+    for (const s of sessionsCache) {
+      if (!s.scenario) continue;
+      const prev = bestByScenario[s.scenario];
+      if (s.fluency_score != null && (!prev || s.fluency_score > prev)) bestByScenario[s.scenario] = s.fluency_score;
+    }
+    grid.innerHTML = SCENARIOS.map(s => {
+      const best = bestByScenario[s.id];
+      const cls = best >= 7 ? 'covered' : (best != null ? 'attempted' : '');
+      const badge = best != null ? ' <small style="margin-left:auto;color:inherit;opacity:0.7;">' + best + '</small>' : '';
+      return '<div class="scenario-cell ' + cls + '"><span class="dot"></span>' + escHtml(s.label) + badge + '</div>';
+    }).join('');
+  }
+
+  // Hook Supabase-ready to flush any pending sessions
+  if (window._supabaseReady) {
+    flushPendingSessions();
+  } else {
+    document.addEventListener('supabase-ready', flushPendingSessions, { once: true });
   }
 </script>
 </body>
