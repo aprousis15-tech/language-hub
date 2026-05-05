@@ -814,6 +814,21 @@
   .lesson-tip strong { color: var(--dark); }
 
   /* ── ALPHABET DRILL ── */
+  .iphone-trainer-card {
+    display: flex; align-items: center; gap: 16px;
+    background: linear-gradient(135deg, #1a1612, #251f18);
+    border: 1px solid #3a3128; border-left: 3px solid #d4a574;
+    border-radius: 4px; padding: 18px 22px; margin-bottom: 24px;
+    text-decoration: none; color: #f4ebdb;
+    transition: all 200ms ease; cursor: pointer;
+  }
+  .iphone-trainer-card:hover { border-left-color: #ecc58a; transform: translateX(2px); box-shadow: 0 4px 16px rgba(212,165,116,0.15); }
+  .iphone-trainer-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .iphone-trainer-text { flex: 1; }
+  .iphone-trainer-text strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #d4a574; margin-bottom: 4px; font-weight: 600; }
+  .iphone-trainer-text span { font-size: 0.82rem; color: #b8a888; line-height: 1.5; }
+  .iphone-trainer-arrow { font-size: 1.4rem; color: #d4a574; flex-shrink: 0; }
+
   .alpha-header {
     background: linear-gradient(135deg, #f0eaf8, #e4d8f0);
     border-radius: 16px; padding: 28px 32px; margin-bottom: 32px;
@@ -1733,6 +1748,15 @@
       <h2>Αα Greek Alphabet Drill</h2>
       <p>Three modes: browse the full reference table, drill with flashcards, or test yourself with the matching game.</p>
     </div>
+
+    <a href="/iphone-greek.html" class="iphone-trainer-card">
+      <div class="iphone-trainer-icon">📱</div>
+      <div class="iphone-trainer-text">
+        <strong>iPhone in Greek — pronunciation trainer</strong>
+        <span>~80 high-frequency Greek words you'll see on your phone (Settings, apps, Maps, Messages), with pronunciation drills + recovery path. ~80 min full run, or jump in and out.</span>
+      </div>
+      <div class="iphone-trainer-arrow">→</div>
+    </a>
 
     <div class="alpha-mode-bar">
       <button class="alpha-mode-btn active" onclick="setAlphaMode('reference',this)">📋 Reference Table</button>

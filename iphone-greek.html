@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone in Greek · Language Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #0d0b08; min-height: 100vh; }
+  body { font-family: 'Manrope', system-ui, sans-serif; color: #f4ebdb; }
+  #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: #0d0b08; z-index: 9; }
+  #loading .pulse { width: 60px; height: 60px; border: 2px solid rgba(212,165,116,0.2); border-top-color: #d4a574; border-radius: 50%; animation: spin 0.9s linear infinite; }
+  #loading .text { font-family: 'EB Garamond', serif; font-style: italic; font-size: 18px; color: #9a8e7a; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #back-to-hub {
+    position: fixed; top: 14px; left: 14px; z-index: 100;
+    background: rgba(26,22,18,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    color: #d4a574; border: 1px solid #3a3128; border-radius: 2px;
+    padding: 8px 14px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+    transition: all 200ms ease; cursor: pointer;
+  }
+  #back-to-hub:hover { background: #251f18; border-color: #d4a574; color: #ecc58a; }
+  #error-fallback { display: none; max-width: 600px; margin: 80px auto; padding: 32px; background: #1a1612; border: 1px solid #3a3128; border-left: 3px solid #c97864; border-radius: 2px; }
+  #error-fallback h2 { font-family: 'EB Garamond', serif; color: #f4ebdb; margin: 0 0 12px; }
+  #error-fallback p { color: #9a8e7a; line-height: 1.6; }
+  #error-fallback code { background: #251f18; padding: 2px 6px; border-radius: 2px; color: #d4a574; font-size: 13px; }
+</style>
+</head>
+<body>
+<a id="back-to-hub" href="/" title="Back to language hub">← hub</a>
+<div id="loading">
+  <div class="pulse"></div>
+  <div class="text">Loading the trainer…</div>
+</div>
+<div id="error-fallback">
+  <h2>Couldn't load the trainer</h2>
+  <p>This page needs an internet connection to fetch React from <code>esm.sh</code>. If you're offline, that's the problem. If you're online and still seeing this, open the browser console (F12) and check for errors.</p>
+  <p style="margin-top:18px;"><a href="/" style="color:#d4a574;">← Back to the language hub</a></p>
+</div>
+<div id="root"></div>
+
+<script type="module">
+import React, { useState, useEffect, useMemo } from 'https://esm.sh/react@18.3.1';
+import { ChevronLeft, ChevronRight, Sparkles, RotateCcw, AlertTriangle, Shield, Phone, MessageSquare, Map, Camera, Image as ImageIcon, Calendar, Clock, Bell, Music, FileText, Heart, Users, Wallet, ArrowRight } from 'https://esm.sh/lucide-react@0.468.0?deps=react@18.3.1';
+// ——————————————————————————————————————————————
+// DATA
+// ——————————————————————————————————————————————
+// The escape path. Drill this first. Verified against Apple's Greek support page.
+const ESCAPE_PATH = [
+    { gr: 'Ρυθμίσεις', translit: 'Rythmíseis', en: 'Settings', phon: 'rith-MEE-sees', note: 'Gear icon on Home Screen' },
+    { gr: 'Γενικά', translit: 'Geniká', en: 'General', phon: 'ye-nee-KAH', note: 'Gray gear icon in the list' },
+    { gr: 'Γλώσσα και περιοχή', translit: 'Glóssa kai periochí', en: 'Language & Region', phon: 'GLOH-sah ke pe-ree-o-HEE', note: 'Near the bottom of the General section' },
+    { gr: 'Γλώσσα iPhone', translit: 'Glóssa iPhone', en: 'iPhone Language', phon: 'GLOH-sah iPhone', note: 'Top item on the next screen' },
+    { gr: 'English', translit: 'English', en: '(pick English)', phon: 'English', note: 'Scroll through the language list' },
+    { gr: 'Τέλος', translit: 'Télos', en: 'Done', phon: 'TE-los', note: 'Top-right corner. Confirms and restarts.' },
+];
+// ~35 highest-confidence, highest-frequency words — these are what we drill.
+const BUTTONS = [
+    { gr: 'Τέλος', translit: 'Télos', en: 'Done', phon: 'TE-los', group: 'button', hint: 'Top-right of editing screens. Confirms and exits.' },
+    { gr: 'Ακύρωση', translit: 'Akýrosi', en: 'Cancel', phon: 'ah-KEE-ro-see', group: 'button', hint: 'Top-left. Exits without saving.' },
+    { gr: 'Αποθήκευση', translit: 'Apothíkefsi', en: 'Save', phon: 'ah-po-THEE-kef-see', group: 'button', hint: 'From "storage". Common in forms.' },
+    { gr: 'Επεξεργασία', translit: 'Epexergasía', en: 'Edit', phon: 'e-pek-ser-ga-SEE-ah', group: 'button', hint: 'Top-right of list screens (Notes, Messages, etc).' },
+    { gr: 'Διαγραφή', translit: 'Diagrafí', en: 'Delete', phon: 'thee-a-gra-FEE', group: 'button', hint: 'Usually in red. Destructive. Be careful.' },
+    { gr: 'Ναι', translit: 'Nai', en: 'Yes', phon: 'neh', group: 'button', hint: 'Just "neh". Two letters, one sound.' },
+    { gr: 'Όχι', translit: 'Óchi', en: 'No', phon: 'OH-hee', group: 'button', hint: 'Starts with Ό. Looks very different from Ναι.' },
+    { gr: 'Πίσω', translit: 'Píso', en: 'Back', phon: 'PEE-so', group: 'button', hint: 'Sometimes shown as just "<". Top-left navigation.' },
+    { gr: 'Επόμενο', translit: 'Epómeno', en: 'Next', phon: 'e-POH-me-no', group: 'button', hint: 'Advances in setup flows.' },
+    { gr: 'Κλείσιμο', translit: 'Kleísimo', en: 'Close', phon: 'KLEE-see-mo', group: 'button', hint: 'Usually dismisses a sheet or modal.' },
+    { gr: 'OK', translit: 'OK', en: 'OK', phon: 'oh-KAY', group: 'button', hint: 'Stays as "OK" — you always know this one.' },
+    { gr: 'Αναζήτηση', translit: 'Anazítisi', en: 'Search', phon: 'ah-na-ZEE-tee-see', group: 'button', hint: 'Magnifying glass icon. Appears everywhere.' },
+];
+const SETTINGS = [
+    { gr: 'Ρυθμίσεις', translit: 'Rythmíseis', en: 'Settings', phon: 'rith-MEE-sees', group: 'settings', hint: 'The app itself. Gear icon.' },
+    { gr: 'Γενικά', translit: 'Geniká', en: 'General', phon: 'ye-nee-KAH', group: 'settings', hint: 'Contains Language, Storage, About, Reset.' },
+    { gr: 'Ειδοποιήσεις', translit: 'Eidopoiíseis', en: 'Notifications', phon: 'ee-tho-pee-EE-sees', group: 'settings', hint: 'Red icon, bell-like.' },
+    { gr: 'Ήχοι', translit: 'Íchoi', en: 'Sounds', phon: 'EE-hee', group: 'settings', hint: 'Ringtones, alerts, vibration.' },
+    { gr: 'Οθόνη και φωτεινότητα', translit: 'Othóni kai foteinótita', en: 'Display & Brightness', phon: 'oh-THO-nee ke fo-tee-NO-tee-ta', group: 'settings', hint: 'Dark mode, text size, brightness.' },
+    { gr: 'Αρχική οθόνη', translit: 'Archikí othóni', en: 'Home Screen', phon: 'ar-hee-KEE oh-THO-nee', group: 'settings', hint: '"arhikí othóni" = "starting screen".' },
+    { gr: 'Προσβασιμότητα', translit: 'Prosvasimótita', en: 'Accessibility', phon: 'pros-va-see-MO-tee-ta', group: 'settings', hint: 'Blue accessibility icon. Text size, vision, hearing.' },
+    { gr: 'Μπαταρία', translit: 'Bataría', en: 'Battery', phon: 'ba-ta-REE-a', group: 'settings', hint: 'Just a Greek spelling of "battery" (Μπ- at start = b).' },
+    { gr: 'Απόρρητο και ασφάλεια', translit: 'Apórrito kai asfáleia', en: 'Privacy & Security', phon: 'ah-PO-ree-to ke ahs-FAH-lee-a', group: 'settings', hint: 'Blue hand icon. App permissions live here.' },
+    { gr: 'Χρόνος οθόνης', translit: 'Chrónos othónis', en: 'Screen Time', phon: 'HRO-nos oh-THO-nees', group: 'settings', hint: '"time of screen". Usage stats.' },
+];
+const APPS = [
+    { gr: 'Τηλέφωνο', translit: 'Tiléfono', en: 'Phone', phon: 'tee-LE-fo-no', group: 'app', icon: Phone, color: '#4cd964', hint: 'Green icon.' },
+    { gr: 'Μηνύματα', translit: 'Minýmata', en: 'Messages', phon: 'mee-NEE-ma-ta', group: 'app', icon: MessageSquare, color: '#4cd964', hint: 'Green speech-bubble icon.' },
+    { gr: 'Χάρτες', translit: 'Chártes', en: 'Maps', phon: 'HAR-tes', group: 'app', icon: Map, color: '#4cd964', hint: 'Your critical travel app.' },
+    { gr: 'Κάμερα', translit: 'Kámera', en: 'Camera', phon: 'KA-me-ra', group: 'app', icon: Camera, color: '#8e8e93', hint: 'Greek spelling of "camera".' },
+    { gr: 'Φωτογραφίες', translit: 'Fotografíes', en: 'Photos', phon: 'fo-to-gra-FEE-es', group: 'app', icon: ImageIcon, color: '#ff3b30', hint: 'Colorful flower icon.' },
+    { gr: 'Ημερολόγιο', translit: 'Imerológio', en: 'Calendar', phon: 'ee-me-ro-LO-yo', group: 'app', icon: Calendar, color: '#ffffff', hint: 'Shows today\'s date.' },
+    { gr: 'Ρολόι', translit: 'Rolói', en: 'Clock', phon: 'ro-LO-ee', group: 'app', icon: Clock, color: '#000000', hint: 'Shows current time. (3 syllables — accented ό breaks the οι digraph.)' },
+    { gr: 'Υπενθυμίσεις', translit: 'Ypenthymíseis', en: 'Reminders', phon: 'ee-pen-thee-MEE-sees', group: 'app', icon: Bell, color: '#ffffff', hint: 'Long word. Take it syllable by syllable.' },
+    { gr: 'Σημειώσεις', translit: 'Simeióseis', en: 'Notes', phon: 'see-mee-O-sees', group: 'app', icon: FileText, color: '#ffcc00', hint: 'Yellow legal-pad icon.' },
+    { gr: 'Μουσική', translit: 'Mousikí', en: 'Music', phon: 'moo-see-KEE', group: 'app', icon: Music, color: '#fa233b', hint: 'Red-pink gradient, music note. Note the ΟΥ = "oo" digraph.' },
+    { gr: 'Αρχεία', translit: 'Archeía', en: 'Files', phon: 'ar-HEE-a', group: 'app', icon: FileText, color: '#007aff', hint: 'Blue folder icon.' },
+    { gr: 'Υγεία', translit: 'Ygeía', en: 'Health', phon: 'ee-YEE-a', group: 'app', icon: Heart, color: '#ff3b30', hint: 'White icon, red heart. Also means "cheers!"' },
+    { gr: 'Επαφές', translit: 'Epafés', en: 'Contacts', phon: 'e-pa-FES', group: 'app', icon: Users, color: '#8e8e93', hint: '= "contacts / touches".' },
+    { gr: 'Πορτοφόλι', translit: 'Portofóli', en: 'Wallet', phon: 'por-to-FO-lee', group: 'app', icon: Wallet, color: '#000000', hint: 'Black icon with card.' },
+];
+const ALERTS = [
+    { gr: 'Είστε σίγουροι;', translit: 'Eíste sígouroi?', en: 'Are you sure?', phon: 'EE-ste SEE-ghoo-ree', hint: 'Confirmation before destructive actions.' },
+    { gr: 'Επιβεβαίωση', translit: 'Epivevaíosi', en: 'Confirm', phon: 'e-pee-ve-VE-o-see', hint: 'Primary button on confirmation dialogs.' },
+    { gr: 'Προειδοποίηση', translit: 'Proeidopoíisi', en: 'Warning', phon: 'pro-ee-tho-PEE-ee-see', hint: 'Amber triangle usually accompanies this.' },
+    { gr: 'Σφάλμα', translit: 'Sfálma', en: 'Error', phon: 'SFAL-ma', hint: 'Something went wrong.' },
+    { gr: 'Διαθέσιμη ενημέρωση', translit: 'Diathésimi enimérosi', en: 'Update available', phon: 'thee-a-THE-see-mee e-nee-ME-ro-see', hint: 'Safe to tap — updates are good.' },
+    { gr: 'Δοκιμάστε ξανά', translit: 'Dokimáste xaná', en: 'Try again', phon: 'tho-kee-MA-ste ksa-NA', hint: 'Retry button, usually after an error.' },
+    { gr: 'Να επιτραπεί', translit: 'Na epitrapeí', en: 'Allow', phon: 'na e-pee-tra-PEE', hint: 'Permission dialogs. Pair with "Να μην επιτραπεί".' },
+    { gr: 'Να μην επιτραπεί', translit: 'Na min epitrapeí', en: 'Don\'t Allow', phon: 'na meen e-pee-tra-PEE', hint: 'The "μην" = "not". Same word + "not" prefix.' },
+];
+const MAPS = [
+    { gr: 'Αναζήτηση', translit: 'Anazítisi', en: 'Search', phon: 'ah-na-ZEE-tee-see', hint: 'Search field for destinations.' },
+    { gr: 'Οδηγίες', translit: 'Odigíes', en: 'Directions', phon: 'o-thee-YEE-es', hint: 'The button that starts routing.' },
+    { gr: 'Διαδρομή', translit: 'Diadromí', en: 'Route', phon: 'thee-a-thro-MEE', hint: 'The path shown on the map. (Both δ = "th" in "this".)' },
+    { gr: 'Αυτοκίνητο', translit: 'Aftokínito', en: 'Car / Drive', phon: 'af-to-KEE-nee-to', hint: '= "auto-motion". Driving mode.' },
+    { gr: 'Περπάτημα', translit: 'Perpátima', en: 'Walking', phon: 'per-PA-tee-ma', hint: 'Pedestrian mode. Often best in Athens.' },
+    { gr: 'Μετακίνηση', translit: 'Metakínisi', en: 'Transit', phon: 'me-ta-KEE-nee-see', hint: 'Public transport mode. Buses, metro.' },
+    { gr: 'Αναχώρηση', translit: 'Anachórisi', en: 'Departure', phon: 'a-na-HO-ree-see', hint: 'Transit schedules, flight boards.' },
+    { gr: 'Άφιξη', translit: 'Áfixi', en: 'Arrival', phon: 'AH-fee-ksee', hint: 'The accent on Ά is on the first letter.' },
+    { gr: 'Προορισμός', translit: 'Proorismós', en: 'Destination', phon: 'pro-o-rees-MOS', hint: 'Where you\'re going.' },
+    { gr: 'Εκκίνηση', translit: 'Ekkínisi', en: 'Start / Go', phon: 'e-KEE-nee-see', hint: 'The button to begin turn-by-turn navigation.' },
+];
+const MESSAGES = [
+    { gr: 'Νέο μήνυμα', translit: 'Néo mínyma', en: 'New Message', phon: 'NEH-o MEE-nee-ma', hint: 'Top-right compose button (square-and-pencil icon).' },
+    { gr: 'Προς:', translit: 'Pros:', en: 'To:', phon: 'pros', hint: 'Recipient field. Colon included.' },
+    { gr: 'Αποστολή', translit: 'Apostolí', en: 'Send', phon: 'ah-pos-to-LEE', hint: 'The blue up-arrow send button. Also labels scheduled sends.' },
+    { gr: 'Απάντηση', translit: 'Apántisi', en: 'Reply', phon: 'ah-PAN-dee-see', hint: 'Appears in notifications and long-press menus.' },
+    { gr: 'Προώθηση', translit: 'Proóthisi', en: 'Forward', phon: 'pro-OH-thee-see', hint: 'Long-press a message to forward it.' },
+    { gr: 'Αντιγραφή', translit: 'Antigrafí', en: 'Copy', phon: 'an-dee-gra-FEE', hint: 'Long-press menu. Copies to clipboard.' },
+    { gr: 'Επικόλληση', translit: 'Epikóllisi', en: 'Paste', phon: 'e-pee-KOL-ee-see', hint: 'Long-press in an empty field to paste.' },
+    { gr: 'Αναφορά ανεπιθύμητης αλληλογραφίας', translit: 'Anaforá anepithýmitis allilografías', en: 'Report Junk', phon: 'a-na-fo-RA a-ne-pee-THEE-mee-tees a-lee-lo-gra-FEE-as', hint: 'Appears on messages from unknown senders. Long but distinctive — "anepithýmitis" = "unwanted".' },
+    { gr: 'Διαγραφή συζήτησης', translit: 'Diagrafí syzítisis', en: 'Delete Conversation', phon: 'thee-a-gra-FEE see-ZEE-tee-sees', hint: 'Red action. Wipes the whole thread.' },
+    { gr: 'Σίγαση', translit: 'Sígasi', en: 'Mute / Hide Alerts', phon: 'SEE-ga-see', hint: 'Silences notifications for one thread. Shows a moon icon next to muted threads.' },
+    { gr: 'Επαφή', translit: 'Epafí', en: 'Contact', phon: 'e-pa-FEE', hint: 'Tap the top of a thread to see contact info, FaceTime, etc.' },
+    { gr: 'Επισύναψη', translit: 'Episýnapsi', en: 'Attach', phon: 'e-pee-SEE-nap-see', hint: 'Plus icon → attach photo, location, contact, etc.' },
+    { gr: 'Φωτογραφία', translit: 'Fotografía', en: 'Photo', phon: 'fo-to-gra-FEE-a', hint: 'In the attach menu. Singular — "fotografíes" (plural) is the Photos app.' },
+    { gr: 'Τοποθεσία', translit: 'Topothesía', en: 'Location', phon: 'to-po-theh-SEE-a', hint: 'Share your live or current location.' },
+    { gr: 'Γραφή', translit: 'Grafí', en: 'typing…', phon: 'gra-FEE', hint: 'Might appear as "...πληκτρολογεί" = "is typing" (the three-dot animation).' },
+    { gr: 'Αναγνώστηκε', translit: 'Anagnóstike', en: 'Read', phon: 'a-na-GNO-stee-ke', hint: '"Read" receipt, appears under a message when the recipient has seen it.' },
+    { gr: 'Παραδόθηκε', translit: 'Paradóthike', en: 'Delivered', phon: 'pa-ra-THO-thee-ke', hint: 'iMessage delivery confirmation.' },
+];
+// High-confidence Spotify UI strings. Spotify's localization is generally stable
+// but less consistent than Apple's — flagged in the intro.
+const SPOTIFY = [
+    { gr: 'Αναζήτηση', translit: 'Anazítisi', en: 'Search', phon: 'ah-na-ZEE-tee-see', hint: 'Same word as in Maps. Bottom tab with magnifying glass.' },
+    { gr: 'Αρχική', translit: 'Archikí', en: 'Home', phon: 'ar-hee-KEE', hint: 'Home tab, bottom left.' },
+    { gr: 'Βιβλιοθήκη', translit: 'Vivliothíki', en: 'Your Library', phon: 'vee-vlee-o-THEE-kee', hint: '"Library" — where your saved playlists live. Bottom tab.' },
+    { gr: 'Αναπαραγωγή', translit: 'Anaparagogí', en: 'Play', phon: 'a-na-pa-ra-go-YEE', hint: 'The play button label in screen readers and context menus.' },
+    { gr: 'Παύση', translit: 'Pávsi', en: 'Pause', phon: 'PAV-see', hint: 'Short and distinctive. Root of "pause".' },
+    { gr: 'Επόμενο', translit: 'Epómeno', en: 'Next', phon: 'e-POH-me-no', hint: 'Skip forward. Same word as the Next button in setup flows.' },
+    { gr: 'Προηγούμενο', translit: 'Proigoúmeno', en: 'Previous', phon: 'pro-ee-GOO-me-no', hint: 'Skip back.' },
+    { gr: 'Αναπαραγωγή σε τυχαία σειρά', translit: 'Anaparagogí se tychaía seirá', en: 'Shuffle', phon: 'a-na-pa-ra-go-YEE se tee-HEH-a see-RA', hint: 'Long! But the shuffle icon tells you everything. "Τυχαία σειρά" = "random order".' },
+    { gr: 'Επανάληψη', translit: 'Epanálipsi', en: 'Repeat', phon: 'e-pa-NA-leep-see', hint: 'The repeat-loop icon.' },
+    { gr: 'Λίστα αναπαραγωγής', translit: 'Lísta anaparagogís', en: 'Playlist', phon: 'LEE-sta a-na-pa-ra-go-YEES', hint: 'Literally "list of playback".' },
+    { gr: 'Τραγούδι', translit: 'Tragoúdi', en: 'Song / Track', phon: 'tra-GOO-thee', hint: 'Singular "song". Plural is Τραγούδια = "Songs".' },
+    { gr: 'Καλλιτέχνης', translit: 'Kallitéchnis', en: 'Artist', phon: 'ka-lee-TEKH-nees', hint: 'From "kalós" (good) + "téchni" (art) — "artist".' },
+    { gr: 'Άλμπουμ', translit: 'Álbum', en: 'Album', phon: 'AL-boom', hint: 'Transliteration of "album" — same word.' },
+    { gr: 'Podcast', translit: 'Podcast', en: 'Podcast', phon: 'POD-cast', hint: 'Usually kept as English. Sometimes shown as "Πόντκαστ".' },
+    { gr: 'Προσθήκη στη βιβλιοθήκη', translit: 'Prosthíki sti vivliothíki', en: 'Add to Library', phon: 'pros-THEE-kee stee vee-vlee-o-THEE-kee', hint: 'Heart icon / plus icon. The word for "add" (προσθήκη) is worth knowing on its own.' },
+    { gr: 'Λήψη', translit: 'Lípsi', en: 'Download', phon: 'LEEP-see', hint: 'Downward arrow icon. The same word Spotify uses for download.' },
+    { gr: 'Έξοδος', translit: 'Éxodos', en: 'Sign out / Exit', phon: 'EKS-o-thos', hint: 'Literally "exit". Same root as in English "exodus". Account settings → Sign out.' },
+];
+const NUMBERS_TIME = [
+    { gr: '1', translit: '1', en: 'one', phon: 'ENA', hint: 'Ένα. Hear it: "é-na". You won\'t see the word — numbers stay as digits.' },
+    { gr: 'Σήμερα', translit: 'Símera', en: 'Today', phon: 'SEE-me-ra', hint: 'Calendar labels, weather, Messages thread headers.' },
+    { gr: 'Χθες', translit: 'Chthes', en: 'Yesterday', phon: 'khthes', hint: 'Recent Messages. Χ+θ at the start = "khth" — awkward but short.' },
+    { gr: 'Αύριο', translit: 'Ávrio', en: 'Tomorrow', phon: 'AV-ree-o', hint: 'Calendar, weather, reservations.' },
+    { gr: 'Τώρα', translit: 'Tóra', en: 'Now', phon: 'TO-ra', hint: '"Now". Appears in timestamps and "typing now" indicators.' },
+    { gr: 'Πριν από λίγο', translit: 'Prin apó lígo', en: 'A moment ago', phon: 'preen a-PO LEE-go', hint: 'Common timestamp on fresh notifications.' },
+    { gr: 'Δευτέρα', translit: 'Deftéra', en: 'Monday', phon: 'thef-TE-ra', hint: '"Second" (day). Mon-Fri is "2nd–6th" + weekend.' },
+    { gr: 'Τρίτη', translit: 'Tríti', en: 'Tuesday', phon: 'TREE-tee', hint: '"Third" day.' },
+    { gr: 'Τετάρτη', translit: 'Tetárti', en: 'Wednesday', phon: 'te-TAR-tee', hint: '"Fourth" day.' },
+    { gr: 'Πέμπτη', translit: 'Pémpti', en: 'Thursday', phon: 'PEM-ptee', hint: '"Fifth" day.' },
+    { gr: 'Παρασκευή', translit: 'Paraskeví', en: 'Friday', phon: 'pa-ra-ske-VEE', hint: '"Preparation" day (pre-Sabbath). Long but rhythmic.' },
+    { gr: 'Σάββατο', translit: 'Sávvato', en: 'Saturday', phon: 'SAH-va-to', hint: 'Same root as "Sabbath".' },
+    { gr: 'Κυριακή', translit: 'Kyriakí', en: 'Sunday', phon: 'kee-ree-a-KEE', hint: '"Lord\'s day".' },
+];
+const KEYBOARD = [
+    { gr: 'Πληκτρολόγιο', translit: 'Pliktrológio', en: 'Keyboard', phon: 'pleek-tro-LO-yo', hint: 'Settings → General → Keyboard.' },
+    { gr: 'Πληκτρολόγια', translit: 'Pliktrológia', en: 'Keyboards', phon: 'pleek-tro-LO-yah', hint: 'Plural. List of enabled keyboards — manage which show on the globe key.' },
+    { gr: 'Προσθήκη πληκτρολογίου', translit: 'Prosthíki pliktrologíou', en: 'Add New Keyboard', phon: 'pros-THEE-kee pleek-tro-lo-YEE-oo', hint: 'How to re-add English if you somehow lose it.' },
+    { gr: 'Αγγλικά (ΗΠΑ)', translit: 'Angliká (IPA)', en: 'English (US)', phon: 'an-glee-KAH', hint: '"Αγγλικά" = English. ΗΠΑ = "USA" (initials). This is what you want in the keyboard list.' },
+    { gr: 'Ελληνικά', translit: 'Elliniká', en: 'Greek', phon: 'e-lee-nee-KAH', hint: 'The Greek keyboard itself. What you set iPhone Language to.' },
+    { gr: 'Παγκόσμιο πλήκτρο', translit: 'Pangósmio plíktro', en: 'Globe key', phon: 'pan-GOS-mee-o PLEEK-tro', hint: '"World key". The 🌐 button next to the spacebar — tap or long-press to switch keyboards.' },
+];
+const PHASES = {
+    INTRO: 'intro',
+    ESCAPE: 'escape',
+    BUTTONS: 'buttons',
+    SETTINGS: 'settings',
+    APPS: 'apps',
+    ALERTS: 'alerts',
+    MAPS: 'maps',
+    MESSAGES: 'messages',
+    SPOTIFY: 'spotify',
+    NUMBERS: 'numbers',
+    KEYBOARD: 'keyboard',
+    STRATEGY: 'strategy',
+    QUIZ: 'quiz',
+    REFERENCE: 'reference',
+};
+// ——————————————————————————————————————————————
+// THEME
+// ——————————————————————————————————————————————
+const theme = {
+    bg: '#0d0b08',
+    surface: '#1a1612',
+    raised: '#251f18',
+    iosSurface: '#1c1c1e', // cool iOS dark
+    iosSep: '#38383a',
+    accent: '#d4a574',
+    accentHi: '#ecc58a',
+    iosBlue: '#0a84ff',
+    ink: '#f4ebdb',
+    inkDim: '#9a8e7a',
+    inkFaint: '#5a5144',
+    success: '#8fb07c',
+    error: '#c97864',
+    border: '#3a3128',
+    iosRed: '#ff3b30',
+    iosGreen: '#30d158',
+};
+const FONT_LINK = 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&family=SF+Pro+Display:wght@400;500;600;700&display=swap';
+// ——————————————————————————————————————————————
+// PRIMITIVES
+// ——————————————————————————————————————————————
+function Button({ children, onClick, variant = 'primary', disabled, style }) {
+    const base = {
+        fontFamily: 'Manrope, sans-serif',
+        fontWeight: 600,
+        fontSize: 14,
+        letterSpacing: '0.04em',
+        padding: '14px 26px',
+        borderRadius: 2,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: 'all 180ms ease',
+        border: 'none',
+        textTransform: 'uppercase',
+        opacity: disabled ? 0.4 : 1,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+    };
+    const variants = {
+        primary: { background: theme.accent, color: theme.bg },
+        ghost: { background: 'transparent', color: theme.ink, border: `1px solid ${theme.border}` },
+        danger: { background: theme.error, color: theme.bg },
+    };
+    return (React.createElement("button", { onClick: onClick, disabled: disabled, style: { ...base, ...variants[variant], ...style }, onMouseEnter: e => { if (!disabled && variant === 'primary')
+            e.currentTarget.style.background = theme.accentHi; }, onMouseLeave: e => { if (!disabled && variant === 'primary')
+            e.currentTarget.style.background = theme.accent; } }, children));
+}
+function MeanderBorder() {
+    return (React.createElement("div", { style: {
+            height: 14,
+            background: `repeating-linear-gradient(90deg,
+        ${theme.accent} 0 10px, transparent 10px 12px,
+        ${theme.accent} 12px 14px, transparent 14px 24px)`,
+            opacity: 0.35,
+        } }));
+}
+function Timer({ seconds }) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    const over = seconds > 80 * 60;
+    return (React.createElement("span", { style: {
+            fontFamily: 'Manrope, sans-serif',
+            fontSize: 12,
+            letterSpacing: '0.15em',
+            color: over ? theme.error : theme.inkDim,
+            fontVariantNumeric: 'tabular-nums',
+        } },
+        String(m).padStart(2, '0'),
+        ":",
+        String(s).padStart(2, '0'),
+        " / 80:00"));
+}
+function PhaseDots({ phase }) {
+    const order = [PHASES.ESCAPE, PHASES.BUTTONS, PHASES.SETTINGS, PHASES.APPS, PHASES.ALERTS, PHASES.MAPS, PHASES.MESSAGES, PHASES.SPOTIFY, PHASES.NUMBERS, PHASES.KEYBOARD, PHASES.STRATEGY, PHASES.QUIZ, PHASES.REFERENCE];
+    const i = order.indexOf(phase);
+    return (React.createElement("div", { style: { display: 'flex', gap: 6 } }, order.map((p, idx) => (React.createElement("div", { key: p, style: {
+            width: idx === i ? 20 : 6,
+            height: 2,
+            background: idx <= i ? theme.accent : theme.border,
+            transition: 'all 240ms ease',
+        } })))));
+}
+// ——————————————————————————————————————————————
+// FAKE iOS SURFACES — for practice
+// ——————————————————————————————————————————————
+function IOSFrame({ children, title, style }) {
+    return (React.createElement("div", { style: {
+            maxWidth: 360,
+            margin: '0 auto',
+            background: '#000',
+            borderRadius: 36,
+            padding: 8,
+            border: `1px solid ${theme.iosSep}`,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+            ...style,
+        } },
+        React.createElement("div", { style: {
+                background: theme.iosSurface,
+                borderRadius: 28,
+                overflow: 'hidden',
+                minHeight: 460,
+                fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif',
+                color: '#fff',
+            } },
+            title && (React.createElement("div", { style: {
+                    padding: '14px 20px 8px',
+                    borderBottom: `0.5px solid ${theme.iosSep}`,
+                    textAlign: 'center',
+                    fontSize: 17,
+                    fontWeight: 600,
+                } }, title)),
+            children)));
+}
+function IOSRow({ left, right, chevron = true, danger = false, onClick, icon, iconColor }) {
+    const Icon = icon;
+    return (React.createElement("div", { onClick: onClick, style: {
+            padding: '12px 16px',
+            borderBottom: `0.5px solid ${theme.iosSep}`,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            cursor: onClick ? 'pointer' : 'default',
+            fontSize: 17,
+        } },
+        Icon && (React.createElement("div", { style: {
+                width: 30, height: 30,
+                borderRadius: 7,
+                background: iconColor || theme.iosBlue,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+            } },
+            React.createElement(Icon, { size: 16, color: "#fff", strokeWidth: 2.5 }))),
+        React.createElement("div", { style: { flex: 1, color: danger ? theme.iosRed : '#fff' } }, left),
+        right && React.createElement("div", { style: { color: '#8e8e93', fontSize: 15 } }, right),
+        chevron && React.createElement("span", { style: { color: '#48484a', fontSize: 18, fontWeight: 300 } }, "\u203A")));
+}
+function IOSAlert({ title, message, buttons }) {
+    return (React.createElement("div", { style: {
+            background: 'rgba(40,40,42,0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: 14,
+            margin: '60px 40px',
+            overflow: 'hidden',
+            width: 270,
+            maxWidth: '100%',
+        } },
+        React.createElement("div", { style: { padding: '19px 16px 16px', textAlign: 'center' } },
+            title && React.createElement("div", { style: { fontSize: 17, fontWeight: 600, marginBottom: 6 } }, title),
+            message && React.createElement("div", { style: { fontSize: 13, color: '#fff', opacity: 0.95, lineHeight: 1.35 } }, message)),
+        React.createElement("div", { style: { display: 'flex', borderTop: `0.33px solid ${theme.iosSep}` } }, buttons.map((b, i) => (React.createElement("div", { key: i, style: {
+                flex: 1,
+                padding: '11px 8px',
+                textAlign: 'center',
+                borderLeft: i > 0 ? `0.33px solid ${theme.iosSep}` : 'none',
+                color: b.danger ? theme.iosRed : theme.iosBlue,
+                fontSize: 17,
+                fontWeight: b.primary ? 600 : 400,
+                cursor: 'pointer',
+            } }, b.label))))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Intro
+// ——————————————————————————————————————————————
+function Intro({ onStart }) {
+    return (React.createElement("div", { style: { textAlign: 'center', padding: '30px 20px' } },
+        React.createElement("div", { style: {
+                fontFamily: '"EB Garamond", serif',
+                fontSize: 140,
+                fontWeight: 500,
+                lineHeight: 1,
+                color: theme.accent,
+                marginBottom: 8,
+            } }, "\u03A1"),
+        React.createElement("h1", { style: {
+                fontFamily: '"EB Garamond", serif',
+                fontSize: 52,
+                fontWeight: 500,
+                letterSpacing: '-0.01em',
+                color: theme.ink,
+                margin: '0 0 14px',
+            } }, "Your iPhone, in Greek"),
+        React.createElement("p", { style: {
+                fontFamily: 'Manrope, sans-serif',
+                fontSize: 16,
+                lineHeight: 1.6,
+                color: theme.inkDim,
+                maxWidth: 540,
+                margin: '0 auto 32px',
+                fontWeight: 300,
+            } }, "The honest version: you don't need to learn Greek. You need ~30 words plus a recognition strategy. Your icons, positions, and muscle memory all stay the same."),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 24px',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderLeft: `3px solid ${theme.error}`,
+                padding: '20px 24px',
+                textAlign: 'left',
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 11,
+                    letterSpacing: '0.2em',
+                    color: theme.error,
+                    textTransform: 'uppercase',
+                    marginBottom: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                } },
+                React.createElement(AlertTriangle, { size: 13 }),
+                " Accuracy disclosure"),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 16,
+                    lineHeight: 1.55,
+                    color: theme.ink,
+                } },
+                "The escape path (back to English) was verified against Apple's Greek localization. The other ~30 words are high-confidence standard iOS strings, but your specific iOS version may use slight variants. ",
+                React.createElement("strong", { style: { color: theme.accentHi } }, "The escape path is your safety net"),
+                " \u2014 once that's memorized, any mistake is recoverable in 30 seconds.")),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 32px',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderLeft: `3px solid ${theme.accent}`,
+                padding: '20px 24px',
+                textAlign: 'left',
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 11,
+                    letterSpacing: '0.2em',
+                    color: theme.accent,
+                    textTransform: 'uppercase',
+                    marginBottom: 10,
+                } }, "How to read each word"),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    color: theme.ink,
+                    marginBottom: 12,
+                } },
+                "Every word shows four layers, top to bottom:",
+                React.createElement("br", null),
+                React.createElement("span", { style: { color: theme.accent } }, "\u03A1\u03C5\u03B8\u03BC\u03AF\u03C3\u03B5\u03B9\u03C2"),
+                " \u2014 the Greek as it appears on your phone",
+                React.createElement("br", null),
+                React.createElement("span", { style: { fontStyle: 'italic', opacity: 0.75 } }, "Rythm\u00EDseis"),
+                " \u2014 transliteration: Greek letters mapped 1-to-1 to Latin (the accent on ",
+                React.createElement("span", { style: { color: theme.accent, fontStyle: 'normal' } }, "\u00ED"),
+                " marks the stressed syllable)",
+                React.createElement("br", null),
+                React.createElement("span", { style: { color: theme.accentHi, fontFamily: 'Manrope, sans-serif', fontSize: 14, letterSpacing: '0.04em' } }, "/rith-MEE-sees/"),
+                " \u2014 how to actually say it, ",
+                React.createElement("strong", null, "CAPS = stress"),
+                React.createElement("br", null),
+                React.createElement("span", { style: { fontStyle: 'italic' } }, "\u2192 Settings"),
+                " \u2014 what it means"),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 15,
+                    lineHeight: 1.6,
+                    color: theme.inkDim,
+                    fontStyle: 'italic',
+                } },
+                "Greek's trick: the accent mark on the word (",
+                React.createElement("span", { style: { color: theme.accent, fontStyle: 'normal' } }, "\u03AC, \u03AD, \u03AE, \u03AF, \u03CC, \u03CD, \u03CE"),
+                ") tells you exactly which syllable gets the stress. It's a pronunciation guide built into the writing \u2014 no silent letters, no exceptions, just hit the accented vowel harder.")),
+        React.createElement("div", { style: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 10,
+                maxWidth: 620,
+                margin: '0 auto 32px',
+            } }, [
+            { label: 'Escape path', min: 5 },
+            { label: 'Buttons + Settings', min: 16 },
+            { label: 'Apps + Alerts', min: 12 },
+            { label: 'Maps', min: 6 },
+            { label: 'Messages', min: 8 },
+            { label: 'Spotify', min: 7 },
+            { label: 'Days + Keyboard', min: 10 },
+            { label: 'Strategy + Quiz', min: 12 },
+            { label: 'Reference card', min: 4 },
+        ].map((c, i) => (React.createElement("div", { key: i, style: {
+                padding: '14px 12px',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 28,
+                    color: theme.accent,
+                    lineHeight: 1,
+                    marginBottom: 4,
+                } },
+                c.min,
+                React.createElement("span", { style: { fontSize: 14, color: theme.inkFaint, marginLeft: 2 } }, "min")),
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 11,
+                    letterSpacing: '0.08em',
+                    color: theme.inkDim,
+                    textTransform: 'uppercase',
+                } }, c.label))))),
+        React.createElement(Button, { onClick: onStart }, "Begin \u00B7 start the 80-minute timer")));
+}
+// ——————————————————————————————————————————————
+// PHASE: Escape Path — the most critical phase
+// ——————————————————————————————————————————————
+function EscapePhase({ onNext }) {
+    const [step, setStep] = useState(0);
+    const [testMode, setTestMode] = useState(false);
+    const [testStep, setTestStep] = useState(0);
+    const [testOptions, setTestOptions] = useState([]);
+    const [feedback, setFeedback] = useState(null);
+    const [passed, setPassed] = useState(false);
+    // In test mode, show 4 options and user must pick the correct next step
+    const setupTest = (idx) => {
+        const correct = ESCAPE_PATH[idx].gr;
+        const pool = [...BUTTONS, ...SETTINGS, ...APPS, ...MAPS].map(x => x.gr);
+        const wrongs = pool.filter(x => !ESCAPE_PATH.some(p => p.gr === x))
+            .sort(() => Math.random() - 0.5).slice(0, 3);
+        setTestOptions([...wrongs, correct].sort(() => Math.random() - 0.5));
+        setTestStep(idx);
+        setFeedback(null);
+    };
+    const startTest = () => {
+        setTestMode(true);
+        setupTest(0);
+    };
+    const answerTest = (choice) => {
+        if (feedback)
+            return;
+        const correct = choice === ESCAPE_PATH[testStep].gr;
+        setFeedback(correct ? 'right' : 'wrong');
+        setTimeout(() => {
+            if (correct) {
+                if (testStep < ESCAPE_PATH.length - 1) {
+                    setupTest(testStep + 1);
+                }
+                else {
+                    setPassed(true);
+                    setFeedback(null);
+                }
+            }
+            else {
+                setFeedback(null);
+            }
+        }, correct ? 500 : 1400);
+    };
+    if (passed) {
+        return (React.createElement("div", { style: { padding: '40px 20px', textAlign: 'center' } },
+            React.createElement(Shield, { size: 40, color: theme.success, style: { marginBottom: 18 } }),
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 38,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 10px',
+                } }, "Escape path locked in."),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 15,
+                    maxWidth: 500,
+                    margin: '0 auto 36px',
+                    lineHeight: 1.6,
+                } }, "Anything you break from here, you can fix in six taps. Now we can actually learn without fear."),
+            React.createElement(Button, { onClick: onNext },
+                "Continue ",
+                React.createElement(ChevronRight, { size: 16 }))));
+    }
+    if (testMode) {
+        const current = ESCAPE_PATH[testStep];
+        return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+            React.createElement("div", { style: { textAlign: 'center', marginBottom: 20 } },
+                React.createElement("h2", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 30,
+                        fontWeight: 500,
+                        color: theme.ink,
+                        margin: '0 0 6px',
+                    } }, "Prove it."),
+                React.createElement("p", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        color: theme.inkDim,
+                        fontSize: 13,
+                        margin: 0,
+                    } },
+                    "Step ",
+                    testStep + 1,
+                    " of ",
+                    ESCAPE_PATH.length,
+                    ". Tap the correct next step.")),
+            React.createElement("div", { style: {
+                    maxWidth: 620,
+                    margin: '0 auto',
+                    background: feedback === 'right' ? 'rgba(143,176,124,0.1)' : feedback === 'wrong' ? 'rgba(201,120,100,0.1)' : theme.raised,
+                    border: `1px solid ${feedback === 'right' ? theme.success : feedback === 'wrong' ? theme.error : theme.border}`,
+                    borderRadius: 2,
+                    padding: '28px 24px',
+                    textAlign: 'center',
+                    transition: 'all 200ms ease',
+                } },
+                React.createElement("div", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        fontSize: 11,
+                        letterSpacing: '0.2em',
+                        color: theme.inkFaint,
+                        textTransform: 'uppercase',
+                        marginBottom: 8,
+                    } }, testStep === 0 ? 'START' : 'NEXT TAP IS'),
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 22,
+                        fontStyle: 'italic',
+                        color: theme.ink,
+                        marginBottom: 4,
+                    } }, testStep === 0 ? 'You want to change language back to English.' : `After "${ESCAPE_PATH[testStep - 1].en}"...`),
+                React.createElement("div", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        fontSize: 14,
+                        color: theme.inkDim,
+                    } },
+                    "English hint: ",
+                    React.createElement("span", { style: { color: theme.accent } }, current.en))),
+            React.createElement("div", { style: {
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: 10,
+                    maxWidth: 620,
+                    margin: '20px auto 0',
+                } }, testOptions.map(opt => {
+                const isRight = feedback && opt === current.gr;
+                return (React.createElement("button", { key: opt, onClick: () => answerTest(opt), disabled: !!feedback, style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 18,
+                        fontWeight: 500,
+                        padding: '18px 14px',
+                        background: isRight ? theme.success : theme.surface,
+                        color: isRight ? theme.bg : theme.ink,
+                        border: `1px solid ${isRight ? theme.success : theme.border}`,
+                        borderRadius: 2,
+                        cursor: feedback ? 'default' : 'pointer',
+                        transition: 'all 180ms ease',
+                    } }, opt));
+            }))));
+    }
+    // Learning mode
+    const s = ESCAPE_PATH[step];
+    const last = step === ESCAPE_PATH.length - 1;
+    return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 18 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 32,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 4px',
+                } }, "The Escape Path"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 14,
+                    margin: 0,
+                } }, "Memorize this cold. Six taps. Everything else is optional.")),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                gap: 6,
+            } }, ESCAPE_PATH.map((p, i) => (React.createElement(React.Fragment, { key: i },
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 14,
+                    color: i === step ? theme.accent : i < step ? theme.ink : theme.inkFaint,
+                    fontWeight: i === step ? 600 : 400,
+                    padding: '4px 8px',
+                    background: i === step ? theme.raised : 'transparent',
+                    border: `1px solid ${i === step ? theme.accent : 'transparent'}`,
+                    borderRadius: 2,
+                    transition: 'all 200ms ease',
+                } }, p.gr),
+            i < ESCAPE_PATH.length - 1 && (React.createElement(ArrowRight, { size: 12, color: theme.inkFaint })))))),
+        React.createElement("div", { key: step, style: {
+                maxWidth: 620,
+                margin: '0 auto',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderLeft: `3px solid ${theme.accent}`,
+                borderRadius: 2,
+                padding: '28px 32px',
+                animation: 'cardIn 280ms ease-out',
+            } },
+            React.createElement("div", { style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    marginBottom: 14,
+                } },
+                React.createElement("div", { style: {
+                        width: 28, height: 28,
+                        borderRadius: 14,
+                        background: theme.accent,
+                        color: theme.bg,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontFamily: 'Manrope, sans-serif',
+                        fontSize: 13,
+                        fontWeight: 700,
+                    } }, step + 1),
+                React.createElement("div", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        fontSize: 11,
+                        letterSpacing: '0.2em',
+                        color: theme.inkFaint,
+                        textTransform: 'uppercase',
+                    } }, "TAP")),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 48,
+                    color: theme.accent,
+                    lineHeight: 1.1,
+                    marginBottom: 4,
+                    fontWeight: 500,
+                } }, s.gr),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 20,
+                    fontStyle: 'italic',
+                    color: theme.ink,
+                    opacity: 0.75,
+                    marginBottom: 4,
+                } }, s.translit),
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 14,
+                    letterSpacing: '0.08em',
+                    color: theme.accentHi,
+                    marginBottom: 10,
+                    fontWeight: 500,
+                } },
+                "/",
+                s.phon,
+                "/"),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 22,
+                    fontStyle: 'italic',
+                    color: theme.ink,
+                    marginBottom: 18,
+                } },
+                "\u2192 ",
+                s.en),
+            React.createElement("div", { style: {
+                    padding: '14px 18px',
+                    background: theme.bg,
+                    border: `1px solid ${theme.border}`,
+                    borderRadius: 2,
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 16,
+                    lineHeight: 1.5,
+                    color: theme.inkDim,
+                } }, s.note)),
+        React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', maxWidth: 620, margin: '24px auto 0' } },
+            React.createElement(Button, { variant: "ghost", onClick: () => setStep(Math.max(0, step - 1)), disabled: step === 0 },
+                React.createElement(ChevronLeft, { size: 16 }),
+                " Back"),
+            last ? (React.createElement(Button, { onClick: startTest },
+                "Test me ",
+                React.createElement(ChevronRight, { size: 16 }))) : (React.createElement(Button, { onClick: () => setStep(step + 1) },
+                "Got it ",
+                React.createElement(ChevronRight, { size: 16 }))))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Word drill (used for Buttons, Settings, Maps)
+// ——————————————————————————————————————————————
+function WordDrill({ title, subtitle, words, onNext, threshold = 2 }) {
+    const [phase, setPhase] = useState('learn'); // learn | quiz
+    const [i, setI] = useState(0);
+    // Quiz state
+    const [scores, setScores] = useState(() => Object.fromEntries(words.map(w => [w.gr, 0])));
+    const [current, setCurrent] = useState(null);
+    const [options, setOptions] = useState([]);
+    const [feedback, setFeedback] = useState(null);
+    const [reverse, setReverse] = useState(false); // show Greek, pick English? Or reverse?
+    const mastered = useMemo(() => Object.values(scores).filter(s => s >= threshold).length, [scores]);
+    const total = words.length;
+    const complete = mastered === total;
+    const pickNext = () => {
+        const minScore = Math.min(...Object.values(scores));
+        const pool = words.filter(w => scores[w.gr] === minScore);
+        const filtered = current && pool.length > 1 ? pool.filter(w => w.gr !== current.gr) : pool;
+        const next = filtered[Math.floor(Math.random() * filtered.length)];
+        const r = Math.random() < 0.5;
+        const wrongs = words.filter(w => w.gr !== next.gr)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3);
+        const opts = [...wrongs, next].sort(() => Math.random() - 0.5);
+        setCurrent(next);
+        setOptions(opts);
+        setFeedback(null);
+        setReverse(r);
+    };
+    const startQuiz = () => {
+        setPhase('quiz');
+        pickNext();
+    };
+    useEffect(() => {
+        if (phase === 'quiz' && !current)
+            pickNext();
+        // eslint-disable-next-line
+    }, [phase]);
+    const answer = (choice) => {
+        if (feedback)
+            return;
+        const correct = choice.gr === current.gr;
+        setFeedback(correct ? 'right' : 'wrong');
+        if (correct) {
+            setScores(s => ({ ...s, [current.gr]: Math.min(threshold + 1, s[current.gr] + 1) }));
+        }
+        else {
+            setScores(s => ({ ...s, [current.gr]: Math.max(0, s[current.gr] - 1) }));
+        }
+        setTimeout(pickNext, correct ? 500 : 1300);
+    };
+    // Learn phase
+    if (phase === 'learn') {
+        const w = words[i];
+        const last = i === words.length - 1;
+        return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+            React.createElement("div", { style: { textAlign: 'center', marginBottom: 18 } },
+                React.createElement("h2", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 32,
+                        fontWeight: 500,
+                        color: theme.ink,
+                        margin: '0 0 6px',
+                    } }, title),
+                React.createElement("p", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        color: theme.inkDim,
+                        fontSize: 13,
+                        margin: 0,
+                    } },
+                    subtitle,
+                    " \u00B7 ",
+                    i + 1,
+                    " of ",
+                    words.length)),
+            React.createElement("div", { key: i, style: {
+                    maxWidth: 620,
+                    margin: '0 auto',
+                    background: theme.raised,
+                    border: `1px solid ${theme.border}`,
+                    borderLeft: `3px solid ${theme.accent}`,
+                    borderRadius: 2,
+                    padding: '28px 32px',
+                    minHeight: 220,
+                    animation: 'cardIn 280ms ease-out',
+                } },
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 46,
+                        color: theme.accent,
+                        fontWeight: 500,
+                        lineHeight: 1.1,
+                        marginBottom: 4,
+                    } }, w.gr),
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 20,
+                        fontStyle: 'italic',
+                        color: theme.ink,
+                        opacity: 0.75,
+                        marginBottom: 4,
+                    } }, w.translit),
+                React.createElement("div", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        fontSize: 14,
+                        letterSpacing: '0.08em',
+                        color: theme.accentHi,
+                        marginBottom: 10,
+                        fontWeight: 500,
+                    } },
+                    "/",
+                    w.phon,
+                    "/"),
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 22,
+                        fontStyle: 'italic',
+                        color: theme.ink,
+                        marginBottom: 18,
+                    } },
+                    "\u2192 ",
+                    w.en),
+                React.createElement("div", { style: {
+                        padding: '14px 18px',
+                        background: theme.bg,
+                        border: `1px solid ${theme.border}`,
+                        borderRadius: 2,
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 16,
+                        lineHeight: 1.5,
+                        color: theme.inkDim,
+                    } }, w.hint)),
+            React.createElement("div", { style: {
+                    display: 'flex', justifyContent: 'center', gap: 4, margin: '20px 0',
+                } }, words.map((_, idx) => (React.createElement("div", { key: idx, style: {
+                    width: idx === i ? 20 : 6,
+                    height: 2,
+                    background: idx <= i ? theme.accent : theme.border,
+                    transition: 'all 200ms ease',
+                } })))),
+            React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', maxWidth: 620, margin: '0 auto' } },
+                React.createElement(Button, { variant: "ghost", onClick: () => setI(Math.max(0, i - 1)), disabled: i === 0 },
+                    React.createElement(ChevronLeft, { size: 16 }),
+                    " Back"),
+                last ? (React.createElement(Button, { onClick: startQuiz },
+                    "Drill it ",
+                    React.createElement(ChevronRight, { size: 16 }))) : (React.createElement(Button, { onClick: () => setI(i + 1) },
+                    "Got it ",
+                    React.createElement(ChevronRight, { size: 16 }))))));
+    }
+    // Quiz phase
+    if (!current)
+        return null;
+    return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 16 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 28,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 4px',
+                } },
+                title,
+                " \u00B7 drill"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 13,
+                    margin: 0,
+                } },
+                mastered,
+                " of ",
+                total,
+                " mastered \u00B7 ",
+                reverse ? 'pick the Greek' : 'pick the English')),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 24px',
+                height: 3,
+                background: theme.border,
+                overflow: 'hidden',
+            } },
+            React.createElement("div", { style: {
+                    width: `${(mastered / total) * 100}%`,
+                    height: '100%',
+                    background: theme.accent,
+                    transition: 'width 320ms ease',
+                } })),
+        React.createElement("div", { key: current.gr + reverse, style: {
+                maxWidth: 620,
+                margin: '0 auto',
+                textAlign: 'center',
+                padding: '32px 20px',
+                background: theme.raised,
+                border: `1px solid ${feedback === 'right' ? theme.success : feedback === 'wrong' ? theme.error : theme.border}`,
+                borderRadius: 2,
+                transition: 'border-color 200ms ease',
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 10,
+                    letterSpacing: '0.25em',
+                    color: theme.inkFaint,
+                    textTransform: 'uppercase',
+                    marginBottom: 10,
+                } }, reverse ? 'English — pick the Greek' : 'Greek — pick the English'),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 44,
+                    fontWeight: 500,
+                    color: theme.accent,
+                    lineHeight: 1.1,
+                } }, reverse ? current.en : current.gr),
+            !reverse && current.translit && (React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 20,
+                    fontStyle: 'italic',
+                    color: theme.ink,
+                    opacity: 0.7,
+                    marginTop: 4,
+                } }, current.translit)),
+            feedback === 'wrong' && (React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontStyle: 'italic',
+                    fontSize: 18,
+                    color: theme.error,
+                    marginTop: 12,
+                } },
+                current.gr,
+                " ",
+                React.createElement("span", { style: { fontFamily: 'Manrope, sans-serif', fontStyle: 'normal', fontSize: 13, letterSpacing: '0.06em', color: theme.accentHi, margin: '0 8px' } },
+                    "/",
+                    current.phon,
+                    "/"),
+                " \u2192 ",
+                current.en))),
+        React.createElement("div", { style: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 10,
+                maxWidth: 620,
+                margin: '20px auto 0',
+            } }, options.map((opt, idx) => {
+            const isRight = feedback && opt.gr === current.gr;
+            const isWrong = feedback === 'wrong' && opt.gr !== current.gr;
+            return (React.createElement("button", { key: opt.gr + idx, onClick: () => answer(opt), disabled: !!feedback, style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 18,
+                    fontWeight: 500,
+                    padding: '16px 14px',
+                    background: isRight ? theme.success : theme.surface,
+                    color: isRight ? theme.bg : theme.ink,
+                    border: `1px solid ${isRight ? theme.success : theme.border}`,
+                    borderRadius: 2,
+                    cursor: feedback ? 'default' : 'pointer',
+                    opacity: isWrong ? 0.35 : 1,
+                    transition: 'all 180ms ease',
+                    textAlign: 'center',
+                } }, reverse ? opt.gr : opt.en));
+        })),
+        complete && (React.createElement("div", { style: { textAlign: 'center', marginTop: 28 } },
+            React.createElement(Button, { onClick: onNext },
+                "Continue ",
+                React.createElement(ChevronRight, { size: 16 })))),
+        !complete && mastered >= Math.floor(total * 0.7) && (React.createElement("div", { style: { textAlign: 'center', marginTop: 20 } },
+            React.createElement(Button, { variant: "ghost", onClick: onNext },
+                "Skip rest ",
+                React.createElement(ChevronRight, { size: 16 }))))));
+}
+// ——————————————————————————————————————————————
+// PHASE: App grid — different treatment, just recognition
+// ——————————————————————————————————————————————
+function AppsPhase({ onNext }) {
+    const [mode, setMode] = useState('grid'); // grid | quiz
+    const [scores, setScores] = useState(() => Object.fromEntries(APPS.map(a => [a.gr, 0])));
+    const [current, setCurrent] = useState(null);
+    const [options, setOptions] = useState([]);
+    const [feedback, setFeedback] = useState(null);
+    const [revealed, setRevealed] = useState({});
+    const mastered = useMemo(() => Object.values(scores).filter(s => s >= 2).length, [scores]);
+    const complete = mastered === APPS.length;
+    const pickNext = () => {
+        const minScore = Math.min(...Object.values(scores));
+        const pool = APPS.filter(a => scores[a.gr] === minScore);
+        const filtered = current && pool.length > 1 ? pool.filter(a => a.gr !== current.gr) : pool;
+        const next = filtered[Math.floor(Math.random() * filtered.length)];
+        const wrongs = APPS.filter(a => a.gr !== next.gr)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3);
+        const opts = [...wrongs, next].sort(() => Math.random() - 0.5);
+        setCurrent(next);
+        setOptions(opts);
+        setFeedback(null);
+    };
+    const startQuiz = () => {
+        setMode('quiz');
+        pickNext();
+    };
+    const answer = (choice) => {
+        if (feedback)
+            return;
+        const correct = choice.gr === current.gr;
+        setFeedback(correct ? 'right' : 'wrong');
+        if (correct)
+            setScores(s => ({ ...s, [current.gr]: Math.min(3, s[current.gr] + 1) }));
+        else
+            setScores(s => ({ ...s, [current.gr]: Math.max(0, s[current.gr] - 1) }));
+        setTimeout(pickNext, correct ? 500 : 1300);
+    };
+    if (mode === 'grid') {
+        return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+            React.createElement("div", { style: { textAlign: 'center', marginBottom: 18 } },
+                React.createElement("h2", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 32,
+                        fontWeight: 500,
+                        color: theme.ink,
+                        margin: '0 0 6px',
+                    } }, "Default apps"),
+                React.createElement("p", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        color: theme.inkDim,
+                        fontSize: 13,
+                        margin: 0,
+                    } }, "Tap each to reveal. The icons are identical in English \u2014 you know these already.")),
+            React.createElement("div", { style: {
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                    gap: 10,
+                    maxWidth: 720,
+                    margin: '0 auto',
+                } }, APPS.map(a => {
+                const Icon = a.icon;
+                const isRevealed = revealed[a.gr];
+                return (React.createElement("div", { key: a.gr, onClick: () => setRevealed(r => ({ ...r, [a.gr]: true })), style: {
+                        padding: 14,
+                        background: theme.raised,
+                        border: `1px solid ${theme.border}`,
+                        borderRadius: 2,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        transition: 'all 160ms ease',
+                    }, onMouseEnter: e => e.currentTarget.style.borderColor = theme.accent, onMouseLeave: e => e.currentTarget.style.borderColor = theme.border },
+                    React.createElement("div", { style: {
+                            width: 36, height: 36,
+                            borderRadius: 8,
+                            background: a.color,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                        } },
+                        React.createElement(Icon, { size: 18, color: "#fff", strokeWidth: 2.3 })),
+                    React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                        React.createElement("div", { style: {
+                                fontFamily: '"EB Garamond", serif',
+                                fontSize: 16,
+                                color: theme.accent,
+                                fontWeight: 500,
+                                lineHeight: 1.1,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            } }, a.gr),
+                        React.createElement("div", { style: {
+                                fontFamily: '"EB Garamond", serif',
+                                fontSize: 12,
+                                fontStyle: 'italic',
+                                color: theme.ink,
+                                opacity: 0.65,
+                                marginTop: 1,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            } }, a.translit),
+                        React.createElement("div", { style: {
+                                fontFamily: 'Manrope, sans-serif',
+                                fontSize: 10,
+                                letterSpacing: '0.05em',
+                                color: theme.accentHi,
+                                marginTop: 2,
+                                fontWeight: 500,
+                            } }, a.phon),
+                        isRevealed && (React.createElement("div", { style: {
+                                fontFamily: 'Manrope, sans-serif',
+                                fontSize: 11,
+                                color: theme.inkDim,
+                                marginTop: 2,
+                                animation: 'fadeIn 200ms ease-out',
+                            } }, a.en)))));
+            })),
+            React.createElement("div", { style: { textAlign: 'center', marginTop: 24 } },
+                React.createElement(Button, { onClick: startQuiz },
+                    "Quiz me ",
+                    React.createElement(ChevronRight, { size: 16 })))));
+    }
+    // Quiz
+    if (!current)
+        return null;
+    const Icon = current.icon;
+    return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 16 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 28,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 4px',
+                } }, "Apps \u00B7 drill"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 13,
+                    margin: 0,
+                } },
+                mastered,
+                " of ",
+                APPS.length,
+                " mastered")),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 24px',
+                height: 3,
+                background: theme.border,
+                overflow: 'hidden',
+            } },
+            React.createElement("div", { style: {
+                    width: `${(mastered / APPS.length) * 100}%`,
+                    height: '100%',
+                    background: theme.accent,
+                    transition: 'width 320ms ease',
+                } })),
+        React.createElement("div", { key: current.gr, style: {
+                maxWidth: 620,
+                margin: '0 auto',
+                textAlign: 'center',
+                padding: '32px 20px',
+                background: theme.raised,
+                border: `1px solid ${feedback === 'right' ? theme.success : feedback === 'wrong' ? theme.error : theme.border}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    width: 72, height: 72,
+                    borderRadius: 16,
+                    background: current.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 14px',
+                } },
+                React.createElement(Icon, { size: 38, color: "#fff", strokeWidth: 2.2 })),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 36,
+                    fontWeight: 500,
+                    color: theme.accent,
+                    lineHeight: 1.1,
+                } }, current.gr),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 18,
+                    fontStyle: 'italic',
+                    color: theme.ink,
+                    opacity: 0.75,
+                    marginTop: 4,
+                } }, current.translit),
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 13,
+                    letterSpacing: '0.08em',
+                    color: theme.accentHi,
+                    marginTop: 4,
+                    fontWeight: 500,
+                } },
+                "/",
+                current.phon,
+                "/"),
+            feedback === 'wrong' && (React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontStyle: 'italic',
+                    fontSize: 18,
+                    color: theme.error,
+                    marginTop: 10,
+                } }, current.en))),
+        React.createElement("div", { style: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 10,
+                maxWidth: 620,
+                margin: '20px auto 0',
+            } }, options.map((opt, idx) => {
+            const isRight = feedback && opt.gr === current.gr;
+            const isWrong = feedback === 'wrong' && opt.gr !== current.gr;
+            return (React.createElement("button", { key: opt.gr + idx, onClick: () => answer(opt), disabled: !!feedback, style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 18,
+                    padding: '16px 14px',
+                    background: isRight ? theme.success : theme.surface,
+                    color: isRight ? theme.bg : theme.ink,
+                    border: `1px solid ${isRight ? theme.success : theme.border}`,
+                    borderRadius: 2,
+                    cursor: feedback ? 'default' : 'pointer',
+                    opacity: isWrong ? 0.35 : 1,
+                    transition: 'all 180ms ease',
+                    textAlign: 'center',
+                } }, opt.en));
+        })),
+        (complete || mastered >= 10) && (React.createElement("div", { style: { textAlign: 'center', marginTop: 28 } },
+            React.createElement(Button, { onClick: onNext },
+                complete ? 'All mastered' : 'Continue',
+                " ",
+                React.createElement(ChevronRight, { size: 16 }))))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Alerts — practice reading fake iOS dialogs
+// ——————————————————————————————————————————————
+function AlertsPhase({ onNext }) {
+    const [step, setStep] = useState(0);
+    const scenarios = [
+        {
+            title: 'Διαγραφή φωτογραφίας',
+            message: 'Αυτή η φωτογραφία θα διαγραφεί από τη συσκευή σας. Είστε σίγουροι;',
+            buttons: [
+                { label: 'Ακύρωση' },
+                { label: 'Διαγραφή', danger: true, primary: true },
+            ],
+            question: 'If you DON\'T want to delete the photo, which button do you tap?',
+            options: ['Ακύρωση (left)', 'Διαγραφή (right)'],
+            correct: 0,
+            explain: 'Ακύρωση = Cancel. The red "Διαγραφή" would delete it — danger-colored buttons mean "this cannot be undone."',
+        },
+        {
+            title: 'Επιτρέπεται η πρόσβαση στην τοποθεσία;',
+            message: 'Η εφαρμογή Χάρτες θέλει να χρησιμοποιήσει την τρέχουσα τοποθεσία σας.',
+            buttons: [
+                { label: 'Να μην επιτραπεί' },
+                { label: 'Να επιτραπεί', primary: true },
+            ],
+            question: 'This is Maps asking for your location. You want it to work. Which do you tap?',
+            options: ['Να μην επιτραπεί', 'Να επιτραπεί'],
+            correct: 1,
+            explain: 'The "μην" in the first option means "not" — so "Να μην επιτραπεί" = "don\'t allow." The bolder right-side button is almost always the primary action.',
+        },
+        {
+            title: 'Διαθέσιμη ενημέρωση iOS',
+            message: 'Μια νέα έκδοση είναι διαθέσιμη. Θέλετε να την εγκαταστήσετε τώρα;',
+            buttons: [
+                { label: 'Αργότερα' },
+                { label: 'Εγκατάσταση', primary: true },
+            ],
+            question: 'What is this dialog telling you?',
+            options: ['An error occurred', 'An update is available', 'Your storage is full'],
+            correct: 1,
+            explain: '"Διαθέσιμη ενημέρωση" = "Update available." Non-urgent. Αργότερα = Later. Εγκατάσταση = Install.',
+        },
+        {
+            title: 'Σφάλμα',
+            message: 'Δεν ήταν δυνατή η σύνδεση στον διακομιστή. Δοκιμάστε ξανά.',
+            buttons: [
+                { label: 'OK', primary: true },
+            ],
+            question: '"Σφάλμα" at the top means...',
+            options: ['Success', 'Warning', 'Error'],
+            correct: 2,
+            explain: '"Σφάλμα" = Error. Always. If you see this word, something failed. "Δοκιμάστε ξανά" = "Try again."',
+        },
+    ];
+    const [answered, setAnswered] = useState(Array(scenarios.length).fill(null));
+    const s = scenarios[step];
+    const ans = answered[step];
+    const answer = (idx) => {
+        if (ans !== null)
+            return;
+        const next = [...answered];
+        next[step] = idx;
+        setAnswered(next);
+    };
+    const last = step === scenarios.length - 1;
+    const canAdvance = ans !== null;
+    return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 18 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 32,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 6px',
+                } }, "Alert dialogs"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 13,
+                    margin: 0,
+                } },
+                step + 1,
+                " of ",
+                scenarios.length,
+                " \u00B7 These are where people panic. Practice reading them.")),
+        React.createElement("div", { style: {
+                display: 'flex',
+                gap: 28,
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'center',
+                maxWidth: 900,
+                margin: '0 auto',
+            } },
+            React.createElement("div", null,
+                React.createElement(IOSFrame, null,
+                    React.createElement("div", { style: {
+                            height: 460,
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            padding: '20px 0',
+                            background: 'linear-gradient(180deg, #1c1c1e 0%, #2c2c2e 100%)',
+                        } },
+                        React.createElement(IOSAlert, { ...s })))),
+            React.createElement("div", { style: { flex: 1, minWidth: 280, maxWidth: 380 } },
+                React.createElement("div", { style: {
+                        padding: '20px 24px',
+                        background: theme.raised,
+                        border: `1px solid ${theme.border}`,
+                        borderLeft: `3px solid ${theme.accent}`,
+                        borderRadius: 2,
+                    } },
+                    React.createElement("div", { style: {
+                            fontFamily: 'Manrope, sans-serif',
+                            fontSize: 11,
+                            letterSpacing: '0.2em',
+                            color: theme.inkFaint,
+                            textTransform: 'uppercase',
+                            marginBottom: 10,
+                        } }, "Question"),
+                    React.createElement("div", { style: {
+                            fontFamily: '"EB Garamond", serif',
+                            fontSize: 18,
+                            lineHeight: 1.55,
+                            color: theme.ink,
+                            marginBottom: 20,
+                        } }, s.question),
+                    React.createElement("div", { style: { display: 'flex', flexDirection: 'column', gap: 8 } }, s.options.map((opt, idx) => {
+                        const isSelected = ans === idx;
+                        const isCorrect = ans !== null && idx === s.correct;
+                        const isWrong = isSelected && ans !== s.correct;
+                        return (React.createElement("button", { key: idx, onClick: () => answer(idx), disabled: ans !== null, style: {
+                                fontFamily: '"EB Garamond", serif',
+                                fontSize: 16,
+                                padding: '12px 16px',
+                                background: isCorrect ? theme.success : isWrong ? 'rgba(201,120,100,0.1)' : theme.surface,
+                                color: isCorrect ? theme.bg : theme.ink,
+                                border: `1px solid ${isCorrect ? theme.success : isWrong ? theme.error : theme.border}`,
+                                borderRadius: 2,
+                                cursor: ans !== null ? 'default' : 'pointer',
+                                textAlign: 'left',
+                                transition: 'all 180ms ease',
+                            } }, opt));
+                    })),
+                    ans !== null && (React.createElement("div", { style: {
+                            marginTop: 16,
+                            padding: '12px 14px',
+                            background: theme.bg,
+                            border: `1px solid ${theme.border}`,
+                            borderRadius: 2,
+                            fontFamily: '"EB Garamond", serif',
+                            fontSize: 14,
+                            lineHeight: 1.5,
+                            color: theme.inkDim,
+                            animation: 'fadeIn 240ms ease-out',
+                        } }, s.explain))))),
+        React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', maxWidth: 900, margin: '28px auto 0' } },
+            React.createElement(Button, { variant: "ghost", onClick: () => setStep(Math.max(0, step - 1)), disabled: step === 0 },
+                React.createElement(ChevronLeft, { size: 16 }),
+                " Back"),
+            last ? (React.createElement(Button, { onClick: onNext, disabled: !canAdvance },
+                "Continue ",
+                React.createElement(ChevronRight, { size: 16 }))) : (React.createElement(Button, { onClick: () => setStep(step + 1), disabled: !canAdvance },
+                "Next ",
+                React.createElement(ChevronRight, { size: 16 }))))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Keyboard — how to switch back to Latin
+// ——————————————————————————————————————————————
+function KeyboardPhase({ onNext }) {
+    const [step, setStep] = useState(0);
+    const steps = [
+        {
+            title: 'The problem',
+            body: 'When you switch iPhone Language to Greek, your keyboard stays the same by default. But any time you type in Messages, Safari, or Notes, iOS will try to autocorrect to Greek words. You need to know how to switch keyboard layouts on the fly.',
+        },
+        {
+            title: 'The fix (one time)',
+            body: 'Settings (Ρυθμίσεις) → General (Γενικά) → Keyboard (Πληκτρολόγιο) → Keyboards (Πληκτρολόγια) → Add New Keyboard (Προσθήκη πληκτρολογίου) → English (US) (Αγγλικά (ΗΠΑ)). Now you have both keyboards installed.',
+        },
+        {
+            title: 'The fix (every time)',
+            body: 'On any keyboard screen, look for the 🌐 globe key just left of the spacebar (Παγκόσμιο πλήκτρο). Tap it to switch keyboards. Long-press it to pick a specific one from a menu. This is the single most important physical action to memorize — once you know it, a Greek-language phone never prevents you from typing English.',
+        },
+        {
+            title: 'Safety check before you switch',
+            body: 'Before changing iPhone Language to Greek, add English (US) as a keyboard first. If you only have a Greek keyboard installed and try to type a Wi-Fi password or email, you will be stuck with Greek autocorrect and no way out. Do this now, not in Athens.',
+        },
+    ];
+    const s = steps[step];
+    const last = step === steps.length - 1;
+    return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 22 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 32,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 6px',
+                } }, "The keyboard"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 13,
+                    margin: 0,
+                } }, "The most common failure mode. Solve it before you switch.")),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 18px',
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 6,
+            } }, steps.map((_, idx) => (React.createElement("div", { key: idx, style: {
+                width: idx === step ? 28 : 8,
+                height: 3,
+                background: idx <= step ? theme.accent : theme.border,
+                transition: 'all 240ms ease',
+            } })))),
+        React.createElement("div", { key: step, style: {
+                maxWidth: 620,
+                margin: '0 auto',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderLeft: `3px solid ${step === 3 ? theme.error : theme.accent}`,
+                borderRadius: 2,
+                padding: '28px 32px',
+                animation: 'cardIn 280ms ease-out',
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 11,
+                    letterSpacing: '0.2em',
+                    color: step === 3 ? theme.error : theme.inkFaint,
+                    textTransform: 'uppercase',
+                    marginBottom: 8,
+                } },
+                "Step ",
+                step + 1,
+                " of ",
+                steps.length,
+                step === 3 ? ' · Do this before you switch' : ''),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 26,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    marginBottom: 14,
+                } }, s.title),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 17,
+                    lineHeight: 1.6,
+                    color: theme.inkDim,
+                } }, s.body)),
+        step >= 1 && (React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '20px auto 0',
+                padding: '16px 20px',
+                background: theme.bg,
+                border: `1px dashed ${theme.border}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 10,
+                    letterSpacing: '0.2em',
+                    color: theme.inkFaint,
+                    textTransform: 'uppercase',
+                    marginBottom: 10,
+                } }, "Keyboard vocabulary"),
+            React.createElement("div", { style: {
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                    gap: 8,
+                } }, KEYBOARD.map(k => (React.createElement("div", { key: k.gr, style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 14,
+                    lineHeight: 1.35,
+                } },
+                React.createElement("span", { style: { color: theme.accent } }, k.gr),
+                React.createElement("span", { style: { color: theme.inkFaint, margin: '0 6px' } }, "\u00B7"),
+                React.createElement("span", { style: { color: theme.inkDim, fontStyle: 'italic' } }, k.en))))))),
+        React.createElement("div", { style: { display: 'flex', justifyContent: 'space-between', maxWidth: 620, margin: '24px auto 0' } },
+            React.createElement(Button, { variant: "ghost", onClick: () => setStep(Math.max(0, step - 1)), disabled: step === 0 },
+                React.createElement(ChevronLeft, { size: 16 }),
+                " Back"),
+            last ? (React.createElement(Button, { onClick: onNext },
+                "Continue ",
+                React.createElement(ChevronRight, { size: 16 }))) : (React.createElement(Button, { onClick: () => setStep(step + 1) },
+                "Got it ",
+                React.createElement(ChevronRight, { size: 16 }))))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Strategy — teach the recognition method
+// ——————————————————————————————————————————————
+function StrategyPhase({ onNext }) {
+    return (React.createElement("div", { style: { padding: '30px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 28 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 38,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 10px',
+                } }, "When you don't know a word"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 15,
+                    maxWidth: 580,
+                    margin: '0 auto',
+                    lineHeight: 1.6,
+                } }, "iOS is the same app you've used for years. Use what hasn't changed.")),
+        React.createElement("div", { style: {
+                maxWidth: 720,
+                margin: '0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 14,
+            } }, [
+            { n: 1, title: 'Position first', body: 'Primary actions go top-right. Cancel goes top-left. Destructive buttons go at the bottom or in red. Apple doesn\'t change the position when they change the language.' },
+            { n: 2, title: 'Color second', body: 'Blue = safe primary action. Red = destructive or critical. Gray text = disabled or secondary. Colors carry 60% of the meaning.' },
+            { n: 3, title: 'Icon third', body: 'Every icon you know stays. Gear = settings. Magnifying glass = search. Chevron right (›) = "tap to go deeper". Back arrow (<) = back. The Greek word next to the icon is usually confirming what the icon already told you.' },
+            { n: 4, title: 'First letter last', body: 'You already know the Greek alphabet. If a button starts with "Α" it could be Αποθήκευση (Save) or Ακύρωση (Cancel) — but position and color already narrowed it down. The letter confirms.' },
+        ].map(r => (React.createElement("div", { key: r.n, style: {
+                display: 'flex',
+                gap: 16,
+                padding: '18px 22px',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderLeft: `3px solid ${theme.accent}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    width: 32, height: 32,
+                    borderRadius: 16,
+                    background: theme.accent,
+                    color: theme.bg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    flexShrink: 0,
+                } }, r.n),
+            React.createElement("div", null,
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 22,
+                        fontWeight: 500,
+                        color: theme.ink,
+                        marginBottom: 4,
+                    } }, r.title),
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 16,
+                        lineHeight: 1.55,
+                        color: theme.inkDim,
+                    } }, r.body)))))),
+        React.createElement("div", { style: {
+                maxWidth: 720,
+                margin: '24px auto 0',
+                padding: '16px 22px',
+                background: theme.bg,
+                border: `1px dashed ${theme.border}`,
+                borderRadius: 2,
+                fontFamily: '"EB Garamond", serif',
+                fontSize: 16,
+                fontStyle: 'italic',
+                lineHeight: 1.55,
+                color: theme.inkDim,
+                textAlign: 'center',
+            } }, "The best heuristic: if you're not sure what a button does, cancel. Destructive actions always give a confirmation dialog \u2014 you can always back out."),
+        React.createElement("div", { style: { textAlign: 'center', marginTop: 28 } },
+            React.createElement(Button, { onClick: onNext },
+                "Final check ",
+                React.createElement(ChevronRight, { size: 16 })))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Mixed quiz
+// ——————————————————————————————————————————————
+function MixedQuiz({ onNext }) {
+    const pool = useMemo(() => {
+        // Take a sampling of all learned words across all sections
+        return [
+            ...BUTTONS.slice(0, 8),
+            ...SETTINGS.slice(0, 6),
+            ...APPS.slice(0, 8),
+            ...MAPS.slice(0, 5),
+            ...ALERTS.slice(0, 4),
+            ...MESSAGES.slice(0, 6),
+            ...SPOTIFY.slice(0, 6),
+            ...NUMBERS_TIME.slice(0, 6),
+        ];
+    }, []);
+    const [scores, setScores] = useState(() => Object.fromEntries(pool.map(w => [w.gr, 0])));
+    const [current, setCurrent] = useState(null);
+    const [options, setOptions] = useState([]);
+    const [feedback, setFeedback] = useState(null);
+    const [answered, setAnswered] = useState(0);
+    const [correct, setCorrect] = useState(0);
+    const TARGET = 16; // answer 16 questions to finish (was 12)
+    const done = answered >= TARGET;
+    const pickNext = () => {
+        const minScore = Math.min(...Object.values(scores));
+        const poolLow = pool.filter(w => scores[w.gr] === minScore);
+        const filtered = current && poolLow.length > 1 ? poolLow.filter(w => w.gr !== current.gr) : poolLow;
+        const next = filtered[Math.floor(Math.random() * filtered.length)];
+        const wrongs = pool.filter(w => w.gr !== next.gr)
+            .sort(() => Math.random() - 0.5).slice(0, 3);
+        setCurrent(next);
+        setOptions([...wrongs, next].sort(() => Math.random() - 0.5));
+        setFeedback(null);
+    };
+    useEffect(() => { pickNext(); /* eslint-disable-next-line */ }, []);
+    const answer = (choice) => {
+        if (feedback)
+            return;
+        const ok = choice.gr === current.gr;
+        setFeedback(ok ? 'right' : 'wrong');
+        setAnswered(n => n + 1);
+        if (ok) {
+            setCorrect(n => n + 1);
+            setScores(s => ({ ...s, [current.gr]: s[current.gr] + 1 }));
+        }
+        else {
+            setScores(s => ({ ...s, [current.gr]: Math.max(0, s[current.gr] - 1) }));
+        }
+        setTimeout(() => {
+            if (answered + 1 < TARGET)
+                pickNext();
+        }, ok ? 500 : 1300);
+    };
+    if (done) {
+        const pct = Math.round((correct / TARGET) * 100);
+        return (React.createElement("div", { style: { textAlign: 'center', padding: '40px 20px' } },
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 72,
+                    fontWeight: 500,
+                    color: pct >= 80 ? theme.success : pct >= 60 ? theme.accent : theme.error,
+                    lineHeight: 1,
+                    marginBottom: 6,
+                } },
+                pct,
+                "%"),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 20,
+                    fontStyle: 'italic',
+                    color: theme.inkDim,
+                    marginBottom: 32,
+                } },
+                correct,
+                " of ",
+                TARGET,
+                " correct"),
+            React.createElement(Button, { onClick: onNext },
+                "Get the reference card ",
+                React.createElement(ChevronRight, { size: 16 }))));
+    }
+    if (!current)
+        return null;
+    return (React.createElement("div", { style: { padding: '12px 20px 20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 16 } },
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 30,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 4px',
+                } }, "Mixed challenge"),
+            React.createElement("p", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    color: theme.inkDim,
+                    fontSize: 13,
+                    margin: 0,
+                } },
+                "Question ",
+                answered + 1,
+                " of ",
+                TARGET,
+                " \u00B7 ",
+                correct,
+                " correct so far")),
+        React.createElement("div", { style: {
+                maxWidth: 620,
+                margin: '0 auto 24px',
+                height: 3,
+                background: theme.border,
+                overflow: 'hidden',
+            } },
+            React.createElement("div", { style: {
+                    width: `${(answered / TARGET) * 100}%`,
+                    height: '100%',
+                    background: theme.accent,
+                    transition: 'width 320ms ease',
+                } })),
+        React.createElement("div", { key: answered, style: {
+                maxWidth: 620,
+                margin: '0 auto',
+                textAlign: 'center',
+                padding: '32px 20px',
+                background: theme.raised,
+                border: `1px solid ${feedback === 'right' ? theme.success : feedback === 'wrong' ? theme.error : theme.border}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 40,
+                    fontWeight: 500,
+                    color: theme.accent,
+                    lineHeight: 1.1,
+                } }, current.gr),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 18,
+                    fontStyle: 'italic',
+                    color: theme.ink,
+                    opacity: 0.75,
+                    marginTop: 4,
+                } }, current.translit),
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 13,
+                    letterSpacing: '0.08em',
+                    color: theme.accentHi,
+                    marginTop: 4,
+                    fontWeight: 500,
+                } },
+                "/",
+                current.phon,
+                "/"),
+            feedback === 'wrong' && (React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontStyle: 'italic',
+                    fontSize: 18,
+                    color: theme.error,
+                    marginTop: 10,
+                } }, current.en))),
+        React.createElement("div", { style: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 10,
+                maxWidth: 620,
+                margin: '20px auto 0',
+            } }, options.map((opt, idx) => {
+            const isRight = feedback && opt.gr === current.gr;
+            const isWrong = feedback === 'wrong' && opt.gr !== current.gr;
+            return (React.createElement("button", { key: opt.gr + idx, onClick: () => answer(opt), disabled: !!feedback, style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 17,
+                    padding: '14px 12px',
+                    background: isRight ? theme.success : theme.surface,
+                    color: isRight ? theme.bg : theme.ink,
+                    border: `1px solid ${isRight ? theme.success : theme.border}`,
+                    borderRadius: 2,
+                    cursor: feedback ? 'default' : 'pointer',
+                    opacity: isWrong ? 0.35 : 1,
+                    transition: 'all 180ms ease',
+                } }, opt.en));
+        }))));
+}
+// ——————————————————————————————————————————————
+// PHASE: Reference card — the takeaway
+// ——————————————————————————————————————————————
+function Reference({ seconds, onRestart }) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    const sections = [
+        { title: 'Escape path (memorize)', words: ESCAPE_PATH.map(p => ({ gr: p.gr, translit: p.translit, en: p.en, phon: p.phon })), important: true },
+        { title: 'Buttons', words: BUTTONS },
+        { title: 'Settings', words: SETTINGS },
+        { title: 'Apps', words: APPS },
+        { title: 'Alerts', words: ALERTS },
+        { title: 'Maps', words: MAPS },
+        { title: 'Messages', words: MESSAGES },
+        { title: 'Spotify', words: SPOTIFY },
+        { title: 'Days & time', words: NUMBERS_TIME },
+        { title: 'Keyboard', words: KEYBOARD },
+    ];
+    return (React.createElement("div", { style: { padding: '20px' } },
+        React.createElement("div", { style: { textAlign: 'center', marginBottom: 28 } },
+            React.createElement(Sparkles, { size: 36, color: theme.accent, style: { marginBottom: 12 } }),
+            React.createElement("h2", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 42,
+                    fontWeight: 500,
+                    color: theme.ink,
+                    margin: '0 0 8px',
+                } }, "Ready."),
+            React.createElement("p", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontStyle: 'italic',
+                    fontSize: 18,
+                    color: theme.inkDim,
+                    margin: '0 0 4px',
+                } },
+                "Finished in ",
+                m,
+                ":",
+                String(s).padStart(2, '0'),
+                ". Screenshot this page before you switch.")),
+        React.createElement("div", { style: {
+                maxWidth: 720,
+                margin: '0 auto 24px',
+                padding: '20px 24px',
+                background: theme.raised,
+                border: `1px solid ${theme.border}`,
+                borderLeft: `3px solid ${theme.iosBlue}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 11,
+                    letterSpacing: '0.2em',
+                    color: theme.iosBlue,
+                    textTransform: 'uppercase',
+                    marginBottom: 10,
+                } }, "TO SWITCH YOUR PHONE NOW"),
+            React.createElement("div", { style: {
+                    fontFamily: '"EB Garamond", serif',
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    color: theme.ink,
+                } },
+                "Settings \u2192 General \u2192 Language & Region \u2192 iPhone Language \u2192 tap ",
+                React.createElement("span", { style: { color: theme.accent } }, "\u0395\u03BB\u03BB\u03B7\u03BD\u03B9\u03BA\u03AC"),
+                " \u2192 a dialog will ask you to confirm (the button on the right, in blue, is \"Change to Greek\") \u2192 your phone restarts in ~20 seconds. To go back, follow the escape path above.")),
+        React.createElement("div", { style: {
+                maxWidth: 960,
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: 14,
+            } }, sections.map(sec => (React.createElement("div", { key: sec.title, style: {
+                padding: '16px 20px',
+                background: sec.important ? 'rgba(212,165,116,0.06)' : theme.raised,
+                border: `1px solid ${sec.important ? theme.accent : theme.border}`,
+                borderRadius: 2,
+            } },
+            React.createElement("div", { style: {
+                    fontFamily: 'Manrope, sans-serif',
+                    fontSize: 10,
+                    letterSpacing: '0.2em',
+                    color: sec.important ? theme.accentHi : theme.inkFaint,
+                    textTransform: 'uppercase',
+                    marginBottom: 12,
+                    fontWeight: 600,
+                } }, sec.title),
+            React.createElement("div", { style: { display: 'flex', flexDirection: 'column', gap: 6 } }, sec.words.map((w, i) => (React.createElement("div", { key: i, style: {
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    gap: 12,
+                    paddingBottom: 4,
+                    borderBottom: i < sec.words.length - 1 ? `1px dotted ${theme.border}` : 'none',
+                } },
+                React.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                    React.createElement("div", { style: {
+                            fontFamily: '"EB Garamond", serif',
+                            fontSize: 15,
+                            color: theme.accent,
+                            fontWeight: 500,
+                            lineHeight: 1.2,
+                        } }, w.gr),
+                    w.translit && (React.createElement("div", { style: {
+                            fontFamily: '"EB Garamond", serif',
+                            fontSize: 11,
+                            fontStyle: 'italic',
+                            color: theme.ink,
+                            opacity: 0.6,
+                            lineHeight: 1.2,
+                        } }, w.translit)),
+                    w.phon && (React.createElement("div", { style: {
+                            fontFamily: 'Manrope, sans-serif',
+                            fontSize: 10,
+                            letterSpacing: '0.04em',
+                            color: theme.accentHi,
+                            fontWeight: 500,
+                            opacity: 0.85,
+                            marginTop: 1,
+                        } }, w.phon))),
+                React.createElement("div", { style: {
+                        fontFamily: 'Manrope, sans-serif',
+                        fontSize: 11,
+                        color: theme.inkDim,
+                        fontWeight: 400,
+                        textAlign: 'right',
+                        flexShrink: 0,
+                    } }, w.en))))))))),
+        React.createElement("div", { style: {
+                maxWidth: 720,
+                margin: '28px auto 0',
+                padding: '16px 22px',
+                background: theme.bg,
+                border: `1px dashed ${theme.border}`,
+                borderRadius: 2,
+                fontFamily: '"EB Garamond", serif',
+                fontSize: 15,
+                fontStyle: 'italic',
+                lineHeight: 1.55,
+                color: theme.inkDim,
+                textAlign: 'center',
+            } }, "Before committing full-time: try it for 30 minutes today. If discomfort level drops below \"mild annoyance\" you're ready for the trip."),
+        React.createElement("div", { style: { textAlign: 'center', marginTop: 24 } },
+            React.createElement(Button, { variant: "ghost", onClick: onRestart },
+                React.createElement(RotateCcw, { size: 16 }),
+                " Restart"))));
+}
+// ——————————————————————————————————————————————
+// ROOT
+// ——————————————————————————————————————————————
+function GreekiOS() {
+    const [phase, setPhase] = useState('intro');
+    const [startTime, setStartTime] = useState(null);
+    const [elapsed, setElapsed] = useState(0);
+    useEffect(() => {
+        if (!startTime)
+            return;
+        const t = setInterval(() => {
+            setElapsed(Math.floor((Date.now() - startTime) / 1000));
+        }, 1000);
+        return () => clearInterval(t);
+    }, [startTime]);
+    const go = (p) => {
+        if (p === PHASES.ESCAPE && !startTime)
+            setStartTime(Date.now());
+        setPhase(p);
+        if (typeof window !== 'undefined')
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const restart = () => {
+        setPhase('intro');
+        setStartTime(null);
+        setElapsed(0);
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement("style", null, `
+        @import url('${FONT_LINK}');
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        body { margin: 0; }
+      `),
+        React.createElement("div", { style: {
+                minHeight: '100vh',
+                background: `
+          radial-gradient(ellipse at top, #1a140e 0%, ${theme.bg} 55%),
+          ${theme.bg}
+        `,
+                color: theme.ink,
+                fontFamily: 'Manrope, sans-serif',
+                position: 'relative',
+            } },
+            React.createElement("div", { style: {
+                    position: 'absolute', inset: 0, pointerEvents: 'none',
+                    opacity: 0.04,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                } }),
+            React.createElement(MeanderBorder, null),
+            React.createElement("div", { style: {
+                    maxWidth: 1000,
+                    margin: '0 auto',
+                    padding: '20px 24px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: `1px solid ${theme.border}`,
+                } },
+                React.createElement("div", { style: {
+                        fontFamily: '"EB Garamond", serif',
+                        fontSize: 20,
+                        color: theme.ink,
+                        fontStyle: 'italic',
+                    } },
+                    "iPhone ",
+                    React.createElement("span", { style: { color: theme.inkFaint, fontSize: 13, fontStyle: 'normal', letterSpacing: '0.2em', marginLeft: 6, textTransform: 'uppercase' } }, "in Greek")),
+                React.createElement("div", { style: { display: 'flex', gap: 20, alignItems: 'center' } },
+                    phase !== 'intro' && React.createElement(PhaseDots, { phase: phase }),
+                    startTime && React.createElement(Timer, { seconds: elapsed }))),
+            React.createElement("div", { style: { maxWidth: 1000, margin: '0 auto', padding: '20px 8px 60px', position: 'relative', zIndex: 1 } },
+                phase === 'intro' && React.createElement(Intro, { onStart: () => go(PHASES.ESCAPE) }),
+                phase === PHASES.ESCAPE && React.createElement(EscapePhase, { onNext: () => go(PHASES.BUTTONS) }),
+                phase === PHASES.BUTTONS && React.createElement(WordDrill, { title: "Buttons you'll tap 100\u00D7/day", subtitle: "The 12 universal actions", words: BUTTONS, onNext: () => go(PHASES.SETTINGS) }),
+                phase === PHASES.SETTINGS && React.createElement(WordDrill, { title: "Settings \u2014 top level", subtitle: "The 10 menu items you actually use", words: SETTINGS, onNext: () => go(PHASES.APPS) }),
+                phase === PHASES.APPS && React.createElement(AppsPhase, { onNext: () => go(PHASES.ALERTS) }),
+                phase === PHASES.ALERTS && React.createElement(AlertsPhase, { onNext: () => go(PHASES.MAPS) }),
+                phase === PHASES.MAPS && React.createElement(WordDrill, { title: "Maps & travel", subtitle: "Critical for Greece \u2014 Athens, Thessaloniki, Crete", words: MAPS, onNext: () => go(PHASES.MESSAGES) }),
+                phase === PHASES.MESSAGES && React.createElement(WordDrill, { title: "Messages app", subtitle: "Sending, replying, and handling junk", words: MESSAGES, onNext: () => go(PHASES.SPOTIFY) }),
+                phase === PHASES.SPOTIFY && React.createElement(WordDrill, { title: "Spotify", subtitle: "Playback controls and library \u2014 third-party, so confidence is slightly lower", words: SPOTIFY, onNext: () => go(PHASES.NUMBERS) }),
+                phase === PHASES.NUMBERS && React.createElement(WordDrill, { title: "Days & time words", subtitle: "You'll see these in calendar, weather, and message timestamps", words: NUMBERS_TIME, onNext: () => go(PHASES.KEYBOARD) }),
+                phase === PHASES.KEYBOARD && React.createElement(KeyboardPhase, { onNext: () => go(PHASES.STRATEGY) }),
+                phase === PHASES.STRATEGY && React.createElement(StrategyPhase, { onNext: () => go(PHASES.QUIZ) }),
+                phase === PHASES.QUIZ && React.createElement(MixedQuiz, { onNext: () => go(PHASES.REFERENCE) }),
+                phase === PHASES.REFERENCE && React.createElement(Reference, { seconds: elapsed, onRestart: restart })))));
+}
+
+import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1';
+const _root = createRoot(document.getElementById('root'));
+_root.render(React.createElement(GreekiOS));
+
+  // Hide loader once mounted
+  document.getElementById('loading').style.display = 'none';
+</script>
+
+<script>
+  // If module fails to load (offline, CDN issue), show fallback after 8s
+  setTimeout(function() {
+    if (!document.getElementById('root').firstChild) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-fallback').style.display = 'block';
+    }
+  }, 8000);
+</script>
+</body>
+</html>
