@@ -538,6 +538,7 @@
   .vocab-entry.editing { background: #f4f8ff; border-bottom-color: #c0d4f0; }
 
   .entry-word { font-weight: 700; font-size: 0.9rem; }
+  .entry-phonetic { display: block; font-weight: 400; font-size: 0.78rem; color: #b8a888; font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace; margin-top: 3px; letter-spacing: 0.02em; }
   .entry-translation { color: #7a6a55; font-style: italic; font-size: 0.88rem; }
 
   .entry-edit-input {
@@ -1824,8 +1825,9 @@
       <h3>+ Add a new entry</h3>
       <div class="form-row">
         <div class="form-group">
-          <label>Word / Phrase</label>
+          <label>Word / Phrase + how to say it</label>
           <input type="text" id="input-word" placeholder="e.g. Ευχαριστώ" />
+          <input type="text" id="input-phonetic" placeholder="phonetic — e.g. ef-kha-ree-STOH" style="margin-top:6px;font-size:0.82rem;" />
         </div>
         <div class="form-group">
           <label>Translation</label>
@@ -2107,7 +2109,7 @@
     if (window._supabase) {
       const { data, error } = await window._supabase
         .from('vocab')
-        .insert([{ word: entry.word, translation: entry.translation, lang: entry.lang, topic: entry.topic }])
+        .insert([{ word: entry.word, translation: entry.translation, phonetic: entry.phonetic || null, lang: entry.lang, topic: entry.topic }])
         .select()
         .single();
       if (!error) return data;
@@ -2160,6 +2162,7 @@
   async function addVocabEntry() {
     const word = document.getElementById('input-word').value.trim();
     const translation = document.getElementById('input-translation').value.trim();
+    const phonetic = document.getElementById('input-phonetic')?.value.trim() || '';
     const lang = document.getElementById('input-lang').value;
     const topic = document.getElementById('input-topic').value;
     if (!word || !translation) return;
@@ -2167,10 +2170,11 @@
     const btn = document.querySelector('.btn-add');
     if (btn) btn.disabled = true;
 
-    await saveVocabEntry({ word, translation, lang, topic });
+    await saveVocabEntry({ word, translation, phonetic, lang, topic });
 
     document.getElementById('input-word').value = '';
     document.getElementById('input-translation').value = '';
+    if (document.getElementById('input-phonetic')) document.getElementById('input-phonetic').value = '';
 
     const msg = document.getElementById('add-msg');
     msg.style.display = 'block';
@@ -2221,8 +2225,8 @@
     }
 
     container.innerHTML = filtered.map(v => `
-      <div class="vocab-entry" id="ventry-${v.id}">
-        <span class="entry-word">${escHtml(v.word)}</span>
+      <div class="vocab-entry" id="ventry-${v.id}" data-phonetic="${escHtml(v.phonetic || '')}">
+        <span class="entry-word">${escHtml(v.word)}${v.phonetic ? `<small class="entry-phonetic">${escHtml(v.phonetic)}</small>` : ''}</span>
         <span class="entry-translation">${escHtml(v.translation)}</span>
         <span class="entry-lang col-lang">
           <span class="entry-tag entry-lang-${v.lang}">${v.lang === 'greek' ? '🇬🇷 Greek' : '🇪🇸 Spanish'}</span>
@@ -2238,14 +2242,20 @@
     const row = document.getElementById('ventry-' + id);
     if (!row) return;
     // Read current values from the rendered DOM
-    const word = row.querySelector('.entry-word')?.textContent || '';
+    const phonetic = row.getAttribute('data-phonetic') || '';
+    const wordEl = row.querySelector('.entry-word');
+    const phonEl = wordEl?.querySelector('.entry-phonetic');
+    const word = (wordEl ? (phonEl ? wordEl.textContent.replace(phonEl.textContent, '') : wordEl.textContent) : '').trim();
     const translation = row.querySelector('.entry-translation')?.textContent || '';
     const langTag = row.querySelector('.entry-tag');
     const lang = langTag?.classList.contains('entry-lang-greek') ? 'greek' : 'spanish';
     const topic = row.querySelector('.entry-topic')?.textContent || 'Other';
     row.classList.add('editing');
     row.innerHTML = `
-      <input class="entry-edit-input" id="edit-word-${id}" value="${escHtml(word)}" placeholder="Word / phrase" />
+      <span style="display:flex;flex-direction:column;gap:4px;">
+        <input class="entry-edit-input" id="edit-word-${id}" value="${escHtml(word)}" placeholder="Word / phrase" />
+        <input class="entry-edit-input" id="edit-phonetic-${id}" value="${escHtml(phonetic)}" placeholder="phonetic" style="font-size:0.8rem;" />
+      </span>
       <input class="entry-edit-input" id="edit-trans-${id}" value="${escHtml(translation)}" placeholder="Translation" />
       <span class="entry-lang col-lang">
         <select class="entry-edit-input" id="edit-lang-${id}" style="padding:4px 6px;">
@@ -2280,10 +2290,11 @@
   async function saveVocabEdit(id) {
     const word = document.getElementById('edit-word-' + id)?.value.trim();
     const translation = document.getElementById('edit-trans-' + id)?.value.trim();
+    const phonetic = document.getElementById('edit-phonetic-' + id)?.value.trim() || null;
     const lang = document.getElementById('edit-lang-' + id)?.value;
     const topic = document.getElementById('edit-topic-' + id)?.value;
     if (!word || !translation) return;
-    await updateVocabEntry(id, { word, translation, lang, topic });
+    await updateVocabEntry(id, { word, translation, phonetic, lang, topic });
     renderVocab();
   }
 
