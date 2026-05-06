@@ -539,6 +539,9 @@
 
   .entry-word { font-weight: 700; font-size: 0.9rem; }
   .entry-phonetic { display: block; font-weight: 400; font-size: 0.78rem; color: #b8a888; font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace; margin-top: 3px; letter-spacing: 0.02em; }
+  .btn-intuition { background: none; border: none; cursor: pointer; padding: 0 4px; font-size: 0.95rem; opacity: 0.55; transition: opacity 0.15s; vertical-align: middle; }
+  .btn-intuition:hover { opacity: 1; }
+  .row-intuition { padding: 10px 16px; background: #fff8eb; border-left: 3px solid #d4a574; font-size: 0.83rem; color: #5a4a35; line-height: 1.5; font-style: italic; border-bottom: 1px solid #e8e0d0; }
   .entry-translation { color: #7a6a55; font-style: italic; font-size: 0.88rem; }
 
   .entry-edit-input {
@@ -1836,8 +1839,9 @@
           <input type="text" id="input-phonetic" placeholder="phonetic — e.g. ef-kha-ree-STOH" style="margin-top:6px;font-size:0.82rem;" />
         </div>
         <div class="form-group">
-          <label>Translation</label>
+          <label>Translation + 💡 intuition</label>
           <input type="text" id="input-translation" placeholder="e.g. Thank you" />
+          <input type="text" id="input-intuition" placeholder="optional — how to remember (e.g. peri = around, μένω = stay → wait)" style="margin-top:6px;font-size:0.82rem;" />
         </div>
         <div class="form-group">
           <label>Language</label>
@@ -2115,7 +2119,7 @@
     if (window._supabase) {
       const { data, error } = await window._supabase
         .from('vocab')
-        .insert([{ word: entry.word, translation: entry.translation, phonetic: entry.phonetic || null, lang: entry.lang, topic: entry.topic }])
+        .insert([{ word: entry.word, translation: entry.translation, phonetic: entry.phonetic || null, intuition: entry.intuition || null, lang: entry.lang, topic: entry.topic }])
         .select()
         .single();
       if (!error) return data;
@@ -2169,6 +2173,7 @@
     const word = document.getElementById('input-word').value.trim();
     const translation = document.getElementById('input-translation').value.trim();
     const phonetic = document.getElementById('input-phonetic')?.value.trim() || '';
+    const intuition = document.getElementById('input-intuition')?.value.trim() || '';
     const lang = document.getElementById('input-lang').value;
     const topic = document.getElementById('input-topic').value;
     if (!word || !translation) return;
@@ -2176,11 +2181,12 @@
     const btn = document.querySelector('.btn-add');
     if (btn) btn.disabled = true;
 
-    await saveVocabEntry({ word, translation, phonetic, lang, topic });
+    await saveVocabEntry({ word, translation, phonetic, intuition, lang, topic });
 
     document.getElementById('input-word').value = '';
     document.getElementById('input-translation').value = '';
     if (document.getElementById('input-phonetic')) document.getElementById('input-phonetic').value = '';
+    if (document.getElementById('input-intuition')) document.getElementById('input-intuition').value = '';
 
     const msg = document.getElementById('add-msg');
     msg.style.display = 'block';
@@ -2231,9 +2237,9 @@
     }
 
     container.innerHTML = filtered.map(v => `
-      <div class="vocab-entry" id="ventry-${v.id}" data-phonetic="${escHtml(v.phonetic || '')}">
+      <div class="vocab-entry" id="ventry-${v.id}" data-phonetic="${escHtml(v.phonetic || '')}" data-intuition="${escHtml(v.intuition || '')}">
         <span class="entry-word">${escHtml(v.word)}${v.phonetic ? `<small class="entry-phonetic">${escHtml(v.phonetic)}</small>` : ''}</span>
-        <span class="entry-translation">${escHtml(v.translation)}</span>
+        <span class="entry-translation">${escHtml(v.translation)}${v.intuition ? ` <button class="btn-intuition" onclick="toggleIntuition('${v.id}')" title="Show intuition">💡</button>` : ''}</span>
         <span class="entry-lang col-lang">
           <span class="entry-tag entry-lang-${v.lang}">${v.lang === 'greek' ? '🇬🇷 Greek' : '🇪🇸 Spanish'}</span>
         </span>
@@ -2241,6 +2247,7 @@
         <button class="btn-edit" onclick="editVocabEntry('${v.id}')" title="Edit">✏️</button>
         <button class="btn-delete" onclick="deleteVocabEntry('${v.id}')" title="Delete">✕</button>
       </div>
+      ${v.intuition ? `<div class="row-intuition" id="intuition-${v.id}" style="display:none;">💡 ${escHtml(v.intuition)}</div>` : ''}
     `).join('');
   }
 
@@ -2249,10 +2256,13 @@
     if (!row) return;
     // Read current values from the rendered DOM
     const phonetic = row.getAttribute('data-phonetic') || '';
+    const intuition = row.getAttribute('data-intuition') || '';
     const wordEl = row.querySelector('.entry-word');
     const phonEl = wordEl?.querySelector('.entry-phonetic');
     const word = (wordEl ? (phonEl ? wordEl.textContent.replace(phonEl.textContent, '') : wordEl.textContent) : '').trim();
-    const translation = row.querySelector('.entry-translation')?.textContent || '';
+    const transEl = row.querySelector('.entry-translation');
+    const intuBtn = transEl?.querySelector('.btn-intuition');
+    const translation = (transEl ? (intuBtn ? transEl.textContent.replace(intuBtn.textContent, '') : transEl.textContent) : '').trim();
     const langTag = row.querySelector('.entry-tag');
     const lang = langTag?.classList.contains('entry-lang-greek') ? 'greek' : 'spanish';
     const topic = row.querySelector('.entry-topic')?.textContent || 'Other';
@@ -2262,7 +2272,10 @@
         <input class="entry-edit-input" id="edit-word-${id}" value="${escHtml(word)}" placeholder="Word / phrase" />
         <input class="entry-edit-input" id="edit-phonetic-${id}" value="${escHtml(phonetic)}" placeholder="phonetic" style="font-size:0.8rem;" />
       </span>
-      <input class="entry-edit-input" id="edit-trans-${id}" value="${escHtml(translation)}" placeholder="Translation" />
+      <span style="display:flex;flex-direction:column;gap:4px;">
+        <input class="entry-edit-input" id="edit-trans-${id}" value="${escHtml(translation)}" placeholder="Translation" />
+        <input class="entry-edit-input" id="edit-intuition-${id}" value="${escHtml(intuition)}" placeholder="intuition (optional)" style="font-size:0.8rem;" />
+      </span>
       <span class="entry-lang col-lang">
         <select class="entry-edit-input" id="edit-lang-${id}" style="padding:4px 6px;">
           <option value="greek" ${lang==='greek'?'selected':''}>🇬🇷 Greek</option>
@@ -2297,11 +2310,18 @@
     const word = document.getElementById('edit-word-' + id)?.value.trim();
     const translation = document.getElementById('edit-trans-' + id)?.value.trim();
     const phonetic = document.getElementById('edit-phonetic-' + id)?.value.trim() || null;
+    const intuition = document.getElementById('edit-intuition-' + id)?.value.trim() || null;
     const lang = document.getElementById('edit-lang-' + id)?.value;
     const topic = document.getElementById('edit-topic-' + id)?.value;
     if (!word || !translation) return;
-    await updateVocabEntry(id, { word, translation, phonetic, lang, topic });
+    await updateVocabEntry(id, { word, translation, phonetic, intuition, lang, topic });
     renderVocab();
+  }
+
+  function toggleIntuition(id) {
+    const panel = document.getElementById('intuition-' + id);
+    if (!panel) return;
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
   }
 
   function escHtml(s) {
