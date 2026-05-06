@@ -729,6 +729,28 @@
   }
   .pimsleur-link:hover { background: #0a3d6e; }
 
+  /* ── LANGUAGE TRANSFER TRACKER ── */
+  .lt-section { margin-bottom: 44px; }
+  .lt-header-row {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+    padding-bottom: 10px; border-bottom: 2px solid #b8860b;
+  }
+  .lt-header-row h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #b8860b; display: flex; align-items: center; gap: 10px; }
+  .lt-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #b8860b; color: white;
+    padding: 8px 18px; border-radius: 8px; text-decoration: none;
+    font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em;
+    transition: background 0.2s;
+  }
+  .lt-link:hover { background: #946a09; }
+  .lt-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 18px; }
+  .lt-range { padding: 14px 16px; background: #fff8eb; border-left: 3px solid #d4a574; border-radius: 6px; }
+  .lt-range-label { font-weight: 700; color: #b8860b; font-size: 0.78rem; letter-spacing: 0.06em; margin-bottom: 4px; text-transform: uppercase; }
+  .lt-range-desc { font-size: 0.85rem; color: #5a4a35; line-height: 1.45; }
+  .lt-range-desc strong { color: #b8860b; }
+
   .lesson-selector {
     display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
     background: white; border-radius: 12px; border: 1px solid #d0dff0;
@@ -1236,6 +1258,49 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- LANGUAGE TRANSFER TRACKER -->
+    <div class="lt-section">
+      <div class="lt-header-row">
+        <h2 class="section-title greek-accent" style="border:none;margin:0;padding:0;">🧠 Language Transfer — Complete Greek (Your Daily Anchor)</h2>
+        <a class="lt-link" href="https://www.languagetransfer.org/complete-greek" target="_blank">▶ Open Language Transfer ↗</a>
+      </div>
+
+      <div class="lesson-selector">
+        <label>I'm on lesson:</label>
+        <select id="lt-lesson-select" onchange="updateLtProgress()">
+          <option value="0">Not started</option>
+          <!-- 1–120 options injected by initLt() -->
+        </select>
+        <span class="lesson-selector-note">120 lessons total · ~10–15 min each · audio-only · pause + repeat as instructed</span>
+      </div>
+
+      <div class="lesson-progress-label" id="lt-progress-label">0 of 120 lessons completed</div>
+      <div class="lesson-progress-bar"><div class="lesson-progress-fill" id="lt-progress-fill" style="width:0%;background:linear-gradient(90deg,#d4a574,#b8860b);"></div></div>
+
+      <div class="lt-overview">
+        <div class="lt-range">
+          <div class="lt-range-label">Lessons 1–10</div>
+          <div class="lt-range-desc"><strong>Foundations.</strong> μένω, περιμένω, ξέρω, θέλω, κάνω. Cognates from English (peri-, epi-). The "I" form (-ω) and "he/she/it" form (-ει).</div>
+        </div>
+        <div class="lt-range">
+          <div class="lt-range-label">Lessons 11–30</div>
+          <div class="lt-range-desc"><strong>Pronouns + cognate nouns.</strong> εγώ, εσύ, αυτός/αυτή/αυτό, εμείς. Greek-derived English nouns (πρόβλημα, σύστημα, διάγραμμα, κλίμα). Possessives (μου, σου, του).</div>
+        </div>
+        <div class="lt-range">
+          <div class="lt-range-label">Lessons 31–60</div>
+          <div class="lt-range-desc"><strong>Past tense + perfective verbs.</strong> Imperfective (ongoing) vs perfective (completed) verb stems — μάθω vs μαθαίνω, καταλάβω vs καταλαβαίνω.</div>
+        </div>
+        <div class="lt-range">
+          <div class="lt-range-label">Lessons 61–90</div>
+          <div class="lt-range-desc"><strong>Future + conditional.</strong> "θα" + verb structure for future. Comparisons (πιο, πολύ). More complex sentences.</div>
+        </div>
+        <div class="lt-range">
+          <div class="lt-range-label">Lessons 91–120</div>
+          <div class="lt-range-desc"><strong>Refinement + conversation.</strong> Idioms, complex sentences, fluency-level patterns. By here you can build sentences without thinking.</div>
+        </div>
+      </div>
     </div>
 
     <!-- PIMSLEUR TRACKER -->
@@ -2578,6 +2643,43 @@
     }
   }
 
+  // ── LANGUAGE TRANSFER TRACKER ──
+  const LT_KEY = 'langHub_lt_v1';
+  const LT_TOTAL = 120;
+  function loadLtState() { try { return JSON.parse(localStorage.getItem(LT_KEY)) || {current:0}; } catch { return {current:0}; } }
+  function saveLtState(s) { try { localStorage.setItem(LT_KEY, JSON.stringify(s)); } catch {} }
+
+  function updateLtProgress() {
+    const sel = document.getElementById('lt-lesson-select');
+    if (!sel) return;
+    const current = parseInt(sel.value) || 0;
+    const s = loadLtState();
+    s.current = current;
+    saveLtState(s);
+    const pct = Math.round((current / LT_TOTAL) * 100);
+    const fill = document.getElementById('lt-progress-fill');
+    const label = document.getElementById('lt-progress-label');
+    if (fill) fill.style.width = pct + '%';
+    if (label) label.textContent = `${current} of ${LT_TOTAL} lessons completed (${pct}%)`;
+  }
+
+  function initLt() {
+    const sel = document.getElementById('lt-lesson-select');
+    if (!sel) return;
+    // Populate options 1–120 once
+    if (sel.options.length <= 1) {
+      for (let i = 1; i <= LT_TOTAL; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = i === LT_TOTAL ? `Lesson ${i} ✓ Course Complete!` : `Lesson ${i}`;
+        sel.appendChild(opt);
+      }
+    }
+    const s = loadLtState();
+    sel.value = s.current || 0;
+    updateLtProgress();
+  }
+
   // ── PIMSLEUR TRACKER ──
   const PIMSLEUR_KEY = 'langHub_pimsleur_v1';
   function loadPimsleurState() { try { return JSON.parse(localStorage.getItem(PIMSLEUR_KEY)) || {current:0}; } catch { return {current:0}; } }
@@ -3156,6 +3258,7 @@
   renderTripSchedule();
   setInterval(renderTripSchedule, 60 * 60 * 1000); // refresh hourly — rolls over at midnight without reload
   renderAll();
+  initLt();
   initPimsleur();
   renderTransHistory();
   const nd = document.getElementById('note-date');
