@@ -485,6 +485,9 @@
 
   .filter-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
   .filter-btn.active { background: var(--terracotta); color: white; border-color: var(--terracotta); }
+  .vocab-controls-pos { margin-top: -12px; margin-bottom: 24px; padding-top: 0; }
+  .vocab-controls-pos .filter-btn.active { background: #7b3fa0; border-color: #7b3fa0; }
+  .filter-label { font-size: 0.74rem; color: #7a6a55; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0 4px; align-self: center; }
 
   .vocab-search {
     margin-left: auto;
@@ -2003,6 +2006,18 @@
       <input class="vocab-search" type="text" id="vocab-search" placeholder="🔍 Search..." oninput="renderVocab()" />
     </div>
 
+    <div class="vocab-controls vocab-controls-pos">
+      <span class="filter-label">By type:</span>
+      <button class="filter-btn" onclick="setFilter('noun', this)">📦 noun</button>
+      <button class="filter-btn" onclick="setFilter('verb', this)">⚡ verb</button>
+      <button class="filter-btn" onclick="setFilter('adj', this)">🎨 adj</button>
+      <button class="filter-btn" onclick="setFilter('adverb', this)">🌀 adverb</button>
+      <button class="filter-btn" onclick="setFilter('pronoun', this)">👤 pronoun</button>
+      <button class="filter-btn" onclick="setFilter('function', this)">🔗 function</button>
+      <button class="filter-btn" onclick="setFilter('number', this)">🔢 number</button>
+      <button class="filter-btn" onclick="setFilter('phrase', this)">💬 phrase / expression</button>
+    </div>
+
     <div class="vocab-stats" id="vocab-stats"></div>
 
     <div class="vocab-table-wrap" id="vocab-table-wrap">
@@ -2341,7 +2356,7 @@
     const vocab = await loadVocab();
 
     let filtered = vocab.filter(v => {
-      const matchFilter = vocabFilter === 'all' || v.lang === vocabFilter || v.topic === vocabFilter;
+      const matchFilter = vocabFilter === 'all' || v.lang === vocabFilter || v.topic === vocabFilter || v.part_of_speech === vocabFilter;
       const matchSearch = !search || v.word.toLowerCase().includes(search) || v.translation.toLowerCase().includes(search);
       return matchFilter && matchSearch;
     });
