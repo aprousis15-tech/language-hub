@@ -1859,6 +1859,7 @@
             <option value="Survival">🆘 Survival</option>
             <option value="Shopping">🛍 Shopping</option>
             <option value="Numbers">🔢 Numbers</option>
+            <option value="iPhone">📱 iPhone</option>
             <option value="Other">📌 Other</option>
           </select>
         </div>
@@ -1878,6 +1879,7 @@
       <button class="filter-btn" onclick="setFilter('Transport', this)">🚇 Transport</button>
       <button class="filter-btn" onclick="setFilter('Small Talk', this)">👋 Small Talk</button>
       <button class="filter-btn" onclick="setFilter('Survival', this)">🆘 Survival</button>
+      <button class="filter-btn" onclick="setFilter('iPhone', this)">📱 iPhone</button>
       <input class="vocab-search" type="text" id="vocab-search" placeholder="🔍 Search..." oninput="renderVocab()" />
     </div>
 
@@ -2285,11 +2287,12 @@
       <span class="entry-topic col-topic">
         <select class="entry-edit-input" id="edit-topic-${id}" style="padding:4px 6px;">
           <option value="Restaurant" ${topic==='Restaurant'?'selected':''}>🍽 Restaurant</option>
-          <option value="Greetings" ${topic==='Greetings'?'selected':''}>👋 Greetings</option>
+          <option value="Small Talk" ${topic==='Small Talk'?'selected':''}>👋 Small Talk</option>
           <option value="Transport" ${topic==='Transport'?'selected':''}>🚌 Transport</option>
           <option value="Survival" ${topic==='Survival'?'selected':''}>🆘 Survival</option>
           <option value="Shopping" ${topic==='Shopping'?'selected':''}>🛍 Shopping</option>
           <option value="Numbers" ${topic==='Numbers'?'selected':''}>🔢 Numbers</option>
+          <option value="iPhone" ${topic==='iPhone'?'selected':''}>📱 iPhone</option>
           <option value="Other" ${topic==='Other'?'selected':''}>📌 Other</option>
         </select>
       </span>
