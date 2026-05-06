@@ -883,6 +883,27 @@
   .articles-table td.greek-cell { font-weight: 700; color: #1a1a1a; font-size: 1rem; }
   .articles-tip { margin-top: 14px; padding: 10px 14px; background: rgba(255,255,255,0.5); border-left: 3px solid #d4a574; border-radius: 6px; font-size: 0.82rem; color: #5a4a35; line-height: 1.5; }
   .articles-tip strong { color: #7b3fa0; }
+  /* Gender + agreement sub-sections inside the articles card */
+  .gender-rules-section { margin-top: 22px; padding-top: 18px; border-top: 1px dashed #d4a574; }
+  .gender-rules-section h4 { font-size: 0.95rem; color: #7b3fa0; margin: 0 0 4px; font-weight: 700; }
+  .gender-rules-intro { font-size: 0.82rem; color: #7a6a55; margin-bottom: 14px; }
+  .gender-rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .gender-rule { padding: 12px 14px; background: rgba(255,255,255,0.55); border-radius: 6px; border-left: 3px solid #ccc; }
+  .gender-rule.gender-masc { border-left-color: #4a90e2; }
+  .gender-rule.gender-fem { border-left-color: #e25684; }
+  .gender-rule.gender-neut { border-left-color: #6b8e63; }
+  .gender-label { font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+  .gender-rule.gender-masc .gender-label { color: #4a90e2; }
+  .gender-rule.gender-fem .gender-label { color: #e25684; }
+  .gender-rule.gender-neut .gender-label { color: #6b8e63; }
+  .gender-rule-endings { font-size: 0.78rem; color: #5a4a35; margin-bottom: 6px; font-style: italic; }
+  .gender-rule-examples { font-size: 0.85rem; color: #1a1a1a; line-height: 1.55; font-weight: 500; }
+  .agreement-rules { margin-top: 18px; padding: 12px 16px; background: rgba(255,255,255,0.55); border-radius: 6px; border-left: 3px solid #d4a574; }
+  .agreement-rules h4 { font-size: 0.82rem; color: #7b3fa0; margin: 0 0 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .agreement-list { margin: 0; padding-left: 18px; font-size: 0.82rem; color: #5a4a35; line-height: 1.6; }
+  .agreement-list li { margin-bottom: 6px; }
+  .agreement-list strong { color: #1a1a1a; }
+  .agreement-list em { color: #7b3fa0; font-style: normal; font-weight: 600; }
 
   .alpha-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
   .alpha-mode-btn {
@@ -1888,6 +1909,40 @@
       </div>
       <div class="articles-tip">
         <strong>Survival rules:</strong> (1) Match the article's gender to the noun. (2) Use Nominative for the subject — "<em>ο άντρας</em> έρχεται" (the man comes). (3) Use Accusative for the direct object — "βλέπω <em>τον άντρα</em>" (I see the man). (4) Use Genitive for "of / from / 's" — "το σπίτι <em>του άντρα</em>" (the man's house). (5) When in doubt, say it anyway — locals hear it, infer it, and reply.
+      </div>
+
+      <!-- GENDER RULES — how to predict noun gender from its ending -->
+      <div class="gender-rules-section">
+        <h4>How to tell if a noun is masculine, feminine, or neuter</h4>
+        <p class="gender-rules-intro">Greek noun endings predict gender most of the time. Learn these three patterns and you'll pick the right article without thinking.</p>
+        <div class="gender-rules-grid">
+          <div class="gender-rule gender-masc">
+            <div class="gender-label">Masculine — ο</div>
+            <div class="gender-rule-endings">Most -ος, -ας, -ης endings</div>
+            <div class="gender-rule-examples">ο άντρας · ο φίλος · ο κόσμος · ο δρόμος · ο μήνας · ο μπαμπάς</div>
+          </div>
+          <div class="gender-rule gender-fem">
+            <div class="gender-label">Feminine — η</div>
+            <div class="gender-rule-endings">Most -η, -α endings</div>
+            <div class="gender-rule-examples">η μαμά · η αδερφή · η μπύρα · η οικογένεια · η ψυχή · η μέρα</div>
+          </div>
+          <div class="gender-rule gender-neut">
+            <div class="gender-label">Neuter — το</div>
+            <div class="gender-rule-endings">Most -ο, -ι, -μα endings</div>
+            <div class="gender-rule-examples">το νερό · το κρασί · το παιδί · το πρόβλημα · το σύστημα · το σπίτι</div>
+          </div>
+        </div>
+
+        <div class="agreement-rules">
+          <h4>Agreement: article + adjective + noun all change together</h4>
+          <ul class="agreement-list">
+            <li><strong>All three must match in gender, number, and case.</strong> Masc: <em>ο μεγάλος άντρας</em>. Fem: <em>η μεγάλη γυναίκα</em>. Neut: <em>το μεγάλο σπίτι</em>.</li>
+            <li><strong>When the noun's case changes, article and adjective change with it.</strong> Subject: <em>ο μεγάλος άντρας έρχεται</em> (the big man comes). Object: <em>βλέπω τον μεγάλο άντρα</em> (I see the big man). Possessor: <em>το σπίτι του μεγάλου άντρα</em> (the big man's house).</li>
+            <li><strong>Greek uses articles where English doesn't:</strong> with country names (<em>η Ελλάδα είναι όμορφη</em> — Greece is beautiful), with personal names (<em>ο Γιάννης ξέρει</em> — Yannis knows), and with abstract / general nouns (<em>μου αρέσει το παγωτό</em> — I like ice cream).</li>
+            <li><strong>Greek drops indefinite articles where English uses them:</strong> <em>είμαι Αμερικανός</em> = "I am American" (no "an"). <em>είναι γιατρός</em> = "she is a doctor".</li>
+            <li><strong>Common gotchas:</strong> a few -ι words are NOT neuter (rare), and a few -ος words are feminine (η οδός = the street, η νήσος = the island). When you meet a noun, learn it WITH its article — "ο φίλος", not just "φίλος".</li>
+          </ul>
+        </div>
       </div>
     </div>
 
