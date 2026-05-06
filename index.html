@@ -863,6 +863,24 @@
   .alpha-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #7b3fa0; margin-bottom: 6px; }
   .alpha-header p { font-size: 0.85rem; color: #6a5a80; }
 
+  /* ── ARTICLES REFERENCE CARD ── */
+  .articles-card {
+    background: linear-gradient(135deg, #faf3e8, #f5e6cc);
+    border: 1px solid #d4a574; border-radius: 10px;
+    padding: 20px 24px; margin-bottom: 24px;
+  }
+  .articles-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #7b3fa0; margin: 0 0 4px; }
+  .articles-card-subtitle { font-size: 0.82rem; color: #7a6a55; margin-bottom: 14px; }
+  .articles-tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .articles-block h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: #b8860b; margin: 0 0 8px; font-weight: 700; }
+  .articles-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .articles-table th, .articles-table td { padding: 6px 8px; text-align: center; border-bottom: 1px solid #e8dcc4; }
+  .articles-table th { font-weight: 700; color: #7b3fa0; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(212,165,116,0.1); }
+  .articles-table .row-label { font-weight: 700; color: #7a6a55; text-align: left; font-size: 0.74rem; }
+  .articles-table td.greek-cell { font-weight: 700; color: #1a1a1a; font-size: 1rem; }
+  .articles-tip { margin-top: 14px; padding: 10px 14px; background: rgba(255,255,255,0.5); border-left: 3px solid #d4a574; border-radius: 6px; font-size: 0.82rem; color: #5a4a35; line-height: 1.5; }
+  .articles-tip strong { color: #7b3fa0; }
+
   .alpha-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
   .alpha-mode-btn {
     padding: 8px 20px; border-radius: 99px; border: 1px solid #c8b8e0;
@@ -1832,6 +1850,43 @@
       </div>
       <div class="iphone-trainer-arrow">→</div>
     </a>
+
+    <!-- ARTICLES REFERENCE CARD -->
+    <div class="articles-card">
+      <h3>📐 Greek Articles — The "the" and "a" Paradigm</h3>
+      <p class="articles-card-subtitle">Articles change with gender (masc/fem/neut), number (sing/plural), AND case (nominative/accusative/genitive). Memorise this grid — it unlocks everything.</p>
+      <div class="articles-tables">
+        <div class="articles-block">
+          <h4>Definite ("the")</h4>
+          <table class="articles-table">
+            <thead><tr><th></th><th>Masc</th><th>Fem</th><th>Neut</th></tr></thead>
+            <tbody>
+              <tr><td class="row-label">Sing Nom</td><td class="greek-cell">ο</td><td class="greek-cell">η</td><td class="greek-cell">το</td></tr>
+              <tr><td class="row-label">Sing Acc</td><td class="greek-cell">τον</td><td class="greek-cell">την</td><td class="greek-cell">το</td></tr>
+              <tr><td class="row-label">Sing Gen</td><td class="greek-cell">του</td><td class="greek-cell">της</td><td class="greek-cell">του</td></tr>
+              <tr><td class="row-label">Plur Nom</td><td class="greek-cell">οι</td><td class="greek-cell">οι</td><td class="greek-cell">τα</td></tr>
+              <tr><td class="row-label">Plur Acc</td><td class="greek-cell">τους</td><td class="greek-cell">τις</td><td class="greek-cell">τα</td></tr>
+              <tr><td class="row-label">Plur Gen</td><td class="greek-cell">των</td><td class="greek-cell">των</td><td class="greek-cell">των</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="articles-block">
+          <h4>Indefinite ("a / an")</h4>
+          <table class="articles-table">
+            <thead><tr><th></th><th>Masc</th><th>Fem</th><th>Neut</th></tr></thead>
+            <tbody>
+              <tr><td class="row-label">Nom</td><td class="greek-cell">ένας</td><td class="greek-cell">μία</td><td class="greek-cell">ένα</td></tr>
+              <tr><td class="row-label">Acc</td><td class="greek-cell">έναν</td><td class="greek-cell">μία</td><td class="greek-cell">ένα</td></tr>
+              <tr><td class="row-label">Gen</td><td class="greek-cell">ενός</td><td class="greek-cell">μιας</td><td class="greek-cell">ενός</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:0.78rem;color:#7a6a55;margin-top:8px;font-style:italic;">No plural — Greek uses bare nouns or μερικά (some) instead.</p>
+        </div>
+      </div>
+      <div class="articles-tip">
+        <strong>Survival rules:</strong> (1) Match the article's gender to the noun. (2) Use Nominative for the subject — "<em>ο άντρας</em> έρχεται" (the man comes). (3) Use Accusative for the direct object — "βλέπω <em>τον άντρα</em>" (I see the man). (4) Use Genitive for "of / from / 's" — "το σπίτι <em>του άντρα</em>" (the man's house). (5) When in doubt, say it anyway — locals hear it, infer it, and reply.
+      </div>
+    </div>
 
     <div class="alpha-mode-bar">
       <button class="alpha-mode-btn active" onclick="setAlphaMode('reference',this)">📋 Reference Table</button>
