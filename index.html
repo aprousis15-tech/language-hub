@@ -2074,6 +2074,7 @@
     <div class="grammar-mode-bar">
       <button class="grammar-mode-btn active" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
     </div>
 
     <!-- Articles drill -->
@@ -2109,6 +2110,24 @@
       <div class="grammar-progress">
         <span id="verb-progress">Verb 1</span>
         <span class="grammar-score" id="verb-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Prepositions drill -->
+    <div id="grammar-preps" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="prep-prompt">…</div>
+        <div class="grammar-prompt-en" id="prep-en">…</div>
+        <div class="grammar-options" id="prep-options"></div>
+        <div class="grammar-feedback" id="prep-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn" onclick="gPrepNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gPrepShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="prep-progress">Question 1</span>
+        <span class="grammar-score" id="prep-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -3937,8 +3956,10 @@
     btn.classList.add('active');
     document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
     document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
+    document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
     if (mode === 'articles') initArticlesDrill();
     if (mode === 'verbs') initVerbsDrill();
+    if (mode === 'preps') initPrepsDrill();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -4135,6 +4156,90 @@
 
   function gVerbShuffle() {
     initVerbsDrill();
+  }
+
+  // Prepositions drill — Greek prepositions are mostly simple words but they
+  // collocate in non-obvious ways. Drill presents a sentence with a blank, English
+  // translation, and 4 candidate prepositions.
+  const PREP_QUESTIONS = [
+    { prompt: 'Πάω σινεμά ___ τον Γιάννη.', en: "I'm going to the cinema with John.", answer: 'με', options: ['με','για','από','προς'], hint: 'με = with (company / accompaniment)' },
+    { prompt: 'Ταξιδεύω ___ τρένο.', en: 'I travel by train.', answer: 'με', options: ['με','σε','από','για'], hint: 'με + means of transport = by (instrument)' },
+    { prompt: 'Σε αγαπώ ___ όλη μου την καρδιά.', en: 'I love you with all my heart.', answer: 'με', options: ['με','σε','από','για'], hint: 'με + abstract noun = with (manner)' },
+    { prompt: 'Αυτό το δώρο είναι ___ σένα.', en: 'This gift is for you.', answer: 'για', options: ['με','για','από','προς'], hint: 'για = for (recipient / benefit)' },
+    { prompt: 'Μιλάμε ___ το ταξίδι.', en: 'We are talking about the trip.', answer: 'για', options: ['με','για','από','σε'], hint: 'για = about (topic of speech / thought)' },
+    { prompt: 'Ψάχνω ___ ένα εστιατόριο.', en: "I'm looking for a restaurant.", answer: 'για', options: ['με','για','από','προς'], hint: 'για = for (seeking / purpose)' },
+    { prompt: 'Είμαι ___ την Ελλάδα.', en: 'I am from Greece.', answer: 'από', options: ['με','για','από','σε'], hint: 'από = from (origin / nationality)' },
+    { prompt: 'Κατέβηκα ___ το λεωφορείο.', en: 'I got off the bus.', answer: 'από', options: ['από','σε','με','προς'], hint: 'από = off / from (separation)' },
+    { prompt: 'Θα φάμε ___ τη δουλειά.', en: 'We will eat after work.', answer: 'μετά', options: ['πριν','μετά','κατά','μέχρι'], hint: 'μετά (από) = after (in time)' },
+    { prompt: 'Γύρισε ___ μία ώρα.', en: 'She came back after an hour.', answer: 'μετά', options: ['μετά','πριν','μέχρι','κατά'], hint: 'μετά από + time = after (a duration)' },
+    { prompt: 'Πλένω τα δόντια μου ___ τον ύπνο.', en: 'I brush my teeth before sleep.', answer: 'πριν', options: ['πριν','μετά','κατά','μέχρι'], hint: 'πριν (από) = before (in time)' },
+    { prompt: 'Καφές ___ ζάχαρη, παρακαλώ.', en: 'Coffee without sugar, please.', answer: 'χωρίς', options: ['χωρίς','με','για','αντί'], hint: 'χωρίς = without' },
+    { prompt: 'Έφυγε ___ να μιλήσει.', en: 'He left without speaking.', answer: 'χωρίς', options: ['χωρίς','με','για','πριν'], hint: 'χωρίς να + verb = without -ing' },
+    { prompt: 'Περιμένω ___ τις 10.', en: "I'll wait until 10.", answer: 'μέχρι', options: ['μέχρι','πριν','μετά','κατά'], hint: 'μέχρι = until / up to' },
+    { prompt: 'Πάω ___ το κέντρο.', en: "I'm heading toward the center.", answer: 'προς', options: ['προς','σε','από','μέχρι'], hint: 'προς = toward (direction, less specific than σε)' },
+    { prompt: 'Όλοι ήρθαν ___ από εμένα.', en: 'Everyone came except me.', answer: 'εκτός', options: ['εκτός','αντί','κατά','προς'], hint: 'εκτός από = except (for)' },
+    { prompt: 'Πίνω τσάι ___ για καφέ.', en: 'I drink tea instead of coffee.', answer: 'αντί', options: ['αντί','εκτός','για','με'], hint: 'αντί (για) = instead of' },
+    { prompt: 'Διάβαζα ___ τη διάρκεια του μαθήματος.', en: 'I was reading during the lesson.', answer: 'κατά', options: ['κατά','μετά','πριν','μέχρι'], hint: 'κατά τη διάρκεια = during (the duration of)' }
+  ];
+
+  let gPrepDeck = [], gPrepIndex = 0, gPrepCorrect = 0, gPrepTotal = 0, gPrepAnswered = false;
+
+  function initPrepsDrill() {
+    gPrepDeck = [...PREP_QUESTIONS].sort(() => Math.random() - 0.5);
+    gPrepIndex = 0;
+    gPrepCorrect = 0;
+    gPrepTotal = 0;
+    gPrepAnswered = false;
+    showPrepCard();
+  }
+
+  function showPrepCard() {
+    const q = gPrepDeck[gPrepIndex];
+    if (!q) return;
+    document.getElementById('prep-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    document.getElementById('prep-en').textContent = q.en;
+    const fb = document.getElementById('prep-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('prep-options');
+    optsHost.innerHTML = '';
+    const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+    shuffled.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gPrepAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('prep-progress').textContent = `Question ${gPrepIndex + 1} of ${gPrepDeck.length}`;
+    document.getElementById('prep-score').textContent = `Score: ${gPrepCorrect}/${gPrepTotal}`;
+    gPrepAnswered = false;
+  }
+
+  function gPrepAnswer(picked, btnEl, q) {
+    if (gPrepAnswered) return;
+    gPrepAnswered = true;
+    gPrepTotal++;
+    if (picked === q.answer) gPrepCorrect++;
+    document.querySelectorAll('#prep-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('prep-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('prep-feedback');
+    fb.textContent = '💡 ' + q.hint;
+    fb.classList.add('show');
+    document.getElementById('prep-score').textContent = `Score: ${gPrepCorrect}/${gPrepTotal}`;
+  }
+
+  function gPrepNext() {
+    gPrepIndex = (gPrepIndex + 1) % gPrepDeck.length;
+    showPrepCard();
+  }
+
+  function gPrepShuffle() {
+    initPrepsDrill();
   }
 </script>
 </body>
