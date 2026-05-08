@@ -1225,6 +1225,56 @@
   }
   .practice-tinybtn:hover { background: #fdeaf2; }
 
+  /* Flashcard mode */
+  .pflash-direction {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 14px;
+  }
+  .pflash-dir-btn {
+    padding: 5px 14px; font-size: 0.78rem;
+    border: 1px solid #e8b9d0; background: white; color: #ad1457;
+    border-radius: 99px; cursor: pointer; font-family: 'Lato', sans-serif;
+  }
+  .pflash-dir-btn.active { background: #ad1457; color: white; border-color: #ad1457; }
+  .pflash-card {
+    background: white; border: 2px solid #e8b9d0; border-radius: 14px;
+    padding: 36px 24px; margin: 0 auto 18px; max-width: 600px;
+    text-align: center; box-shadow: 0 4px 12px rgba(173,20,87,0.06);
+    cursor: pointer; min-height: 200px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; transition: transform 0.18s;
+    user-select: none;
+  }
+  .pflash-card:hover { transform: translateY(-2px); }
+  .pflash-front { font-family: 'Playfair Display', serif; font-size: 2rem; color: #1a1a1a; line-height: 1.3; }
+  .pflash-front-en { font-size: 1.5rem; }
+  .pflash-back { margin-top: 18px; padding-top: 18px; border-top: 1px dashed #e8b9d0; width: 80%; }
+  .pflash-back-greek { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #ad1457; margin-bottom: 6px; }
+  .pflash-back-en { font-size: 1rem; color: #1a1a1a; margin-bottom: 4px; }
+  .pflash-back-phonetic { font-size: 0.85rem; color: #7a4060; font-style: italic; margin-bottom: 10px; }
+  .pflash-back-intuition { font-size: 0.85rem; color: #6a4060; line-height: 1.5; padding: 10px; background: #fdeaf2; border-radius: 8px; margin-top: 10px; text-align: left; }
+  .pflash-tap-hint { font-size: 0.78rem; color: #b58aa0; margin-top: 14px; font-style: italic; }
+  .pflash-card-actions {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px;
+  }
+  .pflash-rate-btn {
+    padding: 9px 18px; border-radius: 99px; border: 2px solid;
+    background: white; font-size: 0.85rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .pflash-rate-hard { border-color: #c62828; color: #c62828; }
+  .pflash-rate-hard:hover { background: #fde8e8; }
+  .pflash-rate-good { border-color: #f57c00; color: #f57c00; }
+  .pflash-rate-good:hover { background: #fff3e0; }
+  .pflash-rate-easy { border-color: #2e7d32; color: #2e7d32; }
+  .pflash-rate-easy:hover { background: #d4f4dd; }
+  .pflash-mini-play {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 99px; border: 1px solid #ad1457;
+    background: white; color: #ad1457; font-size: 0.82rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; transition: all 0.15s; margin-top: 14px;
+  }
+  .pflash-mini-play:hover { background: #fdeaf2; }
+  .pflash-mini-play.playing { background: #ad1457; color: white; }
+
   /* ── GRAMMAR DRILL ── */
   .lang-tab.active-grammar { color: #4527a0; border-bottom-color: #4527a0; background: white; font-weight: 700; }
   .grammar-header { text-align: center; margin-bottom: 24px; }
@@ -2261,6 +2311,7 @@
     <div class="practice-mode-bar">
       <button class="practice-mode-btn active" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('type',this)">✍️ English → Greek (type)</button>
+      <button class="practice-mode-btn" onclick="setPracticeMode('flash',this)">🃏 Flashcard</button>
     </div>
 
     <!-- Listening drill -->
@@ -2285,6 +2336,40 @@
       <div class="practice-progress">
         <span id="listen-progress">Question 1</span>
         <span class="practice-score" id="listen-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Flashcard drill -->
+    <div id="practice-flash" style="display:none;">
+      <div class="pflash-direction">
+        <button class="pflash-dir-btn active" onclick="setFlashDir('gr2en',this)">Greek → English</button>
+        <button class="pflash-dir-btn" onclick="setFlashDir('en2gr',this)">English → Greek</button>
+      </div>
+      <div class="pflash-card" id="pflash-card" onclick="flashFlip()">
+        <div class="pflash-front" id="pflash-front">…</div>
+        <div class="pflash-back" id="pflash-back" style="display:none;">
+          <div class="pflash-back-greek" id="pflash-back-greek"></div>
+          <div class="pflash-back-en" id="pflash-back-en"></div>
+          <div class="pflash-back-phonetic" id="pflash-back-phonetic"></div>
+          <div class="pflash-back-intuition" id="pflash-back-intuition" style="display:none;"></div>
+        </div>
+        <div class="pflash-tap-hint" id="pflash-tap-hint">tap to flip</div>
+      </div>
+      <div style="text-align:center;">
+        <button class="pflash-mini-play" id="pflash-play" onclick="event.stopPropagation();playFlashAudio()">🔊 Play Greek</button>
+      </div>
+      <div class="pflash-card-actions" id="pflash-rate" style="display:none;">
+        <button class="pflash-rate-btn pflash-rate-hard" onclick="flashRate('hard')">😕 Hard — show again soon</button>
+        <button class="pflash-rate-btn pflash-rate-good" onclick="flashRate('good')">👍 Got it</button>
+        <button class="pflash-rate-btn pflash-rate-easy" onclick="flashRate('easy')">✨ Easy</button>
+      </div>
+      <div class="practice-controls">
+        <button class="practice-btn practice-btn-secondary" onclick="flashSkip()">Skip →</button>
+        <button class="practice-btn practice-btn-secondary" onclick="initFlashDrill()">🔀 Shuffle</button>
+      </div>
+      <div class="practice-progress">
+        <span id="pflash-progress">Card 1</span>
+        <span class="practice-score" id="pflash-score">Reviewed: 0</span>
       </div>
     </div>
 
@@ -4598,8 +4683,10 @@
     btn.classList.add('active');
     document.getElementById('practice-listen').style.display = mode === 'listen' ? '' : 'none';
     document.getElementById('practice-type').style.display = mode === 'type' ? '' : 'none';
+    document.getElementById('practice-flash').style.display = mode === 'flash' ? '' : 'none';
     if (mode === 'listen') initListenDrill();
     if (mode === 'type') initTypeDrill();
+    if (mode === 'flash') initFlashDrill();
   }
 
   // Top-level entry — called from switchLang on tab open
@@ -4909,6 +4996,110 @@
 
   function gTypeShuffle() {
     initTypeDrill();
+  }
+
+  // ── Flashcard mode ──
+  // Greek ↔ English flip card with self-rated difficulty. "Hard" cards re-enter
+  // the deck a few positions ahead (in-session only — no DB writes).
+  let gFlashDeck = [], gFlashIndex = 0, gFlashFlipped = false, gFlashDir = 'gr2en', gFlashReviewed = 0;
+
+  function setFlashDir(dir, btn) {
+    document.querySelectorAll('.pflash-dir-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    gFlashDir = dir;
+    showFlashCard();
+  }
+
+  function initFlashDrill() {
+    if (!gPracticeVocab || gPracticeVocab.length === 0) {
+      ensurePracticeVocab().then(() => initFlashDrill());
+      return;
+    }
+    // Skip very long phrases (poor flashcard fit), keep everything else
+    gFlashDeck = gPracticeVocab.filter(v => v.word && v.word.length <= 35).sort(() => Math.random() - 0.5);
+    gFlashIndex = 0;
+    gFlashReviewed = 0;
+    gFlashFlipped = false;
+    showFlashCard();
+  }
+
+  function showFlashCard() {
+    const v = gFlashDeck[gFlashIndex];
+    if (!v) return;
+    gFlashFlipped = false;
+    document.getElementById('pflash-back').style.display = 'none';
+    document.getElementById('pflash-rate').style.display = 'none';
+    document.getElementById('pflash-tap-hint').style.display = '';
+    const front = document.getElementById('pflash-front');
+    if (gFlashDir === 'gr2en') {
+      front.textContent = v.word;
+      front.classList.remove('pflash-front-en');
+    } else {
+      front.textContent = v.translation;
+      front.classList.add('pflash-front-en');
+    }
+    document.getElementById('pflash-progress').textContent = `Card ${gFlashIndex + 1} of ${gFlashDeck.length}`;
+    document.getElementById('pflash-score').textContent = `Reviewed: ${gFlashReviewed}`;
+  }
+
+  function flashFlip() {
+    if (gFlashFlipped) return;
+    const v = gFlashDeck[gFlashIndex];
+    if (!v) return;
+    gFlashFlipped = true;
+    document.getElementById('pflash-back-greek').textContent = v.word;
+    document.getElementById('pflash-back-en').textContent = v.translation;
+    document.getElementById('pflash-back-phonetic').textContent = v.phonetic ? '[' + v.phonetic + ']' : '';
+    const intEl = document.getElementById('pflash-back-intuition');
+    if (v.intuition) {
+      intEl.innerHTML = '💡 ' + v.intuition;
+      intEl.style.display = '';
+    } else {
+      intEl.style.display = 'none';
+    }
+    document.getElementById('pflash-back').style.display = '';
+    document.getElementById('pflash-rate').style.display = '';
+    document.getElementById('pflash-tap-hint').style.display = 'none';
+  }
+
+  function flashRate(rating) {
+    if (!gFlashFlipped) return;
+    const v = gFlashDeck[gFlashIndex];
+    gFlashReviewed++;
+    // In-session weighting: hard re-inserts 3 positions ahead, good 8, easy doesn't re-insert
+    if (rating === 'hard') {
+      const insertAt = Math.min(gFlashIndex + 3, gFlashDeck.length);
+      gFlashDeck.splice(insertAt, 0, v);
+    } else if (rating === 'good') {
+      const insertAt = Math.min(gFlashIndex + 8, gFlashDeck.length);
+      gFlashDeck.splice(insertAt, 0, v);
+    }
+    flashSkip();
+  }
+
+  function flashSkip() {
+    gFlashIndex = (gFlashIndex + 1) % gFlashDeck.length;
+    showFlashCard();
+  }
+
+  function playFlashAudio() {
+    const v = gFlashDeck[gFlashIndex];
+    if (!v) return;
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    ensureGreekVoice(voice => {
+      if (!voice) return;
+      const u = new SpeechSynthesisUtterance(v.word);
+      u.voice = voice;
+      u.lang = voice.lang || 'el-GR';
+      u.rate = 0.92;
+      const btn = document.getElementById('pflash-play');
+      btn.classList.add('playing');
+      u.onend = () => btn.classList.remove('playing');
+      u.onerror = () => btn.classList.remove('playing');
+      synth.speak(u);
+    });
   }
 </script>
 </body>
