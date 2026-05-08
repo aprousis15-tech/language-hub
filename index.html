@@ -1129,6 +1129,71 @@
   .fluency-chart-empty { text-align: center; color: #9a8a75; font-style: italic; padding: 60px 20px; }
   .sessions-empty { text-align: center; padding: 30px; color: #9a8a75; font-style: italic; font-size: 0.88rem; }
 
+  /* ── GRAMMAR DRILL ── */
+  .lang-tab.active-grammar { color: #4527a0; border-bottom-color: #4527a0; background: white; font-weight: 700; }
+  .grammar-header { text-align: center; margin-bottom: 24px; }
+  .grammar-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #4527a0; margin-bottom: 6px; }
+  .grammar-header p { font-size: 0.85rem; color: #6a5a80; }
+  .grammar-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
+  .grammar-mode-btn {
+    padding: 8px 20px; border-radius: 99px; border: 1px solid #c5b9e8;
+    background: white; font-size: 0.82rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; color: #4527a0; transition: all 0.15s;
+  }
+  .grammar-mode-btn:hover { background: #ede7f6; }
+  .grammar-mode-btn.active { background: #4527a0; color: white; border-color: #4527a0; }
+  .grammar-card {
+    background: white; border: 2px solid #c5b9e8; border-radius: 14px;
+    padding: 32px 24px; margin: 0 auto 18px; max-width: 600px;
+    text-align: center; box-shadow: 0 4px 12px rgba(69,39,160,0.06);
+  }
+  .grammar-prompt-greek {
+    font-family: 'Playfair Display', serif; font-size: 1.45rem; color: #1a1a1a;
+    margin-bottom: 6px; line-height: 1.45;
+  }
+  .grammar-prompt-blank {
+    display: inline-block; border-bottom: 3px solid #4527a0;
+    min-width: 60px; padding: 0 6px; color: #4527a0; font-weight: 700;
+  }
+  .grammar-prompt-en {
+    font-size: 0.88rem; color: #6a5a80; font-style: italic; margin-bottom: 22px;
+  }
+  .grammar-options {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px;
+  }
+  .grammar-option {
+    padding: 12px 22px; font-size: 1.25rem; font-family: 'Playfair Display', serif;
+    border: 2px solid #c5b9e8; background: white; color: #4527a0;
+    border-radius: 10px; cursor: pointer; min-width: 76px; transition: all 0.18s;
+  }
+  .grammar-option:hover:not(.disabled) { background: #ede7f6; border-color: #4527a0; }
+  .grammar-option.correct { background: #d4f4dd; border-color: #2e7d32; color: #1b5e20; }
+  .grammar-option.wrong { background: #fde8e8; border-color: #c62828; color: #b71c1c; }
+  .grammar-option.disabled { cursor: default; }
+  .grammar-feedback { font-size: 0.9rem; color: #6a5a80; margin: 14px auto 0; min-height: 22px; max-width: 480px; }
+  .grammar-feedback.show {
+    background: #f3edfa; border-left: 3px solid #4527a0;
+    padding: 10px 14px; border-radius: 0 8px 8px 0;
+    text-align: left; margin: 14px auto 4px;
+  }
+  .grammar-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .grammar-btn {
+    padding: 9px 22px; border-radius: 99px; border: 1px solid #4527a0;
+    background: #4527a0; color: white; font-size: 0.85rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .grammar-btn:hover { background: #311b92; }
+  .grammar-btn-secondary { background: white; color: #4527a0; }
+  .grammar-btn-secondary:hover { background: #ede7f6; }
+  .grammar-progress {
+    text-align: center; font-size: 0.82rem; color: #6a5a80; margin-top: 14px;
+  }
+  .grammar-score {
+    display: inline-block; background: #ede7f6; border: 1px solid #c5b9e8;
+    padding: 3px 12px; border-radius: 99px; color: #4527a0;
+    font-weight: 700; margin-left: 10px;
+  }
+
 </style>
 </head>
 <body>
@@ -1146,6 +1211,7 @@
   <button class="lang-tab" onclick="switchLang('vocab')">📓 My Vocab</button>
   <button class="lang-tab" onclick="switchLang('dad')">👨 Practice w/ Dad</button>
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
+  <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -1997,6 +2063,39 @@
   </div>
 </div>
 
+<div class="lang-panel" id="panel-grammar">
+  <div class="container">
+
+    <div class="grammar-header">
+      <h2>🧠 Greek Grammar Drill</h2>
+      <p>Targeted mini-trainers for the trickiest patterns: articles, verb endings, prepositions, and adjective agreement.</p>
+    </div>
+
+    <div class="grammar-mode-bar">
+      <button class="grammar-mode-btn active" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
+    </div>
+
+    <!-- Articles drill -->
+    <div id="grammar-articles">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="art-prompt">…</div>
+        <div class="grammar-prompt-en" id="art-en">…</div>
+        <div class="grammar-options" id="art-options"></div>
+        <div class="grammar-feedback" id="art-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn" onclick="gArtNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gArtShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="art-progress">Question 1 of 15</span>
+        <span class="grammar-score" id="art-score">Score: 0/0</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
@@ -2524,14 +2623,15 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-translate','active-notes','active-sessions'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-translate','active-notes','active-sessions'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, translate:5, notes:6, sessions:7};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, translate:6, notes:7, sessions:8};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
+    if (lang === 'grammar') { initArticlesDrill(); }
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
@@ -3810,6 +3910,112 @@
     flushPendingSessions();
   } else {
     document.addEventListener('supabase-ready', flushPendingSessions, { once: true });
+  }
+
+  // ── GRAMMAR DRILL ──
+  function setGrammarMode(mode, btn) {
+    document.querySelectorAll('.grammar-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
+    if (mode === 'articles') initArticlesDrill();
+  }
+
+  // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
+  // Singular nom uses ο/η/το; sing acc uses τον/την/το; σε+sing-acc fuses to στον/στην/στο.
+  // Plural nom: οι/οι/τα; plural acc: τους/τις/τα; σε+plur-acc: στους/στις/στα.
+  const ART_QUESTIONS = [
+    // Singular nominative (subject position)
+    { prompt: '___ καιρός είναι ωραίος.', en: 'The weather is nice.', answer: 'Ο', options: ['Ο','Η','Το'], hint: 'καιρός is masc sing → nominative article = ο (capitalised at sentence start)' },
+    { prompt: '___ μέρα είναι μεγάλη.', en: 'The day is long.', answer: 'Η', options: ['Ο','Η','Το'], hint: 'μέρα is fem sing → nominative article = η' },
+    { prompt: '___ παιδί κοιμάται.', en: 'The child is sleeping.', answer: 'Το', options: ['Ο','Η','Το'], hint: 'παιδί is neut sing → nominative article = το' },
+    { prompt: '___ άντρας είναι ψηλός.', en: 'The man is tall.', answer: 'Ο', options: ['Ο','Η','Το'], hint: 'άντρας is masc sing → ο' },
+    { prompt: '___ θάλασσα είναι κρύα.', en: 'The sea is cold.', answer: 'Η', options: ['Ο','Η','Το'], hint: 'θάλασσα is fem sing → η' },
+
+    // Singular accusative (object position)
+    { prompt: 'Βλέπω ___ φίλο μου.', en: 'I see my friend.', answer: 'τον', options: ['τον','την','το'], hint: 'masc sing accusative = τον (note the ν before vowel/φ/τ etc.)' },
+    { prompt: 'Αγαπάω ___ μητέρα μου.', en: 'I love my mother.', answer: 'την', options: ['τον','την','το'], hint: 'fem sing accusative = την' },
+    { prompt: 'Έχω ___ βιβλίο.', en: 'I have the book.', answer: 'το', options: ['τον','την','το'], hint: 'neut sing accusative = το (same as nominative for neuter)' },
+    { prompt: 'Ξέρω ___ άντρα της.', en: 'I know her husband.', answer: 'τον', options: ['τον','την','το'], hint: 'άντρα is masc sing acc → τον' },
+    { prompt: 'Πίνω ___ μπύρα.', en: 'I drink the beer.', answer: 'την', options: ['τον','την','το'], hint: 'μπύρα is fem sing acc → την' },
+
+    // σε + accusative → στον/στην/στο fusion (singular)
+    { prompt: 'Πάω ___ σινεμά.', en: "I'm going to the cinema.", answer: 'στο', options: ['στον','στην','στο'], hint: 'σινεμά is neut → σε + το = στο' },
+    { prompt: 'Δουλεύω ___ τράπεζα.', en: 'I work at the bank.', answer: 'στην', options: ['στον','στην','στο'], hint: 'τράπεζα is fem → σε + την = στην' },
+    { prompt: 'Μένω ___ Πειραιά.', en: 'I live in Piraeus.', answer: 'στον', options: ['στον','στην','στο'], hint: 'Πειραιάς is masc → σε + τον = στον' },
+    { prompt: 'Τρώμε ___ εστιατόριο.', en: 'We are eating at the restaurant.', answer: 'στο', options: ['στον','στην','στο'], hint: 'εστιατόριο is neut → στο' },
+    { prompt: 'Πάω ___ δουλειά.', en: "I'm going to work.", answer: 'στη', options: ['στο','στη','στον'], hint: 'δουλειά is fem; before consonant στην often drops the ν → στη δουλειά' },
+
+    // Plural accusative
+    { prompt: 'Βλέπω ___ φίλους μου.', en: 'I see my friends.', answer: 'τους', options: ['τους','τις','τα'], hint: 'masc plur accusative = τους' },
+    { prompt: 'Αγαπάω ___ αδελφές μου.', en: 'I love my sisters.', answer: 'τις', options: ['τους','τις','τα'], hint: 'fem plur accusative = τις' },
+    { prompt: 'Διαβάζω ___ βιβλία.', en: 'I am reading the books.', answer: 'τα', options: ['τους','τις','τα'], hint: 'neut plur accusative = τα (same as nominative for neuter plural)' },
+
+    // σε + plural accusative → στους/στις/στα fusion
+    { prompt: 'Πάω ___ φίλους μου.', en: "I'm going to my friends'.", answer: 'στους', options: ['στους','στις','στα'], hint: 'masc plur → σε + τους = στους' },
+    { prompt: 'Πάω ___ αγορές.', en: "I'm going shopping (to the markets).", answer: 'στις', options: ['στους','στις','στα'], hint: 'fem plur → σε + τις = στις' },
+    { prompt: 'Πάω ___ μαγαζιά.', en: "I'm going to the shops.", answer: 'στα', options: ['στους','στις','στα'], hint: 'neut plur → σε + τα = στα' }
+  ];
+
+  let gArtDeck = [], gArtIndex = 0, gArtCorrect = 0, gArtTotal = 0, gArtAnswered = false;
+
+  function initArticlesDrill() {
+    gArtDeck = [...ART_QUESTIONS].sort(() => Math.random() - 0.5);
+    gArtIndex = 0;
+    gArtCorrect = 0;
+    gArtTotal = 0;
+    gArtAnswered = false;
+    showArtCard();
+  }
+
+  function showArtCard() {
+    const q = gArtDeck[gArtIndex];
+    if (!q) return;
+    const promptEl = document.getElementById('art-prompt');
+    promptEl.innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    document.getElementById('art-en').textContent = q.en;
+    const fb = document.getElementById('art-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('art-options');
+    optsHost.innerHTML = '';
+    q.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gArtAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('art-progress').textContent = `Question ${gArtIndex + 1} of ${gArtDeck.length}`;
+    document.getElementById('art-score').textContent = `Score: ${gArtCorrect}/${gArtTotal}`;
+    gArtAnswered = false;
+  }
+
+  function gArtAnswer(picked, btnEl, q) {
+    if (gArtAnswered) return;
+    gArtAnswered = true;
+    gArtTotal++;
+    if (picked === q.answer) gArtCorrect++;
+    const allBtns = document.querySelectorAll('#art-options .grammar-option');
+    allBtns.forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    const promptEl = document.getElementById('art-prompt');
+    promptEl.innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('art-feedback');
+    fb.textContent = '💡 ' + q.hint;
+    fb.classList.add('show');
+    document.getElementById('art-score').textContent = `Score: ${gArtCorrect}/${gArtTotal}`;
+  }
+
+  function gArtNext() {
+    gArtIndex = (gArtIndex + 1) % gArtDeck.length;
+    showArtCard();
+  }
+
+  function gArtShuffle() {
+    initArticlesDrill();
   }
 </script>
 </body>
