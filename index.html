@@ -1134,6 +1134,26 @@
   .practice-header { text-align: center; margin-bottom: 24px; }
   .practice-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #ad1457; margin-bottom: 6px; }
   .practice-header p { font-size: 0.85rem; color: #7a4060; }
+  .practice-topic-bar {
+    display: flex; gap: 8px; margin: 0 auto 14px; flex-wrap: wrap;
+    justify-content: center; max-width: 700px;
+  }
+  .practice-topic-chip {
+    padding: 6px 14px; border-radius: 99px; border: 1px solid #e8b9d0;
+    background: white; font-size: 0.78rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; color: #ad1457; transition: all 0.15s;
+  }
+  .practice-topic-chip:hover { background: #fdeaf2; }
+  .practice-topic-chip.active { background: #ad1457; color: white; border-color: #ad1457; }
+  .practice-topic-label {
+    text-align: center; font-size: 0.75rem; color: #7a4060;
+    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .practice-topic-warning {
+    text-align: center; font-size: 0.85rem; color: #b58aa0;
+    background: #fdeaf2; border-radius: 8px; padding: 10px 14px;
+    max-width: 480px; margin: 0 auto 14px;
+  }
   .practice-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
   .practice-mode-btn {
     padding: 8px 20px; border-radius: 99px; border: 1px solid #e8b9d0;
@@ -2311,6 +2331,15 @@
       <h2>🎧 Audio &amp; Production Practice</h2>
       <p>Train your ear (hear Greek, pick the meaning) and your recall (see English, type Greek).</p>
     </div>
+
+    <div class="practice-topic-label">Filter by topic</div>
+    <div class="practice-topic-bar">
+      <button class="practice-topic-chip active" onclick="setPracticeTopic('all',this)">🌐 All</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('iphone',this)">📱 iPhone</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('messages',this)">💬 Messages</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('spotify',this)">🎵 Spotify</button>
+    </div>
+    <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
     <div class="practice-mode-bar">
       <button class="practice-mode-btn active" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
@@ -4668,6 +4697,62 @@
   let gPracticeVocabLoaded = false;
   let gGreekVoice = null;
   let gVoicesProbed = false;
+  let gPracticeTopicKey = 'all';
+
+  // Subset filters — Messages and Spotify words live inside the iPhone topic
+  // but are commonly used in those specific apps. Filter by English translation
+  // since topics aren't subdivided in the DB.
+  const PRACTICE_MESSAGES_TRANSLATIONS = new Set([
+    'New Message','Messages','Delivered','Read','Delete Conversation',
+    'Report Junk','To:','Contact','Contacts','Mute / Hide Alerts','typing…',
+    'Reply','Forward','Attach','Send','Edit','Copy','Paste','Cancel','Done',
+    'OK','Search','Sounds','Notifications','Camera','Photo','Photos',
+    'Save','Delete','Confirm','Are you sure?','Try again','Allow',"Don't Allow"
+  ]);
+  const PRACTICE_SPOTIFY_TRANSLATIONS = new Set([
+    'Music','Play','Pause','Repeat','Shuffle','Playlist','Your Library',
+    'Add to Library','Artist','Album','Song / Track','Podcast','Next','Previous',
+    'Search','Home','Download','Save','Done','Cancel','Sign out / Exit'
+  ]);
+
+  function getPracticeTopicFilter() {
+    switch (gPracticeTopicKey) {
+      case 'iphone':   return v => v.topic === 'iPhone';
+      case 'messages': return v => v.topic === 'iPhone' && PRACTICE_MESSAGES_TRANSLATIONS.has(v.translation);
+      case 'spotify':  return v => v.topic === 'iPhone' && PRACTICE_SPOTIFY_TRANSLATIONS.has(v.translation);
+      case 'all':
+      default:         return v => true;
+    }
+  }
+
+  function getFilteredPracticeVocab() {
+    return (gPracticeVocab || []).filter(getPracticeTopicFilter());
+  }
+
+  function setPracticeTopic(key, btn) {
+    gPracticeTopicKey = key;
+    document.querySelectorAll('.practice-topic-chip').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    // Show warning if the filtered deck is small
+    const filtered = getFilteredPracticeVocab();
+    const warn = document.getElementById('practice-topic-warning');
+    if (filtered.length === 0) {
+      warn.textContent = 'No entries match this topic. Pick another.';
+      warn.style.display = '';
+    } else if (filtered.length < 5) {
+      warn.textContent = `Only ${filtered.length} entries match — small deck, will repeat quickly.`;
+      warn.style.display = '';
+    } else {
+      warn.style.display = 'none';
+    }
+    // Re-init whichever drill is currently visible
+    const listenVisible = document.getElementById('practice-listen').style.display !== 'none';
+    const typeVisible = document.getElementById('practice-type').style.display !== 'none';
+    const flashVisible = document.getElementById('practice-flash').style.display !== 'none';
+    if (listenVisible) initListenDrill();
+    else if (typeVisible) initTypeDrill();
+    else if (flashVisible) initFlashDrill();
+  }
 
   async function ensurePracticeVocab() {
     if (gPracticeVocabLoaded) return gPracticeVocab;
@@ -4753,7 +4838,7 @@
         }
       });
     }
-    gListenDeck = [...gPracticeVocab].sort(() => Math.random() - 0.5);
+    gListenDeck = getFilteredPracticeVocab().sort(() => Math.random() - 0.5);
     gListenIndex = 0;
     gListenCorrect = 0;
     gListenTotal = 0;
@@ -4917,8 +5002,8 @@
       ensurePracticeVocab().then(() => initTypeDrill());
       return;
     }
-    // Filter: skip phrases (too long to type) and very long entries
-    const filtered = gPracticeVocab.filter(v =>
+    // Filter: apply topic filter, then skip phrases (too long to type) and very long entries
+    const filtered = getFilteredPracticeVocab().filter(v =>
       v.part_of_speech !== 'phrase' &&
       v.word && v.word.length <= 30
     );
@@ -5060,8 +5145,8 @@
       ensurePracticeVocab().then(() => initFlashDrill());
       return;
     }
-    // Skip very long phrases (poor flashcard fit), keep everything else
-    gFlashDeck = gPracticeVocab.filter(v => v.word && v.word.length <= 35).sort(() => Math.random() - 0.5);
+    // Apply topic filter, then skip very long phrases (poor flashcard fit)
+    gFlashDeck = getFilteredPracticeVocab().filter(v => v.word && v.word.length <= 35).sort(() => Math.random() - 0.5);
     gFlashIndex = 0;
     gFlashReviewed = 0;
     gFlashFlipped = false;
