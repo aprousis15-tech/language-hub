@@ -2075,6 +2075,7 @@
       <button class="grammar-mode-btn active" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
     </div>
 
     <!-- Articles drill -->
@@ -2128,6 +2129,24 @@
       <div class="grammar-progress">
         <span id="prep-progress">Question 1</span>
         <span class="grammar-score" id="prep-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Adjective gender agreement drill -->
+    <div id="grammar-adj" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="adj-prompt">…</div>
+        <div class="grammar-prompt-en" id="adj-en">…</div>
+        <div class="grammar-options" id="adj-options"></div>
+        <div class="grammar-feedback" id="adj-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn" onclick="gAdjNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gAdjShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="adj-progress">Question 1</span>
+        <span class="grammar-score" id="adj-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -3957,9 +3976,11 @@
     document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
     document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
     document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
+    document.getElementById('grammar-adj').style.display = mode === 'adj' ? '' : 'none';
     if (mode === 'articles') initArticlesDrill();
     if (mode === 'verbs') initVerbsDrill();
     if (mode === 'preps') initPrepsDrill();
+    if (mode === 'adj') initAdjDrill();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -4240,6 +4261,120 @@
 
   function gPrepShuffle() {
     initPrepsDrill();
+  }
+
+  // Adjective gender agreement drill — pick a random adjective triple + a random
+  // gendered noun, ask which form matches. Note: adjectives whose stem ends in
+  // a vowel (ωραίος, νέος, παλιός, κρύος) take -α (not -η) for the feminine.
+  const ADJ_TRIPLES = [
+    { en: 'good',      m: 'καλός',     f: 'καλή',     n: 'καλό' },
+    { en: 'bad',       m: 'κακός',     f: 'κακή',     n: 'κακό' },
+    { en: 'big',       m: 'μεγάλος',   f: 'μεγάλη',   n: 'μεγάλο' },
+    { en: 'small',     m: 'μικρός',    f: 'μικρή',    n: 'μικρό' },
+    { en: 'nice',      m: 'ωραίος',    f: 'ωραία',    n: 'ωραίο',  note: 'fem ends in -α (not -η) because stem ends in vowel ε/ι' },
+    { en: 'new/young', m: 'νέος',      f: 'νέα',      n: 'νέο',    note: 'fem -α (vowel-stem rule)' },
+    { en: 'old',       m: 'παλιός',    f: 'παλιά',    n: 'παλιό',  note: 'fem -ά (vowel-stem rule)' },
+    { en: 'beautiful', m: 'όμορφος',   f: 'όμορφη',   n: 'όμορφο' },
+    { en: 'ugly',      m: 'άσχημος',   f: 'άσχημη',   n: 'άσχημο' },
+    { en: 'hot',       m: 'ζεστός',    f: 'ζεστή',    n: 'ζεστό' },
+    { en: 'cold',      m: 'κρύος',     f: 'κρύα',     n: 'κρύο',   note: 'fem -α (vowel-stem rule)' },
+    { en: 'tasty',     m: 'νόστιμος',  f: 'νόστιμη',  n: 'νόστιμο' },
+    { en: 'expensive', m: 'ακριβός',   f: 'ακριβή',   n: 'ακριβό' },
+    { en: 'cheap',     m: 'φτηνός',    f: 'φτηνή',    n: 'φτηνό' },
+    { en: 'easy',      m: 'εύκολος',   f: 'εύκολη',   n: 'εύκολο' },
+    { en: 'difficult', m: 'δύσκολος',  f: 'δύσκολη',  n: 'δύσκολο' }
+  ];
+  const ADJ_NOUNS = [
+    { gender: 'm', word: 'Ο καιρός',     en: 'The weather' },
+    { gender: 'm', word: 'Ο καφές',      en: 'The coffee' },
+    { gender: 'm', word: 'Ο φίλος μου',  en: 'My friend' },
+    { gender: 'm', word: 'Ο άντρας',     en: 'The man' },
+    { gender: 'm', word: 'Ο δρόμος',     en: 'The road' },
+    { gender: 'f', word: 'Η μέρα',       en: 'The day' },
+    { gender: 'f', word: 'Η νύχτα',      en: 'The night' },
+    { gender: 'f', word: 'Η μουσική',    en: 'The music' },
+    { gender: 'f', word: 'Η ταινία',     en: 'The movie' },
+    { gender: 'f', word: 'Η αδερφή μου', en: 'My sister' },
+    { gender: 'n', word: 'Το παιδί',     en: 'The child' },
+    { gender: 'n', word: 'Το βιβλίο',    en: 'The book' },
+    { gender: 'n', word: 'Το φαγητό',    en: 'The food' },
+    { gender: 'n', word: 'Το νερό',      en: 'The water' },
+    { gender: 'n', word: 'Το ξενοδοχείο',en: 'The hotel' }
+  ];
+  const GENDER_LABEL = { m: 'masculine', f: 'feminine', n: 'neuter' };
+
+  let gAdjQ = null, gAdjCorrect = 0, gAdjTotal = 0, gAdjAnswered = false, gAdjCount = 0;
+
+  function buildAdjQuestion() {
+    const adj = ADJ_TRIPLES[Math.floor(Math.random() * ADJ_TRIPLES.length)];
+    const noun = ADJ_NOUNS[Math.floor(Math.random() * ADJ_NOUNS.length)];
+    return { adj, noun, answer: adj[noun.gender] };
+  }
+
+  function initAdjDrill() {
+    gAdjCorrect = 0;
+    gAdjTotal = 0;
+    gAdjCount = 0;
+    gAdjAnswered = false;
+    gAdjQ = buildAdjQuestion();
+    showAdjCard();
+  }
+
+  function showAdjCard() {
+    if (!gAdjQ) gAdjQ = buildAdjQuestion();
+    gAdjCount++;
+    const q = gAdjQ;
+    document.getElementById('adj-prompt').innerHTML =
+      `${q.noun.word} είναι <span class="grammar-prompt-blank">___</span>`;
+    document.getElementById('adj-en').textContent = `${q.noun.en} is ${q.adj.en}.`;
+    const fb = document.getElementById('adj-feedback');
+    fb.innerHTML = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('adj-options');
+    optsHost.innerHTML = '';
+    const formsShuffled = ['m','f','n'].sort(() => Math.random() - 0.5);
+    formsShuffled.forEach(g => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = q.adj[g];
+      b.dataset.gender = g;
+      b.onclick = () => gAdjAnswer(g, b);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('adj-progress').textContent = `Question ${gAdjCount}`;
+    document.getElementById('adj-score').textContent = `Score: ${gAdjCorrect}/${gAdjTotal}`;
+    gAdjAnswered = false;
+  }
+
+  function gAdjAnswer(pickedGender, btnEl) {
+    if (gAdjAnswered) return;
+    gAdjAnswered = true;
+    gAdjTotal++;
+    const q = gAdjQ;
+    if (pickedGender === q.noun.gender) gAdjCorrect++;
+    document.querySelectorAll('#adj-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.gender === q.noun.gender) b.classList.add('correct');
+      else if (b === btnEl && pickedGender !== q.noun.gender) b.classList.add('wrong');
+    });
+    document.getElementById('adj-prompt').innerHTML =
+      `${q.noun.word} είναι <span class="grammar-prompt-blank">${q.answer}</span>`;
+    const noteHtml = q.adj.note ? `<div style="margin-top:8px;font-size:0.85rem;color:#7a6a55;font-style:italic;">⚠️ ${q.adj.note}</div>` : '';
+    document.getElementById('adj-feedback').innerHTML =
+      `<div style="font-weight:700;margin-bottom:6px;">💡 <em>${q.noun.word}</em> is <strong>${GENDER_LABEL[q.noun.gender]}</strong> — pick the matching ending.</div>` +
+      `<div style="font-size:0.9rem;">All three forms: <strong>${q.adj.m}</strong> (m) · <strong>${q.adj.f}</strong> (f) · <strong>${q.adj.n}</strong> (n)</div>` +
+      noteHtml;
+    document.getElementById('adj-feedback').classList.add('show');
+    document.getElementById('adj-score').textContent = `Score: ${gAdjCorrect}/${gAdjTotal}`;
+  }
+
+  function gAdjNext() {
+    gAdjQ = buildAdjQuestion();
+    showAdjCard();
+  }
+
+  function gAdjShuffle() {
+    initAdjDrill();
   }
 </script>
 </body>
