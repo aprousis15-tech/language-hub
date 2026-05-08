@@ -1295,6 +1295,82 @@
   .pflash-mini-play:hover { background: #fdeaf2; }
   .pflash-mini-play.playing { background: #ad1457; color: white; }
 
+  /* Audio Lesson mode (hands-free Pimsleur style) */
+  .lesson-settings {
+    background: white; border: 1px solid #e8b9d0; border-radius: 12px;
+    padding: 14px 18px; margin: 0 auto 16px; max-width: 600px;
+  }
+  .lesson-setting-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; flex-wrap: wrap; padding: 6px 0;
+    font-size: 0.88rem; color: #6a4060;
+  }
+  .lesson-setting-row + .lesson-setting-row { border-top: 1px dashed #f0d3e0; }
+  .lesson-setting-row strong { color: #1a1a1a; font-weight: 600; }
+  .lesson-pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .lesson-pill {
+    padding: 5px 14px; font-size: 0.78rem; border: 1px solid #e8b9d0;
+    background: white; color: #ad1457; border-radius: 99px; cursor: pointer;
+    font-family: 'Lato', sans-serif;
+  }
+  .lesson-pill.active { background: #ad1457; color: white; border-color: #ad1457; }
+  .lesson-bigplay-wrap { text-align: center; margin: 24px 0 16px; }
+  .lesson-bigplay {
+    width: 96px; height: 96px; border-radius: 50%; border: none;
+    background: #ad1457; color: white; font-size: 2.6rem; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(173,20,87,0.25);
+    transition: all 0.18s; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .lesson-bigplay:hover { background: #880e4f; transform: scale(1.04); }
+  .lesson-bigplay:disabled { background: #c5b9c2; cursor: not-allowed; box-shadow: none; transform: none; }
+  .lesson-now-playing {
+    background: white; border: 2px solid #e8b9d0; border-radius: 14px;
+    padding: 24px 18px; margin: 0 auto 16px; max-width: 600px;
+    text-align: center; min-height: 130px;
+  }
+  .lesson-now-en { font-size: 0.9rem; color: #7a4060; margin-bottom: 8px; min-height: 22px; }
+  .lesson-now-gr { font-family: 'Playfair Display', serif; font-size: 2rem; color: #1a1a1a; line-height: 1.3; min-height: 42px; }
+  .lesson-now-phon { font-size: 0.9rem; color: #7a4060; font-style: italic; margin-top: 6px; min-height: 20px; }
+  .lesson-stage-indicator {
+    display: inline-block; padding: 3px 10px; font-size: 0.72rem;
+    background: #fdeaf2; color: #ad1457; border-radius: 99px;
+    margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .lesson-progress-track {
+    background: #f5e0eb; border-radius: 99px; height: 6px;
+    max-width: 600px; margin: 0 auto 14px; overflow: hidden;
+  }
+  .lesson-progress-fill {
+    background: #ad1457; height: 100%; width: 0%;
+    transition: width 0.4s ease;
+  }
+  .lesson-controls-row {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    align-items: center; margin-top: 8px;
+  }
+  .lesson-skip-btn {
+    padding: 9px 16px; border-radius: 99px; border: 1px solid #ad1457;
+    background: white; color: #ad1457; font-size: 0.85rem; cursor: pointer;
+    font-family: 'Lato', sans-serif;
+  }
+  .lesson-skip-btn:hover:not(:disabled) { background: #fdeaf2; }
+  .lesson-skip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .lesson-info-line {
+    text-align: center; font-size: 0.82rem; color: #6a4060; margin-top: 12px;
+  }
+  .lesson-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; font-size: 0.78rem; border: 1px solid #e8b9d0;
+    background: white; color: #ad1457; border-radius: 99px; cursor: pointer;
+    font-family: 'Lato', sans-serif;
+  }
+  .lesson-toggle.active { background: #ad1457; color: white; border-color: #ad1457; }
+  .lesson-novoice-warn {
+    background: #fff3e0; border: 1px solid #ffb74d; color: #6a4015;
+    padding: 12px 16px; border-radius: 10px; max-width: 600px;
+    margin: 0 auto 14px; font-size: 0.85rem;
+  }
+
   /* ── GRAMMAR DRILL ── */
   .lang-tab.active-grammar { color: #4527a0; border-bottom-color: #4527a0; background: white; font-weight: 700; }
   .grammar-header { text-align: center; margin-bottom: 24px; }
@@ -2345,6 +2421,7 @@
       <button class="practice-mode-btn active" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('type',this)">✍️ English → Greek (type)</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('flash',this)">🃏 Flashcard</button>
+      <button class="practice-mode-btn" onclick="setPracticeMode('lesson',this)">📻 Audio Lesson</button>
     </div>
 
     <!-- Listening drill -->
@@ -2405,6 +2482,60 @@
       <div class="practice-progress">
         <span id="pflash-progress">Card 1</span>
         <span class="practice-score" id="pflash-score">Reviewed: 0</span>
+      </div>
+    </div>
+
+    <!-- Audio Lesson (hands-free Pimsleur style) -->
+    <div id="practice-lesson" style="display:none;">
+      <div class="lesson-novoice-warn" id="lesson-novoice" style="display:none;">
+        <strong>⚠️ Missing voice.</strong> This lesson needs both an English (en-US) and a Greek (el-GR) voice installed. Install via OS speech settings, then come back.
+      </div>
+      <div class="lesson-settings">
+        <div class="lesson-setting-row">
+          <strong>Lesson length</strong>
+          <div class="lesson-pill-group" id="lesson-length-pills">
+            <button class="lesson-pill" data-len="10" onclick="setLessonLength(10,this)">10 cards</button>
+            <button class="lesson-pill active" data-len="20" onclick="setLessonLength(20,this)">20 cards</button>
+            <button class="lesson-pill" data-len="30" onclick="setLessonLength(30,this)">30 cards</button>
+          </div>
+        </div>
+        <div class="lesson-setting-row">
+          <strong>Speed</strong>
+          <div class="lesson-pill-group" id="lesson-speed-pills">
+            <button class="lesson-pill" data-speed="slow" onclick="setLessonSpeed('slow',this)">🐢 Slow</button>
+            <button class="lesson-pill active" data-speed="normal" onclick="setLessonSpeed('normal',this)">Normal</button>
+          </div>
+        </div>
+        <div class="lesson-setting-row">
+          <strong>Keep screen on</strong>
+          <button class="lesson-toggle" id="lesson-wakelock-btn" onclick="toggleWakeLock()">🔆 Off</button>
+        </div>
+        <div class="lesson-setting-row" style="font-size:0.8rem;color:#7a4060;font-style:italic;">
+          Tip: respects the topic chips above. Pick "📱 iPhone" or "💬 Messages" for app-specific lessons.
+        </div>
+      </div>
+
+      <div class="lesson-bigplay-wrap">
+        <button class="lesson-bigplay" id="lesson-bigplay" onclick="lessonTogglePlay()" aria-label="Play lesson">▶</button>
+      </div>
+
+      <div class="lesson-now-playing">
+        <div class="lesson-stage-indicator" id="lesson-stage">Ready</div>
+        <div class="lesson-now-en" id="lesson-now-en">&nbsp;</div>
+        <div class="lesson-now-gr" id="lesson-now-gr">Press play to begin</div>
+        <div class="lesson-now-phon" id="lesson-now-phon">&nbsp;</div>
+      </div>
+
+      <div class="lesson-progress-track">
+        <div class="lesson-progress-fill" id="lesson-progress-fill"></div>
+      </div>
+      <div class="lesson-info-line" id="lesson-info">Card 0 of 20</div>
+
+      <div class="lesson-controls-row">
+        <button class="lesson-skip-btn" id="lesson-prev-btn" onclick="lessonPrevCard()" disabled>⏮ Previous</button>
+        <button class="lesson-skip-btn" id="lesson-replay-btn" onclick="lessonReplayCard()" disabled>🔁 Replay</button>
+        <button class="lesson-skip-btn" id="lesson-next-btn" onclick="lessonNextCard()" disabled>⏭ Next</button>
+        <button class="lesson-skip-btn" onclick="lessonRestart()">🔀 New lesson</button>
       </div>
     </div>
 
@@ -4749,9 +4880,14 @@
     const listenVisible = document.getElementById('practice-listen').style.display !== 'none';
     const typeVisible = document.getElementById('practice-type').style.display !== 'none';
     const flashVisible = document.getElementById('practice-flash').style.display !== 'none';
+    const lessonVisible = document.getElementById('practice-lesson') && document.getElementById('practice-lesson').style.display !== 'none';
     if (listenVisible) initListenDrill();
     else if (typeVisible) initTypeDrill();
     else if (flashVisible) initFlashDrill();
+    else if (lessonVisible) {
+      if (gLessonState && gLessonState.playing) lessonStop();
+      initLessonMode();
+    }
   }
 
   async function ensurePracticeVocab() {
@@ -4804,9 +4940,13 @@
     document.getElementById('practice-listen').style.display = mode === 'listen' ? '' : 'none';
     document.getElementById('practice-type').style.display = mode === 'type' ? '' : 'none';
     document.getElementById('practice-flash').style.display = mode === 'flash' ? '' : 'none';
+    document.getElementById('practice-lesson').style.display = mode === 'lesson' ? '' : 'none';
+    // Stop any running lesson when leaving the lesson tab
+    if (mode !== 'lesson' && gLessonState && gLessonState.playing) lessonStop();
     if (mode === 'listen') initListenDrill();
     if (mode === 'type') initTypeDrill();
     if (mode === 'flash') initFlashDrill();
+    if (mode === 'lesson') initLessonMode();
   }
 
   // Top-level entry — called from switchLang on tab open
@@ -5235,6 +5375,275 @@
       u.onerror = () => btn.classList.remove('playing');
       synth.speak(u);
     });
+  }
+
+  // ── Audio Lesson (hands-free Pimsleur style) ──
+  // Plays English prompt → pause → Greek answer → pause → Greek again → next.
+  // No interaction needed once started. Respects existing topic chip filter.
+  // Mobile screen-lock kills TTS — Wake Lock toggle keeps screen alive.
+
+  let gEnglishVoice = null;
+  let gLessonState = null;
+  let gLessonWakeLock = null;
+
+  function findEnglishVoice() {
+    const voices = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
+    return voices.find(v => v.lang && v.lang.toLowerCase() === 'en-us') ||
+           voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) || null;
+  }
+
+  function ensureBothVoices(callback) {
+    const synth = window.speechSynthesis;
+    if (!synth) { callback(null, null); return; }
+    const tryFind = () => {
+      if (!gGreekVoice) gGreekVoice = findGreekVoice();
+      if (!gEnglishVoice) gEnglishVoice = findEnglishVoice();
+      if (gGreekVoice && gEnglishVoice) { callback(gEnglishVoice, gGreekVoice); return true; }
+      return false;
+    };
+    if (tryFind()) return;
+    let resolved = false;
+    const handler = () => {
+      if (resolved) return;
+      if (tryFind()) { resolved = true; synth.removeEventListener('voiceschanged', handler); }
+    };
+    synth.addEventListener('voiceschanged', handler);
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        synth.removeEventListener('voiceschanged', handler);
+        callback(gEnglishVoice, gGreekVoice);
+      }
+    }, 1500);
+  }
+
+  function speakAsync(text, voice, lang, rate, abortToken) {
+    return new Promise(resolve => {
+      if (abortToken && abortToken.aborted) { resolve(); return; }
+      const synth = window.speechSynthesis;
+      if (!synth || !voice) { resolve(); return; }
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.lang = lang || voice.lang;
+      u.rate = rate;
+      u.onend = () => resolve();
+      u.onerror = () => resolve();
+      synth.speak(u);
+    });
+  }
+
+  function lessonWait(ms, abortToken) {
+    return new Promise(resolve => {
+      if (abortToken && abortToken.aborted) { resolve(); return; }
+      const t = setTimeout(resolve, ms);
+      if (abortToken) abortToken.timeout = t;
+    });
+  }
+
+  function setLessonLength(n, btn) {
+    document.querySelectorAll('#lesson-length-pills .lesson-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (gLessonState) {
+      gLessonState.settings.length = n;
+      if (!gLessonState.playing) buildLessonDeck();
+      updateLessonUI();
+    }
+  }
+
+  function setLessonSpeed(speed, btn) {
+    document.querySelectorAll('#lesson-speed-pills .lesson-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (gLessonState) gLessonState.settings.speed = speed;
+  }
+
+  async function toggleWakeLock() {
+    const btn = document.getElementById('lesson-wakelock-btn');
+    if (gLessonWakeLock) {
+      try { await gLessonWakeLock.release(); } catch {}
+      gLessonWakeLock = null;
+      btn.classList.remove('active');
+      btn.textContent = '🔆 Off';
+      return;
+    }
+    if (!('wakeLock' in navigator)) {
+      btn.textContent = '⚠ Not supported';
+      setTimeout(() => { btn.textContent = '🔆 Off'; }, 2200);
+      return;
+    }
+    try {
+      gLessonWakeLock = await navigator.wakeLock.request('screen');
+      btn.classList.add('active');
+      btn.textContent = '🔆 On';
+      gLessonWakeLock.addEventListener('release', () => {
+        gLessonWakeLock = null;
+        btn.classList.remove('active');
+        btn.textContent = '🔆 Off';
+      });
+    } catch {
+      btn.textContent = '⚠ Failed';
+      setTimeout(() => { btn.textContent = '🔆 Off'; }, 2200);
+    }
+  }
+
+  function initLessonMode() {
+    if (!gPracticeVocab || gPracticeVocab.length === 0) {
+      ensurePracticeVocab().then(() => initLessonMode());
+      return;
+    }
+    ensureBothVoices((en, gr) => {
+      const warn = document.getElementById('lesson-novoice');
+      if (!en || !gr) warn.style.display = '';
+      else warn.style.display = 'none';
+    });
+    if (!gLessonState) {
+      gLessonState = {
+        deck: [], idx: 0, playing: false,
+        settings: { length: 20, speed: 'normal' },
+        abortToken: null
+      };
+    }
+    buildLessonDeck();
+    updateLessonUI();
+  }
+
+  function buildLessonDeck() {
+    const pool = getFilteredPracticeVocab().filter(v => v.word && v.word.length <= 60);
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    gLessonState.deck = shuffled.slice(0, gLessonState.settings.length);
+    gLessonState.idx = 0;
+  }
+
+  function updateLessonUI() {
+    if (!gLessonState) return;
+    const total = gLessonState.deck.length;
+    const idx = gLessonState.idx;
+    document.getElementById('lesson-info').textContent = `Card ${Math.min(idx + 1, total)} of ${total}`;
+    const fillPct = total > 0 ? (idx / total) * 100 : 0;
+    document.getElementById('lesson-progress-fill').style.width = fillPct + '%';
+    const playBtn = document.getElementById('lesson-bigplay');
+    playBtn.textContent = gLessonState.playing ? '⏸' : '▶';
+    playBtn.setAttribute('aria-label', gLessonState.playing ? 'Pause lesson' : 'Play lesson');
+    const skipsEnabled = total > 0;
+    document.getElementById('lesson-prev-btn').disabled = !skipsEnabled || idx === 0;
+    document.getElementById('lesson-next-btn').disabled = !skipsEnabled || idx >= total;
+    document.getElementById('lesson-replay-btn').disabled = !skipsEnabled;
+  }
+
+  function setLessonNowPlaying(stage, en, gr, phon) {
+    document.getElementById('lesson-stage').textContent = stage;
+    document.getElementById('lesson-now-en').textContent = en || ' ';
+    document.getElementById('lesson-now-gr').textContent = gr || ' ';
+    document.getElementById('lesson-now-phon').textContent = phon || ' ';
+  }
+
+  function lessonTogglePlay() {
+    if (!gLessonState) initLessonMode();
+    if (gLessonState.playing) lessonStop();
+    else lessonStart();
+  }
+
+  async function lessonStart() {
+    if (!gLessonState || gLessonState.deck.length === 0) {
+      buildLessonDeck();
+      if (!gLessonState || gLessonState.deck.length === 0) {
+        setLessonNowPlaying('Empty', '', 'No cards in this filter — change topic above', '');
+        return;
+      }
+    }
+    if (gLessonState.idx >= gLessonState.deck.length) gLessonState.idx = 0;
+    ensureBothVoices(async (en, gr) => {
+      if (!en || !gr) {
+        setLessonNowPlaying('Voice missing', '', 'Need both English (en-US) and Greek (el-GR) voices', '');
+        return;
+      }
+      gLessonState.playing = true;
+      gLessonState.abortToken = { aborted: false };
+      updateLessonUI();
+      await runLessonLoop(en, gr, gLessonState.abortToken);
+      if (gLessonState && !gLessonState.abortToken.aborted) {
+        gLessonState.playing = false;
+        setLessonNowPlaying('Lesson complete', '', '✓ Done — press play to start a new round', '');
+        buildLessonDeck();
+        updateLessonUI();
+      }
+    });
+  }
+
+  function lessonStop() {
+    if (gLessonState && gLessonState.abortToken) {
+      gLessonState.abortToken.aborted = true;
+      if (gLessonState.abortToken.timeout) clearTimeout(gLessonState.abortToken.timeout);
+    }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (gLessonState) gLessonState.playing = false;
+    updateLessonUI();
+    setLessonNowPlaying('Paused', '', '⏸ Press play to resume', '');
+  }
+
+  async function runLessonLoop(enVoice, grVoice, abortToken) {
+    const speedFactor = gLessonState.settings.speed === 'slow' ? 0.85 : 1.0;
+    const enRate = 1.0 * speedFactor;
+    const grRate1 = 0.92 * speedFactor;
+    const grRate2 = 0.78 * speedFactor;
+    const recallPause = gLessonState.settings.speed === 'slow' ? 4500 : 3500;
+    const betweenGreekPause = 700;
+    const interCardPause = 1600;
+
+    while (gLessonState.idx < gLessonState.deck.length) {
+      if (abortToken.aborted) return;
+      const v = gLessonState.deck[gLessonState.idx];
+      setLessonNowPlaying('Recall', `Say in Greek: ${v.translation}`, '…', '');
+      updateLessonUI();
+      await speakAsync(`Say in Greek: ${v.translation}`, enVoice, 'en-US', enRate, abortToken);
+      if (abortToken.aborted) return;
+      setLessonNowPlaying('Pause', v.translation, '…', '(think of the word)');
+      await lessonWait(recallPause, abortToken);
+      if (abortToken.aborted) return;
+      setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '');
+      await speakAsync(v.word, grVoice, 'el-GR', grRate1, abortToken);
+      if (abortToken.aborted) return;
+      await lessonWait(betweenGreekPause, abortToken);
+      if (abortToken.aborted) return;
+      setLessonNowPlaying('Repeat (slower)', v.translation, v.word, v.phonetic || '');
+      await speakAsync(v.word, grVoice, 'el-GR', grRate2, abortToken);
+      if (abortToken.aborted) return;
+      await lessonWait(interCardPause, abortToken);
+      if (abortToken.aborted) return;
+      gLessonState.idx++;
+    }
+  }
+
+  function lessonNextCard() {
+    if (!gLessonState) return;
+    const wasPlaying = gLessonState.playing;
+    if (wasPlaying) lessonStop();
+    if (gLessonState.idx < gLessonState.deck.length - 1) gLessonState.idx++;
+    updateLessonUI();
+    if (wasPlaying) setTimeout(lessonStart, 200);
+  }
+
+  function lessonPrevCard() {
+    if (!gLessonState) return;
+    const wasPlaying = gLessonState.playing;
+    if (wasPlaying) lessonStop();
+    if (gLessonState.idx > 0) gLessonState.idx--;
+    updateLessonUI();
+    if (wasPlaying) setTimeout(lessonStart, 200);
+  }
+
+  function lessonReplayCard() {
+    if (!gLessonState) return;
+    const wasPlaying = gLessonState.playing;
+    if (wasPlaying) lessonStop();
+    if (wasPlaying) setTimeout(lessonStart, 200);
+    else lessonStart();
+  }
+
+  function lessonRestart() {
+    if (gLessonState && gLessonState.playing) lessonStop();
+    buildLessonDeck();
+    updateLessonUI();
+    setLessonNowPlaying('Ready', '', 'Press play to begin a new lesson', '');
   }
 </script>
 </body>
