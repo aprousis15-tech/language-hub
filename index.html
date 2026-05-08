@@ -2260,6 +2260,7 @@
 
     <div class="practice-mode-bar">
       <button class="practice-mode-btn active" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
+      <button class="practice-mode-btn" onclick="setPracticeMode('type',this)">✍️ English → Greek (type)</button>
     </div>
 
     <!-- Listening drill -->
@@ -2284,6 +2285,32 @@
       <div class="practice-progress">
         <span id="listen-progress">Question 1</span>
         <span class="practice-score" id="listen-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Production typing drill -->
+    <div id="practice-type" style="display:none;">
+      <div class="practice-card">
+        <div class="practice-prompt-en" id="type-prompt-en">…</div>
+        <div class="practice-prompt-hint" id="type-prompt-pos">&nbsp;</div>
+        <input type="text" class="practice-input" id="type-input"
+               placeholder="Type Greek or transliteration (e.g. kalimera)"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               onkeydown="gTypeKeydown(event)">
+        <div style="margin-top:14px;">
+          <button class="practice-tinybtn" onclick="gTypeHint()">💡 Hint</button>
+          <button class="practice-tinybtn" onclick="gTypeReveal()">👁 Reveal</button>
+        </div>
+        <div class="practice-feedback" id="type-feedback"></div>
+      </div>
+      <div class="practice-controls">
+        <button class="practice-btn" onclick="gTypeSubmit()">Check ✓</button>
+        <button class="practice-btn practice-btn-secondary" onclick="gTypeNext()">Next →</button>
+        <button class="practice-btn practice-btn-secondary" onclick="gTypeShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="practice-progress">
+        <span id="type-progress">Question 1</span>
+        <span class="practice-score" id="type-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -4570,7 +4597,9 @@
     document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('practice-listen').style.display = mode === 'listen' ? '' : 'none';
+    document.getElementById('practice-type').style.display = mode === 'type' ? '' : 'none';
     if (mode === 'listen') initListenDrill();
+    if (mode === 'type') initTypeDrill();
   }
 
   // Top-level entry — called from switchLang on tab open
@@ -4697,6 +4726,189 @@
 
   function gListenShuffle() {
     initListenDrill();
+  }
+
+  // ── English → Greek production drill ──
+  // Normalize Greek and Latin transliteration to a canonical form so users
+  // can type either "καλημέρα" or "kalimera" and have it match.
+  function normalizePractice(s) {
+    if (!s) return '';
+    // 1. Strip combining marks (accents/diacritics) - U+0300 to U+036F
+    s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    // 2. Lowercase + trim + collapse whitespace
+    s = s.toLowerCase().trim().replace(/\s+/g, ' ');
+    // 3. Greek digraphs that map to single Latin sounds (BEFORE single-char map)
+    s = s.replace(/μπ/g, 'b').replace(/ντ/g, 'd').replace(/γκ/g, 'g')
+         .replace(/τσ/g, 'ts').replace(/τζ/g, 'tz')
+         .replace(/γγ/g, 'g');
+    // 4. Single Greek char → canonical Latin (sound-based)
+    const greekMap = {
+      'α':'a','β':'v','γ':'g','δ':'d','ε':'e','ζ':'z','η':'i','θ':'th',
+      'ι':'i','κ':'k','λ':'l','μ':'m','ν':'n','ξ':'x','ο':'o','π':'p',
+      'ρ':'r','σ':'s','ς':'s','τ':'t','υ':'i','φ':'f','χ':'h','ψ':'ps','ω':'o'
+    };
+    let out = '';
+    for (const ch of s) out += (greekMap[ch] !== undefined ? greekMap[ch] : ch);
+    s = out;
+    // 5. Latin variant collapsing
+    s = s.replace(/ph/g, 'f')
+         .replace(/kh/g, 'h').replace(/ch/g, 'h')
+         .replace(/c/g, 'k')
+         .replace(/y/g, 'i')
+         .replace(/ks/g, 'x')
+         .replace(/ou/g, 'u');
+    // 6. Vowel-cluster equivalences (modern Greek pronunciation)
+    s = s.replace(/ai/g, 'e').replace(/ei/g, 'i').replace(/oi/g, 'i').replace(/ee/g, 'i');
+    // 7. Drop anything not a-z (keeps internal spaces lost above; we want letters only for compare)
+    s = s.replace(/[^a-z ]/g, '');
+    // 8. Collapse double letters (kalimera vs kallimera both → kalimera)
+    s = s.replace(/(.)\1+/g, '$1');
+    return s.trim();
+  }
+
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    const m = a.length, n = b.length;
+    if (!m) return n;
+    if (!n) return m;
+    let prev = Array.from({length: n + 1}, (_, i) => i);
+    for (let i = 1; i <= m; i++) {
+      const curr = [i];
+      for (let j = 1; j <= n; j++) {
+        const cost = a[i-1] === b[j-1] ? 0 : 1;
+        curr[j] = Math.min(prev[j] + 1, curr[j-1] + 1, prev[j-1] + cost);
+      }
+      prev = curr;
+    }
+    return prev[n];
+  }
+
+  let gTypeDeck = [], gTypeIndex = 0, gTypeCorrect = 0, gTypeTotal = 0, gTypeAnswered = false;
+
+  function initTypeDrill() {
+    if (!gPracticeVocab || gPracticeVocab.length === 0) {
+      ensurePracticeVocab().then(() => initTypeDrill());
+      return;
+    }
+    // Filter: skip phrases (too long to type) and very long entries
+    const filtered = gPracticeVocab.filter(v =>
+      v.part_of_speech !== 'phrase' &&
+      v.word && v.word.length <= 30
+    );
+    gTypeDeck = filtered.sort(() => Math.random() - 0.5);
+    gTypeIndex = 0;
+    gTypeCorrect = 0;
+    gTypeTotal = 0;
+    gTypeAnswered = false;
+    showTypeCard();
+  }
+
+  function showTypeCard() {
+    const v = gTypeDeck[gTypeIndex];
+    if (!v) return;
+    document.getElementById('type-prompt-en').textContent = v.translation;
+    const pos = v.part_of_speech || '';
+    const topic = v.topic || '';
+    document.getElementById('type-prompt-pos').textContent = [pos, topic].filter(Boolean).join(' · ');
+    const input = document.getElementById('type-input');
+    input.value = '';
+    input.classList.remove('correct', 'wrong');
+    input.disabled = false;
+    input.focus();
+    const fb = document.getElementById('type-feedback');
+    fb.innerHTML = '';
+    fb.classList.remove('show');
+    document.getElementById('type-progress').textContent = `Question ${gTypeIndex + 1} of ${gTypeDeck.length}`;
+    document.getElementById('type-score').textContent = `Score: ${gTypeCorrect}/${gTypeTotal}`;
+    gTypeAnswered = false;
+  }
+
+  function gTypeSubmit() {
+    if (gTypeAnswered) { gTypeNext(); return; }
+    const v = gTypeDeck[gTypeIndex];
+    if (!v) return;
+    const input = document.getElementById('type-input');
+    const userRaw = input.value;
+    const userNorm = normalizePractice(userRaw);
+    const answerNorm = normalizePractice(v.word);
+    if (!userNorm) { input.focus(); return; }  // empty → just refocus
+    gTypeAnswered = true;
+    gTypeTotal++;
+    input.disabled = true;
+    const dist = levenshtein(userNorm, answerNorm);
+    const fb = document.getElementById('type-feedback');
+    let result;
+    if (userNorm === answerNorm) {
+      result = 'correct';
+      gTypeCorrect++;
+    } else if (dist <= 2) {
+      result = 'almost';
+      gTypeCorrect++;
+    } else {
+      result = 'wrong';
+    }
+    if (result === 'correct') {
+      input.classList.add('correct');
+      fb.innerHTML = `<strong>✓ Correct!</strong> &nbsp;<em>${v.word}</em>` +
+        (v.phonetic ? ` &nbsp;<span style="color:#7a4060;">[${v.phonetic}]</span>` : '');
+    } else if (result === 'almost') {
+      input.classList.add('correct');
+      fb.innerHTML = `<strong>✓ Close enough!</strong> Correct spelling: <em>${v.word}</em>` +
+        (v.phonetic ? ` &nbsp;<span style="color:#7a4060;">[${v.phonetic}]</span>` : '');
+    } else {
+      input.classList.add('wrong');
+      fb.innerHTML = `<strong>✗ Not quite.</strong> Answer: <em>${v.word}</em>` +
+        (v.phonetic ? ` &nbsp;<span style="color:#7a4060;">[${v.phonetic}]</span>` : '');
+    }
+    if (v.intuition) {
+      fb.innerHTML += `<div style="margin-top:8px;font-size:0.85rem;">💡 ${v.intuition}</div>`;
+    }
+    fb.classList.add('show');
+    document.getElementById('type-score').textContent = `Score: ${gTypeCorrect}/${gTypeTotal}`;
+  }
+
+  function gTypeKeydown(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      gTypeSubmit();
+    }
+  }
+
+  function gTypeHint() {
+    const v = gTypeDeck[gTypeIndex];
+    if (!v) return;
+    const fb = document.getElementById('type-feedback');
+    if (v.intuition) {
+      fb.innerHTML = '💡 ' + v.intuition;
+    } else {
+      fb.innerHTML = `Starts with: <strong>${v.word.charAt(0)}</strong> · ${v.word.length} characters`;
+    }
+    fb.classList.add('show');
+  }
+
+  function gTypeReveal() {
+    if (gTypeAnswered) return;
+    const v = gTypeDeck[gTypeIndex];
+    if (!v) return;
+    gTypeAnswered = true;
+    gTypeTotal++;
+    document.getElementById('type-input').disabled = true;
+    document.getElementById('type-input').classList.add('wrong');
+    const fb = document.getElementById('type-feedback');
+    fb.innerHTML = `<strong>👁 Revealed:</strong> <em>${v.word}</em>` +
+      (v.phonetic ? ` &nbsp;<span style="color:#7a4060;">[${v.phonetic}]</span>` : '') +
+      (v.intuition ? `<div style="margin-top:8px;font-size:0.85rem;">💡 ${v.intuition}</div>` : '');
+    fb.classList.add('show');
+    document.getElementById('type-score').textContent = `Score: ${gTypeCorrect}/${gTypeTotal}`;
+  }
+
+  function gTypeNext() {
+    gTypeIndex = (gTypeIndex + 1) % gTypeDeck.length;
+    showTypeCard();
+  }
+
+  function gTypeShuffle() {
+    initTypeDrill();
   }
 </script>
 </body>
