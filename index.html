@@ -2879,6 +2879,68 @@
     try { return JSON.parse(localStorage.getItem(VOCAB_KEY)) || []; } catch { return []; }
   }
 
+  // ── MISTAKE TRACKING ──
+  // Records wrong answers across all 7 drills for the Review tab.
+  // Drill-specific context goes into metadata (target_person, gender, topic, POS, etc).
+  const MISTAKES_LS_KEY = 'langHub_mistakes_v1';
+  async function recordMistake(entry) {
+    const row = {
+      drill_type: entry.drill_type,
+      prompt: entry.prompt || null,
+      correct: entry.correct || null,
+      picked: entry.picked || null,
+      vocab_id: entry.vocab_id || null,
+      metadata: entry.metadata || null
+    };
+    if (window._supabase) {
+      try {
+        const { error } = await window._supabase.from('mistakes').insert([row]);
+        if (!error) return;
+      } catch {}
+    }
+    // localStorage fallback
+    try {
+      const arr = JSON.parse(localStorage.getItem(MISTAKES_LS_KEY) || '[]');
+      arr.unshift({ ...row, id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8), created_at: new Date().toISOString() });
+      if (arr.length > 500) arr.length = 500;
+      localStorage.setItem(MISTAKES_LS_KEY, JSON.stringify(arr));
+    } catch {}
+  }
+
+  async function loadMistakes(limit) {
+    let supaRows = [];
+    if (window._supabase) {
+      try {
+        const { data, error } = await window._supabase
+          .from('mistakes')
+          .select('*')
+          .is('resolved_at', null)
+          .order('created_at', { ascending: false })
+          .limit(limit || 200);
+        if (!error && data) supaRows = data;
+      } catch {}
+    }
+    let localRows = [];
+    try { localRows = JSON.parse(localStorage.getItem(MISTAKES_LS_KEY) || '[]'); } catch {}
+    // De-dupe by id, prefer Supabase rows
+    const seen = new Set(supaRows.map(r => r.id));
+    const merged = supaRows.concat(localRows.filter(r => !seen.has(r.id)));
+    return merged.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+  }
+
+  async function resolveMistake(id) {
+    if (typeof id === 'string' && id.startsWith('local-')) {
+      try {
+        const arr = JSON.parse(localStorage.getItem(MISTAKES_LS_KEY) || '[]');
+        localStorage.setItem(MISTAKES_LS_KEY, JSON.stringify(arr.filter(r => r.id !== id)));
+      } catch {}
+      return;
+    }
+    if (window._supabase) {
+      try { await window._supabase.from('mistakes').update({ resolved_at: new Date().toISOString() }).eq('id', id); } catch {}
+    }
+  }
+
   async function saveVocabEntry(entry) {
     if (window._supabase) {
       const { data, error } = await window._supabase
@@ -4475,6 +4537,10 @@
     gArtAnswered = true;
     gArtTotal++;
     if (picked === q.answer) gArtCorrect++;
+    else recordMistake({
+      drill_type: 'articles', prompt: q.prompt, correct: q.answer, picked: picked,
+      metadata: { en: q.en, hint: q.hint }
+    });
     const allBtns = document.querySelectorAll('#art-options .grammar-option');
     allBtns.forEach(b => {
       b.classList.add('disabled');
@@ -4577,6 +4643,13 @@
     gVerbAnswered = true;
     gVerbTotal++;
     if (pickedPerson === gVerbTargetPerson) gVerbCorrect++;
+    else recordMistake({
+      drill_type: 'verbs',
+      prompt: `${v.inf} (${v.en}) — ${PERSON_LABELS[gVerbTargetPerson]}`,
+      correct: v.forms[gVerbTargetPerson],
+      picked: v.forms[pickedPerson],
+      metadata: { verb_inf: v.inf, verb_en: v.en, target_person: gVerbTargetPerson, picked_person: pickedPerson }
+    });
     document.querySelectorAll('#verb-options .grammar-option').forEach(b => {
       b.classList.add('disabled');
       if (b.dataset.person === gVerbTargetPerson) b.classList.add('correct');
@@ -4669,6 +4742,10 @@
     gPrepAnswered = true;
     gPrepTotal++;
     if (picked === q.answer) gPrepCorrect++;
+    else recordMistake({
+      drill_type: 'preps', prompt: q.prompt, correct: q.answer, picked: picked,
+      metadata: { en: q.en, hint: q.hint }
+    });
     document.querySelectorAll('#prep-options .grammar-option').forEach(b => {
       b.classList.add('disabled');
       if (b.textContent === q.answer) b.classList.add('correct');
@@ -4785,6 +4862,12 @@
     gAdjTotal++;
     const q = gAdjQ;
     if (pickedGender === q.noun.gender) gAdjCorrect++;
+    else recordMistake({
+      drill_type: 'adj',
+      prompt: `${q.noun.word} είναι ___ (${q.adj.en})`,
+      correct: q.answer, picked: q.adj[pickedGender],
+      metadata: { noun: q.noun.word, noun_en: q.noun.en, target_gender: q.noun.gender, picked_gender: pickedGender, adj_en: q.adj.en }
+    });
     document.querySelectorAll('#adj-options .grammar-option').forEach(b => {
       b.classList.add('disabled');
       if (b.dataset.gender === q.noun.gender) b.classList.add('correct');
@@ -5044,6 +5127,11 @@
     gListenAnswered = true;
     gListenTotal++;
     if (picked === v.translation) gListenCorrect++;
+    else recordMistake({
+      drill_type: 'listen',
+      prompt: v.word, correct: v.translation, picked: picked, vocab_id: v.id,
+      metadata: { topic: v.topic, part_of_speech: v.part_of_speech, phonetic: v.phonetic }
+    });
     document.querySelectorAll('#listen-options .practice-option').forEach(b => {
       b.classList.add('disabled');
       if (b.textContent === v.translation) b.classList.add('correct');
@@ -5211,6 +5299,10 @@
       input.classList.add('wrong');
       fb.innerHTML = `<strong>✗ Not quite.</strong> Answer: <em>${v.word}</em>` +
         (v.phonetic ? ` &nbsp;<span style="color:#7a4060;">[${v.phonetic}]</span>` : '');
+      recordMistake({
+        drill_type: 'type', prompt: v.translation, correct: v.word, picked: userRaw, vocab_id: v.id,
+        metadata: { topic: v.topic, part_of_speech: v.part_of_speech, phonetic: v.phonetic, levenshtein_distance: dist }
+      });
     }
     if (v.intuition) {
       fb.innerHTML += `<div style="margin-top:8px;font-size:0.85rem;">💡 ${v.intuition}</div>`;
@@ -5244,6 +5336,10 @@
     if (!v) return;
     gTypeAnswered = true;
     gTypeTotal++;
+    recordMistake({
+      drill_type: 'type', prompt: v.translation, correct: v.word, picked: '(revealed)', vocab_id: v.id,
+      metadata: { topic: v.topic, part_of_speech: v.part_of_speech, phonetic: v.phonetic, revealed: true }
+    });
     document.getElementById('type-input').disabled = true;
     document.getElementById('type-input').classList.add('wrong');
     const fb = document.getElementById('type-feedback');
@@ -5340,6 +5436,11 @@
     if (rating === 'hard') {
       const insertAt = Math.min(gFlashIndex + 3, gFlashDeck.length);
       gFlashDeck.splice(insertAt, 0, v);
+      recordMistake({
+        drill_type: 'flash', prompt: gFlashDir === 'gr2en' ? v.word : v.translation,
+        correct: gFlashDir === 'gr2en' ? v.translation : v.word, picked: '(rated hard)', vocab_id: v.id,
+        metadata: { topic: v.topic, part_of_speech: v.part_of_speech, direction: gFlashDir }
+      });
     } else if (rating === 'good') {
       const insertAt = Math.min(gFlashIndex + 8, gFlashDeck.length);
       gFlashDeck.splice(insertAt, 0, v);
