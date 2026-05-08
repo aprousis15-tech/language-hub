@@ -1129,6 +1129,88 @@
   .fluency-chart-empty { text-align: center; color: #9a8a75; font-style: italic; padding: 60px 20px; }
   .sessions-empty { text-align: center; padding: 30px; color: #9a8a75; font-style: italic; font-size: 0.88rem; }
 
+  /* ── REVIEW (Mistakes & Patterns) ── */
+  .lang-tab.active-review { color: #6d4c41; border-bottom-color: #6d4c41; background: white; font-weight: 700; }
+  .review-header { text-align: center; margin-bottom: 22px; }
+  .review-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #6d4c41; margin-bottom: 6px; }
+  .review-header p { font-size: 0.85rem; color: #7a5e50; }
+  .review-stats { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 26px; }
+  .review-stat-tile {
+    background: white; border: 1px solid #d7c4b6; border-radius: 12px;
+    padding: 14px 22px; text-align: center; min-width: 120px;
+  }
+  .review-stat-num { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: #6d4c41; font-weight: 700; }
+  .review-stat-label { font-size: 0.75rem; color: #7a5e50; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .review-section-h { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: #6d4c41; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #e8d8cb; }
+  .review-pattern-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 18px; }
+  .review-pattern-card {
+    background: white; border: 1px solid #d7c4b6; border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .review-pattern-title { font-size: 0.78rem; color: #7a5e50; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .review-pattern-top { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: #1a1a1a; font-weight: 600; }
+  .review-pattern-detail { font-size: 0.8rem; color: #7a5e50; margin-top: 6px; line-height: 1.5; }
+  .review-pattern-bar {
+    background: #f3e8df; border-radius: 99px; height: 5px; margin: 8px 0 4px; overflow: hidden;
+  }
+  .review-pattern-bar-fill { background: #6d4c41; height: 100%; transition: width 0.3s; }
+  .review-empty {
+    text-align: center; padding: 28px; color: #9a8275; font-style: italic;
+    background: white; border: 1px dashed #d7c4b6; border-radius: 12px;
+    margin: 14px 0;
+  }
+  .review-mistake-list { display: flex; flex-direction: column; gap: 8px; }
+  .review-date-bucket {
+    font-size: 0.78rem; color: #7a5e50; text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 14px 0 6px; font-weight: 600;
+  }
+  .review-mistake-row {
+    background: white; border: 1px solid #e8d8cb; border-radius: 10px;
+    padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+  }
+  .review-mistake-tag {
+    display: inline-block; padding: 3px 10px; font-size: 0.7rem;
+    border-radius: 99px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.04em; flex-shrink: 0;
+  }
+  .review-tag-articles { background: #ede7f6; color: #4527a0; }
+  .review-tag-verbs { background: #e8eaf6; color: #283593; }
+  .review-tag-preps { background: #e0f2f1; color: #00695c; }
+  .review-tag-adj { background: #fff3e0; color: #e65100; }
+  .review-tag-listen { background: #fdeaf2; color: #ad1457; }
+  .review-tag-type { background: #f3e5f5; color: #6a1b9a; }
+  .review-tag-flash { background: #fce4ec; color: #c2185b; }
+  .review-mistake-body { flex: 1; min-width: 0; }
+  .review-mistake-prompt { font-family: 'Playfair Display', serif; font-size: 0.98rem; color: #1a1a1a; margin-bottom: 4px; word-break: break-word; }
+  .review-mistake-meta { font-size: 0.78rem; color: #7a5e50; }
+  .review-mistake-meta .ans-correct { color: #2e7d32; font-weight: 600; }
+  .review-mistake-meta .ans-picked { color: #c62828; text-decoration: line-through; }
+  .review-mistake-time { font-size: 0.72rem; color: #9a8275; }
+  .review-resolve-btn {
+    background: white; border: 1px solid #2e7d32; color: #2e7d32;
+    padding: 5px 12px; border-radius: 99px; font-size: 0.75rem;
+    cursor: pointer; flex-shrink: 0; font-family: 'Lato', sans-serif;
+    transition: all 0.15s;
+  }
+  .review-resolve-btn:hover { background: #d4f4dd; }
+  .review-toolbar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+  .review-toolbtn {
+    padding: 7px 16px; border-radius: 99px; border: 1px solid #6d4c41;
+    background: white; color: #6d4c41; font-size: 0.82rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .review-toolbtn:hover { background: #f5ede4; }
+  .review-toolbtn.active { background: #6d4c41; color: white; }
+  .review-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; font-size: 0.8rem; border-radius: 99px;
+    background: #f5ede4; color: #6d4c41; border: 1px solid #d7c4b6;
+    cursor: pointer; font-family: 'Lato', sans-serif;
+    text-decoration: none; transition: all 0.15s;
+  }
+  .review-link:hover { background: #ebdfd1; }
+  .review-link-wrap { text-align: center; margin-bottom: 18px; }
+
   /* ── PRACTICE (Listening + Production) ── */
   .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
   .practice-header { text-align: center; margin-bottom: 24px; }
@@ -1458,6 +1540,7 @@
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
+  <button class="lang-tab" onclick="switchLang('review')">🔍 Review</button>
 </div>
 
 <!-- GREEK PANEL -->
@@ -2313,6 +2396,9 @@
       <h2>🧠 Greek Grammar Drill</h2>
       <p>Targeted mini-trainers for the trickiest patterns: articles, verb endings, prepositions, and adjective agreement.</p>
     </div>
+    <div class="review-link-wrap">
+      <a class="review-link" onclick="switchLang('review')">📊 See your mistakes &amp; weak spots →</a>
+    </div>
 
     <div class="grammar-mode-bar">
       <button class="grammar-mode-btn active" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
@@ -2406,6 +2492,9 @@
     <div class="practice-header">
       <h2>🎧 Audio &amp; Production Practice</h2>
       <p>Train your ear (hear Greek, pick the meaning) and your recall (see English, type Greek).</p>
+    </div>
+    <div class="review-link-wrap">
+      <a class="review-link" onclick="switchLang('review')">📊 See your mistakes &amp; weak spots →</a>
     </div>
 
     <div class="practice-topic-label">Filter by topic</div>
@@ -2817,6 +2906,54 @@
   </div>
 </div>
 
+<div class="lang-panel" id="panel-review">
+  <div class="container">
+
+    <div class="review-header">
+      <h2>🔍 Review &amp; Patterns</h2>
+      <p>Every mistake from the Grammar Drill and Practice tabs lands here, with weak-spot analysis once you've built up enough data.</p>
+    </div>
+
+    <div class="review-stats" id="review-stats">
+      <div class="review-stat-tile">
+        <div class="review-stat-num" id="review-stat-total">0</div>
+        <div class="review-stat-label">Total mistakes</div>
+      </div>
+      <div class="review-stat-tile">
+        <div class="review-stat-num" id="review-stat-week">0</div>
+        <div class="review-stat-label">This week</div>
+      </div>
+      <div class="review-stat-tile">
+        <div class="review-stat-num" id="review-stat-today">0</div>
+        <div class="review-stat-label">Today</div>
+      </div>
+    </div>
+
+    <div class="review-toolbar">
+      <button class="review-toolbtn active" data-filter="all" onclick="setReviewFilter('all',this)">All sources</button>
+      <button class="review-toolbtn" data-filter="articles" onclick="setReviewFilter('articles',this)">📐 Articles</button>
+      <button class="review-toolbtn" data-filter="verbs" onclick="setReviewFilter('verbs',this)">🗣️ Verbs</button>
+      <button class="review-toolbtn" data-filter="preps" onclick="setReviewFilter('preps',this)">🔗 Preps</button>
+      <button class="review-toolbtn" data-filter="adj" onclick="setReviewFilter('adj',this)">🎨 Adj</button>
+      <button class="review-toolbtn" data-filter="listen" onclick="setReviewFilter('listen',this)">🔊 Listen</button>
+      <button class="review-toolbtn" data-filter="type" onclick="setReviewFilter('type',this)">✍️ Type</button>
+      <button class="review-toolbtn" data-filter="flash" onclick="setReviewFilter('flash',this)">🃏 Flash</button>
+      <button class="review-toolbtn" onclick="renderReviewPanel()">🔄 Refresh</button>
+    </div>
+
+    <h3 class="review-section-h">🎯 Weak spots (patterns)</h3>
+    <div id="review-patterns" class="review-pattern-grid">
+      <div class="review-empty">Need at least 5 mistakes in a category before patterns surface.</div>
+    </div>
+
+    <h3 class="review-section-h">📅 Mistake history</h3>
+    <div id="review-mistakes" class="review-mistake-list">
+      <div class="review-empty">No mistakes yet — go drill something to get started.</div>
+    </div>
+
+  </div>
+</div>
+
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
@@ -3158,9 +3295,9 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-translate','active-notes','active-sessions'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-translate','active-notes','active-sessions','active-review'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, translate:7, notes:8, sessions:9};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, translate:7, notes:8, sessions:9, review:10};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -3171,6 +3308,7 @@
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
+    if (lang === 'review') renderReviewPanel();
   }
 
   // ── DAD PRACTICE ──
@@ -5745,6 +5883,291 @@
     buildLessonDeck();
     updateLessonUI();
     setLessonNowPlaying('Ready', '', 'Press play to begin a new lesson', '');
+  }
+
+  // ── REVIEW TAB ──
+  // Loads the mistakes table + localStorage fallback, surfaces pattern signals
+  // (most-missed gender, verb person, prep, topic, POS), groups history by date.
+  let gReviewFilter = 'all';
+  let gReviewMistakesCache = [];
+
+  const REVIEW_DRILL_LABELS = {
+    articles: { label: 'Articles', tag: 'review-tag-articles' },
+    verbs: { label: 'Verbs', tag: 'review-tag-verbs' },
+    preps: { label: 'Prepositions', tag: 'review-tag-preps' },
+    adj: { label: 'Adjective', tag: 'review-tag-adj' },
+    listen: { label: 'Listen', tag: 'review-tag-listen' },
+    type: { label: 'Type', tag: 'review-tag-type' },
+    flash: { label: 'Flashcard', tag: 'review-tag-flash' }
+  };
+
+  const VERB_PERSON_LABELS_REVIEW = {
+    eg: 'εγώ (1st sing)', es: 'εσύ (2nd sing)', af: 'αυτός/ή/ό (3rd sing)',
+    em: 'εμείς (1st plur)', eis: 'εσείς (2nd plur)', af3: 'αυτοί/ές/ά (3rd plur)'
+  };
+  const GENDER_LABELS_REVIEW = { m: 'masculine', f: 'feminine', n: 'neuter' };
+
+  function setReviewFilter(filter, btn) {
+    gReviewFilter = filter;
+    document.querySelectorAll('.review-toolbtn[data-filter]').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderReviewMistakeHistory(gReviewMistakesCache);
+  }
+
+  async function renderReviewPanel() {
+    const mistakes = await loadMistakes(200);
+    gReviewMistakesCache = mistakes;
+    renderReviewStats(mistakes);
+    renderReviewPatterns(mistakes);
+    renderReviewMistakeHistory(mistakes);
+  }
+
+  function renderReviewStats(mistakes) {
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+    const todayMs = todayStart.getTime();
+    const weekAgoMs = now - 7 * dayMs;
+    let total = mistakes.length, week = 0, today = 0;
+    mistakes.forEach(m => {
+      const t = new Date(m.created_at).getTime();
+      if (t >= todayMs) today++;
+      if (t >= weekAgoMs) week++;
+    });
+    document.getElementById('review-stat-total').textContent = total;
+    document.getElementById('review-stat-week').textContent = week;
+    document.getElementById('review-stat-today').textContent = today;
+  }
+
+  function analyzePatterns(mistakes) {
+    const patterns = [];
+    const minThreshold = 5;
+
+    // 1. Most-missed gender (from adjectives drill, where target_gender is explicit)
+    const adjMistakes = mistakes.filter(m => m.drill_type === 'adj');
+    if (adjMistakes.length >= minThreshold) {
+      const genderCounts = {};
+      adjMistakes.forEach(m => {
+        const g = m.metadata?.target_gender;
+        if (g) genderCounts[g] = (genderCounts[g] || 0) + 1;
+      });
+      const sorted = Object.entries(genderCounts).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0 && sorted[0][1] >= 2) {
+        const [g, count] = sorted[0];
+        const total = adjMistakes.length;
+        patterns.push({
+          title: 'Adjective gender',
+          top: GENDER_LABELS_REVIEW[g] || g,
+          detail: `Missed ${count} of ${total} adjective questions when the noun was ${GENDER_LABELS_REVIEW[g] || g}.`,
+          ratio: count / total
+        });
+      }
+    }
+
+    // 2. Most-missed verb person
+    const verbMistakes = mistakes.filter(m => m.drill_type === 'verbs');
+    if (verbMistakes.length >= minThreshold) {
+      const personCounts = {};
+      verbMistakes.forEach(m => {
+        const p = m.metadata?.target_person;
+        if (p) personCounts[p] = (personCounts[p] || 0) + 1;
+      });
+      const sorted = Object.entries(personCounts).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0 && sorted[0][1] >= 2) {
+        const [p, count] = sorted[0];
+        patterns.push({
+          title: 'Verb person',
+          top: VERB_PERSON_LABELS_REVIEW[p] || p,
+          detail: `Missed ${count} of ${verbMistakes.length} verb conjugations when the target was ${VERB_PERSON_LABELS_REVIEW[p] || p}.`,
+          ratio: count / verbMistakes.length
+        });
+      }
+    }
+
+    // 3. Most-missed preposition
+    const prepMistakes = mistakes.filter(m => m.drill_type === 'preps');
+    if (prepMistakes.length >= minThreshold) {
+      const prepCounts = {};
+      prepMistakes.forEach(m => {
+        const p = m.correct;
+        if (p) prepCounts[p] = (prepCounts[p] || 0) + 1;
+      });
+      const sorted = Object.entries(prepCounts).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0 && sorted[0][1] >= 2) {
+        const [p, count] = sorted[0];
+        patterns.push({
+          title: 'Preposition',
+          top: p,
+          detail: `Confused "${p}" ${count} times — pair this one with re-reading the hint.`,
+          ratio: count / prepMistakes.length
+        });
+      }
+    }
+
+    // 4. Most-missed topic (from listen + type + flash, where vocab metadata.topic is set)
+    const vocabMistakes = mistakes.filter(m => ['listen', 'type', 'flash'].includes(m.drill_type) && m.metadata?.topic);
+    if (vocabMistakes.length >= minThreshold) {
+      const topicCounts = {};
+      vocabMistakes.forEach(m => {
+        const t = m.metadata.topic;
+        topicCounts[t] = (topicCounts[t] || 0) + 1;
+      });
+      const sorted = Object.entries(topicCounts).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0 && sorted[0][1] >= 2) {
+        const [t, count] = sorted[0];
+        patterns.push({
+          title: 'Vocab topic',
+          top: t,
+          detail: `${count} mistakes on ${t} words — drill this topic in Practice (use the chip filter).`,
+          ratio: count / vocabMistakes.length
+        });
+      }
+    }
+
+    // 5. Most-missed part of speech (from listen + type + flash)
+    const posMistakes = mistakes.filter(m => ['listen', 'type', 'flash'].includes(m.drill_type) && m.metadata?.part_of_speech);
+    if (posMistakes.length >= minThreshold) {
+      const posCounts = {};
+      posMistakes.forEach(m => {
+        const p = m.metadata.part_of_speech;
+        posCounts[p] = (posCounts[p] || 0) + 1;
+      });
+      const sorted = Object.entries(posCounts).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0 && sorted[0][1] >= 2) {
+        const [p, count] = sorted[0];
+        patterns.push({
+          title: 'Part of speech',
+          top: p,
+          detail: `${count} mistakes on ${p}s — these are your weak word-class.`,
+          ratio: count / posMistakes.length
+        });
+      }
+    }
+
+    // 6. Top 3 most-missed individual vocab entries
+    const vocabIdCounts = {};
+    mistakes.forEach(m => {
+      if (m.vocab_id) vocabIdCounts[m.vocab_id] = (vocabIdCounts[m.vocab_id] || 0) + 1;
+    });
+    const repeats = Object.entries(vocabIdCounts).filter(([_, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
+    if (repeats.length >= 1) {
+      const topVocabId = repeats[0][0];
+      const topMistake = mistakes.find(m => m.vocab_id === topVocabId);
+      if (topMistake) {
+        patterns.push({
+          title: 'Most-missed word',
+          top: topMistake.correct,
+          detail: `"${topMistake.prompt}" → "${topMistake.correct}" missed ${repeats[0][1]} times. ${repeats.length > 1 ? `(${repeats.length} repeat-offenders total.)` : ''}`,
+          ratio: 1
+        });
+      }
+    }
+
+    return patterns;
+  }
+
+  function renderReviewPatterns(mistakes) {
+    const host = document.getElementById('review-patterns');
+    const patterns = analyzePatterns(mistakes);
+    if (patterns.length === 0) {
+      host.innerHTML = `<div class="review-empty">Need at least 5 mistakes in a drill type before patterns surface. You have ${mistakes.length} so far — keep drilling.</div>`;
+      return;
+    }
+    host.innerHTML = patterns.map(p => `
+      <div class="review-pattern-card">
+        <div class="review-pattern-title">${p.title}</div>
+        <div class="review-pattern-top">${p.top}</div>
+        <div class="review-pattern-bar"><div class="review-pattern-bar-fill" style="width:${Math.min(100, p.ratio * 100).toFixed(0)}%"></div></div>
+        <div class="review-pattern-detail">${p.detail}</div>
+      </div>
+    `).join('');
+  }
+
+  function dateBucket(timestamp) {
+    const t = new Date(timestamp);
+    const now = new Date();
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+    const yesterdayStart = new Date(todayStart.getTime() - 86400000);
+    const weekStart = new Date(todayStart.getTime() - 6 * 86400000);
+    if (t >= todayStart) return 'Today';
+    if (t >= yesterdayStart) return 'Yesterday';
+    if (t >= weekStart) return 'Earlier this week';
+    return t.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function timeAgo(timestamp) {
+    const t = new Date(timestamp).getTime();
+    const diff = Date.now() - t;
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    if (d < 30) return `${d}d ago`;
+    return new Date(timestamp).toLocaleDateString();
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+  }
+
+  function renderReviewMistakeHistory(allMistakes) {
+    const host = document.getElementById('review-mistakes');
+    const filtered = gReviewFilter === 'all' ? allMistakes : allMistakes.filter(m => m.drill_type === gReviewFilter);
+    if (filtered.length === 0) {
+      host.innerHTML = `<div class="review-empty">${gReviewFilter === 'all' ? 'No mistakes yet — go drill something to get started.' : 'No mistakes in this filter. Try another source or "All sources".'}</div>`;
+      return;
+    }
+    // Group by date bucket
+    const grouped = {};
+    filtered.forEach(m => {
+      const b = dateBucket(m.created_at);
+      if (!grouped[b]) grouped[b] = [];
+      grouped[b].push(m);
+    });
+    let html = '';
+    for (const bucket of Object.keys(grouped)) {
+      html += `<div class="review-date-bucket">${bucket} · ${grouped[bucket].length}</div>`;
+      grouped[bucket].forEach(m => {
+        const drillInfo = REVIEW_DRILL_LABELS[m.drill_type] || { label: m.drill_type, tag: '' };
+        const promptText = escapeHtml(m.prompt || '(no prompt)');
+        const correctText = escapeHtml(m.correct || '');
+        const pickedText = escapeHtml(m.picked || '');
+        const showPicked = pickedText && pickedText !== '(revealed)' && pickedText !== '(rated hard)';
+        html += `
+          <div class="review-mistake-row">
+            <span class="review-mistake-tag ${drillInfo.tag}">${drillInfo.label}</span>
+            <div class="review-mistake-body">
+              <div class="review-mistake-prompt">${promptText}</div>
+              <div class="review-mistake-meta">
+                ${correctText ? `<span class="ans-correct">${correctText}</span>` : ''}
+                ${showPicked ? ` &nbsp; <span class="ans-picked">${pickedText}</span>` : ''}
+                ${m.picked === '(revealed)' ? ` &nbsp; <em>(revealed)</em>` : ''}
+                ${m.picked === '(rated hard)' ? ` &nbsp; <em>(rated hard)</em>` : ''}
+              </div>
+              <div class="review-mistake-time">${timeAgo(m.created_at)}</div>
+            </div>
+            <button class="review-resolve-btn" onclick="dismissMistake('${m.id}', this)">✓ Got it now</button>
+          </div>
+        `;
+      });
+    }
+    host.innerHTML = html;
+  }
+
+  async function dismissMistake(id, btn) {
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '…';
+    }
+    await resolveMistake(id);
+    // Remove from cache + re-render
+    gReviewMistakesCache = gReviewMistakesCache.filter(m => m.id !== id);
+    renderReviewStats(gReviewMistakesCache);
+    renderReviewPatterns(gReviewMistakesCache);
+    renderReviewMistakeHistory(gReviewMistakesCache);
   }
 </script>
 </body>
