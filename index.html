@@ -2234,6 +2234,7 @@
         <div class="grammar-feedback" id="art-feedback"></div>
       </div>
       <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gArtBack()">← Back</button>
         <button class="grammar-btn" onclick="gArtNext()">Next →</button>
         <button class="grammar-btn grammar-btn-secondary" onclick="gArtShuffle()">🔀 Shuffle</button>
       </div>
@@ -2252,6 +2253,7 @@
         <div class="grammar-feedback" id="verb-feedback"></div>
       </div>
       <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gVerbBack()">← Back</button>
         <button class="grammar-btn" onclick="gVerbNext()">Next →</button>
         <button class="grammar-btn grammar-btn-secondary" onclick="gVerbShuffle()">🔀 New Verb</button>
       </div>
@@ -2270,6 +2272,7 @@
         <div class="grammar-feedback" id="prep-feedback"></div>
       </div>
       <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gPrepBack()">← Back</button>
         <button class="grammar-btn" onclick="gPrepNext()">Next →</button>
         <button class="grammar-btn grammar-btn-secondary" onclick="gPrepShuffle()">🔀 Shuffle</button>
       </div>
@@ -2288,6 +2291,7 @@
         <div class="grammar-feedback" id="adj-feedback"></div>
       </div>
       <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gAdjBack()">← Back</button>
         <button class="grammar-btn" onclick="gAdjNext()">Next →</button>
         <button class="grammar-btn grammar-btn-secondary" onclick="gAdjShuffle()">🔀 Shuffle</button>
       </div>
@@ -2330,6 +2334,7 @@
         <div class="practice-feedback" id="listen-feedback"></div>
       </div>
       <div class="practice-controls">
+        <button class="practice-btn practice-btn-secondary" onclick="gListenBack()">← Back</button>
         <button class="practice-btn" onclick="gListenNext()">Next →</button>
         <button class="practice-btn practice-btn-secondary" onclick="gListenShuffle()">🔀 Shuffle</button>
       </div>
@@ -2364,6 +2369,7 @@
         <button class="pflash-rate-btn pflash-rate-easy" onclick="flashRate('easy')">✨ Easy</button>
       </div>
       <div class="practice-controls">
+        <button class="practice-btn practice-btn-secondary" onclick="flashBack()">← Back</button>
         <button class="practice-btn practice-btn-secondary" onclick="flashSkip()">Skip →</button>
         <button class="practice-btn practice-btn-secondary" onclick="initFlashDrill()">🔀 Shuffle</button>
       </div>
@@ -2389,6 +2395,7 @@
         <div class="practice-feedback" id="type-feedback"></div>
       </div>
       <div class="practice-controls">
+        <button class="practice-btn practice-btn-secondary" onclick="gTypeBack()">← Back</button>
         <button class="practice-btn" onclick="gTypeSubmit()">Check ✓</button>
         <button class="practice-btn practice-btn-secondary" onclick="gTypeNext()">Next →</button>
         <button class="practice-btn practice-btn-secondary" onclick="gTypeShuffle()">🔀 Shuffle</button>
@@ -4327,6 +4334,11 @@
     showArtCard();
   }
 
+  function gArtBack() {
+    gArtIndex = (gArtIndex - 1 + gArtDeck.length) % gArtDeck.length;
+    showArtCard();
+  }
+
   function gArtShuffle() {
     initArticlesDrill();
   }
@@ -4425,6 +4437,11 @@
     showVerbCard();
   }
 
+  function gVerbBack() {
+    gVerbIndex = (gVerbIndex - 1 + gVerbDeck.length) % gVerbDeck.length;
+    showVerbCard();
+  }
+
   function gVerbShuffle() {
     initVerbsDrill();
   }
@@ -4509,6 +4526,11 @@
     showPrepCard();
   }
 
+  function gPrepBack() {
+    gPrepIndex = (gPrepIndex - 1 + gPrepDeck.length) % gPrepDeck.length;
+    showPrepCard();
+  }
+
   function gPrepShuffle() {
     initPrepsDrill();
   }
@@ -4553,7 +4575,7 @@
   ];
   const GENDER_LABEL = { m: 'masculine', f: 'feminine', n: 'neuter' };
 
-  let gAdjQ = null, gAdjCorrect = 0, gAdjTotal = 0, gAdjAnswered = false, gAdjCount = 0;
+  let gAdjQ = null, gAdjCorrect = 0, gAdjTotal = 0, gAdjAnswered = false, gAdjCount = 0, gAdjHistory = [];
 
   function buildAdjQuestion() {
     const adj = ADJ_TRIPLES[Math.floor(Math.random() * ADJ_TRIPLES.length)];
@@ -4566,6 +4588,7 @@
     gAdjTotal = 0;
     gAdjCount = 0;
     gAdjAnswered = false;
+    gAdjHistory = [];
     gAdjQ = buildAdjQuestion();
     showAdjCard();
   }
@@ -4619,8 +4642,20 @@
   }
 
   function gAdjNext() {
+    if (gAdjQ) gAdjHistory.push(gAdjQ);
+    if (gAdjHistory.length > 50) gAdjHistory.shift();  // cap stack size
     gAdjQ = buildAdjQuestion();
     showAdjCard();
+  }
+
+  function gAdjBack() {
+    if (gAdjHistory.length === 0) return;  // nothing to go back to
+    gAdjQ = gAdjHistory.pop();
+    gAdjCount = Math.max(1, gAdjCount - 1);
+    showAdjCard();
+    // showAdjCard increments gAdjCount internally; compensate
+    gAdjCount = Math.max(1, gAdjCount - 1);
+    document.getElementById('adj-progress').textContent = `Question ${gAdjCount}`;
   }
 
   function gAdjShuffle() {
@@ -4811,6 +4846,11 @@
     showListenCard();
   }
 
+  function gListenBack() {
+    gListenIndex = (gListenIndex - 1 + gListenDeck.length) % gListenDeck.length;
+    showListenCard();
+  }
+
   function gListenShuffle() {
     initListenDrill();
   }
@@ -4994,6 +5034,11 @@
     showTypeCard();
   }
 
+  function gTypeBack() {
+    gTypeIndex = (gTypeIndex - 1 + gTypeDeck.length) % gTypeDeck.length;
+    showTypeCard();
+  }
+
   function gTypeShuffle() {
     initTypeDrill();
   }
@@ -5079,6 +5124,11 @@
 
   function flashSkip() {
     gFlashIndex = (gFlashIndex + 1) % gFlashDeck.length;
+    showFlashCard();
+  }
+
+  function flashBack() {
+    gFlashIndex = (gFlashIndex - 1 + gFlashDeck.length) % gFlashDeck.length;
     showFlashCard();
   }
 
