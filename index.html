@@ -2487,6 +2487,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
     </div>
 
     <!-- Articles drill -->
@@ -2505,6 +2506,25 @@
       <div class="grammar-progress">
         <span id="art-progress">Question 1 of 15</span>
         <span class="grammar-score" id="art-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Type A verbs drill -->
+    <div id="grammar-typea" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="typea-prompt">…</div>
+        <div class="grammar-prompt-en" id="typea-en">…</div>
+        <div class="grammar-options" id="typea-options"></div>
+        <div class="grammar-feedback" id="typea-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gTypeABack()">← Back</button>
+        <button class="grammar-btn" onclick="gTypeANext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gTypeAShuffle()">🔀 New Verb</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="typea-progress">Verb 1</span>
+        <span class="grammar-score" id="typea-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -4713,6 +4733,7 @@
     document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
     document.getElementById('grammar-adj').style.display = mode === 'adj' ? '' : 'none';
     document.getElementById('grammar-gtap').style.display = mode === 'gtap' ? '' : 'none';
+    document.getElementById('grammar-typea').style.display = mode === 'typea' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -4720,6 +4741,7 @@
     if (mode === 'preps') initPrepsDrill();
     if (mode === 'adj') initAdjDrill();
     if (mode === 'gtap') initGenderTap();
+    if (mode === 'typea') initTypeADrill();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -4937,6 +4959,107 @@
 
   function gVerbShuffle() {
     initVerbsDrill();
+  }
+
+  // Type A verbs (-ω) — endings: -ω, -εις, -ει, -ουμε, -ετε, -ουν(ε)
+  // Cleanly regular Type A only — skipped ακούω (contracted, between A/B),
+  // τρώω/πίνω (irregular). 15 high-frequency verbs.
+  const TYPE_A_VERBS = [
+    { inf: 'κάνω',     en: 'to do / to make', forms: { eg:'κάνω',     es:'κάνεις',     af:'κάνει',     em:'κάνουμε',     eis:'κάνετε',     af3:'κάνουν' } },
+    { inf: 'βλέπω',    en: 'to see',          forms: { eg:'βλέπω',    es:'βλέπεις',    af:'βλέπει',    em:'βλέπουμε',    eis:'βλέπετε',    af3:'βλέπουν' } },
+    { inf: 'διαβάζω',  en: 'to read',         forms: { eg:'διαβάζω',  es:'διαβάζεις',  af:'διαβάζει',  em:'διαβάζουμε',  eis:'διαβάζετε',  af3:'διαβάζουν' } },
+    { inf: 'γράφω',    en: 'to write',        forms: { eg:'γράφω',    es:'γράφεις',    af:'γράφει',    em:'γράφουμε',    eis:'γράφετε',    af3:'γράφουν' } },
+    { inf: 'μένω',     en: 'to stay / live',  forms: { eg:'μένω',     es:'μένεις',     af:'μένει',     em:'μένουμε',     eis:'μένετε',     af3:'μένουν' } },
+    { inf: 'δουλεύω',  en: 'to work',         forms: { eg:'δουλεύω',  es:'δουλεύεις',  af:'δουλεύει',  em:'δουλεύουμε',  eis:'δουλεύετε',  af3:'δουλεύουν' } },
+    { inf: 'τρέχω',    en: 'to run',          forms: { eg:'τρέχω',    es:'τρέχεις',    af:'τρέχει',    em:'τρέχουμε',    eis:'τρέχετε',    af3:'τρέχουν' } },
+    { inf: 'μαθαίνω',  en: 'to learn',        forms: { eg:'μαθαίνω',  es:'μαθαίνεις',  af:'μαθαίνει',  em:'μαθαίνουμε',  eis:'μαθαίνετε',  af3:'μαθαίνουν' } },
+    { inf: 'φεύγω',    en: 'to leave',        forms: { eg:'φεύγω',    es:'φεύγεις',    af:'φεύγει',    em:'φεύγουμε',    eis:'φεύγετε',    af3:'φεύγουν' } },
+    { inf: 'τελειώνω', en: 'to finish',       forms: { eg:'τελειώνω', es:'τελειώνεις', af:'τελειώνει', em:'τελειώνουμε', eis:'τελειώνετε', af3:'τελειώνουν' } },
+    { inf: 'αρχίζω',   en: 'to begin',        forms: { eg:'αρχίζω',   es:'αρχίζεις',   af:'αρχίζει',   em:'αρχίζουμε',   eis:'αρχίζετε',   af3:'αρχίζουν' } },
+    { inf: 'θέλω',     en: 'to want',         forms: { eg:'θέλω',     es:'θέλεις',     af:'θέλει',     em:'θέλουμε',     eis:'θέλετε',     af3:'θέλουν' } },
+    { inf: 'ξέρω',     en: 'to know',         forms: { eg:'ξέρω',     es:'ξέρεις',     af:'ξέρει',     em:'ξέρουμε',     eis:'ξέρετε',     af3:'ξέρουν' } },
+    { inf: 'παίρνω',   en: 'to take',         forms: { eg:'παίρνω',   es:'παίρνεις',   af:'παίρνει',   em:'παίρνουμε',   eis:'παίρνετε',   af3:'παίρνουν' } },
+    { inf: 'φέρνω',    en: 'to bring',        forms: { eg:'φέρνω',    es:'φέρνεις',    af:'φέρνει',    em:'φέρνουμε',    eis:'φέρνετε',    af3:'φέρνουν' } }
+  ];
+
+  let gTypeADeck = [], gTypeAIndex = 0, gTypeACorrect = 0, gTypeATotal = 0, gTypeAAnswered = false, gTypeATargetPerson = null;
+
+  function initTypeADrill() {
+    gTypeADeck = [...TYPE_A_VERBS].sort(() => Math.random() - 0.5);
+    gTypeAIndex = 0;
+    gTypeACorrect = 0;
+    gTypeATotal = 0;
+    gTypeAAnswered = false;
+    showTypeACard();
+  }
+
+  function showTypeACard() {
+    const v = gTypeADeck[gTypeAIndex];
+    if (!v) return;
+    gTypeATargetPerson = PERSON_KEYS[Math.floor(Math.random() * PERSON_KEYS.length)];
+    const targetLabel = PERSON_LABELS[gTypeATargetPerson];
+    document.getElementById('typea-prompt').innerHTML =
+      `<strong>${v.inf}</strong> &nbsp;<span style="font-size:0.95rem;color:#6a5a80;">— ${v.en}</span>` +
+      `<div style="font-size:1rem;color:#4527a0;margin-top:14px;">Pick the form for: <strong>${targetLabel}</strong></div>`;
+    document.getElementById('typea-en').textContent = '';
+    const fb = document.getElementById('typea-feedback');
+    fb.innerHTML = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('typea-options');
+    optsHost.innerHTML = '';
+    const formsShuffled = [...PERSON_KEYS].sort(() => Math.random() - 0.5);
+    formsShuffled.forEach(pk => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = v.forms[pk];
+      b.dataset.person = pk;
+      b.onclick = () => gTypeAAnswer(pk, b, v);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('typea-progress').textContent = `Verb ${gTypeAIndex + 1} of ${gTypeADeck.length}`;
+    document.getElementById('typea-score').textContent = `Score: ${gTypeACorrect}/${gTypeATotal}`;
+    gTypeAAnswered = false;
+  }
+
+  function gTypeAAnswer(pickedPerson, btnEl, v) {
+    if (gTypeAAnswered) return;
+    gTypeAAnswered = true;
+    gTypeATotal++;
+    if (pickedPerson === gTypeATargetPerson) gTypeACorrect++;
+    else recordMistake({
+      drill_type: 'verbs',
+      prompt: `${v.inf} (${v.en}) — ${PERSON_LABELS[gTypeATargetPerson]}`,
+      correct: v.forms[gTypeATargetPerson],
+      picked: v.forms[pickedPerson],
+      metadata: { verb_inf: v.inf, verb_en: v.en, target_person: gTypeATargetPerson, picked_person: pickedPerson, verb_type: 'A' }
+    });
+    document.querySelectorAll('#typea-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.person === gTypeATargetPerson) b.classList.add('correct');
+      else if (b === btnEl && pickedPerson !== gTypeATargetPerson) b.classList.add('wrong');
+    });
+    const tableRows = PERSON_KEYS.map(pk => {
+      const isTarget = pk === gTypeATargetPerson;
+      return `<tr style="${isTarget ? 'background:#ede7f6;font-weight:700;' : ''}"><td style="padding:3px 10px;color:#6a5a80;font-size:0.85rem;">${PERSON_LABELS[pk]}</td><td style="padding:3px 10px;font-family:'Playfair Display',serif;color:#1a1a1a;">${v.forms[pk]}</td></tr>`;
+    }).join('');
+    const fb = document.getElementById('typea-feedback');
+    fb.innerHTML = `<div style="font-weight:700;margin-bottom:6px;">💡 Full conjugation of <em>${v.inf}</em>:</div><table style="margin:0 auto;border-collapse:collapse;">${tableRows}</table>`;
+    fb.classList.add('show');
+    document.getElementById('typea-score').textContent = `Score: ${gTypeACorrect}/${gTypeATotal}`;
+  }
+
+  function gTypeANext() {
+    gTypeAIndex = (gTypeAIndex + 1) % gTypeADeck.length;
+    showTypeACard();
+  }
+
+  function gTypeABack() {
+    gTypeAIndex = (gTypeAIndex - 1 + gTypeADeck.length) % gTypeADeck.length;
+    showTypeACard();
+  }
+
+  function gTypeAShuffle() {
+    initTypeADrill();
   }
 
   // Prepositions drill — Greek prepositions are mostly simple words but they
