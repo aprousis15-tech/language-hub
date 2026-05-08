@@ -1129,6 +1129,102 @@
   .fluency-chart-empty { text-align: center; color: #9a8a75; font-style: italic; padding: 60px 20px; }
   .sessions-empty { text-align: center; padding: 30px; color: #9a8a75; font-style: italic; font-size: 0.88rem; }
 
+  /* ── PRACTICE (Listening + Production) ── */
+  .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
+  .practice-header { text-align: center; margin-bottom: 24px; }
+  .practice-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #ad1457; margin-bottom: 6px; }
+  .practice-header p { font-size: 0.85rem; color: #7a4060; }
+  .practice-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
+  .practice-mode-btn {
+    padding: 8px 20px; border-radius: 99px; border: 1px solid #e8b9d0;
+    background: white; font-size: 0.82rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; color: #ad1457; transition: all 0.15s;
+  }
+  .practice-mode-btn:hover { background: #fdeaf2; }
+  .practice-mode-btn.active { background: #ad1457; color: white; border-color: #ad1457; }
+  .practice-card {
+    background: white; border: 2px solid #e8b9d0; border-radius: 14px;
+    padding: 32px 24px; margin: 0 auto 18px; max-width: 600px;
+    text-align: center; box-shadow: 0 4px 12px rgba(173,20,87,0.06);
+  }
+  .practice-play-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 18px 36px; border-radius: 99px; border: 2px solid #ad1457;
+    background: #ad1457; color: white; font-size: 1.1rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; transition: all 0.15s; margin-bottom: 12px;
+  }
+  .practice-play-btn:hover { background: #880e4f; border-color: #880e4f; transform: scale(1.03); }
+  .practice-play-btn:disabled { background: #c5b9c2; border-color: #c5b9c2; cursor: not-allowed; transform: none; }
+  .practice-play-btn.playing { background: #880e4f; border-color: #880e4f; animation: pulseRing 0.8s ease-in-out infinite; }
+  @keyframes pulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(173,20,87,0.4); } 50% { box-shadow: 0 0 0 12px rgba(173,20,87,0); } }
+  .practice-greek-reveal {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #1a1a1a;
+    min-height: 28px; margin: 14px 0 6px; opacity: 0; transition: opacity 0.3s;
+  }
+  .practice-greek-reveal.shown { opacity: 1; }
+  .practice-greek-reveal-phonetic { font-size: 0.85rem; color: #7a4060; font-style: italic; margin-bottom: 18px; min-height: 18px; opacity: 0; transition: opacity 0.3s; }
+  .practice-greek-reveal-phonetic.shown { opacity: 1; }
+  .practice-options {
+    display: flex; flex-direction: column; gap: 10px;
+    align-items: stretch; margin: 16px auto 0; max-width: 420px;
+  }
+  .practice-option {
+    padding: 12px 18px; font-size: 0.95rem; font-family: 'Lato', sans-serif;
+    border: 2px solid #e8b9d0; background: white; color: #1a1a1a;
+    border-radius: 10px; cursor: pointer; transition: all 0.18s; text-align: left;
+  }
+  .practice-option:hover:not(.disabled) { background: #fdeaf2; border-color: #ad1457; }
+  .practice-option.correct { background: #d4f4dd; border-color: #2e7d32; color: #1b5e20; font-weight: 600; }
+  .practice-option.wrong { background: #fde8e8; border-color: #c62828; color: #b71c1c; }
+  .practice-option.disabled { cursor: default; }
+  .practice-feedback { font-size: 0.9rem; color: #6a4060; margin: 14px auto 0; min-height: 22px; max-width: 480px; }
+  .practice-feedback.show {
+    background: #fdeaf2; border-left: 3px solid #ad1457;
+    padding: 10px 14px; border-radius: 0 8px 8px 0;
+    text-align: left; margin: 14px auto 4px;
+  }
+  .practice-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .practice-btn {
+    padding: 9px 22px; border-radius: 99px; border: 1px solid #ad1457;
+    background: #ad1457; color: white; font-size: 0.85rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .practice-btn:hover { background: #880e4f; }
+  .practice-btn-secondary { background: white; color: #ad1457; }
+  .practice-btn-secondary:hover { background: #fdeaf2; }
+  .practice-progress { text-align: center; font-size: 0.82rem; color: #6a4060; margin-top: 14px; }
+  .practice-score {
+    display: inline-block; background: #fdeaf2; border: 1px solid #e8b9d0;
+    padding: 3px 12px; border-radius: 99px; color: #ad1457;
+    font-weight: 700; margin-left: 10px;
+  }
+  .practice-novoice {
+    background: #fff3e0; border: 1px solid #ffb74d; color: #6a4015;
+    padding: 14px 18px; border-radius: 10px; max-width: 480px;
+    margin: 0 auto 16px; font-size: 0.88rem; line-height: 1.5;
+  }
+  .practice-input {
+    width: 100%; max-width: 420px; padding: 14px 18px; font-size: 1.1rem;
+    font-family: 'Lato', sans-serif; border: 2px solid #e8b9d0;
+    border-radius: 10px; text-align: center; color: #1a1a1a;
+    transition: border-color 0.15s;
+  }
+  .practice-input:focus { outline: none; border-color: #ad1457; }
+  .practice-input.correct { border-color: #2e7d32; background: #f0faf3; }
+  .practice-input.wrong { border-color: #c62828; background: #fdf3f3; }
+  .practice-prompt-en {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #1a1a1a;
+    margin-bottom: 6px; line-height: 1.4;
+  }
+  .practice-prompt-hint { font-size: 0.85rem; color: #7a4060; font-style: italic; margin-bottom: 22px; }
+  .practice-tinybtn {
+    display: inline-block; padding: 4px 12px; font-size: 0.78rem;
+    border: 1px solid #e8b9d0; background: white; color: #ad1457;
+    border-radius: 99px; cursor: pointer; margin: 0 4px;
+    font-family: 'Lato', sans-serif; transition: all 0.12s;
+  }
+  .practice-tinybtn:hover { background: #fdeaf2; }
+
   /* ── GRAMMAR DRILL ── */
   .lang-tab.active-grammar { color: #4527a0; border-bottom-color: #4527a0; background: white; font-weight: 700; }
   .grammar-header { text-align: center; margin-bottom: 24px; }
@@ -1212,6 +1308,7 @@
   <button class="lang-tab" onclick="switchLang('dad')">👨 Practice w/ Dad</button>
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
   <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
+  <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -2153,6 +2250,46 @@
   </div>
 </div>
 
+<div class="lang-panel" id="panel-practice">
+  <div class="container">
+
+    <div class="practice-header">
+      <h2>🎧 Audio &amp; Production Practice</h2>
+      <p>Train your ear (hear Greek, pick the meaning) and your recall (see English, type Greek).</p>
+    </div>
+
+    <div class="practice-mode-bar">
+      <button class="practice-mode-btn active" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
+    </div>
+
+    <!-- Listening drill -->
+    <div id="practice-listen">
+      <div class="practice-novoice" id="listen-novoice" style="display:none;">
+        <strong>⚠️ No Greek voice found on this device.</strong><br>
+        Install a Greek TTS voice via your OS speech settings:<br>
+        <em>Windows:</em> Settings → Time &amp; Language → Speech → Add a voice → Greek (Stefanos).<br>
+        <em>iOS/macOS:</em> ships with Siri Greek by default — should already work.
+      </div>
+      <div class="practice-card" id="listen-card">
+        <button class="practice-play-btn" id="listen-play" onclick="playListenAudio()">🔊 Play Greek</button>
+        <div class="practice-greek-reveal" id="listen-greek">&nbsp;</div>
+        <div class="practice-greek-reveal-phonetic" id="listen-phonetic">&nbsp;</div>
+        <div class="practice-options" id="listen-options"></div>
+        <div class="practice-feedback" id="listen-feedback"></div>
+      </div>
+      <div class="practice-controls">
+        <button class="practice-btn" onclick="gListenNext()">Next →</button>
+        <button class="practice-btn practice-btn-secondary" onclick="gListenShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="practice-progress">
+        <span id="listen-progress">Question 1</span>
+        <span class="practice-score" id="listen-score">Score: 0/0</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <footer>
   Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
 </footer>
@@ -2680,15 +2817,16 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-translate','active-notes','active-sessions'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-translate','active-notes','active-sessions'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, translate:6, notes:7, sessions:8};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, translate:7, notes:8, sessions:9};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
     if (lang === 'grammar') { initArticlesDrill(); }
+    if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
@@ -4375,6 +4513,190 @@
 
   function gAdjShuffle() {
     initAdjDrill();
+  }
+
+  // ── PRACTICE (Listen + Production) ──
+  // Shared vocab cache — populated on first practice tab open, reused across modes
+  let gPracticeVocab = null;
+  let gPracticeVocabLoaded = false;
+  let gGreekVoice = null;
+  let gVoicesProbed = false;
+
+  async function ensurePracticeVocab() {
+    if (gPracticeVocabLoaded) return gPracticeVocab;
+    const all = await loadVocab();
+    gPracticeVocab = (all || []).filter(v => v.lang === 'greek');
+    gPracticeVocabLoaded = true;
+    return gPracticeVocab;
+  }
+
+  function findGreekVoice() {
+    const synth = window.speechSynthesis;
+    if (!synth) return null;
+    const voices = synth.getVoices();
+    if (!voices || voices.length === 0) return null;
+    // Prefer non-default Greek voices first; fall back to anything starting with 'el'
+    return voices.find(v => v.lang && v.lang.toLowerCase().startsWith('el')) || null;
+  }
+
+  function ensureGreekVoice(callback) {
+    if (gGreekVoice) { callback(gGreekVoice); return; }
+    const synth = window.speechSynthesis;
+    if (!synth) { callback(null); return; }
+    const tryFind = () => {
+      const v = findGreekVoice();
+      if (v) { gGreekVoice = v; callback(v); return true; }
+      return false;
+    };
+    if (tryFind()) return;
+    // Voices may load async (Chrome). Listen for change event.
+    let resolved = false;
+    const handler = () => {
+      if (resolved) return;
+      if (tryFind()) { resolved = true; synth.removeEventListener('voiceschanged', handler); }
+    };
+    synth.addEventListener('voiceschanged', handler);
+    // Safety timeout — give up after 1.5s
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        synth.removeEventListener('voiceschanged', handler);
+        callback(null);
+      }
+    }, 1500);
+  }
+
+  function setPracticeMode(mode, btn) {
+    document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('practice-listen').style.display = mode === 'listen' ? '' : 'none';
+    if (mode === 'listen') initListenDrill();
+  }
+
+  // Top-level entry — called from switchLang on tab open
+  async function initPracticeDrill() {
+    await ensurePracticeVocab();
+    initListenDrill();
+  }
+
+  // ── Listen → Pick mode ──
+  let gListenDeck = [], gListenIndex = 0, gListenCorrect = 0, gListenTotal = 0, gListenAnswered = false;
+
+  function initListenDrill() {
+    if (!gPracticeVocab || gPracticeVocab.length === 0) {
+      ensurePracticeVocab().then(() => initListenDrill());
+      return;
+    }
+    // Probe for Greek voice once; show banner if missing
+    if (!gVoicesProbed) {
+      gVoicesProbed = true;
+      ensureGreekVoice(v => {
+        const banner = document.getElementById('listen-novoice');
+        const card = document.getElementById('listen-card');
+        if (!v) {
+          banner.style.display = '';
+          card.style.opacity = '0.4';
+        } else {
+          banner.style.display = 'none';
+          card.style.opacity = '1';
+        }
+      });
+    }
+    gListenDeck = [...gPracticeVocab].sort(() => Math.random() - 0.5);
+    gListenIndex = 0;
+    gListenCorrect = 0;
+    gListenTotal = 0;
+    gListenAnswered = false;
+    showListenCard();
+  }
+
+  function showListenCard() {
+    const v = gListenDeck[gListenIndex];
+    if (!v) return;
+    document.getElementById('listen-greek').textContent = ' ';
+    document.getElementById('listen-greek').classList.remove('shown');
+    document.getElementById('listen-phonetic').textContent = ' ';
+    document.getElementById('listen-phonetic').classList.remove('shown');
+    const fb = document.getElementById('listen-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    // Build 4 options: correct + 3 distractors of same part_of_speech if possible
+    const correct = v.translation;
+    const samePOS = gPracticeVocab.filter(x => x.part_of_speech === v.part_of_speech && x.translation !== correct);
+    const pool = samePOS.length >= 3 ? samePOS : gPracticeVocab.filter(x => x.translation !== correct);
+    const distractors = [...pool].sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.translation);
+    const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+    const optsHost = document.getElementById('listen-options');
+    optsHost.innerHTML = '';
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'practice-option';
+      b.textContent = opt;
+      b.onclick = () => gListenAnswer(opt, b, v);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('listen-progress').textContent = `Question ${gListenIndex + 1} of ${gListenDeck.length}`;
+    document.getElementById('listen-score').textContent = `Score: ${gListenCorrect}/${gListenTotal}`;
+    gListenAnswered = false;
+    // Auto-play once on card show (safe — only fires on user-initiated tab/mode/next click chain)
+    playListenAudio();
+  }
+
+  function playListenAudio() {
+    const v = gListenDeck[gListenIndex];
+    if (!v) return;
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    ensureGreekVoice(voice => {
+      if (!voice) return;
+      const u = new SpeechSynthesisUtterance(v.word);
+      u.voice = voice;
+      u.lang = voice.lang || 'el-GR';
+      u.rate = 0.92;
+      u.pitch = 1.0;
+      const playBtn = document.getElementById('listen-play');
+      playBtn.classList.add('playing');
+      u.onend = () => playBtn.classList.remove('playing');
+      u.onerror = () => playBtn.classList.remove('playing');
+      synth.speak(u);
+    });
+  }
+
+  function gListenAnswer(picked, btnEl, v) {
+    if (gListenAnswered) return;
+    gListenAnswered = true;
+    gListenTotal++;
+    if (picked === v.translation) gListenCorrect++;
+    document.querySelectorAll('#listen-options .practice-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === v.translation) b.classList.add('correct');
+      else if (b === btnEl && picked !== v.translation) b.classList.add('wrong');
+    });
+    // Reveal Greek + phonetic so user can confirm what they heard
+    document.getElementById('listen-greek').textContent = v.word;
+    document.getElementById('listen-greek').classList.add('shown');
+    if (v.phonetic) {
+      document.getElementById('listen-phonetic').textContent = v.phonetic;
+      document.getElementById('listen-phonetic').classList.add('shown');
+    }
+    const fb = document.getElementById('listen-feedback');
+    if (v.intuition) {
+      fb.innerHTML = '💡 ' + v.intuition;
+    } else {
+      fb.textContent = picked === v.translation ? '✓ Correct!' : `Correct answer: ${v.translation}`;
+    }
+    fb.classList.add('show');
+    document.getElementById('listen-score').textContent = `Score: ${gListenCorrect}/${gListenTotal}`;
+  }
+
+  function gListenNext() {
+    gListenIndex = (gListenIndex + 1) % gListenDeck.length;
+    showListenCard();
+  }
+
+  function gListenShuffle() {
+    initListenDrill();
   }
 </script>
 </body>
