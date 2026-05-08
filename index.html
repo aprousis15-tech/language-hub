@@ -2073,6 +2073,7 @@
 
     <div class="grammar-mode-bar">
       <button class="grammar-mode-btn active" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
     </div>
 
     <!-- Articles drill -->
@@ -2090,6 +2091,24 @@
       <div class="grammar-progress">
         <span id="art-progress">Question 1 of 15</span>
         <span class="grammar-score" id="art-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Type B verbs drill -->
+    <div id="grammar-verbs" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="verb-prompt">…</div>
+        <div class="grammar-prompt-en" id="verb-en">…</div>
+        <div class="grammar-options" id="verb-options"></div>
+        <div class="grammar-feedback" id="verb-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn" onclick="gVerbNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gVerbShuffle()">🔀 New Verb</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="verb-progress">Verb 1</span>
+        <span class="grammar-score" id="verb-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -3917,7 +3936,9 @@
     document.querySelectorAll('.grammar-mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
+    document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
     if (mode === 'articles') initArticlesDrill();
+    if (mode === 'verbs') initVerbsDrill();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -4016,6 +4037,104 @@
 
   function gArtShuffle() {
     initArticlesDrill();
+  }
+
+  // Type B verbs (-άω) — endings: -άω/-ώ, -άς, -άει/-ά, -άμε/-ούμε, -άτε, -άνε/-ούν(ε)
+  // Drill picks a random verb + random target person, presents all 6 forms shuffled,
+  // user clicks the form matching the target person.
+  const PERSON_KEYS = ['eg','es','af','em','eis','af3'];
+  const PERSON_LABELS = {
+    eg: 'εγώ (I)',
+    es: 'εσύ (you sing.)',
+    af: 'αυτός / αυτή / αυτό (he / she / it)',
+    em: 'εμείς (we)',
+    eis: 'εσείς (you plur. / formal)',
+    af3: 'αυτοί / αυτές / αυτά (they)'
+  };
+  const TYPE_B_VERBS = [
+    { inf: 'αγαπάω', en: 'to love',        forms: { eg:'αγαπάω',     es:'αγαπάς',     af:'αγαπάει',     em:'αγαπάμε',     eis:'αγαπάτε',     af3:'αγαπάνε' } },
+    { inf: 'μιλάω',  en: 'to speak / talk', forms: { eg:'μιλάω',      es:'μιλάς',      af:'μιλάει',      em:'μιλάμε',      eis:'μιλάτε',      af3:'μιλάνε' } },
+    { inf: 'ρωτάω',  en: 'to ask',         forms: { eg:'ρωτάω',      es:'ρωτάς',      af:'ρωτάει',      em:'ρωτάμε',      eis:'ρωτάτε',      af3:'ρωτάνε' } },
+    { inf: 'περπατάω', en: 'to walk',      forms: { eg:'περπατάω',   es:'περπατάς',   af:'περπατάει',   em:'περπατάμε',   eis:'περπατάτε',   af3:'περπατάνε' } },
+    { inf: 'κοιτάω', en: 'to look',        forms: { eg:'κοιτάω',     es:'κοιτάς',     af:'κοιτάει',     em:'κοιτάμε',     eis:'κοιτάτε',     af3:'κοιτάνε' } },
+    { inf: 'χαμογελάω', en: 'to smile',    forms: { eg:'χαμογελάω',  es:'χαμογελάς',  af:'χαμογελάει',  em:'χαμογελάμε',  eis:'χαμογελάτε',  af3:'χαμογελάνε' } },
+    { inf: 'γελάω',  en: 'to laugh',       forms: { eg:'γελάω',      es:'γελάς',      af:'γελάει',      em:'γελάμε',      eis:'γελάτε',      af3:'γελάνε' } },
+    { inf: 'πεινάω', en: 'to be hungry',   forms: { eg:'πεινάω',     es:'πεινάς',     af:'πεινάει',     em:'πεινάμε',     eis:'πεινάτε',     af3:'πεινάνε' } },
+    { inf: 'διψάω',  en: 'to be thirsty',  forms: { eg:'διψάω',      es:'διψάς',      af:'διψάει',      em:'διψάμε',      eis:'διψάτε',      af3:'διψάνε' } },
+    { inf: 'σταματάω', en: 'to stop',      forms: { eg:'σταματάω',   es:'σταματάς',   af:'σταματάει',   em:'σταματάμε',   eis:'σταματάτε',   af3:'σταματάνε' } },
+    { inf: 'ξυπνάω', en: 'to wake up',     forms: { eg:'ξυπνάω',     es:'ξυπνάς',     af:'ξυπνάει',     em:'ξυπνάμε',     eis:'ξυπνάτε',     af3:'ξυπνάνε' } },
+    { inf: 'τραγουδάω', en: 'to sing',     forms: { eg:'τραγουδάω',  es:'τραγουδάς',  af:'τραγουδάει',  em:'τραγουδάμε',  eis:'τραγουδάτε',  af3:'τραγουδάνε' } },
+    { inf: 'βοηθάω', en: 'to help',        forms: { eg:'βοηθάω',     es:'βοηθάς',     af:'βοηθάει',     em:'βοηθάμε',     eis:'βοηθάτε',     af3:'βοηθάνε' } },
+    { inf: 'απαντάω', en: 'to answer',     forms: { eg:'απαντάω',    es:'απαντάς',    af:'απαντάει',    em:'απαντάμε',    eis:'απαντάτε',    af3:'απαντάνε' } },
+    { inf: 'προσπαθάω', en: 'to try',      forms: { eg:'προσπαθάω',  es:'προσπαθάς',  af:'προσπαθάει',  em:'προσπαθάμε',  eis:'προσπαθάτε',  af3:'προσπαθάνε' } }
+  ];
+
+  let gVerbDeck = [], gVerbIndex = 0, gVerbCorrect = 0, gVerbTotal = 0, gVerbAnswered = false, gVerbTargetPerson = null;
+
+  function initVerbsDrill() {
+    gVerbDeck = [...TYPE_B_VERBS].sort(() => Math.random() - 0.5);
+    gVerbIndex = 0;
+    gVerbCorrect = 0;
+    gVerbTotal = 0;
+    gVerbAnswered = false;
+    showVerbCard();
+  }
+
+  function showVerbCard() {
+    const v = gVerbDeck[gVerbIndex];
+    if (!v) return;
+    gVerbTargetPerson = PERSON_KEYS[Math.floor(Math.random() * PERSON_KEYS.length)];
+    const targetLabel = PERSON_LABELS[gVerbTargetPerson];
+    document.getElementById('verb-prompt').innerHTML =
+      `<strong>${v.inf}</strong> &nbsp;<span style="font-size:0.95rem;color:#6a5a80;">— ${v.en}</span>` +
+      `<div style="font-size:1rem;color:#4527a0;margin-top:14px;">Pick the form for: <strong>${targetLabel}</strong></div>`;
+    document.getElementById('verb-en').textContent = '';
+    const fb = document.getElementById('verb-feedback');
+    fb.innerHTML = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('verb-options');
+    optsHost.innerHTML = '';
+    const formsShuffled = [...PERSON_KEYS].sort(() => Math.random() - 0.5);
+    formsShuffled.forEach(pk => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = v.forms[pk];
+      b.dataset.person = pk;
+      b.onclick = () => gVerbAnswer(pk, b, v);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('verb-progress').textContent = `Verb ${gVerbIndex + 1} of ${gVerbDeck.length}`;
+    document.getElementById('verb-score').textContent = `Score: ${gVerbCorrect}/${gVerbTotal}`;
+    gVerbAnswered = false;
+  }
+
+  function gVerbAnswer(pickedPerson, btnEl, v) {
+    if (gVerbAnswered) return;
+    gVerbAnswered = true;
+    gVerbTotal++;
+    if (pickedPerson === gVerbTargetPerson) gVerbCorrect++;
+    document.querySelectorAll('#verb-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.person === gVerbTargetPerson) b.classList.add('correct');
+      else if (b === btnEl && pickedPerson !== gVerbTargetPerson) b.classList.add('wrong');
+    });
+    const tableRows = PERSON_KEYS.map(pk => {
+      const isTarget = pk === gVerbTargetPerson;
+      return `<tr style="${isTarget ? 'background:#ede7f6;font-weight:700;' : ''}"><td style="padding:3px 10px;color:#6a5a80;font-size:0.85rem;">${PERSON_LABELS[pk]}</td><td style="padding:3px 10px;font-family:'Playfair Display',serif;color:#1a1a1a;">${v.forms[pk]}</td></tr>`;
+    }).join('');
+    const fb = document.getElementById('verb-feedback');
+    fb.innerHTML = `<div style="font-weight:700;margin-bottom:6px;">💡 Full conjugation of <em>${v.inf}</em>:</div><table style="margin:0 auto;border-collapse:collapse;">${tableRows}</table>`;
+    fb.classList.add('show');
+    document.getElementById('verb-score').textContent = `Score: ${gVerbCorrect}/${gVerbTotal}`;
+  }
+
+  function gVerbNext() {
+    gVerbIndex = (gVerbIndex + 1) % gVerbDeck.length;
+    showVerbCard();
+  }
+
+  function gVerbShuffle() {
+    initVerbsDrill();
   }
 </script>
 </body>
