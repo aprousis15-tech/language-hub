@@ -1518,6 +1518,87 @@
     font-weight: 700; margin-left: 10px;
   }
 
+  /* Gender Tap — rapid-fire micro-game */
+  .gtap-intro {
+    background: white; border: 2px solid #c5b9e8; border-radius: 14px;
+    padding: 24px; margin: 0 auto 18px; max-width: 520px; text-align: center;
+  }
+  .gtap-intro p { font-size: 0.92rem; color: #4527a0; line-height: 1.55; margin-bottom: 14px; }
+  .gtap-startbtn {
+    width: 120px; height: 120px; border-radius: 50%; border: none;
+    background: #4527a0; color: white; font-size: 1.4rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 6px 18px rgba(69,39,160,0.25);
+    transition: all 0.18s; font-family: 'Lato', sans-serif;
+  }
+  .gtap-startbtn:hover { background: #311b92; transform: scale(1.04); }
+  .gtap-arena {
+    background: white; border: 2px solid #c5b9e8; border-radius: 14px;
+    padding: 28px 18px; margin: 0 auto 16px; max-width: 600px; text-align: center;
+    box-shadow: 0 4px 12px rgba(69,39,160,0.06);
+  }
+  .gtap-timerbar {
+    background: #ede7f6; border-radius: 99px; height: 8px;
+    max-width: 600px; margin: 0 auto 12px; overflow: hidden;
+  }
+  .gtap-timerbar-fill {
+    background: linear-gradient(90deg, #4527a0, #7b3fa0);
+    height: 100%; width: 100%; transition: width 1s linear;
+  }
+  .gtap-timerbar-fill.lowtime { background: #c62828; }
+  .gtap-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 600px; margin: 0 auto 8px; font-size: 0.85rem; color: #6a5a80;
+    padding: 0 8px;
+  }
+  .gtap-noun {
+    font-family: 'Playfair Display', serif; font-size: 2.4rem; color: #1a1a1a;
+    margin: 18px 0 24px; line-height: 1.2; min-height: 56px;
+  }
+  .gtap-buttons {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    max-width: 480px; margin: 0 auto;
+  }
+  .gtap-genbtn {
+    padding: 22px 6px; font-size: 1rem; font-weight: 700;
+    border: 2px solid #c5b9e8; background: white; color: #4527a0;
+    border-radius: 12px; cursor: pointer; transition: all 0.15s;
+    font-family: 'Lato', sans-serif;
+  }
+  .gtap-genbtn-icon { display: block; font-size: 1.6rem; margin-bottom: 4px; }
+  .gtap-genbtn:hover:not(.flash-correct):not(.flash-wrong) { background: #ede7f6; border-color: #4527a0; transform: translateY(-2px); }
+  .gtap-genbtn.flash-correct { background: #d4f4dd; border-color: #2e7d32; color: #1b5e20; animation: gtapFlashGreen 0.4s; }
+  .gtap-genbtn.flash-wrong { background: #fde8e8; border-color: #c62828; color: #b71c1c; animation: gtapFlashRed 0.4s; }
+  @keyframes gtapFlashGreen { 0%,100% { transform: scale(1); } 30% { transform: scale(1.06); } }
+  @keyframes gtapFlashRed { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  .gtap-reveal {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    color: #4527a0; margin-top: 14px; min-height: 28px;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .gtap-reveal.shown { opacity: 1; }
+  .gtap-results {
+    background: white; border: 2px solid #c5b9e8; border-radius: 14px;
+    padding: 28px 22px; margin: 0 auto 18px; max-width: 540px; text-align: center;
+  }
+  .gtap-results h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #4527a0; margin-bottom: 14px; }
+  .gtap-results-stats { display: flex; gap: 12px; justify-content: center; margin: 18px 0; flex-wrap: wrap; }
+  .gtap-stat {
+    background: #ede7f6; border-radius: 12px; padding: 12px 18px; min-width: 110px;
+  }
+  .gtap-stat-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: #4527a0; font-weight: 700; }
+  .gtap-stat-label { font-size: 0.72rem; color: #6a5a80; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+  .gtap-misses {
+    text-align: left; margin-top: 14px; max-height: 200px; overflow-y: auto;
+    background: #faf8fd; border-radius: 8px; padding: 10px;
+  }
+  .gtap-miss-row {
+    display: flex; justify-content: space-between; padding: 4px 8px;
+    font-size: 0.85rem; border-bottom: 1px dashed #ede7f6;
+  }
+  .gtap-miss-row:last-child { border-bottom: none; }
+  .gtap-miss-noun { font-family: 'Playfair Display', serif; color: #1a1a1a; }
+  .gtap-miss-correct { color: #2e7d32; font-weight: 600; }
+
 </style>
 </head>
 <body>
@@ -2405,6 +2486,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
     </div>
 
     <!-- Articles drill -->
@@ -2461,6 +2543,42 @@
       <div class="grammar-progress">
         <span id="prep-progress">Question 1</span>
         <span class="grammar-score" id="prep-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Gender Tap micro-game -->
+    <div id="grammar-gtap" style="display:none;">
+      <div class="gtap-intro" id="gtap-intro">
+        <p>Rapid-fire gender drill. You'll see a noun (no article) — tap <strong>♂ Masc</strong>, <strong>♀ Fem</strong>, or <strong>⬢ Neut</strong>. <br>30 seconds, as many as you can. Sofia's "rule of thumb": <em>-ς → masc, -α/-η → fem, -ο/-ι/-μα → neut</em>.</p>
+        <button class="gtap-startbtn" onclick="gtapStart()">Start ▶</button>
+      </div>
+      <div id="gtap-arena" style="display:none;">
+        <div class="gtap-meta">
+          <span>⏱ <strong id="gtap-time">30</strong>s left</span>
+          <span>Score: <strong id="gtap-score">0/0</strong></span>
+        </div>
+        <div class="gtap-timerbar"><div class="gtap-timerbar-fill" id="gtap-timerbar-fill"></div></div>
+        <div class="gtap-arena">
+          <div class="gtap-noun" id="gtap-noun">…</div>
+          <div class="gtap-buttons">
+            <button class="gtap-genbtn" data-gender="m" onclick="gtapAnswer('m',this)"><span class="gtap-genbtn-icon">♂</span>Masc</button>
+            <button class="gtap-genbtn" data-gender="f" onclick="gtapAnswer('f',this)"><span class="gtap-genbtn-icon">♀</span>Fem</button>
+            <button class="gtap-genbtn" data-gender="n" onclick="gtapAnswer('n',this)"><span class="gtap-genbtn-icon">⬢</span>Neut</button>
+          </div>
+          <div class="gtap-reveal" id="gtap-reveal">&nbsp;</div>
+        </div>
+      </div>
+      <div id="gtap-results" style="display:none;">
+        <div class="gtap-results">
+          <h3>⏰ Time's up!</h3>
+          <div class="gtap-results-stats">
+            <div class="gtap-stat"><div class="gtap-stat-num" id="gtap-final-score">0</div><div class="gtap-stat-label">Correct</div></div>
+            <div class="gtap-stat"><div class="gtap-stat-num" id="gtap-final-total">0</div><div class="gtap-stat-label">Answered</div></div>
+            <div class="gtap-stat"><div class="gtap-stat-num" id="gtap-final-acc">0%</div><div class="gtap-stat-label">Accuracy</div></div>
+          </div>
+          <div class="gtap-misses" id="gtap-misses-host" style="display:none;"></div>
+          <button class="grammar-btn" style="margin-top:14px;" onclick="gtapResetToIntro()">🔁 Play again</button>
+        </div>
       </div>
     </div>
 
@@ -4594,10 +4712,14 @@
     document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
     document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
     document.getElementById('grammar-adj').style.display = mode === 'adj' ? '' : 'none';
+    document.getElementById('grammar-gtap').style.display = mode === 'gtap' ? '' : 'none';
+    // Stop any running gender tap when leaving
+    if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
     if (mode === 'verbs') initVerbsDrill();
     if (mode === 'preps') initPrepsDrill();
     if (mode === 'adj') initAdjDrill();
+    if (mode === 'gtap') initGenderTap();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -5042,6 +5164,160 @@
 
   function gAdjShuffle() {
     initAdjDrill();
+  }
+
+  // ── Gender Tap micro-game (rapid-fire 30s) ──
+  // Pulls singular-prefixed nouns from the practice vocab cache, strips the
+  // article for display, asks for m/f/n. End-of-round summary lists misses.
+  let gGtapState = null;
+
+  function initGenderTap() {
+    if (!gPracticeVocab || gPracticeVocab.length === 0) {
+      ensurePracticeVocab().then(() => initGenderTap());
+      return;
+    }
+    gtapResetToIntro();
+  }
+
+  function gtapResetToIntro() {
+    if (gGtapState && gGtapState.timer) { clearInterval(gGtapState.timer); }
+    gGtapState = null;
+    document.getElementById('gtap-intro').style.display = '';
+    document.getElementById('gtap-arena').style.display = 'none';
+    document.getElementById('gtap-results').style.display = 'none';
+  }
+
+  function gtapBuildPool() {
+    // Filter nouns whose word starts with a singular gendered article.
+    // Strip the article for the display form. Skip plural-prefixed entries.
+    const pool = [];
+    for (const v of gPracticeVocab) {
+      if (v.part_of_speech !== 'noun' || !v.word) continue;
+      let gender = null, stem = null;
+      if (v.word.startsWith('ο ')) { gender = 'm'; stem = v.word.slice(2); }
+      else if (v.word.startsWith('η ')) { gender = 'f'; stem = v.word.slice(2); }
+      else if (v.word.startsWith('το ')) { gender = 'n'; stem = v.word.slice(3); }
+      else continue;  // skips οι/τα/un-prefixed
+      if (!stem || stem.length < 2) continue;
+      pool.push({ stem, gender, full: v.word, en: v.translation });
+    }
+    return pool.sort(() => Math.random() - 0.5);
+  }
+
+  function gtapStart() {
+    const pool = gtapBuildPool();
+    if (pool.length < 5) {
+      alert('Not enough singular nouns in the pool — need at least 5.');
+      return;
+    }
+    gGtapState = {
+      pool, idx: 0, correct: 0, total: 0, secondsLeft: 30,
+      misses: [], answered: false, running: true, timer: null
+    };
+    document.getElementById('gtap-intro').style.display = 'none';
+    document.getElementById('gtap-results').style.display = 'none';
+    document.getElementById('gtap-arena').style.display = '';
+    gtapShowNoun();
+    gGtapState.timer = setInterval(gtapTick, 1000);
+    updateGtapMeta();
+  }
+
+  function gtapTick() {
+    if (!gGtapState || !gGtapState.running) return;
+    gGtapState.secondsLeft--;
+    if (gGtapState.secondsLeft <= 0) { gtapEnd(false); return; }
+    updateGtapMeta();
+  }
+
+  function updateGtapMeta() {
+    if (!gGtapState) return;
+    document.getElementById('gtap-time').textContent = gGtapState.secondsLeft;
+    document.getElementById('gtap-score').textContent = `${gGtapState.correct}/${gGtapState.total}`;
+    const fill = document.getElementById('gtap-timerbar-fill');
+    fill.style.width = (gGtapState.secondsLeft / 30 * 100) + '%';
+    if (gGtapState.secondsLeft <= 5) fill.classList.add('lowtime');
+    else fill.classList.remove('lowtime');
+  }
+
+  function gtapShowNoun() {
+    if (!gGtapState) return;
+    if (gGtapState.idx >= gGtapState.pool.length) {
+      // Reshuffle and continue (rare — would need ~3+ taps/sec)
+      gGtapState.pool = gGtapState.pool.sort(() => Math.random() - 0.5);
+      gGtapState.idx = 0;
+    }
+    const item = gGtapState.pool[gGtapState.idx];
+    document.getElementById('gtap-noun').textContent = item.stem;
+    document.getElementById('gtap-reveal').textContent = ' ';
+    document.getElementById('gtap-reveal').classList.remove('shown');
+    document.querySelectorAll('.gtap-genbtn').forEach(b => {
+      b.classList.remove('flash-correct', 'flash-wrong');
+      b.disabled = false;
+    });
+    gGtapState.answered = false;
+  }
+
+  function gtapAnswer(picked, btnEl) {
+    if (!gGtapState || !gGtapState.running || gGtapState.answered) return;
+    gGtapState.answered = true;
+    const item = gGtapState.pool[gGtapState.idx];
+    gGtapState.total++;
+    const correct = picked === item.gender;
+    if (correct) {
+      gGtapState.correct++;
+      btnEl.classList.add('flash-correct');
+    } else {
+      btnEl.classList.add('flash-wrong');
+      // Also flash the correct one green
+      const correctBtn = document.querySelector(`.gtap-genbtn[data-gender="${item.gender}"]`);
+      if (correctBtn) correctBtn.classList.add('flash-correct');
+      gGtapState.misses.push({ stem: item.stem, full: item.full, en: item.en, picked, gender: item.gender });
+    }
+    document.getElementById('gtap-reveal').textContent = item.full + ' — ' + item.en;
+    document.getElementById('gtap-reveal').classList.add('shown');
+    updateGtapMeta();
+    // Auto-advance after a brief flash
+    setTimeout(() => {
+      if (!gGtapState || !gGtapState.running) return;
+      gGtapState.idx++;
+      gtapShowNoun();
+    }, correct ? 350 : 700);
+  }
+
+  function gtapEnd(silent) {
+    if (!gGtapState) return;
+    gGtapState.running = false;
+    if (gGtapState.timer) { clearInterval(gGtapState.timer); gGtapState.timer = null; }
+    if (silent) return;  // navigated away — just clean up
+    document.getElementById('gtap-arena').style.display = 'none';
+    document.getElementById('gtap-results').style.display = '';
+    const total = gGtapState.total, correct = gGtapState.correct;
+    const acc = total > 0 ? Math.round(correct / total * 100) : 0;
+    document.getElementById('gtap-final-score').textContent = correct;
+    document.getElementById('gtap-final-total').textContent = total;
+    document.getElementById('gtap-final-acc').textContent = acc + '%';
+    const missesHost = document.getElementById('gtap-misses-host');
+    if (gGtapState.misses.length === 0) {
+      missesHost.style.display = total > 0 ? '' : 'none';
+      missesHost.innerHTML = total > 0 ? '<div style="text-align:center;padding:8px;color:#2e7d32;font-weight:600;">✓ No misses — clean round!</div>' : '';
+    } else {
+      const GENDER_FULL = { m: 'masc', f: 'fem', n: 'neut' };
+      missesHost.style.display = '';
+      missesHost.innerHTML = '<div style="font-size:0.78rem;color:#7a6a55;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Misses to remember</div>' +
+        gGtapState.misses.map(m =>
+          `<div class="gtap-miss-row"><span class="gtap-miss-noun">${m.full}</span><span><span style="color:#c62828;text-decoration:line-through;margin-right:6px;">${GENDER_FULL[m.picked]}</span><span class="gtap-miss-correct">${GENDER_FULL[m.gender]}</span></span></div>`
+        ).join('');
+      // Also feed each miss into the global mistakes table
+      gGtapState.misses.forEach(m => {
+        recordMistake({
+          drill_type: 'articles',
+          prompt: `Gender of: ${m.stem}`,
+          correct: m.full,
+          picked: GENDER_FULL[m.picked],
+          metadata: { gender: m.gender, picked_gender: m.picked, source: 'gender-tap', noun_en: m.en }
+        });
+      });
+    }
   }
 
   // ── PRACTICE (Listen + Production) ──
