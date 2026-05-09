@@ -6236,9 +6236,9 @@
     while (gLessonState.idx < gLessonState.deck.length) {
       if (abortToken.aborted) return;
       const v = gLessonState.deck[gLessonState.idx];
-      setLessonNowPlaying('Recall', `Say in Greek: ${v.translation}`, '…', '');
+      setLessonNowPlaying('Recall', v.translation, '…', '');
       updateLessonUI();
-      await speakAsync(`Say in Greek: ${v.translation}`, enVoice, 'en-US', enRate, abortToken);
+      await speakAsync(v.translation, enVoice, 'en-US', enRate, abortToken);
       if (abortToken.aborted) return;
       setLessonNowPlaying('Pause', v.translation, '…', '(think of the word)');
       await lessonWait(recallPause, abortToken);
