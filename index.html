@@ -2489,6 +2489,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
     </div>
 
     <!-- Articles drill -->
@@ -2507,6 +2508,25 @@
       <div class="grammar-progress">
         <span id="art-progress">Question 1 of 15</span>
         <span class="grammar-score" id="art-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Negation drill (δεν vs όχι, double negative) -->
+    <div id="grammar-neg" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="neg-en">…</div>
+        <div class="grammar-prompt-greek" id="neg-prompt">…</div>
+        <div class="grammar-options" id="neg-options"></div>
+        <div class="grammar-feedback" id="neg-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gNegBack()">← Back</button>
+        <button class="grammar-btn" onclick="gNegNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gNegShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="neg-progress">Question 1</span>
+        <span class="grammar-score" id="neg-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -4755,6 +4775,7 @@
     document.getElementById('grammar-gtap').style.display = mode === 'gtap' ? '' : 'none';
     document.getElementById('grammar-typea').style.display = mode === 'typea' ? '' : 'none';
     document.getElementById('grammar-time').style.display = mode === 'time' ? '' : 'none';
+    document.getElementById('grammar-neg').style.display = mode === 'neg' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -4764,6 +4785,7 @@
     if (mode === 'gtap') initGenderTap();
     if (mode === 'typea') initTypeADrill();
     if (mode === 'time') initTimeDrill();
+    if (mode === 'neg') initNegDrill();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -5184,6 +5206,98 @@
 
   function gTimeShuffle() {
     initTimeDrill();
+  }
+
+  // ── Negation drill (δεν vs όχι, double negative) ──
+  // Sofia's rule: δεν negates verbs only; όχι negates nouns/standalone.
+  // ποτέ/κανένας/τίποτα REQUIRE δεν before the verb (double negative).
+  const NEG_QUESTIONS = [
+    { en: 'I never drink coffee.',           prompt: 'Ποτέ ___ πίνω καφέ.',                   answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 ποτέ (never) ALWAYS requires δεν before the verb — Greek uses double negative.' },
+    { en: 'No one is here.',                 prompt: 'Κανένας ___ είναι εδώ.',                answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 κανένας (no one) requires δεν before the verb — double negative.' },
+    { en: 'I don’t want anything.',     prompt: '___ θέλω τίποτα.',                       answer: 'Δεν',  options: ['Δεν','Όχι','—'], hint: '🔁 δεν negates θέλω (the verb); τίποτα (nothing) reinforces it. Always paired.' },
+    { en: 'Not coffee, tea.',                prompt: '___ καφέ, τσάι.',                        answer: 'Όχι',  options: ['Δεν','Όχι','—'], hint: '🚫 όχι negates NOUNS. δεν is only for verbs. There''s no verb here → όχι.' },
+    { en: 'I’m not tired.',             prompt: '___ είμαι κουρασμένος.',                 answer: 'Δεν',  options: ['Δεν','Όχι','—'], hint: '✅ δεν negates the verb είμαι. Standard verb negation.' },
+    { en: 'He never works.',                 prompt: 'Αυτός ποτέ ___ δουλεύει.',               answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 ποτέ + δεν always go together = "never (does the verb)".' },
+    { en: 'Nothing is impossible.',          prompt: 'Τίποτα ___ είναι αδύνατο.',              answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 τίποτα + δεν = double negative. "Nothing not is impossible" = nothing IS impossible.' },
+    { en: 'Not the big one.',                prompt: '___ τον μεγάλο.',                        answer: 'Όχι',  options: ['Δεν','Όχι','—'], hint: '🚫 No verb here — όχι negates the noun phrase.' },
+    { en: 'She doesn’t sleep.',         prompt: 'Αυτή ___ κοιμάται.',                     answer: 'δεν',  options: ['δεν','όχι','—'], hint: '✅ δεν before the verb κοιμάται. Standard verb negation.' },
+    { en: 'Not now.',                        prompt: '___ τώρα.',                              answer: 'Όχι',  options: ['Δεν','Όχι','—'], hint: '🚫 Standalone time word, no verb → όχι.' },
+    { en: 'I never said that.',              prompt: 'Ποτέ ___ είπα αυτό.',                    answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 ποτέ requires δεν before the verb (είπα = I said, aorist of λέω).' },
+    { en: 'We don’t have anything today.', prompt: 'Σήμερα ___ έχουμε τίποτα.',           answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 τίποτα requires δεν before the verb — even when τίποτα is at the end.' },
+    { en: 'Not me!',                         prompt: '___ εγώ!',                               answer: 'Όχι',  options: ['Δεν','Όχι','—'], hint: '🚫 Pronoun standalone, no verb → όχι. Common in arguments.' },
+    { en: 'It’s not difficult.',        prompt: '___ είναι δύσκολο.',                     answer: 'Δεν',  options: ['Δεν','Όχι','—'], hint: '✅ Negating the verb είναι → δεν.' },
+    { en: 'He has no time.',                 prompt: 'Αυτός ___ έχει χρόνο.',                  answer: 'δεν',  options: ['δεν','όχι','—'], hint: '✅ Negating έχει (he has) → δεν. (You could also say δεν έχει καθόλου χρόνο with double neg.)' },
+    { en: 'Why not?',                        prompt: 'Γιατί ___ ;',                            answer: 'όχι',  options: ['δεν','όχι','—'], hint: '🚫 Standalone "not" → όχι. The full phrase Sofia taught: γιατί όχι.' },
+    { en: 'I don’t speak Greek well.',  prompt: '___ μιλάω καλά ελληνικά.',                answer: 'Δεν',  options: ['Δεν','Όχι','—'], hint: '✅ Negating μιλάω (I speak) → δεν.' },
+    { en: 'No one knows.',                   prompt: 'Κανείς ___ ξέρει.',                      answer: 'δεν',  options: ['δεν','όχι','—'], hint: '🔁 κανείς (variant of κανένας, "no one") requires δεν.' }
+  ];
+
+  let gNegDeck = [], gNegIndex = 0, gNegCorrect = 0, gNegTotal = 0, gNegAnswered = false;
+
+  function initNegDrill() {
+    gNegDeck = [...NEG_QUESTIONS].sort(() => Math.random() - 0.5);
+    gNegIndex = 0;
+    gNegCorrect = 0;
+    gNegTotal = 0;
+    gNegAnswered = false;
+    showNegCard();
+  }
+
+  function showNegCard() {
+    const q = gNegDeck[gNegIndex];
+    if (!q) return;
+    document.getElementById('neg-en').textContent = q.en;
+    document.getElementById('neg-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('neg-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('neg-options');
+    optsHost.innerHTML = '';
+    q.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gNegAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('neg-progress').textContent = `Question ${gNegIndex + 1} of ${gNegDeck.length}`;
+    document.getElementById('neg-score').textContent = `Score: ${gNegCorrect}/${gNegTotal}`;
+    gNegAnswered = false;
+  }
+
+  function gNegAnswer(picked, btnEl, q) {
+    if (gNegAnswered) return;
+    gNegAnswered = true;
+    gNegTotal++;
+    if (picked === q.answer) gNegCorrect++;
+    else recordMistake({
+      drill_type: 'articles', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'negation', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#neg-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('neg-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('neg-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('neg-score').textContent = `Score: ${gNegCorrect}/${gNegTotal}`;
+  }
+
+  function gNegNext() {
+    gNegIndex = (gNegIndex + 1) % gNegDeck.length;
+    showNegCard();
+  }
+
+  function gNegBack() {
+    gNegIndex = (gNegIndex - 1 + gNegDeck.length) % gNegDeck.length;
+    showNegCard();
+  }
+
+  function gNegShuffle() {
+    initNegDrill();
   }
 
   // Prepositions drill — Greek prepositions are mostly simple words but they
