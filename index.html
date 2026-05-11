@@ -2678,6 +2678,7 @@
     <div class="practice-topic-label">Filter by topic</div>
     <div class="practice-topic-bar">
       <button class="practice-topic-chip active" onclick="setPracticeTopic('all',this)">🌐 All</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('mistakes',this)">🎯 My Mistakes</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('iphone',this)">📱 iPhone</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('messages',this)">💬 Messages</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('spotify',this)">🎵 Spotify</button>
@@ -5716,8 +5717,26 @@
     'Sign Up / Register','Episode','Show','Devices','Sign In / Connect','Queue'
   ]);
 
+  // Cache of vocab_ids the user has gotten wrong (unresolved mistakes with vocab_id).
+  // Populated lazily when the 🎯 My Mistakes chip is tapped.
+  let gMistakeVocabIdsCache = null;
+
+  async function loadMistakeVocabIds() {
+    if (!window._supabase) return new Set();
+    try {
+      const { data, error } = await window._supabase
+        .from('mistakes')
+        .select('vocab_id')
+        .is('resolved_at', null)
+        .not('vocab_id', 'is', null);
+      if (error || !data) return new Set();
+      return new Set(data.map(r => r.vocab_id));
+    } catch { return new Set(); }
+  }
+
   function getPracticeTopicFilter() {
     switch (gPracticeTopicKey) {
+      case 'mistakes':   return v => gMistakeVocabIdsCache && gMistakeVocabIdsCache.has(v.id);
       case 'iphone':     return v => v.topic === 'iPhone';
       case 'messages':   return v => v.topic === 'iPhone' && PRACTICE_MESSAGES_TRANSLATIONS.has(v.translation);
       case 'spotify':    return v => v.topic === 'iPhone' && PRACTICE_SPOTIFY_TRANSLATIONS.has(v.translation);
@@ -5736,10 +5755,17 @@
     return (gPracticeVocab || []).filter(getPracticeTopicFilter());
   }
 
-  function setPracticeTopic(key, btn) {
+  async function setPracticeTopic(key, btn) {
     gPracticeTopicKey = key;
     document.querySelectorAll('.practice-topic-chip').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
+    // For the mistakes chip, fetch fresh vocab_ids from the mistakes table first
+    if (key === 'mistakes') {
+      const warn = document.getElementById('practice-topic-warning');
+      warn.textContent = 'Loading your mistakes…';
+      warn.style.display = '';
+      gMistakeVocabIdsCache = await loadMistakeVocabIds();
+    }
     // Show warning if the filtered deck is small
     const filtered = getFilteredPracticeVocab();
     const warn = document.getElementById('practice-topic-warning');
