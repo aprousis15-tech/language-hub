@@ -2681,6 +2681,12 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('iphone',this)">📱 iPhone</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('messages',this)">💬 Messages</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('spotify',this)">🎵 Spotify</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('restaurant',this)">🍽️ Restaurant</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('survival',this)">🆘 Survival</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('smalltalk',this)">💬 Small Talk</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('numbers',this)">🔢 Numbers</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('transport',this)">🚗 Transport</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('shopping',this)">🛍️ Shopping</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
@@ -5712,11 +5718,17 @@
 
   function getPracticeTopicFilter() {
     switch (gPracticeTopicKey) {
-      case 'iphone':   return v => v.topic === 'iPhone';
-      case 'messages': return v => v.topic === 'iPhone' && PRACTICE_MESSAGES_TRANSLATIONS.has(v.translation);
-      case 'spotify':  return v => v.topic === 'iPhone' && PRACTICE_SPOTIFY_TRANSLATIONS.has(v.translation);
+      case 'iphone':     return v => v.topic === 'iPhone';
+      case 'messages':   return v => v.topic === 'iPhone' && PRACTICE_MESSAGES_TRANSLATIONS.has(v.translation);
+      case 'spotify':    return v => v.topic === 'iPhone' && PRACTICE_SPOTIFY_TRANSLATIONS.has(v.translation);
+      case 'restaurant': return v => v.topic === 'Restaurant';
+      case 'survival':   return v => v.topic === 'Survival';
+      case 'smalltalk':  return v => v.topic === 'Small Talk';
+      case 'numbers':    return v => v.topic === 'Numbers';
+      case 'transport':  return v => v.topic === 'Transport';
+      case 'shopping':   return v => v.topic === 'Shopping';
       case 'all':
-      default:         return v => true;
+      default:           return v => true;
     }
   }
 
