@@ -2488,6 +2488,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
     </div>
 
     <!-- Articles drill -->
@@ -2506,6 +2507,25 @@
       <div class="grammar-progress">
         <span id="art-progress">Question 1 of 15</span>
         <span class="grammar-score" id="art-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Time Expressions drill -->
+    <div id="grammar-time" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="time-en">…</div>
+        <div class="grammar-prompt-greek" id="time-prompt">…</div>
+        <div class="grammar-options" id="time-options"></div>
+        <div class="grammar-feedback" id="time-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gTimeBack()">← Back</button>
+        <button class="grammar-btn" onclick="gTimeNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gTimeShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="time-progress">Question 1</span>
+        <span class="grammar-score" id="time-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -4734,6 +4754,7 @@
     document.getElementById('grammar-adj').style.display = mode === 'adj' ? '' : 'none';
     document.getElementById('grammar-gtap').style.display = mode === 'gtap' ? '' : 'none';
     document.getElementById('grammar-typea').style.display = mode === 'typea' ? '' : 'none';
+    document.getElementById('grammar-time').style.display = mode === 'time' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -4742,6 +4763,7 @@
     if (mode === 'adj') initAdjDrill();
     if (mode === 'gtap') initGenderTap();
     if (mode === 'typea') initTypeADrill();
+    if (mode === 'time') initTimeDrill();
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
@@ -5060,6 +5082,108 @@
 
   function gTypeAShuffle() {
     initTypeADrill();
+  }
+
+  // ── Time Expressions drill ──
+  // Sofia's rule: time phrases need τον/την/το (matching the time-word's gender),
+  // EXCEPT for specific times-of-day and dates which always use στις.
+  const TIME_QUESTIONS = [
+    // Days of week (fem → την, except Σάββατο which is neut → το)
+    { en: 'on Monday',         prompt: '___ Δευτέρα',          answer: 'την',  options: ['τον','την','το','στις'], hint: 'Δευτέρα is feminine (-α ending) → την.' },
+    { en: 'on Tuesday',        prompt: '___ Τρίτη',            answer: 'την',  options: ['τον','την','το','στις'], hint: 'Τρίτη is feminine (-η ending) → την.' },
+    { en: 'on Wednesday',      prompt: '___ Τετάρτη',          answer: 'την',  options: ['τον','την','το','στις'], hint: 'Τετάρτη is feminine → την. All weekdays except Σάββατο are feminine.' },
+    { en: 'on Thursday',       prompt: '___ Πέμπτη',           answer: 'την',  options: ['τον','την','το','στις'], hint: 'Πέμπτη is feminine → την.' },
+    { en: 'on Friday',         prompt: '___ Παρασκευή',        answer: 'την',  options: ['τον','την','το','στις'], hint: 'Παρασκευή is feminine → την.' },
+    { en: 'on Saturday',       prompt: '___ Σάββατο',          answer: 'το',   options: ['τον','την','το','στις'], hint: '⚠️ Σάββατο is NEUTER (-ο ending) — the one day-of-week that isn’t feminine. → το.' },
+    { en: 'on Sunday',         prompt: '___ Κυριακή',          answer: 'την',  options: ['τον','την','το','στις'], hint: 'Κυριακή is feminine → την.' },
+    // Months (all masc → τον)
+    { en: 'in January',        prompt: '___ Ιανουάριο',        answer: 'τον',  options: ['τον','την','το','στις'], hint: 'All months are masculine (ο Ιανουάριος). Accusative → τον.' },
+    { en: 'in May',            prompt: '___ Μάιο',             answer: 'τον',  options: ['τον','την','το','στις'], hint: 'ο Μάιος → τον Μάιο (accusative).' },
+    { en: 'in June',           prompt: '___ Ιούνιο',           answer: 'τον',  options: ['τον','την','το','στις'], hint: 'ο Ιούνιος → τον Ιούνιο. Your Greece trip month!' },
+    { en: 'in July',           prompt: '___ Ιούλιο',           answer: 'τον',  options: ['τον','την','το','στις'], hint: 'ο Ιούλιος → τον Ιούλιο.' },
+    { en: 'in October',        prompt: '___ Οκτώβριο',         answer: 'τον',  options: ['τον','την','το','στις'], hint: 'ο Οκτώβριος → τον Οκτώβριο.' },
+    { en: 'in December',       prompt: '___ Δεκέμβριο',        answer: 'τον',  options: ['τον','την','το','στις'], hint: 'ο Δεκέμβριος → τον Δεκέμβριο.' },
+    // Parts of day (all neut → το)
+    { en: 'in the morning',    prompt: '___ πρωί',             answer: 'το',   options: ['τον','την','το','στις'], hint: 'το πρωί is neuter (-ί ending) → το.' },
+    { en: 'in the afternoon',  prompt: '___ απόγευμα',         answer: 'το',   options: ['τον','την','το','στις'], hint: 'το απόγευμα is neuter (-μα ending — ALL -μα words are neuter) → το.' },
+    { en: 'in the evening',    prompt: '___ βράδυ',            answer: 'το',   options: ['τον','την','το','στις'], hint: 'το βράδυ is neuter → το.' },
+    { en: 'at noon',           prompt: '___ μεσημέρι',         answer: 'το',   options: ['τον','την','το','στις'], hint: 'το μεσημέρι is neuter (-ι ending) → το.' },
+    // Specific times of day → ALWAYS στις
+    { en: 'at 8 o’clock',  prompt: '___ οχτώ η ώρα',       answer: 'στις', options: ['τον','την','το','στις'], hint: '⏰ Specific times of day always use στις (implicit plural ώρες). Memorize: στις + number + η ώρα.' },
+    { en: 'at 9 o’clock',  prompt: '___ εννέα η ώρα',      answer: 'στις', options: ['τον','την','το','στις'], hint: '⏰ Times of day → στις. στις εννέα = "at nine".' },
+    // Dates → ALWAYS στις
+    { en: 'on June 5th',       prompt: '___ πέντε Ιουνίου',    answer: 'στις', options: ['τον','την','το','στις'], hint: '📅 Dates use στις regardless of month gender. Format: στις + number + month-genitive.' },
+    { en: 'on July 15th',      prompt: '___ δεκαπέντε Ιουλίου', answer: 'στις', options: ['τον','την','το','στις'], hint: '📅 Dates always → στις. Note Ιουλίου (genitive: "of July").' },
+    // Years → το
+    { en: 'in 2026',           prompt: '___ είκοσι έξι',       answer: 'το',   options: ['τον','την','το','στις'], hint: 'Years take το (neuter — implicit "the [year] twenty-six").' }
+  ];
+
+  let gTimeDeck = [], gTimeIndex = 0, gTimeCorrect = 0, gTimeTotal = 0, gTimeAnswered = false;
+
+  function initTimeDrill() {
+    gTimeDeck = [...TIME_QUESTIONS].sort(() => Math.random() - 0.5);
+    gTimeIndex = 0;
+    gTimeCorrect = 0;
+    gTimeTotal = 0;
+    gTimeAnswered = false;
+    showTimeCard();
+  }
+
+  function showTimeCard() {
+    const q = gTimeDeck[gTimeIndex];
+    if (!q) return;
+    document.getElementById('time-en').textContent = q.en;
+    document.getElementById('time-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('time-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('time-options');
+    optsHost.innerHTML = '';
+    q.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gTimeAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('time-progress').textContent = `Question ${gTimeIndex + 1} of ${gTimeDeck.length}`;
+    document.getElementById('time-score').textContent = `Score: ${gTimeCorrect}/${gTimeTotal}`;
+    gTimeAnswered = false;
+  }
+
+  function gTimeAnswer(picked, btnEl, q) {
+    if (gTimeAnswered) return;
+    gTimeAnswered = true;
+    gTimeTotal++;
+    if (picked === q.answer) gTimeCorrect++;
+    else recordMistake({
+      drill_type: 'articles', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'time-expressions', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#time-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('time-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('time-feedback');
+    fb.textContent = '💡 ' + q.hint;
+    fb.classList.add('show');
+    document.getElementById('time-score').textContent = `Score: ${gTimeCorrect}/${gTimeTotal}`;
+  }
+
+  function gTimeNext() {
+    gTimeIndex = (gTimeIndex + 1) % gTimeDeck.length;
+    showTimeCard();
+  }
+
+  function gTimeBack() {
+    gTimeIndex = (gTimeIndex - 1 + gTimeDeck.length) % gTimeDeck.length;
+    showTimeCard();
+  }
+
+  function gTimeShuffle() {
+    initTimeDrill();
   }
 
   // Prepositions drill — Greek prepositions are mostly simple words but they
