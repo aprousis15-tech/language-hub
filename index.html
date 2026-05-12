@@ -2693,14 +2693,14 @@
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
     <div class="practice-mode-bar">
-      <button class="practice-mode-btn active" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
+      <button class="practice-mode-btn active" onclick="setPracticeMode('lesson',this)">📻 Audio Lesson</button>
+      <button class="practice-mode-btn" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('type',this)">✍️ English → Greek (type)</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('flash',this)">🃏 Flashcard</button>
-      <button class="practice-mode-btn" onclick="setPracticeMode('lesson',this)">📻 Audio Lesson</button>
     </div>
 
     <!-- Listening drill -->
-    <div id="practice-listen">
+    <div id="practice-listen" style="display:none;">
       <div class="practice-novoice" id="listen-novoice" style="display:none;">
         <strong>⚠️ No Greek voice found on this device.</strong><br>
         Install a Greek TTS voice via your OS speech settings:<br>
@@ -2760,8 +2760,8 @@
       </div>
     </div>
 
-    <!-- Audio Lesson (hands-free Pimsleur style) -->
-    <div id="practice-lesson" style="display:none;">
+    <!-- Audio Lesson (hands-free Pimsleur style) — DEFAULT mode on tab open -->
+    <div id="practice-lesson">
       <div class="lesson-novoice-warn" id="lesson-novoice" style="display:none;">
         <strong>⚠️ Missing voice.</strong> This lesson needs both an English (en-US) and a Greek (el-GR) voice installed. Install via OS speech settings, then come back.
       </div>
@@ -5861,10 +5861,12 @@
     if (mode === 'lesson') initLessonMode();
   }
 
-  // Top-level entry — called from switchLang on tab open
+  // Top-level entry — called from switchLang on tab open.
+  // Default mode is now 📻 Audio Lesson (hands-free) so the big play button
+  // is the first thing the user sees on mobile.
   async function initPracticeDrill() {
     await ensurePracticeVocab();
-    initListenDrill();
+    initLessonMode();
   }
 
   // ── Listen → Pick mode ──
