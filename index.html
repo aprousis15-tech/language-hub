@@ -6167,6 +6167,7 @@
     document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const isLesson = (mode === 'lesson' || mode === 'lesson-gr');
+    if (mode !== 'listen' && gListenAutoTimer) { clearTimeout(gListenAutoTimer); gListenAutoTimer = null; }
     document.getElementById('practice-listen').style.display = mode === 'listen' ? '' : 'none';
     document.getElementById('practice-type').style.display = mode === 'type' ? '' : 'none';
     document.getElementById('practice-flash').style.display = mode === 'flash' ? '' : 'none';
@@ -6195,6 +6196,7 @@
 
   // ── Listen → Pick mode ──
   let gListenDeck = [], gListenIndex = 0, gListenCorrect = 0, gListenTotal = 0, gListenAnswered = false;
+  let gListenAutoTimer = null;
 
   function initListenDrill() {
     if (!gPracticeVocab || gPracticeVocab.length === 0) {
@@ -6307,19 +6309,27 @@
     }
     fb.classList.add('show');
     document.getElementById('listen-score').textContent = `Score: ${gListenCorrect}/${gListenTotal}`;
+    // Auto-advance — short delay for correct, longer for wrong so user can read the right answer.
+    const wasCorrect = picked === v.translation;
+    const delay = wasCorrect ? 1100 : 2400;
+    if (gListenAutoTimer) clearTimeout(gListenAutoTimer);
+    gListenAutoTimer = setTimeout(() => { gListenAutoTimer = null; gListenNext(); }, delay);
   }
 
   function gListenNext() {
+    if (gListenAutoTimer) { clearTimeout(gListenAutoTimer); gListenAutoTimer = null; }
     gListenIndex = (gListenIndex + 1) % gListenDeck.length;
     showListenCard();
   }
 
   function gListenBack() {
+    if (gListenAutoTimer) { clearTimeout(gListenAutoTimer); gListenAutoTimer = null; }
     gListenIndex = (gListenIndex - 1 + gListenDeck.length) % gListenDeck.length;
     showListenCard();
   }
 
   function gListenShuffle() {
+    if (gListenAutoTimer) { clearTimeout(gListenAutoTimer); gListenAutoTimer = null; }
     initListenDrill();
   }
 
