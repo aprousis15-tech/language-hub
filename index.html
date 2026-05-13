@@ -6562,13 +6562,10 @@
     showFlashCard();
   }
 
-  let gFlashClueTier = 0;
-
   function showFlashCard() {
     const v = gFlashDeck[gFlashIndex];
     if (!v) return;
     gFlashFlipped = false;
-    gFlashClueTier = 0;
     document.getElementById('pflash-back').style.display = 'none';
     document.getElementById('pflash-rate').style.display = 'none';
     document.getElementById('pflash-tap-hint').style.display = '';
@@ -6588,59 +6585,34 @@
     document.getElementById('pflash-score').textContent = `Reviewed: ${gFlashReviewed}`;
   }
 
-  // Build a tiered, no-spoiler clue. Tier 1 = a gentle nudge; Tier 2 = a stronger
-  // hint that includes intuition/mnemonic text when available. Both respect the
-  // current flashcard direction so we never reveal the answer side.
-  function buildFlashClue(v, tier) {
+  // Build a single no-spoiler clue. Surfaces the intuition / mnemonic / grammar
+  // hook when available. Adds part-of-speech as light context. Never reveals
+  // the answer's first letter, letter count, or phonetic.
+  function buildFlashClue(v) {
     if (!v) return '';
-    const answer = (gFlashDir === 'gr2en') ? v.translation : v.word;
-    const lines = [];
-    if (tier >= 1) {
-      // Tier 1: structural clue — POS, syllable hint, first letter
-      const pos = v.part_of_speech || '';
-      const posLabel = pos ? `<strong>Type:</strong> ${pos}` : '';
-      const firstLetter = (answer && answer.trim().length) ? answer.trim()[0] : '';
-      const letterCount = answer ? answer.replace(/\s+/g, '').length : 0;
-      const firstHint = firstLetter
-        ? `<strong>Starts with:</strong> "${firstLetter}…" &nbsp;·&nbsp; ${letterCount} letters`
-        : '';
-      // For en→gr, also show the phonetic since it's pure pronunciation help, not the answer
-      const phoneticHint = (gFlashDir === 'en2gr' && v.phonetic)
-        ? `<strong>Sounds like:</strong> ${v.phonetic}`
-        : '';
-      if (posLabel || firstHint || phoneticHint) {
-        lines.push('<span class="pflash-clue-tier">' +
-          [posLabel, firstHint, phoneticHint].filter(Boolean).join('<br>') +
-          '</span>');
-      }
+    const parts = [];
+    if (v.intuition) {
+      parts.push('<span class="pflash-clue-tier">💡 ' + v.intuition + '</span>');
     }
-    if (tier >= 2) {
-      // Tier 2: intuition / mnemonic / grammar hook
-      if (v.intuition) {
-        lines.push('<span class="pflash-clue-tier">💡 ' + v.intuition + '</span>');
-      } else {
-        // No stored intuition — fall back to a gentle "no hint stored" note
-        lines.push('<span class="pflash-clue-tier"><em>No extra hint stored for this word.</em></span>');
-      }
+    if (v.part_of_speech) {
+      parts.push('<span class="pflash-clue-tier"><strong>Type:</strong> ' + v.part_of_speech + '</span>');
     }
-    return lines.join('');
+    if (parts.length === 0) {
+      parts.push('<span class="pflash-clue-tier"><em>No hint stored for this word — try to recall from sound or context.</em></span>');
+    }
+    return parts.join('');
   }
 
   function flashShowClue() {
     if (gFlashFlipped) return;
     const v = gFlashDeck[gFlashIndex];
     if (!v) return;
-    gFlashClueTier = Math.min(gFlashClueTier + 1, 2);
     const box = document.getElementById('pflash-clue-box');
-    box.innerHTML = buildFlashClue(v, gFlashClueTier);
+    box.innerHTML = buildFlashClue(v);
     box.style.display = '';
     const btn = document.getElementById('pflash-clue-btn');
-    if (gFlashClueTier >= 2) {
-      btn.disabled = true;
-      btn.textContent = '💡 Out of clues';
-    } else {
-      btn.textContent = '💡 Stronger clue';
-    }
+    btn.disabled = true;
+    btn.textContent = '💡 Clue shown';
   }
 
   function flashFlip() {
