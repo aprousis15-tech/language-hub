@@ -1213,6 +1213,38 @@
 
   /* ── PRACTICE (Listening + Production) ── */
   .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
+  .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
+
+  /* Rules tab */
+  .rules-header { text-align: center; margin: 8px 0 22px; }
+  .rules-header h2 { color: #00695c; margin: 0 0 6px; }
+  .rules-header p { color: #4a6360; font-size: 0.92rem; margin: 0; }
+  .rules-section { margin-bottom: 30px; }
+  .rules-section-title {
+    color: #00695c; font-size: 1.15rem; font-weight: 700;
+    border-bottom: 2px solid #b2dfdb; padding-bottom: 6px; margin-bottom: 14px;
+  }
+  .rule-card {
+    background: white; border-left: 4px solid #00695c; border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .rule-card-title { font-weight: 700; color: #004d40; margin-bottom: 6px; }
+  .rule-card-body { font-size: 0.92rem; color: #2c3e3a; line-height: 1.5; }
+  .rule-greek { font-family: 'Georgia', serif; color: #00695c; font-weight: 600; }
+  .rule-en { color: #5a6f6c; font-style: italic; }
+  .rule-table {
+    width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem;
+  }
+  .rule-table th, .rule-table td {
+    padding: 8px 10px; text-align: left; border-bottom: 1px solid #e0eeec;
+  }
+  .rule-table th { background: #e0f2f1; color: #004d40; font-weight: 700; }
+  .rule-table td .rule-greek { font-size: 0.95rem; }
+  .rule-callout {
+    background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 6px;
+    padding: 10px 14px; margin-top: 10px; font-size: 0.88rem; color: #5d4a14;
+  }
+  .rule-callout strong { color: #b76e00; }
   .practice-header { text-align: center; margin-bottom: 24px; }
   .practice-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #ad1457; margin-bottom: 6px; }
   .practice-header p { font-size: 0.85rem; color: #7a4060; }
@@ -1376,6 +1408,18 @@
   }
   .pflash-mini-play:hover { background: #fdeaf2; }
   .pflash-mini-play.playing { background: #ad1457; color: white; }
+  .pflash-clue-btn { margin-left: 8px; border-color: #d97706; color: #92400e; }
+  .pflash-clue-btn:hover { background: #fef3c7; }
+  .pflash-clue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .pflash-clue-box {
+    margin: 14px auto 0; max-width: 420px;
+    background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 8px;
+    padding: 12px 16px; color: #5d4a14; font-size: 0.92rem; line-height: 1.5;
+    text-align: left;
+  }
+  .pflash-clue-box strong { color: #b76e00; }
+  .pflash-clue-box .pflash-clue-tier { display: block; margin-top: 6px; }
+  .pflash-clue-box .pflash-clue-tier:first-child { margin-top: 0; }
 
   /* Audio Lesson mode (hands-free Pimsleur style) */
   .lesson-settings {
@@ -1437,6 +1481,13 @@
   }
   .lesson-skip-btn:hover:not(:disabled) { background: #fdeaf2; }
   .lesson-skip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #lesson-hard-btn { border-color: #d97706; color: #92400e; }
+  #lesson-hard-btn:hover:not(:disabled) { background: #fef3c7; }
+  #lesson-hard-btn.flagged { background: #fde68a; border-color: #92400e; color: #78350f; }
+  .lesson-hard-feedback {
+    text-align: center; font-size: 0.78rem; color: #92400e; margin-top: 6px;
+    min-height: 1em; transition: opacity 0.3s;
+  }
   .lesson-info-line {
     text-align: center; font-size: 0.82rem; color: #6a4060; margin-top: 12px;
   }
@@ -1618,6 +1669,7 @@
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
   <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
+  <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -2689,11 +2741,13 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('numbers',this)">🔢 Numbers</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('transport',this)">🚗 Transport</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('shopping',this)">🛍️ Shopping</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('italki',this)">📝 iTalki 11/05</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
     <div class="practice-mode-bar">
-      <button class="practice-mode-btn active" onclick="setPracticeMode('lesson',this)">📻 Audio Lesson</button>
+      <button class="practice-mode-btn active" onclick="setPracticeMode('lesson',this)">📻 Audio Lesson (EN → GR)</button>
+      <button class="practice-mode-btn" onclick="setPracticeMode('lesson-gr',this)">🎧 Audio Lesson (GR → EN)</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('listen',this)">🔊 Listen → Pick</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('type',this)">✍️ English → Greek (type)</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('flash',this)">🃏 Flashcard</button>
@@ -2743,7 +2797,9 @@
       </div>
       <div style="text-align:center;">
         <button class="pflash-mini-play" id="pflash-play" onclick="event.stopPropagation();playFlashAudio()">🔊 Play Greek</button>
+        <button class="pflash-mini-play pflash-clue-btn" id="pflash-clue-btn" onclick="event.stopPropagation();flashShowClue()">💡 Get a clue</button>
       </div>
+      <div class="pflash-clue-box" id="pflash-clue-box" style="display:none;"></div>
       <div class="pflash-card-actions" id="pflash-rate" style="display:none;">
         <button class="pflash-rate-btn pflash-rate-hard" onclick="flashRate('hard')">😕 Hard — show again soon</button>
         <button class="pflash-rate-btn pflash-rate-good" onclick="flashRate('good')">👍 Got it</button>
@@ -2766,6 +2822,13 @@
         <strong>⚠️ Missing voice.</strong> This lesson needs both an English (en-US) and a Greek (el-GR) voice installed. Install via OS speech settings, then come back.
       </div>
       <div class="lesson-settings">
+        <div class="lesson-setting-row">
+          <strong>Direction</strong>
+          <div class="lesson-pill-group" id="lesson-direction-pills">
+            <button class="lesson-pill active" data-dir="en2gr" onclick="setLessonDirection('en2gr',this)">🇬🇧 → 🇬🇷 English → Greek</button>
+            <button class="lesson-pill" data-dir="gr2en" onclick="setLessonDirection('gr2en',this)">🇬🇷 → 🇬🇧 Greek → English</button>
+          </div>
+        </div>
         <div class="lesson-setting-row">
           <strong>Lesson length</strong>
           <div class="lesson-pill-group" id="lesson-length-pills">
@@ -2810,8 +2873,10 @@
         <button class="lesson-skip-btn" id="lesson-prev-btn" onclick="lessonPrevCard()" disabled>⏮ Previous</button>
         <button class="lesson-skip-btn" id="lesson-replay-btn" onclick="lessonReplayCard()" disabled>🔁 Replay</button>
         <button class="lesson-skip-btn" id="lesson-next-btn" onclick="lessonNextCard()" disabled>⏭ Next</button>
+        <button class="lesson-skip-btn" id="lesson-hard-btn" onclick="lessonMarkChallenging()" disabled>⭐ Mark hard</button>
         <button class="lesson-skip-btn" onclick="lessonRestart()">🔀 New lesson</button>
       </div>
+      <div class="lesson-hard-feedback" id="lesson-hard-feedback"></div>
     </div>
 
     <!-- Production typing drill -->
@@ -2844,9 +2909,163 @@
   </div>
 </div>
 
-<footer>
-  Built with Claude · Your personal language learning hub · Καλή τύχη &amp; ¡Buena suerte! 🌊
-</footer>
+<div class="lang-panel" id="panel-rules">
+  <div class="container">
+
+    <div class="rules-header">
+      <h2>📚 Greek Rules & Endings</h2>
+      <p>Your running cheat sheet — the rules and endings worth memorizing. Glance here before any speaking practice.</p>
+    </div>
+
+    <!-- ─── KEY RULES ─── -->
+    <div class="rules-section">
+      <div class="rules-section-title">🔑 Key Rules to Remember</div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">να separates verbs</div>
+        <div class="rule-card-body">
+          When you have two verbs back-to-back, <span class="rule-greek">να</span> links them — and the second verb takes its <em>closed</em> form.<br>
+          <span class="rule-greek">Θέλω να δω φωτογραφία</span> — <span class="rule-en">I want to see a photo</span> (not <span class="rule-greek">βλέπω</span> → <span class="rule-greek">δω</span>)<br>
+          <span class="rule-greek">Θέλω να ξυπνήσω στις 8</span> — <span class="rule-en">I want to wake up at 8</span> (not <span class="rule-greek">ξυπνάω</span> → <span class="rule-greek">ξυπνήσω</span>)
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">δεν vs. όχι — two different "no"s</div>
+        <div class="rule-card-body">
+          <strong>δεν</strong> only goes with <em>verbs</em>. <strong>όχι</strong> goes with everything else (nouns, adverbs, adjectives).<br>
+          <span class="rule-greek">Δεν είναι εδώ</span> — <span class="rule-en">is not here</span> (verb → δεν)<br>
+          <span class="rule-greek">Όχι σήμερα</span> — <span class="rule-en">not today</span> (adverb → όχι)
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Double negative — always required</div>
+        <div class="rule-card-body">
+          Greek does <em>not</em> drop the δεν when you also have <span class="rule-greek">ποτέ / κανένας / τίποτα</span>. Keep both.<br>
+          <span class="rule-greek">Ποτέ <strong>δεν</strong> πίνω καφέ</span> — <span class="rule-en">I never drink coffee</span><br>
+          <span class="rule-greek">Κανένας <strong>δεν</strong> είναι εδώ</span> — <span class="rule-en">No one is here</span><br>
+          <span class="rule-greek"><strong>Δεν</strong> θέλω τίποτα</span> — <span class="rule-en">I don't want anything</span>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Time expressions: τον/την/το vs. στις</div>
+        <div class="rule-card-body">
+          Time expressions take the article (<span class="rule-greek">τον/την/το</span>) — <strong>except</strong> clock times and dates, which take <span class="rule-greek">στις</span>.
+          <table class="rule-table">
+            <tr><th>English</th><th>Greek</th><th>Rule</th></tr>
+            <tr><td>on Monday</td><td><span class="rule-greek">την Δευτέρα</span></td><td>article</td></tr>
+            <tr><td>in July</td><td><span class="rule-greek">τον Ιούλιο</span></td><td>article</td></tr>
+            <tr><td>in the afternoon</td><td><span class="rule-greek">το απόγευμα</span></td><td>article</td></tr>
+            <tr><td>in 2026</td><td><span class="rule-greek">το 2026</span></td><td>article</td></tr>
+            <tr><td>at 9 o'clock</td><td><span class="rule-greek">στις εννέα η ώρα</span></td><td>clock → στις</td></tr>
+            <tr><td>on July 15th</td><td><span class="rule-greek">στις δεκαπέντε Ιουλίου</span></td><td>date → στις</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Adjectives match the noun's gender</div>
+        <div class="rule-card-body">
+          The adjective ending changes to match the gender (and number) of the noun it describes.<br>
+          <span class="rule-greek">Η Ναταλία είναι κουρασμέν<strong>η</strong></span> — fem. noun → fem. adjective ending <span class="rule-greek">-η</span><br>
+          <span class="rule-greek">Ο Νίκος είναι κουρασμέν<strong>ος</strong></span> — masc. noun → masc. ending <span class="rule-greek">-ος</span>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Open vs. closed verb forms</div>
+        <div class="rule-card-body">
+          Most verbs have an <strong>open</strong> form (the dictionary form, used in habitual present) and a <strong>closed</strong> form (used after <span class="rule-greek">να</span>, <span class="rule-greek">θα</span>, <span class="rule-greek">αν</span>).<br>
+          <span class="rule-greek">Ξυπνάω κάθε μέρα</span> — open, habitual<br>
+          <span class="rule-greek">Θέλω να ξυπνήσω</span> — closed after να<br>
+          <span class="rule-greek">Θα σου δείξω</span> — closed after θα (from <span class="rule-greek">δείχνω</span>)
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">πότε vs. ποτέ — accent changes the meaning</div>
+        <div class="rule-card-body">
+          <span class="rule-greek">πότε</span> (accent on the first syllable) = <span class="rule-en">when</span><br>
+          <span class="rule-greek">ποτέ</span> (accent on the last syllable) = <span class="rule-en">never</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CASES ─── -->
+    <div class="rules-section">
+      <div class="rules-section-title">🧩 Cases — the article changes by role</div>
+
+      <div class="rule-card">
+        <div class="rule-card-body">
+          The article shifts depending on the noun's role in the sentence.
+          <table class="rule-table">
+            <tr><th>Case</th><th>Masc.</th><th>Fem.</th><th>Neut.</th><th>Used when…</th></tr>
+            <tr><td><strong>Nominative</strong></td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">το</span></td><td>describing the <em>subject</em></td></tr>
+            <tr><td><strong>Genitive</strong></td><td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td><td>possession ("of the…")</td></tr>
+            <tr><td><strong>Accusative</strong></td><td><span class="rule-greek">τον</span></td><td><span class="rule-greek">την</span></td><td><span class="rule-greek">το</span></td><td>direct object, after prepositions</td></tr>
+          </table>
+          <div class="rule-callout">
+            <strong>Masculine drops the -ς in accusative:</strong> <span class="rule-greek">ο πατέρας</span> (nom.) → <span class="rule-greek">τον πατέρα</span> (acc.). Same for <span class="rule-greek">ο φίλος</span> → <span class="rule-greek">τον φίλο</span>.
+          </div>
+          <div class="rule-callout">
+            <strong>Prepositions like σε contract with the article:</strong> σε + τον = <span class="rule-greek">στον</span>, σε + την = <span class="rule-greek">στην</span>, σε + το = <span class="rule-greek">στο</span>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── GENDER ENDINGS ─── -->
+    <div class="rules-section">
+      <div class="rules-section-title">🔤 Gender Endings — spot it from the ending</div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Masculine: -ος, -ας, -ης</div>
+        <div class="rule-card-body">
+          <span class="rule-greek">ο άνθρωπος</span> (o ánthropos) — <span class="rule-en">the person</span><br>
+          <span class="rule-greek">ο πατέρας</span> (o patéras) — <span class="rule-en">the father</span><br>
+          <span class="rule-greek">ο μαθητής</span> (o mathitís) — <span class="rule-en">the student</span>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Feminine: -α, -η  (and rarely -ος)</div>
+        <div class="rule-card-body">
+          <span class="rule-greek">η μητέρα</span> (i mitéra) — <span class="rule-en">the mother</span><br>
+          <span class="rule-greek">η αδελφή</span> (i adelfí) — <span class="rule-en">the sister</span><br>
+          <span class="rule-greek">η οδός</span> (i odós) — <span class="rule-en">the street</span> — <em>exception, looks masculine but is feminine</em>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Neuter: -ο, -ι, -μα</div>
+        <div class="rule-card-body">
+          <span class="rule-greek">το βιβλίο</span> (to vivlío) — <span class="rule-en">the book</span><br>
+          <span class="rule-greek">το παιδί</span> (to pedí) — <span class="rule-en">the child</span><br>
+          <span class="rule-greek">το πρόβλημα</span> (to próvlima) — <span class="rule-en">the problem</span>
+          <div class="rule-callout">
+            <strong>-μα words are always neuter:</strong> <span class="rule-greek">πράγμα</span> (thing), <span class="rule-greek">πρόβλημα</span> (problem), <span class="rule-greek">θέμα</span> (topic), <span class="rule-greek">μάθημα</span> (lesson)…
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">⚡ Quick rule of thumb</div>
+        <div class="rule-card-body">
+          Ends in <strong>-ς</strong> → probably <strong>masculine</strong><br>
+          Ends in <strong>-α</strong> or <strong>-η</strong> → probably <strong>feminine</strong><br>
+          Ends in <strong>-ο</strong>, <strong>-ι</strong>, or <strong>-μα</strong> → probably <strong>neuter</strong>
+          <div class="rule-callout">
+            All feminine words end in <span class="rule-greek">η</span> as their <em>article</em>, even when the noun itself ends in -α (like <span class="rule-greek">η μητέρα</span>) or -ος (like <span class="rule-greek">η οδός</span>).
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div class="lang-panel" id="panel-vocab">
   <div class="container">
 
@@ -3481,9 +3700,9 @@
   // ── TAB SWITCHING (override) ──
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-translate','active-notes','active-sessions','active-review'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, translate:7, notes:8, sessions:9, review:10};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, translate:8, notes:9, sessions:10, review:11};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -5723,16 +5942,22 @@
   let gMistakeVocabIdsCache = null;
 
   async function loadMistakeVocabIds() {
-    if (!window._supabase) return new Set();
+    const ids = new Set();
+    if (window._supabase) {
+      try {
+        const { data, error } = await window._supabase
+          .from('mistakes')
+          .select('vocab_id')
+          .is('resolved_at', null)
+          .not('vocab_id', 'is', null);
+        if (!error && data) data.forEach(r => ids.add(r.vocab_id));
+      } catch {}
+    }
     try {
-      const { data, error } = await window._supabase
-        .from('mistakes')
-        .select('vocab_id')
-        .is('resolved_at', null)
-        .not('vocab_id', 'is', null);
-      if (error || !data) return new Set();
-      return new Set(data.map(r => r.vocab_id));
-    } catch { return new Set(); }
+      const local = JSON.parse(localStorage.getItem(MISTAKES_LS_KEY) || '[]');
+      local.forEach(r => { if (r.vocab_id) ids.add(r.vocab_id); });
+    } catch {}
+    return ids;
   }
 
   function getPracticeTopicFilter() {
@@ -5748,6 +5973,7 @@
       case 'numbers':    return v => v.topic === 'Numbers';
       case 'transport':  return v => v.topic === 'Transport';
       case 'shopping':   return v => v.topic === 'Shopping';
+      case 'italki':     return v => v.topic === 'iTalki 11/05';
       case 'all':
       default:           return v => true;
     }
@@ -5802,10 +6028,101 @@
     }
   }
 
+  // ── iTalki session notes (11/05) ──
+  // Static vocab + rule-illustrating sentences. Merged into gPracticeVocab so they
+  // flow into all four drill modes. IDs use the 'italki-' prefix so they never
+  // collide with Supabase numeric/UUID ids.
+  const ITALKI_NOTES_VOCAB = [
+    // Core session vocabulary
+    { word: 'η διαφορά', translation: 'the difference', phonetic: 'i thiafora', part_of_speech: 'noun', intuition: 'Feminine — ends in η, takes η article.' },
+    { word: 'ταξιδεύω', translation: "I'm traveling / I travel", phonetic: 'taksithevo', part_of_speech: 'verb', intuition: 'Open form (type B verb). Closed form after να/θα: να ταξιδέψω.' },
+    { word: 'σήμερα', translation: 'today', phonetic: 'simera', part_of_speech: 'adverb' },
+    { word: 'το κάμπινγκ', translation: 'camping', phonetic: 'to kambing', part_of_speech: 'noun', intuition: 'Loanword, neuter (το).' },
+    { word: 'στα βόρεια', translation: 'in the north', phonetic: 'sta voria', part_of_speech: 'phrase' },
+    { word: 'κοντά στο δάσος', translation: 'near the woods', phonetic: 'konda sto thasos', part_of_speech: 'phrase', intuition: 'κοντά σε + acc. → κοντά στο/στη/στον.' },
+    { word: 'πόσες μέρες', translation: 'how many days', phonetic: 'poses meres', part_of_speech: 'phrase', intuition: 'πόσες agrees with feminine plural μέρες.' },
+    { word: 'μία μέρα', translation: 'one day / a day', phonetic: 'mia mera', part_of_speech: 'phrase' },
+    { word: 'η μέρα', translation: 'the day', phonetic: 'i mera', part_of_speech: 'noun', intuition: 'Feminine — η.' },
+    { word: 'με ποιον', translation: 'with whom', phonetic: 'me pion', part_of_speech: 'phrase' },
+    { word: 'μόνος μου', translation: 'on my own (m)', phonetic: 'monos mou', part_of_speech: 'phrase', intuition: 'Feminine form: μόνη μου.' },
+    { word: 'μακριά', translation: 'far', phonetic: 'makria', part_of_speech: 'adverb' },
+    { word: 'μιάμιση ώρα', translation: 'an hour and a half', phonetic: 'miamisi ora', part_of_speech: 'phrase' },
+    { word: 'η ελευθερία', translation: 'freedom', phonetic: 'i eleftheria', part_of_speech: 'noun', intuition: 'Feminine — η.' },
+    { word: 'γιατί όχι', translation: 'why not', phonetic: 'yiati ohi', part_of_speech: 'phrase' },
+    { word: 'θέλω να δω', translation: 'I want to see', phonetic: 'thelo na tho', part_of_speech: 'phrase', intuition: 'να + closed form (δω, not βλέπω).' },
+    { word: 'η φωτογραφία', translation: 'photo', phonetic: 'i fotografia', part_of_speech: 'noun', intuition: 'Feminine — η.' },
+    { word: 'θα σου δείξω', translation: "I'll show you", phonetic: 'tha sou theekso', part_of_speech: 'phrase', intuition: 'θα + closed form (δείξω, not δείχνω).' },
+    { word: 'κουρασμένη', translation: 'tired (fem)', phonetic: 'kourasmeni', part_of_speech: 'adjective', intuition: 'Masc: κουρασμένος. Adjective endings agree with the noun.' },
+    { word: 'το μάθημα', translation: 'the lesson', phonetic: 'to mathima', part_of_speech: 'noun', intuition: 'Neuter — το.' },
+    { word: 'αργότερα', translation: 'later', phonetic: 'argotera', part_of_speech: 'adverb' },
+    { word: 'καλύτερα', translation: 'better', phonetic: 'kalitera', part_of_speech: 'adverb' },
+    { word: 'ποτέ', translation: 'never', phonetic: 'pote', part_of_speech: 'adverb', intuition: 'Accent on the last syllable. πότε (accent on first) = "when".' },
+    { word: 'πότε', translation: 'when', phonetic: 'pote', part_of_speech: 'adverb', intuition: 'Accent on first syllable. ποτέ (accent last) = "never".' },
+    { word: 'το τσάι', translation: 'tea', phonetic: 'to tsai', part_of_speech: 'noun' },
+    { word: 'το πρωί', translation: 'the morning', phonetic: 'to proi', part_of_speech: 'noun' },
+    { word: 'κανένας', translation: 'no one / nobody', phonetic: 'kanenas', part_of_speech: 'pronoun', intuition: 'Pairs with δεν: Κανένας δεν είναι εδώ.' },
+    { word: 'τίποτα', translation: 'nothing / anything', phonetic: 'tipota', part_of_speech: 'pronoun', intuition: 'Pairs with δεν: Δεν θέλω τίποτα.' },
+    { word: 'ξυπνάω', translation: 'I wake up', phonetic: 'ksipnao', part_of_speech: 'verb', intuition: 'Open form. Closed (after να/θα): ξυπνήσω.' },
+    { word: 'να ξυπνήσω', translation: 'to wake up (closed)', phonetic: 'na ksipniso', part_of_speech: 'verb', intuition: 'Closed form — used after να, θα, αν.' },
+    { word: 'περπατάω', translation: 'I walk', phonetic: 'perpatao', part_of_speech: 'verb', intuition: 'Open form. Closed: περπατήσω.' },
+    { word: 'να περπατήσω', translation: 'to walk (closed)', phonetic: 'na perpatiso', part_of_speech: 'verb' },
+    { word: 'εύχομαι', translation: 'I wish', phonetic: 'efhome', part_of_speech: 'verb' },
+    { word: 'η εργασία', translation: 'the homework / task', phonetic: 'i ergasia', part_of_speech: 'noun', intuition: 'Feminine — η.' },
+    { word: 'ο καιρός', translation: 'the weather', phonetic: 'o keros', part_of_speech: 'noun', intuition: 'Masculine — ο. (Also means "time".)' },
+    { word: 'το γραφείο', translation: 'the office', phonetic: 'to grafio', part_of_speech: 'noun', intuition: 'Neuter — το.' },
+    { word: 'σύντομα', translation: 'soon', phonetic: 'sindoma', part_of_speech: 'adverb' },
+    { word: 'νωρίς', translation: 'early', phonetic: 'noris', part_of_speech: 'adverb' },
+    { word: 'αύριο', translation: 'tomorrow', phonetic: 'avrio', part_of_speech: 'adverb' },
+
+    // Rule-illustrating sentences (so the rules surface inside the same drills)
+    // Double-negative rule
+    { word: 'Ποτέ δεν πίνω καφέ', translation: 'I never drink coffee', phonetic: 'pote then pino kafe', part_of_speech: 'sentence', intuition: 'Double negative: ποτέ + δεν. Never drop the δεν.' },
+    { word: 'Δεν θέλω τίποτα', translation: "I don't want anything", phonetic: 'then thelo tipota', part_of_speech: 'sentence', intuition: 'Double negative: δεν + τίποτα.' },
+    { word: 'Κανένας δεν είναι εδώ', translation: 'No one is here', phonetic: 'kanenas then ine etho', part_of_speech: 'sentence', intuition: 'Double negative: κανένας + δεν.' },
+
+    // Time-expression rule (τον/την/το except clock & date which use στις)
+    { word: 'την Δευτέρα', translation: 'on Monday', phonetic: 'tin theftera', part_of_speech: 'phrase', intuition: 'Days of the week use τον/την/το (acc. article), not στις.' },
+    { word: 'τον Ιούλιο', translation: 'in July', phonetic: 'ton ioulio', part_of_speech: 'phrase', intuition: 'Months take τον/την/το (Ιούλιος is masc., so τον).' },
+    { word: 'το απόγευμα', translation: 'in the afternoon', phonetic: 'to apoyevma', part_of_speech: 'phrase', intuition: 'Times of day take τον/την/το. Απόγευμα is neuter → το.' },
+    { word: 'το 2026', translation: 'in 2026', phonetic: 'to ikosi eksi', part_of_speech: 'phrase', intuition: 'Years take το (neuter article).' },
+    { word: 'στις εννέα η ώρα', translation: "at 9 o'clock", phonetic: 'stis ennea i ora', part_of_speech: 'phrase', intuition: 'Clock times take στις (στις = σε + τις).' },
+    { word: 'στις δεκαπέντε Ιουλίου', translation: 'on July 15th', phonetic: 'stis thekapente iouliou', part_of_speech: 'phrase', intuition: 'Dates take στις.' },
+
+    // Negation rule (δεν with verbs, όχι with nouns)
+    { word: 'όχι σήμερα', translation: 'not today', phonetic: 'ohi simera', part_of_speech: 'phrase', intuition: 'όχι negates nouns/adverbs. δεν only goes with verbs.' },
+    { word: 'δεν είναι εδώ', translation: 'is not here', phonetic: 'then ine etho', part_of_speech: 'phrase', intuition: 'δεν negates verbs.' },
+
+    // Gender agreement reminder
+    { word: 'Η Ναταλία είναι κουρασμένη σήμερα', translation: 'Natalia is tired today', phonetic: 'i natalia ine kourasmeni simera', part_of_speech: 'sentence', intuition: 'Adjective κουρασμένη ends -η to match feminine Ναταλία. Always agree gender.' },
+    { word: 'Μεγάλη μέρα στο γραφείο αύριο', translation: 'Big day at the office tomorrow', phonetic: 'megali mera sto grafio avrio', part_of_speech: 'sentence', intuition: 'μεγάλη (fem.) agrees with μέρα (fem.).' },
+
+    // Open vs closed verb forms
+    { word: 'Ξυπνάω κάθε μέρα στις 9', translation: 'I wake up every day at 9', phonetic: 'ksipnao kathe mera stis ennea', part_of_speech: 'sentence', intuition: 'Open form ξυπνάω — habitual present.' },
+    { word: 'Θέλω να ξυπνήσω στις 8 αύριο', translation: 'I want to wake up at 8 tomorrow', phonetic: 'thelo na ksipniso stis okto avrio', part_of_speech: 'sentence', intuition: 'After να → closed form ξυπνήσω.' },
+  ];
+
+  // Build full vocab rows with synthetic ids and metadata required by all drill modes.
+  const ITALKI_NOTES_ENTRIES = ITALKI_NOTES_VOCAB.map((v, i) => ({
+    id: 'italki-1105-' + (i + 1),
+    lang: 'greek',
+    topic: 'iTalki 11/05',
+    word: v.word,
+    translation: v.translation,
+    phonetic: v.phonetic || null,
+    part_of_speech: v.part_of_speech || null,
+    intuition: v.intuition || null,
+    srs_due_at: null
+  }));
+
   async function ensurePracticeVocab() {
     if (gPracticeVocabLoaded) return gPracticeVocab;
     const all = await loadVocab();
-    gPracticeVocab = (all || []).filter(v => v.lang === 'greek');
+    const live = (all || []).filter(v => v.lang === 'greek');
+    // Merge in iTalki notes. Skip any that already exist (matched by greek word) so
+    // we don't double-count if the user later copies them into the main vocab table.
+    const liveWords = new Set(live.map(v => v.word));
+    const merged = live.concat(ITALKI_NOTES_ENTRIES.filter(v => !liveWords.has(v.word)));
+    gPracticeVocab = merged;
     gPracticeVocabLoaded = true;
     return gPracticeVocab;
   }
@@ -5849,16 +6166,23 @@
   function setPracticeMode(mode, btn) {
     document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    const isLesson = (mode === 'lesson' || mode === 'lesson-gr');
     document.getElementById('practice-listen').style.display = mode === 'listen' ? '' : 'none';
     document.getElementById('practice-type').style.display = mode === 'type' ? '' : 'none';
     document.getElementById('practice-flash').style.display = mode === 'flash' ? '' : 'none';
-    document.getElementById('practice-lesson').style.display = mode === 'lesson' ? '' : 'none';
+    document.getElementById('practice-lesson').style.display = isLesson ? '' : 'none';
     // Stop any running lesson when leaving the lesson tab
-    if (mode !== 'lesson' && gLessonState && gLessonState.playing) lessonStop();
+    if (!isLesson && gLessonState && gLessonState.playing) lessonStop();
     if (mode === 'listen') initListenDrill();
     if (mode === 'type') initTypeDrill();
     if (mode === 'flash') initFlashDrill();
-    if (mode === 'lesson') initLessonMode();
+    if (isLesson) {
+      const desiredDir = mode === 'lesson-gr' ? 'gr2en' : 'en2gr';
+      if (gLessonState && gLessonState.playing && gLessonState.settings.direction !== desiredDir) {
+        lessonStop();
+      }
+      initLessonMode(desiredDir);
+    }
   }
 
   // Top-level entry — called from switchLang on tab open.
@@ -6220,13 +6544,20 @@
     showFlashCard();
   }
 
+  let gFlashClueTier = 0;
+
   function showFlashCard() {
     const v = gFlashDeck[gFlashIndex];
     if (!v) return;
     gFlashFlipped = false;
+    gFlashClueTier = 0;
     document.getElementById('pflash-back').style.display = 'none';
     document.getElementById('pflash-rate').style.display = 'none';
     document.getElementById('pflash-tap-hint').style.display = '';
+    const clueBox = document.getElementById('pflash-clue-box');
+    if (clueBox) { clueBox.style.display = 'none'; clueBox.innerHTML = ''; }
+    const clueBtn = document.getElementById('pflash-clue-btn');
+    if (clueBtn) { clueBtn.disabled = false; clueBtn.textContent = '💡 Get a clue'; }
     const front = document.getElementById('pflash-front');
     if (gFlashDir === 'gr2en') {
       front.textContent = v.word;
@@ -6237,6 +6568,61 @@
     }
     document.getElementById('pflash-progress').textContent = `Card ${gFlashIndex + 1} of ${gFlashDeck.length}`;
     document.getElementById('pflash-score').textContent = `Reviewed: ${gFlashReviewed}`;
+  }
+
+  // Build a tiered, no-spoiler clue. Tier 1 = a gentle nudge; Tier 2 = a stronger
+  // hint that includes intuition/mnemonic text when available. Both respect the
+  // current flashcard direction so we never reveal the answer side.
+  function buildFlashClue(v, tier) {
+    if (!v) return '';
+    const answer = (gFlashDir === 'gr2en') ? v.translation : v.word;
+    const lines = [];
+    if (tier >= 1) {
+      // Tier 1: structural clue — POS, syllable hint, first letter
+      const pos = v.part_of_speech || '';
+      const posLabel = pos ? `<strong>Type:</strong> ${pos}` : '';
+      const firstLetter = (answer && answer.trim().length) ? answer.trim()[0] : '';
+      const letterCount = answer ? answer.replace(/\s+/g, '').length : 0;
+      const firstHint = firstLetter
+        ? `<strong>Starts with:</strong> "${firstLetter}…" &nbsp;·&nbsp; ${letterCount} letters`
+        : '';
+      // For en→gr, also show the phonetic since it's pure pronunciation help, not the answer
+      const phoneticHint = (gFlashDir === 'en2gr' && v.phonetic)
+        ? `<strong>Sounds like:</strong> ${v.phonetic}`
+        : '';
+      if (posLabel || firstHint || phoneticHint) {
+        lines.push('<span class="pflash-clue-tier">' +
+          [posLabel, firstHint, phoneticHint].filter(Boolean).join('<br>') +
+          '</span>');
+      }
+    }
+    if (tier >= 2) {
+      // Tier 2: intuition / mnemonic / grammar hook
+      if (v.intuition) {
+        lines.push('<span class="pflash-clue-tier">💡 ' + v.intuition + '</span>');
+      } else {
+        // No stored intuition — fall back to a gentle "no hint stored" note
+        lines.push('<span class="pflash-clue-tier"><em>No extra hint stored for this word.</em></span>');
+      }
+    }
+    return lines.join('');
+  }
+
+  function flashShowClue() {
+    if (gFlashFlipped) return;
+    const v = gFlashDeck[gFlashIndex];
+    if (!v) return;
+    gFlashClueTier = Math.min(gFlashClueTier + 1, 2);
+    const box = document.getElementById('pflash-clue-box');
+    box.innerHTML = buildFlashClue(v, gFlashClueTier);
+    box.style.display = '';
+    const btn = document.getElementById('pflash-clue-btn');
+    if (gFlashClueTier >= 2) {
+      btn.disabled = true;
+      btn.textContent = '💡 Out of clues';
+    } else {
+      btn.textContent = '💡 Stronger clue';
+    }
   }
 
   function flashFlip() {
@@ -6365,6 +6751,36 @@
   let gEnglishVoice = null;
   let gLessonState = null;
   let gLessonWakeLock = null;
+  const gLessonHardFlagged = new Set();
+  let gLessonHardFeedbackTimer = null;
+
+  function lessonMarkChallenging() {
+    if (!gLessonState) return;
+    const card = gLessonState.deck[gLessonState.idx];
+    if (!card) return;
+    const fb = document.getElementById('lesson-hard-feedback');
+    if (gLessonHardFlagged.has(card.id)) {
+      if (fb) { fb.textContent = 'Already flagged — find it in 🎯 My Mistakes'; }
+    } else {
+      gLessonHardFlagged.add(card.id);
+      recordMistake({
+        drill_type: 'lesson_flag',
+        prompt: card.word,
+        correct: card.translation,
+        vocab_id: card.id,
+        metadata: { source: 'lesson_user_flagged', direction: (gLessonState.settings.direction || 'en2gr') }
+      });
+      // Invalidate the mistakes cache so the 🎯 chip picks this up immediately.
+      gMistakeVocabIdsCache = null;
+      if (fb) { fb.textContent = `⭐ "${card.word}" added to your mistakes review`; }
+    }
+    updateLessonUI();
+    if (gLessonHardFeedbackTimer) clearTimeout(gLessonHardFeedbackTimer);
+    gLessonHardFeedbackTimer = setTimeout(() => {
+      const fb2 = document.getElementById('lesson-hard-feedback');
+      if (fb2) fb2.textContent = '';
+    }, 3000);
+  }
 
   function findEnglishVoice() {
     const voices = (window.speechSynthesis && window.speechSynthesis.getVoices()) || [];
@@ -6436,6 +6852,19 @@
     if (gLessonState) gLessonState.settings.speed = speed;
   }
 
+  function setLessonDirection(dir, btn) {
+    document.querySelectorAll('#lesson-direction-pills .lesson-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (gLessonState) {
+      const wasPlaying = gLessonState.playing;
+      if (wasPlaying) lessonStop();
+      gLessonState.settings.direction = dir;
+      setLessonNowPlaying('Ready', '', dir === 'gr2en'
+        ? 'Greek → English — press play to begin'
+        : 'English → Greek — press play to begin', '');
+    }
+  }
+
   async function toggleWakeLock() {
     const btn = document.getElementById('lesson-wakelock-btn');
     if (gLessonWakeLock) {
@@ -6465,7 +6894,12 @@
     }
   }
 
-  function initLessonMode() {
+  // Direction requested before gLessonState exists (vocab still loading).
+  // Applied as soon as the state is created.
+  let gLessonPendingDirection = null;
+
+  function initLessonMode(desiredDir) {
+    if (desiredDir) gLessonPendingDirection = desiredDir;
     if (!gPracticeVocab || gPracticeVocab.length === 0) {
       ensurePracticeVocab().then(() => initLessonMode());
       return;
@@ -6478,12 +6912,25 @@
     if (!gLessonState) {
       gLessonState = {
         deck: [], idx: 0, playing: false,
-        settings: { length: 20, speed: 'normal' },
+        settings: { length: 20, speed: 'normal', direction: gLessonPendingDirection || 'en2gr' },
         abortToken: null
       };
+    } else if (gLessonPendingDirection) {
+      gLessonState.settings.direction = gLessonPendingDirection;
     }
+    // Sync the in-panel direction pills to the active direction.
+    const activeDir = gLessonState.settings.direction;
+    document.querySelectorAll('#lesson-direction-pills .lesson-pill').forEach(b => {
+      b.classList.toggle('active', b.dataset.dir === activeDir);
+    });
+    gLessonPendingDirection = null;
     buildLessonDeck();
     updateLessonUI();
+    if (gLessonState.deck.length > 0 && (!gLessonState.playing)) {
+      setLessonNowPlaying('Ready', '', activeDir === 'gr2en'
+        ? 'Greek → English — press play to begin'
+        : 'English → Greek — press play to begin', '');
+    }
   }
 
   function buildLessonDeck() {
@@ -6507,6 +6954,14 @@
     document.getElementById('lesson-prev-btn').disabled = !skipsEnabled || idx === 0;
     document.getElementById('lesson-next-btn').disabled = !skipsEnabled || idx >= total;
     document.getElementById('lesson-replay-btn').disabled = !skipsEnabled;
+    const hardBtn = document.getElementById('lesson-hard-btn');
+    if (hardBtn) {
+      const card = (gLessonState && gLessonState.deck && gLessonState.deck[idx]) || null;
+      hardBtn.disabled = !card;
+      const flagged = card && gLessonHardFlagged.has(card.id);
+      hardBtn.classList.toggle('flagged', !!flagged);
+      hardBtn.textContent = flagged ? '⭐ Flagged' : '⭐ Mark hard';
+    }
   }
 
   function setLessonNowPlaying(stage, en, gr, phon) {
@@ -6568,27 +7023,50 @@
     const recallPause = gLessonState.settings.speed === 'slow' ? 4500 : 3500;
     const betweenGreekPause = 700;
     const interCardPause = 1600;
+    const direction = gLessonState.settings.direction || 'en2gr';
 
     while (gLessonState.idx < gLessonState.deck.length) {
       if (abortToken.aborted) return;
       const v = gLessonState.deck[gLessonState.idx];
-      setLessonNowPlaying('Recall', v.translation, '…', '');
-      updateLessonUI();
-      await speakAsync(v.translation, enVoice, 'en-US', enRate, abortToken);
-      if (abortToken.aborted) return;
-      setLessonNowPlaying('Pause', v.translation, '…', '(think of the word)');
-      await lessonWait(recallPause, abortToken);
-      if (abortToken.aborted) return;
-      setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '');
-      await speakAsync(v.word, grVoice, 'el-GR', grRate1, abortToken);
-      if (abortToken.aborted) return;
-      await lessonWait(betweenGreekPause, abortToken);
-      if (abortToken.aborted) return;
-      setLessonNowPlaying('Repeat (slower)', v.translation, v.word, v.phonetic || '');
-      await speakAsync(v.word, grVoice, 'el-GR', grRate2, abortToken);
-      if (abortToken.aborted) return;
-      await lessonWait(interCardPause, abortToken);
-      if (abortToken.aborted) return;
+
+      if (direction === 'gr2en') {
+        setLessonNowPlaying('Listen', '', v.word, v.phonetic || '');
+        updateLessonUI();
+        await speakAsync(v.word, grVoice, 'el-GR', grRate1, abortToken);
+        if (abortToken.aborted) return;
+        await lessonWait(betweenGreekPause, abortToken);
+        if (abortToken.aborted) return;
+        setLessonNowPlaying('Listen again', '', v.word, v.phonetic || '');
+        await speakAsync(v.word, grVoice, 'el-GR', grRate2, abortToken);
+        if (abortToken.aborted) return;
+        setLessonNowPlaying('Pause', '…', v.word, '(what does it mean?)');
+        await lessonWait(recallPause, abortToken);
+        if (abortToken.aborted) return;
+        setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '');
+        await speakAsync(v.translation, enVoice, 'en-US', enRate, abortToken);
+        if (abortToken.aborted) return;
+        await lessonWait(interCardPause, abortToken);
+        if (abortToken.aborted) return;
+      } else {
+        setLessonNowPlaying('Recall', v.translation, '…', '');
+        updateLessonUI();
+        await speakAsync(v.translation, enVoice, 'en-US', enRate, abortToken);
+        if (abortToken.aborted) return;
+        setLessonNowPlaying('Pause', v.translation, '…', '(think of the word)');
+        await lessonWait(recallPause, abortToken);
+        if (abortToken.aborted) return;
+        setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '');
+        await speakAsync(v.word, grVoice, 'el-GR', grRate1, abortToken);
+        if (abortToken.aborted) return;
+        await lessonWait(betweenGreekPause, abortToken);
+        if (abortToken.aborted) return;
+        setLessonNowPlaying('Repeat (slower)', v.translation, v.word, v.phonetic || '');
+        await speakAsync(v.word, grVoice, 'el-GR', grRate2, abortToken);
+        if (abortToken.aborted) return;
+        await lessonWait(interCardPause, abortToken);
+        if (abortToken.aborted) return;
+      }
+
       gLessonState.idx++;
     }
   }
