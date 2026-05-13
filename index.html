@@ -7057,38 +7057,39 @@
       if (abortToken.aborted) return;
       const v = gLessonState.deck[gLessonState.idx];
 
+      const clue = v.intuition || '';
       if (direction === 'gr2en') {
-        setLessonNowPlaying('Listen', '', v.word, v.phonetic || '');
+        setLessonNowPlaying('Listen', '', v.word, v.phonetic || '', clue);
         updateLessonUI();
         await speakAsync(v.word, grVoice, 'el-GR', grRate1, abortToken);
         if (abortToken.aborted) return;
         await lessonWait(betweenGreekPause, abortToken);
         if (abortToken.aborted) return;
-        setLessonNowPlaying('Listen again', '', v.word, v.phonetic || '');
+        setLessonNowPlaying('Listen again', '', v.word, v.phonetic || '', clue);
         await speakAsync(v.word, grVoice, 'el-GR', grRate2, abortToken);
         if (abortToken.aborted) return;
-        setLessonNowPlaying('Pause', '…', v.word, '(what does it mean?)');
+        setLessonNowPlaying('Pause', '…', v.word, '(what does it mean?)', clue);
         await lessonWait(recallPause, abortToken);
         if (abortToken.aborted) return;
-        setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '', v.intuition || '');
+        setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '', clue);
         await speakAsync(v.translation, enVoice, 'en-US', enRate, abortToken);
         if (abortToken.aborted) return;
         await lessonWait(interCardPause, abortToken);
         if (abortToken.aborted) return;
       } else {
-        setLessonNowPlaying('Recall', v.translation, '…', '');
+        setLessonNowPlaying('Recall', v.translation, '…', '', clue);
         updateLessonUI();
         await speakAsync(v.translation, enVoice, 'en-US', enRate, abortToken);
         if (abortToken.aborted) return;
-        setLessonNowPlaying('Pause', v.translation, '…', '(think of the word)');
+        setLessonNowPlaying('Pause', v.translation, '…', '(think of the word)', clue);
         await lessonWait(recallPause, abortToken);
         if (abortToken.aborted) return;
-        setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '', v.intuition || '');
+        setLessonNowPlaying('Answer', v.translation, v.word, v.phonetic || '', clue);
         await speakAsync(v.word, grVoice, 'el-GR', grRate1, abortToken);
         if (abortToken.aborted) return;
         await lessonWait(betweenGreekPause, abortToken);
         if (abortToken.aborted) return;
-        setLessonNowPlaying('Repeat (slower)', v.translation, v.word, v.phonetic || '', v.intuition || '');
+        setLessonNowPlaying('Repeat (slower)', v.translation, v.word, v.phonetic || '', clue);
         await speakAsync(v.word, grVoice, 'el-GR', grRate2, abortToken);
         if (abortToken.aborted) return;
         await lessonWait(interCardPause, abortToken);
