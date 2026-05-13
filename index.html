@@ -7040,7 +7040,20 @@
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     if (gLessonState) gLessonState.playing = false;
     updateLessonUI();
-    setLessonNowPlaying('Paused', '', '⏸ Press play to resume', '');
+    // Keep the current card's word, translation, phonetic, and clue visible while paused.
+    // Just swap the stage indicator so the user knows playback has stopped.
+    const card = gLessonState && gLessonState.deck ? gLessonState.deck[gLessonState.idx] : null;
+    if (card) {
+      setLessonNowPlaying(
+        '⏸ Paused — press play to resume',
+        card.translation || '',
+        card.word || '',
+        card.phonetic || '',
+        card.intuition || ''
+      );
+    } else {
+      setLessonNowPlaying('Paused', '', '⏸ Press play to resume', '');
+    }
   }
 
   async function runLessonLoop(enVoice, grVoice, abortToken) {
