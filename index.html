@@ -7017,14 +7017,14 @@
     const card = gLessonState && gLessonState.deck ? gLessonState.deck[gLessonState.idx] : null;
     if (card) {
       setLessonNowPlaying(
-        '⏸ Paused — press play to resume',
+        '⏸ Paused',
         card.translation || '',
         card.word || '',
         card.phonetic || '',
         card.intuition || ''
       );
     } else {
-      setLessonNowPlaying('Paused', '', '⏸ Press play to resume', '');
+      setLessonNowPlaying('⏸ Paused', '', '', '');
     }
   }
 
