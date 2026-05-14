@@ -2750,6 +2750,7 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('shopping',this)">🛍️ Shopping</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('italki',this)">📝 iTalki 11/05</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('writing',this)">✍️ Writing 11/05</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pino',this)">🥤 πίνω (drink)</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
@@ -3145,6 +3146,31 @@
           <div class="rule-callout">
             This is the single most common English-thinking error. Drop "is" whenever you're tempted to add it before a verb.
           </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">🥤 Worked example: πίνω (to drink)</div>
+        <div class="rule-card-body">
+          The "is it πίνω or πιω?" trap is just rule #2 (verb endings) + the aspect distinction. Same root, two forms based on what kind of action you mean.
+          <table class="rule-table">
+            <tr><th>Person</th><th>Habitual (open)</th><th>One-time after να/θα (closed / perfective)</th></tr>
+            <tr><td>I</td><td><span class="rule-greek">πίνω</span></td><td><span class="rule-greek">να πιω</span></td></tr>
+            <tr><td>You (sg.)</td><td><span class="rule-greek">πίνεις</span></td><td><span class="rule-greek">να πιεις</span></td></tr>
+            <tr><td>He / she</td><td><span class="rule-greek">πίνει</span></td><td><span class="rule-greek">να πιει</span></td></tr>
+            <tr><td>We</td><td><span class="rule-greek">πίνουμε</span></td><td>—</td></tr>
+            <tr><td>You all</td><td><span class="rule-greek">πίνετε</span></td><td>—</td></tr>
+            <tr><td>They</td><td><span class="rule-greek">πίνουν</span></td><td>—</td></tr>
+          </table>
+          <div class="rule-callout">
+            <strong>Aspect cue:</strong> "<em>every day</em>" / "<em>always</em>" / "<em>never</em>" → habitual → use πίνω.<br>
+            "<em>now</em>" / "<em>today</em>" / "<em>I want to…</em>" / after <span class="rule-greek">να</span> or <span class="rule-greek">θα</span> → one-time → use πιω.
+          </div>
+          <span style="display:block; margin-top:8px; font-size:0.9rem;">
+            ✓ <span class="rule-greek">Πίνω καφέ κάθε μέρα.</span> — habitual<br>
+            ✓ <span class="rule-greek">Θέλω να πιω καφέ τώρα.</span> — one-time<br>
+            Same pattern applies to most type-A verbs: ξυπνάω ↔ ξυπνήσω, διαβάζω ↔ διαβάσω, βλέπω ↔ δω.
+          </span>
         </div>
       </div>
 
@@ -6077,6 +6103,7 @@
       case 'shopping':   return v => v.topic === 'Shopping';
       case 'italki':     return v => v.topic === 'iTalki 11/05';
       case 'writing':    return v => v.topic === 'Writing 11/05';
+      case 'pino':       return v => v.topic === 'Verb πίνω';
       case 'all':
       default:           return v => true;
     }
@@ -6250,6 +6277,40 @@
     srs_due_at: null
   }));
 
+  // ── Verb drill: πίνω (to drink) — present-tense conjugation + perfective forms ──
+  // Common pattern source for habitual vs one-time aspect (πίνω vs πιω).
+  const VERB_PINO = [
+    // Present tense (open form) — habitual
+    { word: 'πίνω', translation: 'I drink', phonetic: 'PEE-no', part_of_speech: 'verb', intuition: '1st-person present, habitual. The "ee" sound here is ι. Always -ω, never -ο.' },
+    { word: 'πίνεις', translation: 'you drink (singular)', phonetic: 'PEE-nis', part_of_speech: 'verb', intuition: '2nd-person present. -εις ending. Don\'t mix with πίνει (he/she).' },
+    { word: 'πίνει', translation: 'he / she / it drinks', phonetic: 'PEE-ni', part_of_speech: 'verb', intuition: '3rd-person present. -ει ending.' },
+    { word: 'πίνουμε', translation: 'we drink', phonetic: 'PEE-noo-meh', part_of_speech: 'verb', intuition: '1st-person plural. -ουμε ending.' },
+    { word: 'πίνετε', translation: 'you all drink', phonetic: 'PEE-neh-teh', part_of_speech: 'verb', intuition: '2nd-person plural. -ετε ending.' },
+    { word: 'πίνουν', translation: 'they drink', phonetic: 'PEE-noon', part_of_speech: 'verb', intuition: '3rd-person plural. -ουν ending.' },
+
+    // Perfective (closed form) — used after να / θα for a single, one-time action
+    { word: 'να πιω', translation: 'to drink (one-time, after να)', phonetic: 'na pio', part_of_speech: 'verb', intuition: 'Perfective/closed form. Used after να or θα for ONE-OFF actions. Θέλω να πιω καφέ = "I want to drink (a) coffee."' },
+    { word: 'να πιεις', translation: 'you to drink (one-time)', phonetic: 'na piis', part_of_speech: 'verb', intuition: 'Perfective 2nd-person. Same root as πιω, different ending.' },
+    { word: 'να πιει', translation: 'he/she to drink (one-time)', phonetic: 'na pii', part_of_speech: 'verb', intuition: 'Perfective 3rd-person.' },
+
+    // Example sentences showing the aspect distinction
+    { word: 'Πίνω καφέ κάθε μέρα.', translation: 'I drink coffee every day.', phonetic: 'PEE-no kafe kathe mera', part_of_speech: 'sentence', intuition: 'Habitual / ongoing → open form πίνω. The "every day" cue is the giveaway.' },
+    { word: 'Θέλω να πιω καφέ τώρα.', translation: 'I want to drink coffee now.', phonetic: 'thelo na pio kafe tora', part_of_speech: 'sentence', intuition: 'Single one-time action after να → perfective πιω. "Now" / "today" / specific moment → closed form.' },
+    { word: 'Ποτέ δεν πίνει καφέ.', translation: 'She never drinks coffee.', phonetic: 'pote then pini kafe', part_of_speech: 'sentence', intuition: 'Habitual negation → open form πίνει + the double negative ποτέ δεν.' },
+  ];
+
+  const VERB_PINO_ENTRIES = VERB_PINO.map((v, i) => ({
+    id: 'verb-pino-' + (i + 1),
+    lang: 'greek',
+    topic: 'Verb πίνω',
+    word: v.word,
+    translation: v.translation,
+    phonetic: v.phonetic || null,
+    part_of_speech: v.part_of_speech || null,
+    intuition: v.intuition || null,
+    srs_due_at: null
+  }));
+
   async function ensurePracticeVocab() {
     if (gPracticeVocabLoaded) return gPracticeVocab;
     const all = await loadVocab();
@@ -6258,8 +6319,13 @@
     // (matched by greek word) so we don't double-count if the user later copies
     // them into the main vocab table.
     const liveWords = new Set(live.map(v => v.word));
-    const synthetic = ITALKI_NOTES_ENTRIES.concat(ITALKI_WRITING_ENTRIES);
-    const merged = live.concat(synthetic.filter(v => !liveWords.has(v.word)));
+    // iTalki and writing entries get deduped against live; verb-conjugation sets
+    // are kept whole (their value is the full table, even if individual forms exist).
+    const dedupable = ITALKI_NOTES_ENTRIES.concat(ITALKI_WRITING_ENTRIES);
+    const keepAll = VERB_PINO_ENTRIES;
+    const merged = live
+      .concat(dedupable.filter(v => !liveWords.has(v.word)))
+      .concat(keepAll);
     gPracticeVocab = merged;
     gPracticeVocabLoaded = true;
     return gPracticeVocab;
