@@ -6721,6 +6721,105 @@
       srs_due_at: null
     }));
   }
+  // ── Small Talk & Basic Conversation ──
+  // Daily-use phrases for greetings, courtesy, asking questions, restaurant interactions,
+  // and survival small talk. All tagged topic='Small Talk' so they flow into the existing
+  // 💬 Small Talk chip alongside any Supabase entries.
+  const SMALL_TALK_VOCAB = [
+    // Greetings
+    { word: 'γεια σου', translation: 'hi / hello (informal)', phonetic: 'YA-soo', intuition: 'Singular informal. Used with one person you know.' },
+    { word: 'γεια σας', translation: 'hello (formal / plural)', phonetic: 'YA-sas', intuition: 'Plural OR singular formal. Default with strangers, shopkeepers, older people.' },
+    { word: 'καλημέρα', translation: 'good morning', phonetic: 'ka-lee-ME-ra', intuition: 'Used until ~noon. Literally "good day." Universal greeting in the morning.' },
+    { word: 'καλό μεσημέρι', translation: 'good afternoon (early)', phonetic: 'ka-LO me-see-ME-ree', intuition: 'Used around midday/early afternoon. Less common than καλημέρα or καλησπέρα.' },
+    { word: 'καλησπέρα', translation: 'good evening', phonetic: 'ka-lee-SPE-ra', intuition: 'Used from late afternoon onwards. Standard evening greeting.' },
+    { word: 'καληνύχτα', translation: 'good night', phonetic: 'ka-lee-NEEH-ta', intuition: 'Only when parting at night. Not a greeting on arrival.' },
+    { word: 'αντίο', translation: 'goodbye', phonetic: 'an-DEE-o', intuition: 'Formal/final farewell. For casual "bye" use γεια σου.' },
+    { word: 'τα λέμε', translation: 'see you / talk to you later', phonetic: 'ta LE-me', intuition: 'Casual "see you around." Literally "we say them" (= we\'ll talk).' },
+    { word: 'τα λέμε αύριο', translation: 'see you tomorrow', phonetic: 'ta LE-me AV-ree-o', intuition: 'Add αύριο for specificity.' },
+
+    // How are you / responses
+    { word: 'τι κάνεις;', translation: 'how are you? (informal)', phonetic: 'tee KA-nis', intuition: 'Literally "what are you doing?" Standard informal greeting after γεια.' },
+    { word: 'τι κάνετε;', translation: 'how are you? (formal/plural)', phonetic: 'tee KA-ne-te', intuition: 'Formal/plural version. Use with strangers, elders, multiple people.' },
+    { word: 'πώς είσαι;', translation: 'how are you? (informal)', phonetic: 'pos EE-se', intuition: 'Slightly more sincere than τι κάνεις — asks how you actually are.' },
+    { word: 'καλά', translation: 'good / fine', phonetic: 'ka-LA', intuition: 'Default response. Can stand alone or pair: καλά, εσύ;' },
+    { word: 'πολύ καλά', translation: 'very well', phonetic: 'po-LEE ka-LA', intuition: 'Stronger positive. πολύ = very.' },
+    { word: 'μια χαρά', translation: 'great / wonderful', phonetic: 'mya ha-RA', intuition: 'Literally "a joy." Enthusiastic response.' },
+    { word: 'έτσι κι έτσι', translation: 'so-so', phonetic: 'ET-see kee ET-see', intuition: 'Lukewarm. Literally "like this and like this."' },
+    { word: 'εσύ;', translation: 'you? (informal)', phonetic: 'e-SEE', intuition: 'Bounce the question back. Always polite to ask.' },
+    { word: 'εσείς;', translation: 'you? (formal/plural)', phonetic: 'e-SEES', intuition: 'Formal version. Use after τι κάνετε answer.' },
+
+    // Names / introductions
+    { word: 'πώς σε λένε;', translation: "what's your name? (informal)", phonetic: 'pos se LE-ne', intuition: 'Literally "how do they call you?" Standard informal intro question.' },
+    { word: 'πώς σας λένε;', translation: "what's your name? (formal)", phonetic: 'pos sas LE-ne', intuition: 'Formal/plural version.' },
+    { word: 'με λένε', translation: 'my name is (literally "they call me")', phonetic: 'me LE-ne', intuition: 'Just add your name. Example: Με λένε Άντονι.' },
+    { word: 'χαίρω πολύ', translation: 'nice to meet you', phonetic: 'HE-ro po-LEE', intuition: 'Standard introduction phrase. Literally "I rejoice much."' },
+    { word: 'από πού είσαι;', translation: 'where are you from? (informal)', phonetic: 'a-PO POO EE-se', intuition: 'από + accusative. Standard travel/meeting question.' },
+    { word: 'είμαι από την Αμερική', translation: "I'm from America", phonetic: 'EE-me a-PO teen a-me-ree-KEE', intuition: 'Note από + την Αμερική (feminine accusative).' },
+
+    // Courtesy / thank you / sorry
+    { word: 'παρακαλώ', translation: 'please / you\'re welcome', phonetic: 'pa-ra-ka-LO', intuition: 'Versatile. Use for "please," "you\'re welcome," AND "may I help you?" (shopkeeper greeting).' },
+    { word: 'ευχαριστώ', translation: 'thank you', phonetic: 'ef-ha-ree-STO', intuition: 'ευ → "ef." Singular form, used by one person.' },
+    { word: 'ευχαριστούμε', translation: 'thank you (we)', phonetic: 'ef-ha-ree-STOO-me', intuition: 'Plural form when speaking for a group.' },
+    { word: 'ευχαριστώ πολύ', translation: 'thank you very much', phonetic: 'ef-ha-ree-STO po-LEE', intuition: 'Add πολύ for emphasis.' },
+    { word: 'τίποτα', translation: "you're welcome (literally 'nothing')", phonetic: 'TEE-po-ta', intuition: 'Casual "no problem" response to ευχαριστώ. Same word as "nothing" — context disambiguates.' },
+    { word: 'συγγνώμη', translation: "sorry / excuse me", phonetic: 'si-GHNO-mee', intuition: 'Both apologies AND getting attention. The γν makes a "ghn" sound.' },
+    { word: 'με συγχωρείτε', translation: 'excuse me (formal)', phonetic: 'me see-gho-REE-te', intuition: 'More formal than συγγνώμη. Used to get a stranger\'s attention politely.' },
+    { word: 'δεν πειράζει', translation: "it's ok / no worries", phonetic: 'then pi-RA-zi', intuition: 'Response to apology. Literally "it doesn\'t bother." Conversational closer.' },
+    { word: 'κανένα πρόβλημα', translation: 'no problem', phonetic: 'ka-NE-na PRO-vlee-ma', intuition: 'Drop-in replacement for "no worries."' },
+
+    // Question words / common asks
+    { word: 'ναι', translation: 'yes', phonetic: 'ne', intuition: 'Looks like English "nay" but means yes — common confusion.' },
+    { word: 'όχι', translation: 'no', phonetic: 'O-hi', intuition: 'Used for negating nouns (όχι σήμερα = not today). For negating verbs use δεν.' },
+    { word: 'ίσως', translation: 'maybe', phonetic: 'EE-sos', intuition: 'Standard "maybe." Stands alone or before a clause.' },
+    { word: 'δεν ξέρω', translation: "I don't know", phonetic: 'then KSE-ro', intuition: 'High-frequency phrase. Practice the δ pronunciation.' },
+    { word: 'δεν καταλαβαίνω', translation: "I don't understand", phonetic: 'then ka-ta-la-VE-no', intuition: 'Survival phrase #1. Learn this before everything else.' },
+    { word: 'καταλαβαίνεις;', translation: 'do you understand? (informal)', phonetic: 'ka-ta-la-VE-nis', intuition: 'Check comprehension during conversation.' },
+    { word: 'μπορείς να το επαναλάβεις;', translation: 'can you repeat that? (informal)', phonetic: 'bo-REES na to e-pa-na-LA-vis', intuition: 'Survival phrase #2. μπ = "b" sound.' },
+    { word: 'πιο αργά, παρακαλώ', translation: 'more slowly, please', phonetic: 'pyo ar-GA pa-ra-ka-LO', intuition: 'Survival phrase #3. Use freely with native speakers.' },
+    { word: 'μιλάς αγγλικά;', translation: 'do you speak English? (informal)', phonetic: 'mee-LAS ang-glee-KA', intuition: 'Useful escape hatch. αγγλικά = English (as a language).' },
+    { word: 'μιλάω λίγα ελληνικά', translation: 'I speak a little Greek', phonetic: 'mee-LA-o LEE-ga e-lee-nee-KA', intuition: 'Sets honest expectations. λίγα = a little (n. plural).' },
+    { word: 'πώς λέγεται...;', translation: 'how do you say…?', phonetic: 'pos LE-ye-te', intuition: 'Point at something and ask. Useful learning move.' },
+    { word: 'τι σημαίνει;', translation: 'what does it mean?', phonetic: 'tee see-ME-nee', intuition: 'Ask the meaning of a word you just heard.' },
+
+    // Restaurant / café small talk
+    { word: 'ένα τραπέζι για δύο', translation: 'a table for two', phonetic: 'E-na tra-PE-zee ya THEE-o', intuition: 'Δύο = two. τραπέζι is neuter (ένα).' },
+    { word: 'το μενού, παρακαλώ', translation: 'the menu, please', phonetic: 'toh me-NOO pa-ra-ka-LO', intuition: 'μενού is a loanword, neuter.' },
+    { word: 'τι προτείνεις;', translation: 'what do you recommend? (informal)', phonetic: 'tee pro-TEE-nis', intuition: 'Server interaction. Opens up the menu conversation.' },
+    { word: 'θα ήθελα...', translation: "I'd like…", phonetic: 'tha EE-the-la', intuition: 'Polite ordering form. Add the dish: Θα ήθελα μια σαλάτα.' },
+    { word: 'τον λογαριασμό, παρακαλώ', translation: 'the bill, please', phonetic: 'ton lo-ga-rya-SMO pa-ra-ka-LO', intuition: 'End-of-meal phrase. λογαριασμός is masc → τον λογαριασμό in accusative.' },
+    { word: 'ήταν νόστιμο', translation: 'it was delicious', phonetic: 'EE-tan NO-stee-mo', intuition: 'Compliment after eating. νόστιμο is neuter to match the meal/dish generically.' },
+    { word: 'στην υγειά σου', translation: 'cheers! (informal)', phonetic: 'stin ee-YA-soo', intuition: 'Literally "to your health." Toast.' },
+    { word: 'στην υγειά μας', translation: 'cheers! (us)', phonetic: 'stin ee-YA-mas', intuition: '"To our health." Group toast.' },
+
+    // Time-of-day & meeting plans
+    { word: 'τι ώρα είναι;', translation: 'what time is it?', phonetic: 'tee O-ra EE-ne', intuition: 'Note: ώρα uses ω. Standard question.' },
+    { word: 'πότε;', translation: 'when?', phonetic: 'PO-te', intuition: 'Accent on first syllable — distinguishes from ποτέ (never).' },
+    { word: 'σήμερα το βράδυ', translation: 'tonight (= today in the evening)', phonetic: 'SEE-me-ra toh VRA-thee', intuition: 'More natural than απόψε in scheduling contexts.' },
+    { word: 'πάμε;', translation: 'shall we go? / let\'s go!', phonetic: 'PA-me', intuition: 'High-frequency conversational nudge. 1st-person plural of πάω.' },
+    { word: 'φτάνει', translation: 'enough / that\'s enough', phonetic: 'FTA-nee', intuition: 'Useful for declining more food/drink. Literally "it suffices."' },
+
+    // Filler / connectors
+    { word: 'λοιπόν', translation: 'so / well / anyway', phonetic: 'lee-PON', intuition: 'High-frequency filler. Use to start a sentence or transition topics.' },
+    { word: 'εντάξει', translation: 'ok / alright', phonetic: 'en-DA-ksee', intuition: 'Universal "ok" / "fine." Same use as English ok.' },
+    { word: 'φυσικά', translation: 'of course / naturally', phonetic: 'fee-see-KA', intuition: 'Confident affirmative. Stronger than just ναι.' },
+    { word: 'βέβαια', translation: 'sure / of course', phonetic: 'VE-ve-a', intuition: 'Alternative to φυσικά. Slightly less emphatic.' },
+    { word: 'ίσως ναι, ίσως όχι', translation: 'maybe yes, maybe no', phonetic: 'EE-sos ne, EE-sos O-hi', intuition: 'Useful diplomatic hedge.' },
+    { word: 'δες!', translation: 'look! / see!', phonetic: 'thes', intuition: 'Imperative of βλέπω. Conversational interjection.' },
+    { word: 'άκου', translation: 'listen', phonetic: 'A-koo', intuition: 'Conversational lead-in. "Listen, I was thinking…"' },
+  ];
+
+  const SMALL_TALK_ENTRIES = SMALL_TALK_VOCAB.map((v, i) => ({
+    id: 'small-talk-' + (i + 1),
+    lang: 'greek',
+    topic: 'Small Talk',
+    word: v.word,
+    translation: v.translation,
+    phonetic: v.phonetic || null,
+    part_of_speech: v.word.length > 18 ? 'phrase' : null,
+    intuition: v.intuition || null,
+    srs_due_at: null
+  }));
+
   const MAY14_DAYS_ENTRIES = makeMay14Entries(MAY14_DAYS, 'Days of Week', 'may14-day');
   const MAY14_MONTHS_ENTRIES = makeMay14Entries(MAY14_MONTHS, 'Months', 'may14-month');
   const MAY14_DEN_REFLEX_ENTRIES = makeMay14Entries(MAY14_DEN_REFLEX, 'δεν Reflex', 'may14-den');
@@ -6774,7 +6873,8 @@
     // are kept whole (their value is the full table, even if individual forms exist).
     const dedupable = ITALKI_NOTES_ENTRIES
       .concat(ITALKI_WRITING_ENTRIES)
-      .concat(MAY14_MISC_ENTRIES);
+      .concat(MAY14_MISC_ENTRIES)
+      .concat(SMALL_TALK_ENTRIES);
     const keepAll = VERB_PINO_ENTRIES
       .concat(MAY14_DAYS_ENTRIES)
       .concat(MAY14_MONTHS_ENTRIES)
