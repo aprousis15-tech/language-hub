@@ -1245,6 +1245,19 @@
     padding: 10px 14px; margin-top: 10px; font-size: 0.88rem; color: #5d4a14;
   }
   .rule-callout strong { color: #b76e00; }
+  .rule-severity {
+    display: inline-block; padding: 2px 8px; border-radius: 99px;
+    font-size: 0.72rem; font-weight: 700; margin-right: 8px;
+    vertical-align: middle;
+  }
+  .rule-severity.critical { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+  .rule-severity.high     { background: #fff3e0; color: #e65100; border: 1px solid #ffb74d; }
+  .rule-severity.marker   { background: #fff8e1; color: #8d6e00; border: 1px solid #ffd54f; }
+  .rule-code-badge {
+    display: inline-block; padding: 1px 7px; border-radius: 4px;
+    background: #e0f2f1; color: #00695c; font-family: monospace;
+    font-size: 0.78rem; font-weight: 700; margin-right: 6px;
+  }
   .practice-header { text-align: center; margin-bottom: 24px; }
   .practice-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #ad1457; margin-bottom: 6px; }
   .practice-header p { font-size: 0.85rem; color: #7a4060; }
@@ -2751,6 +2764,11 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('italki',this)">📝 iTalki 11/05</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('writing',this)">✍️ Writing 11/05</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('pino',this)">🥤 πίνω (drink)</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('days',this)">📅 Days</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('months',this)">🗓️ Months</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('denreflex',this)">🚫 δεν reflex</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('timetriage',this)">🕐 Time triage</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('timesofday',this)">⏰ Times of day</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
@@ -3248,6 +3266,208 @@
           <div class="rule-callout">
             <strong>When in doubt, add the article.</strong> Greek leans article-heavy.
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MAY 14 RULE CODEBOOK ─── -->
+    <div class="rules-section">
+      <div class="rules-section-title">📋 May 14 Rule Codebook</div>
+      <p style="color:#4a6360; font-size:0.92rem; margin: -4px 0 14px;">
+        Severity-coded rules from the May 14 trainer compilation. <span class="rule-severity critical">🔴 critical</span> = causes communication failure. <span class="rule-severity high">🟠 high</span> = clearly non-native. <span class="rule-severity marker">🟡 marker</span> = worth fixing eventually.
+      </p>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R1</span><span class="rule-severity critical">🔴 critical</span>Double negation table — every negation word needs δεν
+        </div>
+        <div class="rule-card-body">
+          Greek negates with <strong>δεν before the verb</strong> + the negation word. Without δεν, the negation word flips to positive meaning.
+          <table class="rule-table">
+            <tr><th>English</th><th>Greek (with δεν)</th><th>Drops δεν? Means…</th></tr>
+            <tr><td>never</td><td><span class="rule-greek">δεν…ποτέ</span></td><td>"ever" (positive)</td></tr>
+            <tr><td>nothing</td><td><span class="rule-greek">δεν…τίποτα</span></td><td>"anything"</td></tr>
+            <tr><td>no one (m / f)</td><td><span class="rule-greek">δεν…κανείς / καμία</span></td><td>"anyone / someone"</td></tr>
+            <tr><td>nowhere</td><td><span class="rule-greek">δεν…πουθενά</span></td><td>(unusable)</td></tr>
+          </table>
+          <div class="rule-callout">
+            <strong>The reflex to drill:</strong> when English has <em>never / nothing / no one / nowhere</em>, the FIRST word out of your mouth must be <span class="rule-greek">Δεν</span>.
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R2</span><span class="rule-severity critical">🔴 critical</span>είναι is required — no copula drop
+        </div>
+        <div class="rule-card-body">
+          Unlike Russian / Arabic, Greek <em>requires</em> the "is / are" verb. Subject + adjective alone is broken.<br>
+          ❌ <span class="rule-greek">Η φίλη μου κουρασμένη</span><br>
+          ✅ <span class="rule-greek">Η φίλη μου <strong>είναι</strong> κουρασμένη</span><br>
+          Same for "the weather is bad" → <span class="rule-greek">Ο καιρός <strong>είναι</strong> κακός</span>.
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R10</span><span class="rule-severity high">🟠 high</span>κάθε ≠ any / some
+        </div>
+        <div class="rule-card-body">
+          <table class="rule-table">
+            <tr><th>English</th><th>Greek</th><th>Notes</th></tr>
+            <tr><td>every / each</td><td><span class="rule-greek">κάθε</span></td><td>Invariable, positive frequency only</td></tr>
+            <tr><td>some (m / f / n)</td><td><span class="rule-greek">κάποιος / κάποια / κάποιο</span></td><td>Gender-matches the noun</td></tr>
+            <tr><td>any (in negation)</td><td>— (drop it) OR <span class="rule-greek">καμία / κανένας</span></td><td>"I don't want any" → just <span class="rule-greek">Δεν θέλω τίποτα</span></td></tr>
+          </table>
+          <div class="rule-callout">
+            <strong>δεν + κάθε is a near-contradiction.</strong> If English says "any / some" in a negative, drop the word entirely.
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R11</span><span class="rule-severity high">🟠 high</span>Masculine -ος / -ας / -ης drops -ς in accusative
+        </div>
+        <div class="rule-card-body">
+          After prepositions like <span class="rule-greek">με, σε, από</span>, masculine nouns lose their final <span class="rule-greek">-ς</span>. The article also changes (<span class="rule-greek">ο → τον</span>).
+          <table class="rule-table">
+            <tr><th>Nominative</th><th>Accusative</th></tr>
+            <tr><td><span class="rule-greek">ο φίλος</span></td><td><span class="rule-greek">με τον φίλο</span></td></tr>
+            <tr><td><span class="rule-greek">ο πατέρας</span></td><td><span class="rule-greek">με τον πατέρα</span></td></tr>
+            <tr><td><span class="rule-greek">ο Νίκος</span></td><td><span class="rule-greek">με τον Νίκο</span></td></tr>
+            <tr><td><span class="rule-greek">ο Ιούλιος</span></td><td><span class="rule-greek">τον Ιούλιο</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R14</span><span class="rule-severity marker">🟡 marker</span>ευ diphthong = "ef / ev"
+        </div>
+        <div class="rule-card-body">
+          <span class="rule-greek">ευ</span> before <em>unvoiced</em> consonants → "ef." Before <em>vowels / voiced</em> → "ev."<br>
+          <span class="rule-greek">Δευτέρα</span> (<strong>def-</strong>) · <span class="rule-greek">ευχαριστώ</span> (<strong>ef-</strong>) · <span class="rule-greek">Ευρώπη</span> (<strong>ev-</strong>)
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R15</span><span class="rule-severity marker">🟡 marker</span>αυ diphthong = "af / av"
+        </div>
+        <div class="rule-card-body">
+          Same pattern as ευ. <span class="rule-greek">αυ</span> before unvoiced → "af." Before voiced → "av."<br>
+          <span class="rule-greek">αύριο</span> (<strong>av-</strong>) · <span class="rule-greek">αυτό</span> (<strong>af-</strong>) · <span class="rule-greek">Αύγουστος</span> (<strong>av-</strong>)
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R16</span><span class="rule-severity marker">🟡 marker</span>ου digraph = "oo"
+        </div>
+        <div class="rule-card-body">
+          Two letters, one "oo" sound.<br>
+          <span class="rule-greek">δουλειά</span> · <span class="rule-greek">Ιούλιος</span> · <span class="rule-greek">ευχαριστούμε</span>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R17</span><span class="rule-severity marker">🟡 marker</span>σ vs. ς vs. ζ — three different things
+        </div>
+        <div class="rule-card-body">
+          <span class="rule-greek">σ</span> and <span class="rule-greek">ς</span> are the <em>same letter</em> in different positions — never end with σ.<br>
+          <span class="rule-greek">ζ</span> is zeta — a totally <em>different</em> letter, used for the "z" sound (<span class="rule-greek">ζώο</span> = animal).
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R18</span><span class="rule-severity marker">🟡 marker</span>Greek rarely doubles consonants
+        </div>
+        <div class="rule-card-body">
+          When in doubt, single. Watch <span class="rule-greek">θέλει</span> (single λ, not θέλλει).
+          <div class="rule-callout">
+            <strong>Exceptions to memorize:</strong> <span class="rule-greek">άλλος</span>, <span class="rule-greek">Ελλάδα</span>, <span class="rule-greek">θάλασσα</span>, <span class="rule-greek">Στέλλα</span>, <span class="rule-greek">εννέα</span>, <span class="rule-greek">γράμμα</span>, <span class="rule-greek">Σάββατο</span>.
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R19</span><span class="rule-severity marker">🟡 marker</span>πριν vs. προτού
+        </div>
+        <div class="rule-card-body">
+          <span class="rule-greek">πριν</span> / <span class="rule-greek">πριν από</span> + <strong>noun</strong>: <span class="rule-greek">πριν από το γραφείο</span> = before the office.<br>
+          <span class="rule-greek">προτού</span> + <strong>verb / clause</strong>: <span class="rule-greek">προτού φύγει</span> = before he leaves.<br>
+          Never <span class="rule-greek">προτού</span> before a noun.
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">R20</span><span class="rule-severity marker">🟡 marker</span>Adverbs never take articles
+        </div>
+        <div class="rule-card-body">
+          <span class="rule-greek">σήμερα</span>, <span class="rule-greek">αύριο</span>, <span class="rule-greek">νωρίς</span>, <span class="rule-greek">εδώ</span> stand alone — no <span class="rule-greek">η / ο / το</span>.<br>
+          ❌ <span class="rule-greek">η σήμερα</span> · ✅ <span class="rule-greek">σήμερα</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PERSISTENT LEAKS + LOCKED PATTERNS (May 14 takeaways) ─── -->
+    <div class="rules-section">
+      <div class="rules-section-title">🎯 Drill Priorities (May 14 takeaways)</div>
+      <p style="color:#4a6360; font-size:0.92rem; margin: -4px 0 14px;">
+        From analyzing the 20-sentence corpus across multiple rounds. Use this to spend your daily drill time on what's actually leaking, not what's already locked.
+      </p>
+
+      <div class="rule-card">
+        <div class="rule-card-title">🚨 Persistent leaks — drill these first</div>
+        <div class="rule-card-body">
+          <table class="rule-table">
+            <tr><th>Leak</th><th>Severity</th></tr>
+            <tr><td>Missing δεν before κανείς / τίποτα / ποτέ</td><td><span class="rule-severity critical">🔴 top</span></td></tr>
+            <tr><td>Month names unrecognizable (esp. Ιούλιος)</td><td><span class="rule-severity critical">🔴 top</span></td></tr>
+            <tr><td>Masculine accusative drop (πατέρας → πατέρα)</td><td><span class="rule-severity high">🟠</span></td></tr>
+            <tr><td>TE rule regression (στη(ν) overuse on days/months)</td><td><span class="rule-severity high">🟠</span></td></tr>
+            <tr><td>Double consonants in verbs (θέλλει)</td><td><span class="rule-severity marker">🟡</span></td></tr>
+            <tr><td>πριν vs προτού</td><td><span class="rule-severity marker">🟡</span></td></tr>
+          </table>
+          <div class="rule-callout">
+            <strong>Tonight's session:</strong> <a class="review-link" onclick="switchLang('practice')" style="cursor:pointer;">go to the 🚫 δεν reflex and 🗓️ Months chips in Practice</a> and run 5 minutes each.
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">🔒 Locked patterns — maintain weekly, don't burn daily time</div>
+        <div class="rule-card-body">
+          These won't regress with light maintenance. One pass per week is enough.
+          <ul style="margin:8px 0 0; padding-left:22px; line-height:1.7;">
+            <li>1st-person -ω endings (Πίνω, Έχω, ξυπνάω)</li>
+            <li>3rd-person -ει endings (έχει, πίνει, θέλει)</li>
+            <li>Possessive structure (ο/η + noun + μου)</li>
+            <li>με + τον/τη contractions</li>
+            <li>από + article + noun</li>
+            <li>Feminine indefinite chain (μια + adj-η + noun-η)</li>
+            <li>Neuter chain for -μα nouns (ένα + adj-ο + μάθημα)</li>
+            <li>ξυπνάω verb family</li>
+            <li>σ vs ς at word end</li>
+            <li>ευ diphthong (Δευτέρα)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">💡 Mistake reflections — rules learned the hard way</div>
+        <div class="rule-card-body">
+          <ol style="margin:0; padding-left:22px; line-height:1.7;">
+            <li><strong>δεν is a reflex, not a knowledge gap.</strong> The rule is in your head; what fails is firing it in real-time. Speed drills > rule explanations.</li>
+            <li><strong>Months are vocab, not grammar.</strong> No rule will save you if <span class="rule-greek">Ιούλιος</span> isn't a memorized shape.</li>
+            <li><strong>English "in / on" + time → drop the preposition for days, months, times-of-day.</strong> Only clock times keep <span class="rule-greek">στις</span>.</li>
+            <li><strong>κάθε = every, never any / some.</strong> δεν + κάθε is a near-contradiction.</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -6165,6 +6385,11 @@
       case 'italki':     return v => v.topic === 'iTalki 11/05';
       case 'writing':    return v => v.topic === 'Writing 11/05';
       case 'pino':       return v => v.topic === 'Verb πίνω';
+      case 'days':       return v => v.topic === 'Days of Week';
+      case 'months':     return v => v.topic === 'Months';
+      case 'denreflex':  return v => v.topic === 'δεν Reflex';
+      case 'timetriage': return v => v.topic === 'Time Triage';
+      case 'timesofday': return v => v.topic === 'Times of Day';
       case 'all':
       default:           return v => true;
     }
@@ -6338,6 +6563,112 @@
     srs_due_at: null
   }));
 
+  // ── May 14 trainer ingest: days, months, negation reflex sentences, time triage ──
+  // Five focused topic chips covering the persistent leaks identified in §3 of the
+  // greek-trainer-may14.md compilation. Each entry's intuition carries the
+  // diagnostic note from the source doc.
+  const MAY14_DAYS = [
+    { word: 'τη Δευτέρα', translation: 'on Monday', phonetic: 'tee def-TE-ra', intuition: 'Accusative day-name. Greek time expressions take the article ONLY — no στη(ν).' },
+    { word: 'την Τρίτη', translation: 'on Tuesday', phonetic: 'teen TREE-tee', intuition: 'Accusative day-name. No στη(ν).' },
+    { word: 'την Τετάρτη', translation: 'on Wednesday', phonetic: 'teen te-TAR-tee', intuition: 'Accusative day-name. No στη(ν).' },
+    { word: 'την Πέμπτη', translation: 'on Thursday', phonetic: 'teen PEM-ptee', intuition: 'Accusative day-name. No στη(ν).' },
+    { word: 'την Παρασκευή', translation: 'on Friday', phonetic: 'teen pa-ra-ske-VEE', intuition: 'Accusative day-name. ευ diphthong → "ev". No στη(ν).' },
+    { word: 'το Σάββατο', translation: 'on Saturday', phonetic: 'toh SA-va-toh', intuition: 'The ONE neuter day — takes το, not τη. Double β exception.' },
+    { word: 'την Κυριακή', translation: 'on Sunday', phonetic: 'teen kir-ya-KEE', intuition: 'Accusative day-name. No στη(ν).' },
+  ];
+  const MAY14_MONTHS = [
+    { word: 'τον Ιανουάριο', translation: 'in January', phonetic: 'ton ya-noo-A-ree-o', intuition: 'Masc -ος drops -ς in accusative (Ιανουάριος → Ιανουάριο). No στον.' },
+    { word: 'τον Φεβρουάριο', translation: 'in February', phonetic: 'ton fev-roo-A-ree-o', intuition: 'Masc -ος drops -ς. ευ → "ev".' },
+    { word: 'τον Μάρτιο', translation: 'in March', phonetic: 'ton MAR-tee-o', intuition: 'Masc -ος drops -ς in accusative.' },
+    { word: 'τον Απρίλιο', translation: 'in April', phonetic: 'ton a-PREE-lee-o', intuition: 'Masc -ος drops -ς in accusative.' },
+    { word: 'τον Μάιο', translation: 'in May', phonetic: 'ton MA-ee-o', intuition: 'Masc -ος drops -ς in accusative.' },
+    { word: 'τον Ιούνιο', translation: 'in June', phonetic: 'ton ee-OO-nee-o', intuition: 'Masc -ος drops -ς. ου digraph = "oo".' },
+    { word: 'τον Ιούλιο', translation: 'in July', phonetic: 'ton ee-OO-lee-o', intuition: 'CRITICAL — chronic leak. Masc -ος drops -ς. ου digraph = "oo".' },
+    { word: 'τον Αύγουστο', translation: 'in August', phonetic: 'ton AV-goos-toh', intuition: 'Masc -ος drops -ς. αυ diphthong = "av".' },
+    { word: 'τον Σεπτέμβριο', translation: 'in September', phonetic: 'ton sep-TEM-vree-o', intuition: 'Masc -ος drops -ς in accusative.' },
+    { word: 'τον Οκτώβριο', translation: 'in October', phonetic: 'ton ok-TOH-vree-o', intuition: 'Masc -ος drops -ς. Note ω (omega) in Οκτώβριος.' },
+    { word: 'τον Νοέμβριο', translation: 'in November', phonetic: 'ton no-EM-vree-o', intuition: 'Masc -ος drops -ς in accusative.' },
+    { word: 'τον Δεκέμβριο', translation: 'in December', phonetic: 'ton de-KEM-vree-o', intuition: 'Masc -ος drops -ς in accusative.' },
+  ];
+  const MAY14_DEN_REFLEX = [
+    { word: 'Δεν είναι κανείς εδώ.', translation: 'No one is here.', phonetic: 'then EE-ne ka-NEES e-THO', intuition: 'δεν reflex: when English says "no one / never / nothing / nowhere," first word out is Δεν. The negation word follows the verb.' },
+    { word: 'Δεν θέλω τίποτα.', translation: "I don't want anything.", phonetic: 'then THE-lo TEE-po-ta', intuition: 'δεν + τίποτα = the required double negative. "I want nothing" without δεν is broken Greek.' },
+    { word: 'Δεν πάει πουθενά.', translation: "He doesn't go anywhere.", phonetic: 'then PA-ee poo-the-NA', intuition: 'πουθενά (nowhere) ALWAYS pairs with δεν.' },
+    { word: 'Δεν πίνει ποτέ καφέ.', translation: "She never drinks coffee.", phonetic: 'then PEE-nee po-TE ka-FE', intuition: 'ποτέ (never) ALWAYS pairs with δεν. Word order: Δεν + verb + ποτέ.' },
+    { word: 'Δεν θέλει τίποτα από το γραφείο.', translation: "She doesn't want anything from the office.", phonetic: 'then THE-li TEE-po-ta a-PO toh gra-FEE-o', intuition: 'Composite: δεν + τίποτα + από + article + noun. από takes accusative (από το γραφείο).' },
+  ];
+  const MAY14_TIME_TRIAGE = [
+    { word: 'το πρωί', translation: 'in the morning', phonetic: 'toh pro-EE', intuition: 'Times of day take the article only — no στη(ν). English "in the" maps to just το/τη/τον.' },
+    { word: 'το απόγευμα', translation: 'in the afternoon', phonetic: 'toh a-PO-yev-ma', intuition: 'NOT μεσημέρι (that means noon). Article only, no preposition.' },
+    { word: 'το βράδυ', translation: 'in the evening', phonetic: 'toh VRA-thee', intuition: 'Article only.' },
+    { word: 'το μεσημέρι', translation: 'at noon', phonetic: 'toh me-see-ME-ree', intuition: 'Noon, NOT afternoon. Article only.' },
+    { word: 'στις οκτώ η ώρα', translation: "at 8 o'clock", phonetic: 'stees ok-TOH ee O-ra', intuition: 'Clock times are the ONLY time-expression that takes στις. Note οκτώ uses ω, not ο.' },
+    { word: 'στις εννέα η ώρα', translation: "at 9 o'clock", phonetic: 'stees en-NE-a ee O-ra', intuition: 'Clock times → στις. εννέα has the rare double ν.' },
+    { word: 'σήμερα', translation: 'today', phonetic: 'SEE-meh-ra', intuition: 'Adverb — no article. σήμερα stands alone (not η σήμερα). η spelling (not ι).' },
+    { word: 'αύριο', translation: 'tomorrow', phonetic: 'AV-ree-o', intuition: 'Adverb — no article. αυ diphthong = "av".' },
+  ];
+  const MAY14_TIMES_OF_DAY = [
+    { word: 'σήμερα', translation: 'today', phonetic: 'SEE-meh-ra', intuition: 'Adverb. Stands alone, no article.' },
+    { word: 'αύριο', translation: 'tomorrow', phonetic: 'AV-ree-o', intuition: 'Adverb. αυ → "av".' },
+    { word: 'νωρίς', translation: 'early', phonetic: 'no-REES', intuition: 'Adverb. ω (not ο). σ→ς at word end.' },
+    { word: 'αργότερα', translation: 'later', phonetic: 'ar-GO-te-ra', intuition: 'Adverb. Cleaner comparative than πιο αργά.' },
+    { word: 'απόψε', translation: 'tonight', phonetic: 'a-PO-pse', intuition: 'Adverb. ψ = "ps" (one letter).' },
+  ];
+  // Other May 14 vocab additions: negation words + quantifiers + common verbs/nouns
+  // not already in italki/writing entries. Tagged with their own intuition where useful.
+  const MAY14_MISC = [
+    // Negation words
+    { word: 'ποτέ', translation: 'never', phonetic: 'po-TE', intuition: 'Requires δεν before the verb. ποτέ (last-syllable accent) ≠ πότε (when, first-syllable accent).' },
+    { word: 'τίποτα', translation: 'nothing / anything', phonetic: 'TEE-po-ta', intuition: 'Requires δεν before the verb.' },
+    { word: 'κανείς', translation: 'no one (masc)', phonetic: 'ka-NEES', intuition: 'Requires δεν before the verb. Feminine form: καμία.' },
+    { word: 'καμία', translation: 'no one (fem)', phonetic: 'ka-MEE-a', intuition: 'Requires δεν before the verb. Masculine form: κανείς.' },
+    { word: 'πουθενά', translation: 'nowhere', phonetic: 'poo-the-NA', intuition: 'Requires δεν before the verb.' },
+    // Quantifiers
+    { word: 'κάθε', translation: 'every / each', phonetic: 'KA-the', intuition: 'Invariable. NOT "any/some" — that\'s κάποιος. κάθε is positive frequency only.' },
+    { word: 'κάποιος', translation: 'some (masc)', phonetic: 'KA-pyos', intuition: 'Masculine indefinite "some." Feminine: κάποια. Neuter: κάποιο.' },
+    { word: 'κάποια', translation: 'some (fem)', phonetic: 'KA-pya', intuition: 'Feminine indefinite "some."' },
+    { word: 'κάποιο', translation: 'some (neut)', phonetic: 'KA-pyo', intuition: 'Neuter indefinite "some."' },
+    // Prepositions / time-relation
+    { word: 'πριν', translation: 'before (+ noun)', phonetic: 'preen', intuition: 'Used with nouns: πριν από το γραφείο = before the office.' },
+    { word: 'προτού', translation: 'before (+ verb)', phonetic: 'pro-TOO', intuition: 'Used with verbs/clauses: προτού φύγει = before he leaves. NEVER with nouns.' },
+    { word: 'από', translation: 'from', phonetic: 'a-PO', intuition: 'Takes accusative. Contracts with article: από το, από τη, από τον.' },
+    // Common verbs (forms that weren\'t in earlier entries)
+    { word: 'είμαι', translation: 'I am', phonetic: 'EE-me', intuition: 'Irregular. Required — Greek does NOT drop the copula like Russian does.' },
+    { word: 'είσαι', translation: 'you are', phonetic: 'EE-se', intuition: '2nd person of είμαι. Irregular.' },
+    { word: 'τρώμε', translation: 'we eat', phonetic: 'TRO-me', intuition: 'Contract verb. 1st-person singular: τρώω.' },
+    // High-utility nouns from §5 not already in the pool (deduped on word at merge)
+    { word: 'ο καιρός', translation: 'the weather', phonetic: 'o ke-ROS', intuition: 'Masculine. Also means "time" in some contexts. Accusative: τον καιρό.' },
+    { word: 'ο καφές', translation: 'the coffee', phonetic: 'o ka-FES', intuition: 'Masculine. Accusative: τον καφέ (drops -ς).' },
+    { word: 'ο πατέρας', translation: 'the father', phonetic: 'o pa-TE-ras', intuition: 'Masculine -ας. Accusative: τον πατέρα (drops -ς).' },
+    { word: 'ο φίλος', translation: 'the friend (male)', phonetic: 'o FEE-los', intuition: 'Masculine -ος. Accusative: τον φίλο (drops -ς).' },
+    { word: 'η μέρα', translation: 'the day', phonetic: 'ee ME-ra', intuition: 'Feminine.' },
+    { word: 'η Αμερική', translation: 'America', phonetic: 'ee a-me-ree-KEE', intuition: 'Feminine. "to America" = στην Αμερική.' },
+    { word: 'εδώ', translation: 'here', phonetic: 'e-THO', intuition: 'Adverb. ω (not ο).' },
+    { word: 'οκτώ', translation: 'eight', phonetic: 'ok-TOH', intuition: 'Number. ω (not ο).' },
+    { word: 'εννέα', translation: 'nine', phonetic: 'en-NE-a', intuition: 'Number. RARE double-ν exception.' },
+    { word: 'πώς', translation: 'how', phonetic: 'pos', intuition: 'Question word. ω + accent. πως (no accent) = "that" conjunction.' },
+  ];
+
+  function makeMay14Entries(arr, topic, idPrefix) {
+    return arr.map((v, i) => ({
+      id: idPrefix + '-' + (i + 1),
+      lang: 'greek',
+      topic,
+      word: v.word,
+      translation: v.translation,
+      phonetic: v.phonetic || null,
+      part_of_speech: v.part_of_speech || (v.word.length > 18 ? 'phrase' : null),
+      intuition: v.intuition || null,
+      srs_due_at: null
+    }));
+  }
+  const MAY14_DAYS_ENTRIES = makeMay14Entries(MAY14_DAYS, 'Days of Week', 'may14-day');
+  const MAY14_MONTHS_ENTRIES = makeMay14Entries(MAY14_MONTHS, 'Months', 'may14-month');
+  const MAY14_DEN_REFLEX_ENTRIES = makeMay14Entries(MAY14_DEN_REFLEX, 'δεν Reflex', 'may14-den');
+  const MAY14_TIME_TRIAGE_ENTRIES = makeMay14Entries(MAY14_TIME_TRIAGE, 'Time Triage', 'may14-triage');
+  const MAY14_TIMES_ENTRIES = makeMay14Entries(MAY14_TIMES_OF_DAY, 'Times of Day', 'may14-tod');
+  const MAY14_MISC_ENTRIES = makeMay14Entries(MAY14_MISC, 'May14 Misc', 'may14-misc');
+
   // ── Verb drill: πίνω (to drink) — present-tense conjugation + perfective forms ──
   // Common pattern source for habitual vs one-time aspect (πίνω vs πιω).
   const VERB_PINO = [
@@ -6382,8 +6713,15 @@
     const liveWords = new Set(live.map(v => v.word));
     // iTalki and writing entries get deduped against live; verb-conjugation sets
     // are kept whole (their value is the full table, even if individual forms exist).
-    const dedupable = ITALKI_NOTES_ENTRIES.concat(ITALKI_WRITING_ENTRIES);
-    const keepAll = VERB_PINO_ENTRIES;
+    const dedupable = ITALKI_NOTES_ENTRIES
+      .concat(ITALKI_WRITING_ENTRIES)
+      .concat(MAY14_MISC_ENTRIES);
+    const keepAll = VERB_PINO_ENTRIES
+      .concat(MAY14_DAYS_ENTRIES)
+      .concat(MAY14_MONTHS_ENTRIES)
+      .concat(MAY14_DEN_REFLEX_ENTRIES)
+      .concat(MAY14_TIME_TRIAGE_ENTRIES)
+      .concat(MAY14_TIMES_ENTRIES);
     const merged = live
       .concat(dedupable.filter(v => !liveWords.has(v.word)))
       .concat(keepAll);
