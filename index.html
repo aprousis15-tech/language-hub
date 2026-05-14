@@ -1537,6 +1537,12 @@
   }
   .grammar-mode-btn:hover { background: #ede7f6; }
   .grammar-mode-btn.active { background: #4527a0; color: white; border-color: #4527a0; }
+  .grammar-mode-btn.grammar-mode-random {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-color: #ef6c00; color: #bf360c; font-weight: 700;
+  }
+  .grammar-mode-btn.grammar-mode-random:hover { background: #ffcc80; }
+  .grammar-mode-btn.grammar-mode-random.active { background: #ef6c00; color: white; border-color: #bf360c; }
   .grammar-card {
     background: white; border: 2px solid #c5b9e8; border-radius: 14px;
     padding: 32px 24px; margin: 0 auto 18px; max-width: 600px;
@@ -2601,6 +2607,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
+      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
     </div>
 
     <!-- Articles drill -->
@@ -5461,6 +5468,19 @@
     if (mode === 'typea') initTypeADrill();
     if (mode === 'time') initTimeDrill();
     if (mode === 'neg') initNegDrill();
+  }
+
+  // Pick a random non-Random drill mode. Reuses setGrammarMode so all the
+  // visibility + init wiring stays in one place.
+  function setRandomGrammarMode() {
+    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg'];
+    const pick = modes[Math.floor(Math.random() * modes.length)];
+    const btn = [...document.querySelectorAll('.grammar-mode-btn')]
+      .find(b => {
+        const m = (b.getAttribute('onclick') || '').match(/setGrammarMode\('([^']+)'/);
+        return m && m[1] === pick;
+      });
+    if (btn) setGrammarMode(pick, btn);
   }
 
   // Articles drill — covers nominative/accusative articles AND σε-fusion (στον/στην/στο)
