@@ -2862,6 +2862,8 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('denreflex',this)">🚫 δεν reflex</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('timetriage',this)">🕐 Time triage</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('timesofday',this)">⏰ Times of day</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('greecetrip',this)">🏖️ Greece Trip</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('italkiopener',this)">🎓 iTalki Opener</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
@@ -6617,6 +6619,8 @@
       case 'denreflex':  return v => v.topic === 'δεν Reflex';
       case 'timetriage': return v => v.topic === 'Time Triage';
       case 'timesofday': return v => v.topic === 'Times of Day';
+      case 'greecetrip': return v => v.topic === 'Greece Trip';
+      case 'italkiopener': return v => v.topic === 'iTalki Opener';
       case 'all':
       default:           return v => true;
     }
@@ -6976,6 +6980,146 @@
     { word: 'άκου', translation: 'listen', phonetic: 'A-koo', intuition: 'Conversational lead-in. "Listen, I was thinking…"' },
   ];
 
+  // ── Greece Trip phrases — for actual travel scenarios ──
+  // Travel-critical phrases covering airport, hotel, taxi, restaurant deeper,
+  // asking directions, shopping, help/emergency, café orders, sightseeing.
+  // All tagged topic='Greece Trip' for the new 🏖️ chip.
+  const GREECE_TRIP_VOCAB = [
+    // ─ Airport / arrivals ─
+    { word: 'το διαβατήριο', translation: 'the passport', phonetic: 'toh thee-a-va-TEE-ree-o', intuition: 'Neuter. Carry-ready vocab for customs.' },
+    { word: 'οι αποσκευές', translation: 'the luggage', phonetic: 'ee a-po-ske-VES', intuition: 'Feminine plural. Used at baggage claim signs.' },
+    { word: 'η πτήση', translation: 'the flight', phonetic: 'ee PTEE-see', intuition: 'Feminine. πτ = "pt" (one sound).' },
+    { word: 'η αφίξεις', translation: 'arrivals', phonetic: 'ee a-FEE-ksis', intuition: 'Airport sign vocab. ξ = "ks."' },
+    { word: 'η αναχωρήσεις', translation: 'departures', phonetic: 'ee a-na-ho-REE-sis', intuition: 'Airport sign vocab.' },
+    { word: 'το τελωνείο', translation: 'customs', phonetic: 'toh te-lo-NEE-o', intuition: 'Neuter. Where to declare goods.' },
+    { word: 'πού είναι η έξοδος;', translation: 'where is the exit?', phonetic: 'POO EE-ne ee EK-so-thos', intuition: 'Universal direction question. έξοδος is feminine.' },
+
+    // ─ Taxi / transport ─
+    { word: 'το ταξί', translation: 'the taxi', phonetic: 'toh ta-KSEE', intuition: 'Neuter, invariable. ξ = "ks."' },
+    { word: 'στο ξενοδοχείο, παρακαλώ', translation: 'to the hotel, please', phonetic: 'sto kse-no-tho-HEE-o pa-ra-ka-LO', intuition: 'σε + το = στο. Standard taxi instruction.' },
+    { word: 'πόσο κάνει;', translation: 'how much does it cost?', phonetic: 'PO-so KA-ni', intuition: 'High-frequency question. Use for taxis, shops, restaurants.' },
+    { word: 'βάλτε το μετρητή, παρακαλώ', translation: 'turn on the meter, please', phonetic: 'VAL-te toh me-tree-TEE pa-ra-ka-LO', intuition: 'Useful Athens taxi defense — taxi drivers occasionally skip the meter.' },
+    { word: 'εδώ είναι μια χαρά', translation: "here is fine", phonetic: 'e-THO EE-ne mya ha-RA', intuition: 'Stop instruction. Literally "here is a joy."' },
+    { word: 'κρατήστε τα ρέστα', translation: 'keep the change', phonetic: 'kra-TEE-ste ta RE-sta', intuition: 'Tip phrase. ρέστα = change.' },
+    { word: 'πόσο μακριά είναι;', translation: 'how far is it?', phonetic: 'PO-so mak-ree-A EE-ne', intuition: 'Useful for taxi vs. walking decision.' },
+
+    // ─ Hotel / lodging ─
+    { word: 'έχω κράτηση', translation: 'I have a reservation', phonetic: 'E-ho KRA-tee-see', intuition: 'Check-in phrase. κράτηση is feminine.' },
+    { word: 'ένα δωμάτιο για δύο', translation: 'a room for two', phonetic: 'E-na tho-MA-tee-o ya THEE-o', intuition: 'Booking. δωμάτιο is neuter. ένα + neuter.' },
+    { word: 'μονόκλινο', translation: 'single room', phonetic: 'mo-NO-klee-no', intuition: 'Hotel category. Literally "one-bed."' },
+    { word: 'δίκλινο', translation: 'double room', phonetic: 'THEE-klee-no', intuition: 'Hotel category. δι- = two.' },
+    { word: 'το κλειδί', translation: 'the key', phonetic: 'toh klee-THEE', intuition: 'Neuter (-ι ending).' },
+    { word: 'περιλαμβάνεται πρωινό;', translation: 'is breakfast included?', phonetic: 'pe-ree-lam-VA-ne-te pro-ee-NO', intuition: 'Hotel question. Verb is περιλαμβάνεται = it is included.' },
+    { word: 'πόσο κάνει η νύχτα;', translation: 'how much per night?', phonetic: 'PO-so KA-ni ee NEEH-ta', intuition: 'Pricing question. νύχτα is feminine.' },
+    { word: 'υπάρχει wifi;', translation: 'is there wifi?', phonetic: 'ee-PAR-hee wi-fi', intuition: 'υπάρχει = there is. Standard "do you have" pattern.' },
+    { word: 'ο κωδικός;', translation: 'the password?', phonetic: 'o ko-thee-KOS', intuition: 'Masculine. WiFi follow-up question.' },
+
+    // ─ Restaurant deeper ─
+    { word: 'είμαστε δύο άτομα', translation: 'we are two people', phonetic: 'EE-ma-ste THEE-o A-to-ma', intuition: 'Restaurant entry. άτομα is neuter plural ("people / persons").' },
+    { word: 'μπορώ να δω τον κατάλογο;', translation: 'can I see the menu?', phonetic: 'bo-RO na tho ton ka-TA-lo-go', intuition: 'μπ = "b". κατάλογος is masc → accusative τον κατάλογο.' },
+    { word: 'τι έχει για επιδόρπιο;', translation: "what's for dessert?", phonetic: 'tee E-hi ya e-pee-THOR-pee-o', intuition: 'Post-meal question.' },
+    { word: 'είμαι αλλεργικός', translation: "I'm allergic (m)", phonetic: 'EE-me a-ler-yee-KOS', intuition: 'Medical/dietary alert. Feminine: αλλεργική. Add: σε + το/τη + allergen.' },
+    { word: 'είμαι χορτοφάγος', translation: "I'm vegetarian", phonetic: 'EE-me hor-to-FA-ghos', intuition: 'Dietary phrase. Feminine: χορτοφάγα.' },
+    { word: 'χωρίς...', translation: 'without...', phonetic: 'ho-REES', intuition: 'Modifier preposition. Pair with food: χωρίς αλάτι = without salt.' },
+    { word: 'νερό, παρακαλώ', translation: 'water, please', phonetic: 'ne-RO pa-ra-ka-LO', intuition: 'Standard first ask. νερό is neuter.' },
+    { word: 'ένα ποτήρι κρασί', translation: 'a glass of wine', phonetic: 'E-na po-TEE-ree kra-SEE', intuition: 'Standard order. ποτήρι = glass.' },
+    { word: 'τον λογαριασμό, παρακαλώ', translation: 'the bill, please', phonetic: 'ton lo-ga-rya-SMO pa-ra-ka-LO', intuition: 'End of meal. λογαριασμός is masc → τον λογαριασμό.' },
+
+    // ─ Café / quick orders ─
+    { word: 'έναν καφέ, παρακαλώ', translation: 'a coffee, please', phonetic: 'E-nan ka-FE pa-ra-ka-LO', intuition: 'καφές is masc → accusative έναν καφέ.' },
+    { word: 'φραπέ', translation: 'frappé (iced)', phonetic: 'fra-PE', intuition: 'Classic Greek summer drink.' },
+    { word: 'φρέντο εσπρέσο', translation: 'freddo espresso (iced)', phonetic: 'FRED-do es-PRE-so', intuition: 'Younger crowd order. φρέντο = cold.' },
+    { word: 'ελληνικό καφέ', translation: 'Greek coffee', phonetic: 'e-lee-nee-KO ka-FE', intuition: 'Traditional. Order σκέτο/μέτριο/γλυκό for sweetness.' },
+    { word: 'σκέτο', translation: 'no sugar', phonetic: 'SKE-to', intuition: 'For Greek coffee sweetness levels.' },
+    { word: 'μέτριο', translation: 'medium sweet', phonetic: 'ME-tree-o', intuition: 'Default sweetness in Greek coffee.' },
+    { word: 'γλυκό', translation: 'sweet', phonetic: 'ghlee-KO', intuition: 'Sweetest level of Greek coffee.' },
+
+    // ─ Asking directions ─
+    { word: 'πού είναι...;', translation: 'where is...?', phonetic: 'POO EE-ne', intuition: 'Universal location question. Pair with το/τη + noun.' },
+    { word: 'κοντά εδώ', translation: 'near here', phonetic: 'kon-DA e-THO', intuition: 'Useful filler in directions.' },
+    { word: 'ευθεία', translation: 'straight ahead', phonetic: 'ef-THEE-a', intuition: 'Direction word. ευ → "ef."' },
+    { word: 'αριστερά', translation: 'left', phonetic: 'a-rees-te-RA', intuition: 'Direction.' },
+    { word: 'δεξιά', translation: 'right', phonetic: 'thek-see-A', intuition: 'Direction.' },
+    { word: 'πώς πάω στο...;', translation: 'how do I get to...?', phonetic: 'POS PA-o sto', intuition: 'Direction-question template. Add destination after στο/στη.' },
+    { word: 'χάρτη, παρακαλώ', translation: 'a map, please', phonetic: 'HAR-tee pa-ra-ka-LO', intuition: 'For tourist offices, kiosks.' },
+
+    // ─ Shopping ─
+    { word: 'μπορώ να δοκιμάσω;', translation: 'can I try it on?', phonetic: 'bo-RO na tho-kee-MA-so', intuition: 'Clothing shop phrase. μπ = "b".' },
+    { word: 'έχετε αυτό σε άλλο μέγεθος;', translation: 'do you have this in another size?', phonetic: 'E-he-te af-TO se A-lo ME-ye-thos', intuition: 'μέγεθος is neuter (note -ος→neuter exception).' },
+    { word: 'πληρώνω με κάρτα', translation: 'I pay by card', phonetic: 'plee-RO-no me KAR-ta', intuition: '"With card" — με + accusative.' },
+    { word: 'μετρητά', translation: 'cash', phonetic: 'me-tree-TA', intuition: 'Some Greek shops/tavernas prefer cash. Neuter plural.' },
+    { word: 'μια απόδειξη, παρακαλώ', translation: 'a receipt, please', phonetic: 'mya a-PO-thee-ksee pa-ra-ka-LO', intuition: 'απόδειξη is feminine.' },
+
+    // ─ Help / emergency ─
+    { word: 'βοήθεια!', translation: 'help!', phonetic: 'vo-EE-thee-a', intuition: 'Emergency. Stand-alone.' },
+    { word: 'χρειάζομαι γιατρό', translation: 'I need a doctor', phonetic: 'hree-A-zo-me ya-TRO', intuition: 'γιατρός → γιατρό in accusative (masc -ος drops -ς).' },
+    { word: 'πού είναι το φαρμακείο;', translation: 'where is the pharmacy?', phonetic: 'POO EE-ne toh far-ma-KEE-o', intuition: 'φαρμακείο is neuter.' },
+    { word: 'πού είναι το νοσοκομείο;', translation: 'where is the hospital?', phonetic: 'POO EE-ne toh no-so-ko-MEE-o', intuition: 'νοσοκομείο is neuter.' },
+    { word: 'καλέστε την αστυνομία', translation: 'call the police', phonetic: 'ka-LE-ste teen as-tee-no-MEE-a', intuition: 'αστυνομία is feminine.' },
+    { word: 'έχασα το πορτοφόλι μου', translation: 'I lost my wallet', phonetic: 'E-ha-sa toh por-to-FO-lee mu', intuition: 'πορτοφόλι is neuter.' },
+
+    // ─ Sightseeing ─
+    { word: 'πότε ανοίγει;', translation: 'when does it open?', phonetic: 'PO-te a-NEE-yi', intuition: 'πότε (when) — accent on first syllable.' },
+    { word: 'πότε κλείνει;', translation: 'when does it close?', phonetic: 'PO-te KLEE-ni', intuition: 'Counterpart to ανοίγει.' },
+    { word: 'ένα εισιτήριο, παρακαλώ', translation: 'one ticket, please', phonetic: 'E-na ee-see-TEE-ree-o pa-ra-ka-LO', intuition: 'εισιτήριο is neuter.' },
+    { word: 'φωτογραφίες επιτρέπονται;', translation: 'are photos allowed?', phonetic: 'fo-to-gra-FEE-es e-pee-TRE-pon-de', intuition: 'Museum/site question.' },
+    { word: 'πανέμορφο!', translation: 'beautiful! / gorgeous!', phonetic: 'pa-NE-mor-fo', intuition: 'Compliment / reaction. Neuter form for general "it / that."' },
+  ];
+  const GREECE_TRIP_ENTRIES = GREECE_TRIP_VOCAB.map((v, i) => ({
+    id: 'greece-trip-' + (i + 1),
+    lang: 'greek',
+    topic: 'Greece Trip',
+    word: v.word,
+    translation: v.translation,
+    phonetic: v.phonetic || null,
+    part_of_speech: v.word.length > 18 ? 'phrase' : null,
+    intuition: v.intuition || null,
+    srs_due_at: null
+  }));
+
+  // ── iTalki Opener phrases — for starting a session, catching up since last lesson ──
+  const ITALKI_OPENER_VOCAB = [
+    { word: 'γεια σου, Σοφία!', translation: 'hi, Sofia!', phonetic: 'YA-soo So-FEE-a', intuition: 'Casual session opener. Swap in your tutor\'s name.' },
+    { word: 'πώς είσαι;', translation: 'how are you?', phonetic: 'pos EE-se', intuition: 'Informal. Use πώς είστε for the formal version.' },
+    { word: 'καλά, ευχαριστώ. εσύ;', translation: 'good, thanks. you?', phonetic: 'ka-LA ef-ha-ree-STO. e-SEE', intuition: 'Standard response — always bounce the question back.' },
+    { word: 'συγγνώμη, άργησα', translation: "sorry, I'm late", phonetic: 'see-GHNO-mee AR-yee-sa', intuition: 'Apology for tardiness. Past tense of αργώ.' },
+
+    { word: 'πέρασα μια ωραία εβδομάδα', translation: 'I had a nice week', phonetic: 'PE-ra-sa mya o-RE-a ev-tho-MA-tha', intuition: '"Spent a nice week." πέρασα = past of περνάω.' },
+    { word: 'πέρασα μια κουραστική εβδομάδα', translation: 'I had a tiring week', phonetic: 'PE-ra-sa mya koo-ras-tee-KEE ev-tho-MA-tha', intuition: 'Honest version. κουραστική is the feminine of κουραστικός.' },
+    { word: 'από την τελευταία μας συνάντηση...', translation: 'since our last meeting...', phonetic: 'a-PO teen te-lef-TE-a mas see-NAN-dee-see', intuition: 'Catch-up opener. συνάντηση = meeting/session.' },
+    { word: 'αυτή την εβδομάδα...', translation: 'this week...', phonetic: 'af-TEE teen ev-tho-MA-tha', intuition: 'Time scope opener. εβδομάδα is feminine accusative.' },
+    { word: 'το σαββατοκύριακο πήγα...', translation: 'on the weekend I went...', phonetic: 'toh sa-va-to-KEE-rya-ko PEE-gha', intuition: 'σαββατοκύριακο is neuter. πήγα = past of πάω.' },
+    { word: 'δούλεψα πολύ', translation: 'I worked a lot', phonetic: 'THOOL-ep-sa po-LEE', intuition: 'Past of δουλεύω. Pair with "this week."' },
+    { word: 'βγήκα με φίλους', translation: 'I went out with friends', phonetic: 'VYEE-ka me FEE-loos', intuition: 'Social update. βγήκα = past of βγαίνω (go out).' },
+    { word: 'πήγα σε έναν γάμο', translation: 'I went to a wedding', phonetic: 'PEE-gha se E-nan GHA-mo', intuition: 'σε + indefinite → σε έναν (no contraction). γάμος → γάμο in acc.' },
+    { word: 'πήγα στο γυμναστήριο', translation: 'I went to the gym', phonetic: 'PEE-gha sto yim-nas-TEE-ree-o', intuition: 'Health-routine update. γυμναστήριο is neuter.' },
+    { word: 'έφαγα ελληνικό φαγητό', translation: 'I ate Greek food', phonetic: 'E-fa-gha e-lee-nee-KO fa-yee-TO', intuition: 'φαγητό is neuter. Good follow-up to "ate."' },
+    { word: 'είδα μια ταινία', translation: 'I watched a movie', phonetic: 'EE-tha mya te-NEE-a', intuition: 'Past of βλέπω = είδα. ταινία is feminine.' },
+    { word: 'έχω ένα νέο πρόγραμμα', translation: 'I have a new schedule', phonetic: 'E-ho E-na NE-o PRO-gha-ma', intuition: 'Update vocab. πρόγραμμα is neuter (-μα → neuter).' },
+
+    { word: 'ετοιμάζομαι για το ταξίδι στην Ελλάδα', translation: "I'm preparing for the trip to Greece", phonetic: 'e-tee-MA-zo-me ya toh ta-KSEE-thee steen e-LA-tha', intuition: 'Travel context. Ελλάδα is feminine → στην Ελλάδα.' },
+    { word: 'ανυπομονώ', translation: "I can't wait", phonetic: 'a-nee-po-mo-NO', intuition: 'Anticipation. Literally "I have no patience."' },
+    { word: 'φεύγω σε δύο εβδομάδες', translation: 'I leave in two weeks', phonetic: 'FEV-gho se THEE-o ev-tho-MA-thes', intuition: 'Travel countdown. ευ → "ev."' },
+
+    { word: 'θυμάμαι αυτό που μάθαμε...', translation: 'I remember what we learned...', phonetic: 'thee-MA-me af-TO poo MA-tha-me', intuition: 'Bring up previous lesson. μάθαμε = we learned.' },
+    { word: 'ξέχασα κάτι από το προηγούμενο μάθημα', translation: 'I forgot something from the previous lesson', phonetic: 'KSE-ha-sa KA-tee a-PO toh pro-ee-GHOO-me-no MA-thee-ma', intuition: 'Honest review request.' },
+    { word: 'μπορούμε να επαναλάβουμε...;', translation: 'can we review...?', phonetic: 'bo-ROO-me na e-pa-na-LA-voo-me', intuition: 'Review request template. Add topic after.' },
+    { word: 'εξάσκησα το μάθημα', translation: 'I practiced the lesson', phonetic: 'e-KSAS-kee-sa toh MA-thee-ma', intuition: 'Show you did homework. εξάσκησα = past of εξασκώ.' },
+    { word: 'έχω μια ερώτηση', translation: 'I have a question', phonetic: 'E-ho mya e-RO-tee-see', intuition: 'Universal intro. ερώτηση is feminine.' },
+    { word: 'τι θα κάνουμε σήμερα;', translation: 'what will we do today?', phonetic: 'tee tha KA-noo-me SEE-me-ra', intuition: 'Pivot to today\'s lesson plan.' },
+  ];
+  const ITALKI_OPENER_ENTRIES = ITALKI_OPENER_VOCAB.map((v, i) => ({
+    id: 'italki-opener-' + (i + 1),
+    lang: 'greek',
+    topic: 'iTalki Opener',
+    word: v.word,
+    translation: v.translation,
+    phonetic: v.phonetic || null,
+    part_of_speech: v.word.length > 18 ? 'phrase' : null,
+    intuition: v.intuition || null,
+    srs_due_at: null
+  }));
+
   const SMALL_TALK_ENTRIES = SMALL_TALK_VOCAB.map((v, i) => ({
     id: 'small-talk-' + (i + 1),
     lang: 'greek',
@@ -7048,7 +7192,9 @@
       .concat(MAY14_MONTHS_ENTRIES)
       .concat(MAY14_DEN_REFLEX_ENTRIES)
       .concat(MAY14_TIME_TRIAGE_ENTRIES)
-      .concat(MAY14_TIMES_ENTRIES);
+      .concat(MAY14_TIMES_ENTRIES)
+      .concat(GREECE_TRIP_ENTRIES)
+      .concat(ITALKI_OPENER_ENTRIES);
     const merged = live
       .concat(dedupable.filter(v => !liveWords.has(v.word)))
       .concat(keepAll);
