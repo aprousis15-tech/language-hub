@@ -1543,6 +1543,41 @@
   }
   .grammar-mode-btn.grammar-mode-random:hover { background: #ffcc80; }
   .grammar-mode-btn.grammar-mode-random.active { background: #ef6c00; color: white; border-color: #bf360c; }
+
+  /* Drill rule disclosure (Rules ↔ Grammar Drill link) */
+  .drill-rule-disclosure {
+    max-width: 720px; margin: 14px auto 18px;
+    background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 8px;
+    overflow: hidden;
+  }
+  .drill-rule-toggle {
+    width: 100%; padding: 10px 16px; background: transparent; border: none;
+    text-align: left; cursor: pointer; font-family: 'Lato', sans-serif;
+    font-size: 0.93rem; font-weight: 700; color: #8d6e00;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .drill-rule-toggle:hover { background: rgba(249, 168, 37, 0.08); }
+  .drill-rule-chevron { font-size: 0.78rem; transition: transform 0.2s; }
+  .drill-rule-chevron.open { transform: rotate(180deg); }
+  .drill-rule-body {
+    padding: 0 16px 14px; color: #5d4a14; font-size: 0.93rem; line-height: 1.55;
+  }
+  .drill-rule-body .drill-rule-content strong { color: #b76e00; }
+  .drill-rule-body .drill-rule-content .rule-greek {
+    font-family: 'Georgia', serif; color: #00695c; font-weight: 600;
+  }
+  .drill-rule-body table {
+    width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 0.88rem;
+  }
+  .drill-rule-body table th, .drill-rule-body table td {
+    padding: 6px 10px; text-align: left; border-bottom: 1px solid #ffe082;
+  }
+  .drill-rule-body table th { background: #fff3c4; color: #b76e00; font-weight: 700; }
+  .drill-rule-fullink {
+    display: inline-block; margin-top: 6px; color: #00695c; cursor: pointer;
+    font-weight: 700; font-size: 0.88rem;
+  }
+  .drill-rule-fullink:hover { text-decoration: underline; }
   .grammar-card {
     background: white; border: 2px solid #c5b9e8; border-radius: 14px;
     padding: 32px 24px; margin: 0 auto 18px; max-width: 600px;
@@ -2608,6 +2643,18 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
+    </div>
+
+    <!-- Rules disclosure — auto-updates to the rule for the current drill. -->
+    <div class="drill-rule-disclosure" id="drill-rule-disclosure">
+      <button class="drill-rule-toggle" onclick="toggleDrillRuleBody()" id="drill-rule-toggle-btn">
+        <span id="drill-rule-toggle-text">📚 Show the rule</span>
+        <span class="drill-rule-chevron" id="drill-rule-chevron">▾</span>
+      </button>
+      <div class="drill-rule-body" id="drill-rule-body" style="display:none;">
+        <div class="drill-rule-content" id="drill-rule-content"></div>
+        <a class="drill-rule-fullink" onclick="switchLang('rules')">See full Rules tab →</a>
+      </div>
     </div>
 
     <!-- Articles drill -->
@@ -4163,7 +4210,7 @@
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
-    if (lang === 'grammar') { initArticlesDrill(); }
+    if (lang === 'grammar') { initArticlesDrill(); updateDrillRuleDisclosure('articles'); }
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
@@ -5447,9 +5494,130 @@
   }
 
   // ── GRAMMAR DRILL ──
+  // Rule reminders mapped per grammar drill mode. Shown in the disclosure
+  // above the active drill. Click "See full Rules tab →" to jump to the full version.
+  const DRILL_RULES = {
+    articles: `
+      <strong>Articles change by case (subject vs. object vs. "of"):</strong>
+      <table>
+        <tr><th>Case</th><th>Masc.</th><th>Fem.</th><th>Neut.</th></tr>
+        <tr><td>Nom. (subject)</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">το</span></td></tr>
+        <tr><td>Acc. (object, after preps)</td><td><span class="rule-greek">τον</span></td><td><span class="rule-greek">την</span></td><td><span class="rule-greek">το</span></td></tr>
+        <tr><td>Gen. ("of the")</td><td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td></tr>
+      </table>
+      <strong>σε + article contracts:</strong> σε + το → <span class="rule-greek">στο</span>, σε + τη → <span class="rule-greek">στη(ν)</span>, σε + τον → <span class="rule-greek">στον</span>. Never write σε + article uncontracted.
+    `,
+    verbs: `
+      <strong>Type B verbs (-άω / -ώ endings):</strong> the present-tense person endings are <em>different</em> from Type A.
+      <table>
+        <tr><th>Person</th><th>Ending</th><th>Example (αγαπώ)</th></tr>
+        <tr><td>I</td><td>-ώ / -άω</td><td><span class="rule-greek">αγαπώ</span></td></tr>
+        <tr><td>You (sg.)</td><td>-άς</td><td><span class="rule-greek">αγαπάς</span></td></tr>
+        <tr><td>He / she</td><td>-ά / -άει</td><td><span class="rule-greek">αγαπά</span></td></tr>
+        <tr><td>We</td><td>-άμε / -ούμε</td><td><span class="rule-greek">αγαπάμε</span></td></tr>
+        <tr><td>You all</td><td>-άτε</td><td><span class="rule-greek">αγαπάτε</span></td></tr>
+        <tr><td>They</td><td>-άνε / -ούν</td><td><span class="rule-greek">αγαπάνε</span></td></tr>
+      </table>
+    `,
+    preps: `
+      <strong>Prepositions take the accusative:</strong> after <span class="rule-greek">σε, με, για, από</span>, the noun is in accusative case.
+      <table>
+        <tr><th>Prep</th><th>Used for</th><th>Example</th></tr>
+        <tr><td><span class="rule-greek">σε</span></td><td>at / to / in (location)</td><td><span class="rule-greek">στο γραφείο</span></td></tr>
+        <tr><td><span class="rule-greek">με</span></td><td>with</td><td><span class="rule-greek">με τον Νίκο</span></td></tr>
+        <tr><td><span class="rule-greek">για</span></td><td>for / about</td><td><span class="rule-greek">για σένα</span></td></tr>
+        <tr><td><span class="rule-greek">από</span></td><td>from / by</td><td><span class="rule-greek">από την Ελλάδα</span></td></tr>
+      </table>
+      <strong>Masc. -ος / -ας / -ης drops -ς in accusative:</strong> <span class="rule-greek">ο φίλος → με τον φίλο</span>.
+    `,
+    adj: `
+      <strong>Adjectives agree with the noun</strong> in gender AND number. If you know the noun's gender, the adjective ending follows.
+      <table>
+        <tr><th>Gender</th><th>Adj. ending</th><th>Example</th></tr>
+        <tr><td>Masculine</td><td>-ος</td><td><span class="rule-greek">καλός φίλος</span></td></tr>
+        <tr><td>Feminine</td><td>-η  (or -α)</td><td><span class="rule-greek">καλή φίλη</span></td></tr>
+        <tr><td>Neuter</td><td>-ο</td><td><span class="rule-greek">καλό παιδί</span></td></tr>
+      </table>
+      Gender persists across <span class="rule-greek">είναι</span> too: <span class="rule-greek">Ο καιρός είναι κακός</span> (masc), <span class="rule-greek">Η εργασία είναι δύσκολη</span> (fem).
+    `,
+    gtap: `
+      <strong>Spot the gender from the noun ending:</strong>
+      <table>
+        <tr><th>Ending</th><th>Gender</th><th>Examples</th></tr>
+        <tr><td>-ος, -ας, -ης</td><td>Masculine (♂)</td><td><span class="rule-greek">φίλος, πατέρας, μαθητής</span></td></tr>
+        <tr><td>-α, -η</td><td>Feminine (♀)</td><td><span class="rule-greek">μέρα, φίλη</span></td></tr>
+        <tr><td>-ο, -ι, -μα</td><td>Neuter (⬢)</td><td><span class="rule-greek">βιβλίο, παιδί, μάθημα</span></td></tr>
+      </table>
+      <strong>Trap:</strong> a few -ος words are neuter (<span class="rule-greek">λάθος, μέρος, δάσος</span>). And <span class="rule-greek">η οδός</span> is feminine despite ending in -ος.
+    `,
+    typea: `
+      <strong>Type A verbs (-ω endings):</strong> the dictionary form ends in -ω. Most regular Greek verbs are Type A.
+      <table>
+        <tr><th>Person</th><th>Ending</th><th>Example (έχω)</th></tr>
+        <tr><td>I</td><td>-ω</td><td><span class="rule-greek">έχω</span></td></tr>
+        <tr><td>You (sg.)</td><td>-εις</td><td><span class="rule-greek">έχεις</span></td></tr>
+        <tr><td>He / she</td><td>-ει</td><td><span class="rule-greek">έχει</span></td></tr>
+        <tr><td>We</td><td>-ουμε</td><td><span class="rule-greek">έχουμε</span></td></tr>
+        <tr><td>You all</td><td>-ετε</td><td><span class="rule-greek">έχετε</span></td></tr>
+        <tr><td>They</td><td>-ουν</td><td><span class="rule-greek">έχουν</span></td></tr>
+      </table>
+      <strong>1st person is ALWAYS -ω</strong>, never -ο. Same sound, different spelling.
+    `,
+    time: `
+      <strong>Time expressions use the article ONLY — no preposition.</strong> Only clock times take στις.
+      <table>
+        <tr><th>Use article only</th><th>Use στις (clock times)</th></tr>
+        <tr><td><span class="rule-greek">το πρωί, το βράδυ, το απόγευμα</span></td><td><span class="rule-greek">στις 8 η ώρα</span></td></tr>
+        <tr><td><span class="rule-greek">τη Δευτέρα ... την Κυριακή</span></td><td><span class="rule-greek">στις 9 η ώρα</span></td></tr>
+        <tr><td><span class="rule-greek">τον Ιανουάριο ... τον Δεκέμβριο</span></td><td></td></tr>
+      </table>
+      English "in / on" before days, months, parts-of-day → drop the preposition.
+    `,
+    neg: `
+      <strong>Two different negations:</strong>
+      <table>
+        <tr><th>Word</th><th>Used for</th><th>Example</th></tr>
+        <tr><td><span class="rule-greek">δεν</span></td><td>Verbs</td><td><span class="rule-greek">Δεν είναι εδώ</span></td></tr>
+        <tr><td><span class="rule-greek">όχι</span></td><td>Nouns, adverbs, standalone</td><td><span class="rule-greek">Όχι σήμερα</span></td></tr>
+      </table>
+      <strong>Double negation is REQUIRED</strong> with ποτέ / τίποτα / κανείς / πουθενά. <span class="rule-greek">Δεν θέλω τίποτα</span> (never just "τίποτα").
+    `
+  };
+
+  function updateDrillRuleDisclosure(mode) {
+    const content = document.getElementById('drill-rule-content');
+    const disclosure = document.getElementById('drill-rule-disclosure');
+    if (!content || !disclosure) return;
+    const html = DRILL_RULES[mode];
+    if (!html) {
+      disclosure.style.display = 'none';
+      return;
+    }
+    disclosure.style.display = '';
+    content.innerHTML = html;
+    // Reset to collapsed on mode change
+    const body = document.getElementById('drill-rule-body');
+    const chev = document.getElementById('drill-rule-chevron');
+    const txt = document.getElementById('drill-rule-toggle-text');
+    if (body) body.style.display = 'none';
+    if (chev) chev.classList.remove('open');
+    if (txt) txt.textContent = '📚 Show the rule';
+  }
+
+  function toggleDrillRuleBody() {
+    const body = document.getElementById('drill-rule-body');
+    const chev = document.getElementById('drill-rule-chevron');
+    const txt = document.getElementById('drill-rule-toggle-text');
+    const open = body.style.display === 'none';
+    body.style.display = open ? '' : 'none';
+    chev.classList.toggle('open', open);
+    if (txt) txt.textContent = open ? '📚 Hide the rule' : '📚 Show the rule';
+  }
+
   function setGrammarMode(mode, btn) {
     document.querySelectorAll('.grammar-mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    updateDrillRuleDisclosure(mode);
     document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
     document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
     document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
