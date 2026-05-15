@@ -8576,7 +8576,7 @@
     // Q: How's your Greek going
     { word: 'Πώς πάνε τα ελληνικά σου;', translation: 'How\'s your Greek going?', phonetic: 'pos PA-ne ta e-lee-nee-KA soo', intuition: 'Self-assessment question. Answer: Πάνε καλά / Έχω πρόοδο / Είναι δύσκολα.' },
     { word: 'Πάνε καλύτερα κάθε εβδομάδα.', translation: '(Answer) Getting better each week.', phonetic: 'PA-ne ka-LEE-te-ra KA-the ev-tho-MA-tha', intuition: 'Optimistic. Variant: Πάνε σιγά σιγά. (going slowly).' },
-    { word: 'Έχω πρόοδο, αλλά είναι δύσκολα.', translation: "(Answer) I'm making progress, but it's hard.", phonetic: 'E-ho PRO-o-tho a-LA EE-ne THEES-ko-la', intuition: 'Honest. πρόοδος is feminine; here in acc.' },
+    { word: 'Έχω πρόοδο, αλλά είναι δύσκολο.', translation: "(Answer) I'm making progress, but it's hard.", phonetic: 'E-ho PRO-o-tho a-LA EE-ne THEES-ko-lo', intuition: 'Honest. πρόοδος is feminine (here in acc). δύσκολο = neuter singular impersonal "it\'s difficult" (not the plural δύσκολα which would mean "tough times").' },
   ];
   const TUTOR_QA_ENTRIES = makeSyntheticEntries(TUTOR_QA_VOCAB, 'Tutor Q&A', 'tutorqa');
 
@@ -8670,7 +8670,7 @@
     { word: 'κοιμάμαι', translation: 'I go to sleep / I sleep', phonetic: 'kee-MA-me', intuition: 'Passive verb. Past: κοιμήθηκα.' },
     // Aorist routine verbs (for "what did you do?")
     { word: 'πήγα στη δουλειά', translation: 'I went to work', phonetic: 'PEE-gha stee thoo-LYA', intuition: 'Aorist version of routine.' },
-    { word: 'συνάντησα φίλους', translation: 'I met friends', phonetic: 'see-NAN-dee-sa FEE-loos', intuition: 'Aorist of συναντάω. φίλους is acc plural.' },
+    { word: 'συνάντησα τους φίλους μου', translation: 'I met my friends', phonetic: 'see-NAN-dee-sa toos FEE-loos moo', intuition: 'Aorist of συναντάω. Greek prefers the article + possessive — "Συνάντησα φίλους" alone is grammatical but sounds unidiomatic. φίλους is acc plural.' },
     { word: 'έκανα γιόγκα', translation: 'I did yoga', phonetic: 'E-ka-na YIO-ga', intuition: 'Activity report. γιόγκα is fem (loanword).' },
     { word: 'πέρασα ωραία', translation: 'I had a good time', phonetic: 'PE-ra-sa o-RE-a', intuition: 'Universal positive evaluation.' },
     { word: 'ξεκουράστηκα', translation: 'I rested / I relaxed', phonetic: 'kse-koo-RAS-tee-ka', intuition: 'Passive aorist. Often paired with το σαββατοκύριακο.' },
@@ -8781,7 +8781,7 @@
     { word: 'Δουλεύω από το σπίτι.', translation: 'I work from home.', phonetic: 'thoo-LE-vo a-PO toh SPEE-tee', intuition: 'Use if true. WFH context.' },
     { word: 'Είμαι [married/single/in a relationship].', translation: 'I am [marital status].', phonetic: '', intuition: '👉 Pick one: παντρεμένος (m, married) / παντρεμένη (f) / ελεύθερος (m, single) / ελεύθερη (f) / σε σχέση (in a relationship).' },
     { word: 'Έχω [X παιδιά] / Δεν έχω παιδιά.', translation: 'I have [X kids] / I have no kids.', phonetic: '', intuition: '👉 Pick: Δεν έχω παιδιά / Έχω ένα παιδί / Έχω δύο παιδιά.' },
-    { word: 'Μου αρέσει [hobby] στον ελεύθερο χρόνο μου.', translation: 'I enjoy [hobby] in my free time.', phonetic: '', intuition: '👉 Customize hobbies: e.g. "να διαβάζω" (to read), "να γυμνάζομαι" (to work out), "να ταξιδεύω" (to travel), "να μαγειρεύω" (to cook). Use να + verb.' },
+    { word: 'Μου αρέσει να [verb] στον ελεύθερο χρόνο μου.', translation: 'I enjoy [doing X] in my free time.', phonetic: 'moo a-RE-si na ... ston e-LEF-the-ro HRO-no moo', intuition: '👉 Customize the verb: e.g. να διαβάζω (to read), να γυμνάζομαι (to work out), να ταξιδεύω (to travel), να μαγειρεύω (to cook). Always να + verb in present.' },
     { word: 'Πάω συχνά στο γυμναστήριο.', translation: 'I often go to the gym.', phonetic: 'PA-o see-HNA sto yim-nas-TEE-ree-o', intuition: 'Routine claim. Adjust frequency: συχνά / σπάνια / κάθε μέρα.' },
     { word: 'Μαθαίνω ελληνικά για [reason].', translation: 'I\'m learning Greek for [reason].', phonetic: 'ma-THE-no e-lee-nee-KA ya', intuition: '👉 Customize: "για την οικογένειά μου" (for my family) / "γιατί ταξιδεύω συχνά στην Ελλάδα" (because I travel to Greece often) / "για να μιλάω με τον πατέρα μου."' },
     { word: 'Πηγαίνω στην Ελλάδα τον Ιούλιο.', translation: "I'm going to Greece in July.", phonetic: 'pee-YE-no steen e-LA-tha ton ee-OO-lyo', intuition: 'Travel statement (uses present for near-certain plan). Customize the month.' },
@@ -9351,8 +9351,15 @@
 
   function speedStart() {
     if (!gSpeedState || gSpeedState.deck.length === 0) return;
+    // If the previous session completed (idx past end), reset for a fresh run.
+    if (gSpeedState.idx >= gSpeedState.deck.length) {
+      initSpeedDrill();
+      // Re-pull the freshly-initialized state, then continue.
+      if (!gSpeedState || gSpeedState.deck.length === 0) return;
+    }
     gSpeedState.running = true;
     document.getElementById('speed-start-btn').style.display = 'none';
+    document.getElementById('speed-start-btn').textContent = '▶ Start session';
     document.getElementById('speed-stop-btn').style.display = '';
     speedShowCard();
   }
