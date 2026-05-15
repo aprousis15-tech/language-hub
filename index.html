@@ -8843,6 +8843,165 @@
     srs_due_at: null
   }));
 
+  // ── Mnemonic hooks — sound-association + etymology for high-frequency words ──
+  // Patched into entries' intuition field after the merge so they surface in
+  // the Flashcard "💡 Get a clue" reveal and the Audio Lesson clue box.
+  // Format: 🧠 prefix marks a mnemonic vs. a grammar note (which stays appended).
+  const MNEMONIC_HOOKS = {
+    // Greetings & courtesy (etymology gold)
+    'καλημέρα': '🧠 καλή + μέρα = literally "good day." Both halves cognate-able.',
+    'καλησπέρα': '🧠 καλή + εσπέρα = "good evening." "Vespers" (evening prayer) is the same root.',
+    'καληνύχτα': '🧠 καλή + νύχτα = "good night." νύχτα ↔ English "night" — Indo-European cousins.',
+    'ευχαριστώ': '🧠 Same word as English "Eucharist" — the Christian sacrament of thanksgiving.',
+    'παρακαλώ': '🧠 παρα- (alongside) + καλώ (I call) — "I call you over" → please/welcome.',
+    'συγγνώμη': '🧠 "see my knee" — apologetic, like "sorry, see I bumped my knee."',
+    'αντίο': '🧠 Same root as Italian "addio" / Spanish "adiós." Mediterranean farewell.',
+    'χαίρω πολύ': '🧠 χαίρω = "rejoice" — same root as Eucharist (joy + thanks). "Nice to meet you" = "I much rejoice."',
+    'γεια': '🧠 γεια = health. "Hi" literally wishes you health. Toast: στην υγειά σου = "to your health."',
+
+    // High-freq verbs (1st person)
+    'έχω': '🧠 Sounds like "EH-ho." Think: "Eh, ho ho ho — I have presents like Santa."',
+    'είμαι': '🧠 First syllable echoes "I am" / "me" — built right into the sound.',
+    'θέλω': '🧠 "TELL-oh" — I want to TELL you what I want.',
+    'κάνω': '🧠 "CAN-oh" — I CAN do (anything I want).',
+    'πάω': '🧠 "PA-oh" — Pa\'s going (out). One syllable to remember.',
+    'πίνω': '🧠 "PEE-no" — drink enough and you\'ll need to.',
+    'τρώω': '🧠 Same root as "phage" (bacteriophage = bacteria-eater). τρώω = I eat.',
+    'βλέπω': '🧠 Same root as "blepharitis" (eyelid inflammation) — what eyes do.',
+    'λέω': '🧠 Same root as "logos" (word), "lecture," "dialogue" — to say.',
+    'ξέρω': '🧠 When you know nothing, you say "δεν ξέρω" — "k-zero" knowledge.',
+    'μένω': '🧠 "ME-no" — "Me? No, I\'m staying here." I stay.',
+    'δουλεύω': '🧠 "do-LEV-o" — what you DO daily. δούλος = servant (Greek root for work).',
+    'μιλάω': '🧠 Same root as English "homily" — to speak/preach. μιλάω = I talk.',
+    'μαθαίνω': '🧠 Same root as "mathematics" — μάθημα literally = "thing learned."',
+    'ξυπνάω': '🧠 "ksip-NOW!" — what your alarm yells at you every morning.',
+    'περπατάω': '🧠 "per-PAT-ow" — pat-pat-pat go your feet when you walk.',
+    'ζω': '🧠 "ZO" — same root as "zoo" (live animals) and "zoology." To live.',
+    'γράφω': '🧠 GRAPH- — graphic, graphite, paragraph. To write.',
+    'διαβάζω': '🧠 διά + βάζω = "go through" (lit. put across). To read.',
+    'βλέπω τηλεόραση': '🧠 τηλε + όραση = "far-sight" — same root as "television." Literally what TV means.',
+
+    // Irregular aorists (the MUST-know ten)
+    'πήγα': '🧠 "PEE-ga" → "PIG-a went." Pig went to market — yesterday, in past.',
+    'είδα': '🧠 "EE-tha" → "I saw an IDEA." Same root as "idea" (what you see in your mind).',
+    'έφαγα': '🧠 "EFF-aga" → "Ugh, I ate it." Past of τρώω. Compare bacterio-phage.',
+    'ήπια': '🧠 "EE-pya" → "I drank a piña colada." Past of πίνω.',
+    'είχα': '🧠 "EE-ha" → "I had it — yee-haw!" Past of έχω.',
+    'ήμουν': '🧠 "EE-moon" → "I was on the moon" (gone yesterday). Past of είμαι.',
+    'είπα': '🧠 "EE-pa" → "I said it, pa." Past of λέω.',
+    'βρήκα': '🧠 "VREE-ka" → "VERY good, found it!" Past of βρίσκω.',
+    'πήρα': '🧠 "PEE-ra" → "I took it from my PEER." Past of παίρνω.',
+    'ήρθα': '🧠 "EER-tha" → "I came down to EARTH-a" (I arrived). Past of έρχομαι.',
+
+    // Time
+    'σήμερα': '🧠 "SEE-me-here" → "see me HERE today."',
+    'τώρα': '🧠 WWII film "Tora! Tora! Tora!" = it\'s happening NOW.',
+    'ώρα': '🧠 Same root as Latin "hora" → English "hour."',
+    'χρόνος': '🧠 CHRONO- — chronology, chronic, synchronize. χρόνος = time / year.',
+    'μέρα': '🧠 Easy: hemera (μέρα) is the Greek word that gives us "ephemeral" (lasting one day).',
+    'νύχτα': '🧠 νύχτα ↔ English "night" — Indo-European cousins.',
+    'πρωί': '🧠 Same root as "prior" — the EARLY (prior) part of the day.',
+    'απόψε': '🧠 από + όψη = "from sight" — tonight, the time when sight gets dark.',
+
+    // Negation
+    'δεν': '🧠 Sounds like "then." "I then don\'t…" — English bridge for negation reflex.',
+    'όχι': '🧠 Sarcastic "OH HI" — "oh hi, no thanks."',
+    'ποτέ': '🧠 Poe\'s raven: "Nevermore." ποτέ = never.',
+    'τίποτα': '🧠 Empty TEA-pot — nothing inside.',
+    'κανείς': '🧠 "ka-NEES" → "knees nobody" — no one\'s here.',
+    'πουθενά': '🧠 "POO-the-NA" → "POO, there\'s nothing here, nowhere to go."',
+
+    // Days (etymology gold)
+    'Δευτέρα': '🧠 Deutero- = "second." Same root as Deuteronomy ("second law"). Δευτέρα = second day.',
+    'τη Δευτέρα': '🧠 Deutero- = "second." Same root as Deuteronomy. Δευτέρα = second day.',
+    'Τρίτη': '🧠 TRI- = three. Triangle, triple. Third day.',
+    'την Τρίτη': '🧠 TRI- = three. Triangle, triple. Third day.',
+    'Τετάρτη': '🧠 TETRA- = four. Tetragon, tetrahedron. Fourth day.',
+    'την Τετάρτη': '🧠 TETRA- = four. Tetragon, tetrahedron. Fourth day.',
+    'Πέμπτη': '🧠 PEMP- = ancient form of PENTA- (five). Pentagon, pentathlon. Fifth day.',
+    'την Πέμπτη': '🧠 PEMP- = ancient form of PENTA- (five). Pentagon, pentathlon. Fifth day.',
+    'Παρασκευή': '🧠 παρα + σκευή = "preparation" — historically Jewish Sabbath prep-day.',
+    'την Παρασκευή': '🧠 παρα + σκευή = "preparation" — historically Jewish Sabbath prep-day.',
+    'Σάββατο': '🧠 Same root as English "Sabbath." Holy day of rest.',
+    'το Σάββατο': '🧠 Same root as English "Sabbath." Holy day of rest.',
+    'Κυριακή': '🧠 Κύριος = Lord ("Kyrie eleison" = "Lord have mercy"). Lord\'s day.',
+    'την Κυριακή': '🧠 Κύριος = Lord ("Kyrie eleison" = "Lord have mercy"). Lord\'s day.',
+
+    // Numbers (etymology gold)
+    'ένα': '🧠 Sounds like English "an" (= "one"). An apple = one apple.',
+    'δύο': '🧠 DUO — same word, same meaning. Cognate gift.',
+    'τρία': '🧠 TRI- — triangle, triple, trio. Three.',
+    'τέσσερα': '🧠 TESS- → TETRA in older Greek. Four.',
+    'πέντε': '🧠 PENTA — pentagon, pentathlon. Five.',
+    'έξι': '🧠 HEX — hexagon, hexadecimal. Six.',
+    'επτά': '🧠 HEPTA — heptagon, heptathlon. Seven.',
+    'οκτώ': '🧠 OCT — octopus, octave, octagon. Eight.',
+    'εννέα': '🧠 "e-NEE-a" — sounds like "ninea" = nine. (Double ν is the rare consonant exception.)',
+    'δέκα': '🧠 DECA — decade, decathlon, decimal. Ten.',
+    'εκατό': '🧠 HECTO — hectogram, hectare, hectopascal. One hundred.',
+    'χίλια': '🧠 KILO — kilogram, kilometer (1000-meter). One thousand.',
+
+    // Common nouns (etymology gold)
+    'καφές': '🧠 Same word as English "café" / "coffee." Universal Mediterranean import.',
+    'οικογένεια': '🧠 OIKO- (house) + GEN- (origin). Your eco-genetics. Family.',
+    'πατέρας': '🧠 PATER — paternal, patriarch, paternity. Father.',
+    'μητέρα': '🧠 MATER — maternal, matriarch, maternity. Mother.',
+    'παιδί': '🧠 PEDI- — pediatrician, pedagogy. Child.',
+    'αγάπη': '🧠 AGAPE — English uses it for "unconditional love." Same Greek word.',
+    'μάθημα': '🧠 MATH- — mathematics literally = "things learned." Lesson.',
+    'σπίτι': '🧠 Same root as Latin "hospitium" (lodging) — hospitable, hospital. Home.',
+    'φίλος': '🧠 PHIL- — philosophy ("love of wisdom"), philology. Friend / lover-of.',
+    'φωτογραφία': '🧠 φως (light) + γράφω (write) — "writing with light." Same as English "photo-graph."',
+    'βιβλίο': '🧠 BIBLIO — bibliography, Bible. Book.',
+    'τηλέφωνο': '🧠 τηλε (far) + φωνή (sound) — "far-sound." Same as English "tele-phone."',
+    'μουσική': '🧠 Same word as English "music." Greek root.',
+    'θάλασσα': '🧠 THALASSO- — thalassotherapy (sea therapy). Sea.',
+    'ήλιος': '🧠 HELIO — helium (gas first found in the sun), heliocentric. Sun.',
+    'σελήνη': '🧠 SELENO — selenology = study of the moon. Moon.',
+    'ποτάμι': '🧠 POTAM- — hippopotamus = "river horse" (ίππος + ποτάμι). River.',
+
+    // Adjectives (etymology gold)
+    'μεγάλος': '🧠 MEGA — megabyte, megaphone. Big.',
+    'μικρός': '🧠 MICRO — microscope, microbe. Small.',
+    'νέος': '🧠 NEO — neoclassical, neon. Also: Neo from The Matrix = "the new one."',
+    'καλός': '🧠 Same root as "kaleidoscope" (καλός + είδος = "beautiful form"). Good.',
+    'ωραίος': '🧠 Same root as "hour/season" — beautiful = "in season."',
+    'παλιός': '🧠 PALEO — paleolithic, paleontology. Old.',
+
+    // Adverbs / particles
+    'πολύ': '🧠 POLY — polygon, polyester, polyglot. Many / very.',
+    'καλά': '🧠 Same root as καλός (good). Used as the universal "fine / well."',
+    'σιγά σιγά': '🧠 Doubled adverb — "slowly slowly." Native catchphrase.',
+
+    // Prepositions / connectors
+    'από': '🧠 APO- — apostle ("sent off"), apology ("away-talk"). From / off.',
+    'σε': '🧠 "say" → SE = at / in / to (the place you say things happen).',
+    'με': '🧠 Sounds like "me" — "with me." Built-in cognate.',
+    'για': '🧠 "ya" — "for ya."',
+    'και': '🧠 Sounds like "kay" — what comes between two things. Greek "and."',
+    'αλλά': '🧠 "a-LA" — "ah-LAH, but actually…" — buts and contrasts.',
+
+    // Pronouns
+    'εγώ': '🧠 EGO — ego, egomaniac. Greek for "I."',
+    'εσύ': '🧠 Same root as Latin "tu" / French "tu." You (sg).',
+    'αυτός': '🧠 AUTO- — automatic, autobiography. αυτός = he / the same one.',
+
+    // High-utility "be / have / want / can"
+    'μπορώ': '🧠 "BO-ro" — "borrow ability." Can.',
+    'πρέπει': '🧠 "PRE-pee" — preparation needed → must / should.',
+  };
+
+  function enrichWithMnemonics(vocabArray) {
+    if (!vocabArray) return;
+    vocabArray.forEach(v => {
+      if (!v || !v.word) return;
+      const hook = MNEMONIC_HOOKS[v.word];
+      if (hook) {
+        v.intuition = v.intuition ? hook + ' · ' + v.intuition : hook;
+      }
+    });
+  }
+
   async function ensurePracticeVocab() {
     if (gPracticeVocabLoaded) return gPracticeVocab;
     const all = await loadVocab();
@@ -8888,6 +9047,7 @@
     const merged = live
       .concat(dedupable.filter(v => !liveWords.has(v.word)))
       .concat(keepAll);
+    enrichWithMnemonics(merged);
     gPracticeVocab = merged;
     gPracticeVocabLoaded = true;
     return gPracticeVocab;
