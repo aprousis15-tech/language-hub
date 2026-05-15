@@ -2988,7 +2988,17 @@
       <div class="practice-topic-group-label">▸ Conversations</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('smalltalk',this)">💬 Small Talk</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('italkiopener',this)">🎓 iTalki Opener</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('tutorqa',this)">🎓 Tutor Q&amp;A</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('easyout',this)">🆘 Easy Outs</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('colloq',this)">💥 Colloquialisms</button>
+
+      <div class="practice-topic-group-label">▸ Personal</div>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('profile',this)">👤 Personal Profile</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('myweek',this)">🗓️ My Week</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('family',this)">👨‍👩‍👧 Family</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('workchip',this)">💼 Work</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('foodchip',this)">🍽️ Food</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('modifiers',this)">🎨 Modifiers</button>
 
       <div class="practice-topic-group-label">▸ Session Notes</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('italki',this)">📝 iTalki 11/05</button>
@@ -7620,6 +7630,14 @@
       case 'subjna':     return v => v.topic === 'Subjunctive να';
       case 'connectors': return v => v.topic === 'Connectors';
       case 'qstart':     return v => v.topic === 'Question Starters';
+      case 'tutorqa':    return v => v.topic === 'Tutor Q&A';
+      case 'easyout':    return v => v.topic === 'Easy Outs';
+      case 'modifiers':  return v => v.topic === 'Modifiers';
+      case 'myweek':     return v => v.topic === 'My Week';
+      case 'family':     return v => v.topic === 'Family';
+      case 'workchip':   return v => v.topic === 'Work';
+      case 'foodchip':   return v => v.topic === 'Food';
+      case 'profile':    return v => v.topic === 'Personal Profile';
       case 'all':
       default:           return v => true;
     }
@@ -8431,6 +8449,262 @@
   ];
   const QSTART_ENTRIES = makeSyntheticEntries(QUESTION_STARTERS_VOCAB, 'Question Starters', 'qstart');
 
+  // ─────────────────────────────────────────────────────────────────
+  // VOCAB JUMPSTART — 7 chips to bridge the productive-vocab gap
+  // ─────────────────────────────────────────────────────────────────
+
+  // ── 🎓 Tutor Q&A — question-bank with template answers ──
+  // The most likely questions Sofia opens with, paired with 2-3 ready
+  // template answers using vocab Anthony already has.
+  const TUTOR_QA_VOCAB = [
+    // Q: How are you / how was your week
+    { word: 'Πώς είσαι σήμερα;', translation: 'How are you today? (Sofia\'s likely opener)', phonetic: 'pos EE-se SEE-me-ra', intuition: 'Answer templates: Καλά, ευχαριστώ / Λίγο κουρασμένος / Μια χαρά. Always bounce back with εσύ;' },
+    { word: 'Καλά, εσύ;', translation: '(Answer) Good, you?', phonetic: 'ka-LA e-SEE', intuition: 'Default answer + bounce. ALWAYS ask back — keeps the flow.' },
+    { word: 'Λίγο κουρασμένος, αλλά καλά.', translation: '(Answer) A little tired, but good.', phonetic: 'LEE-gho koo-ras-ME-nos a-LA ka-LA', intuition: 'Honest variant. Feminine: κουρασμένη.' },
+    { word: 'Πέρασα μια ωραία εβδομάδα.', translation: '(Answer) I had a nice week.', phonetic: 'PE-ra-sa mya o-RE-a ev-tho-MA-tha', intuition: 'Aorist πέρασα + ωραία εβδομάδα. Good safe response.' },
+    // Q: What did you do
+    { word: 'Τι έκανες αυτή την εβδομάδα;', translation: 'What did you do this week?', phonetic: 'tee E-ka-nes af-TEE teen ev-tho-MA-tha', intuition: 'Top-3 tutor question. Answer with 2-3 aorist verbs: πήγα, είδα, δούλεψα.' },
+    { word: 'Πήγα στο γυμναστήριο και δούλεψα πολύ.', translation: '(Answer) I went to the gym and worked a lot.', phonetic: 'PEE-gha sto yim-nas-TEE-ree-o ke THOOL-ep-sa po-LEE', intuition: 'Two-verb template with και. Swap activities as needed.' },
+    { word: 'Είδα μια ταινία με φίλους.', translation: '(Answer) I saw a movie with friends.', phonetic: 'EE-tha mya te-NEE-a me FEE-loos', intuition: 'Social variant. φίλους is acc. plural (drops -ς to -ους ending).' },
+    { word: 'Δούλεψα όλη την εβδομάδα.', translation: '(Answer) I worked all week.', phonetic: 'THOOL-ep-sa O-lee teen ev-tho-MA-tha', intuition: 'When the week was busy. όλη = all/whole (fem).' },
+    // Q: Weekend
+    { word: 'Πώς ήταν το σαββατοκύριακο;', translation: 'How was the weekend?', phonetic: 'pos EE-tan toh sa-va-to-KEE-rya-ko', intuition: 'Imperfect ήταν (was). Answer: Ήταν + adjective.' },
+    { word: 'Ήταν χαλαρό.', translation: '(Answer) It was relaxing.', phonetic: 'EE-tan ha-la-RO', intuition: 'Neuter adjective χαλαρό matches σαββατοκύριακο (neuter).' },
+    { word: 'Ήταν γεμάτο.', translation: '(Answer) It was full / busy.', phonetic: 'EE-tan ye-MA-toh', intuition: 'Busy social weekend.' },
+    { word: 'Πέρασα τέλεια.', translation: '(Answer) I had a great time.', phonetic: 'PE-ra-sa TE-lya', intuition: 'τέλεια = perfectly. Enthusiastic.' },
+    // Q: Work
+    { word: 'Πώς πάει η δουλειά;', translation: 'How\'s work going?', phonetic: 'pos PA-i ee thoo-LYA', intuition: 'Standard catch-up. Answer: Πάει καλά / Έχει πολλή δουλειά.' },
+    { word: 'Πάει καλά, ευχαριστώ.', translation: '(Answer) Going well, thanks.', phonetic: 'PA-i ka-LA ef-ha-ree-STO', intuition: 'Polite default.' },
+    { word: 'Έχει πολλή δουλειά τελευταία.', translation: '(Answer) Lots of work lately.', phonetic: 'E-hi po-LEE thoo-LYA te-lef-TE-a', intuition: 'πολλή matches δουλειά (fem). τελευταία = lately.' },
+    // Q: What's new
+    { word: 'Τι νέα;', translation: 'What\'s new? / Any news?', phonetic: 'tee NE-a', intuition: 'Conversational filler-question. Answer: Όλα καλά / Τίποτα ιδιαίτερο.' },
+    { word: 'Όλα καλά.', translation: '(Answer) All good.', phonetic: 'O-la ka-LA', intuition: 'Universal "everything\'s fine" closer.' },
+    { word: 'Τίποτα ιδιαίτερο.', translation: '(Answer) Nothing special.', phonetic: 'TEE-po-ta ee-thee-E-te-ro', intuition: 'Casual catch-up response.' },
+    // Q: Greece trip
+    { word: 'Πότε φεύγεις για Ελλάδα;', translation: 'When do you leave for Greece?', phonetic: 'PO-te FEV-yis ya e-LA-tha', intuition: 'Travel countdown question. Answer: Σε X εβδομάδες / Στις X του [month].' },
+    { word: 'Φεύγω σε δύο εβδομάδες.', translation: '(Answer) I leave in two weeks.', phonetic: 'FEV-gho se THEE-o ev-tho-MA-thes', intuition: 'Travel timeline. σε + time = in X time.' },
+    { word: 'Ανυπομονώ πολύ!', translation: "(Answer) I can't wait!", phonetic: 'a-nee-po-mo-NO po-LEE', intuition: 'Excitement. Literally "I have much impatience."' },
+    // Q: Why are you learning Greek
+    { word: 'Γιατί μαθαίνεις ελληνικά;', translation: 'Why are you learning Greek?', phonetic: 'ya-TEE ma-THE-nis e-lee-nee-KA', intuition: 'First-session staple. Answer: Επειδή... + reason.' },
+    { word: 'Επειδή ο πατέρας μου είναι Έλληνας.', translation: '(Answer) Because my father is Greek.', phonetic: 'e-pee-THEE o pa-TE-ras moo EE-ne E-lee-nas', intuition: 'Family-heritage answer. Έλληνας is masc nationality noun.' },
+    { word: 'Θέλω να μιλάω με την οικογένειά μου.', translation: '(Answer) I want to talk with my family.', phonetic: 'THE-lo na mee-LA-o me teen ee-ko-YE-nee-A moo', intuition: 'Subjunctive να μιλάω. οικογένεια = family (fem).' },
+    // Q: How's your Greek going
+    { word: 'Πώς πάνε τα ελληνικά σου;', translation: 'How\'s your Greek going?', phonetic: 'pos PA-ne ta e-lee-nee-KA soo', intuition: 'Self-assessment question. Answer: Πάνε καλά / Έχω πρόοδο / Είναι δύσκολα.' },
+    { word: 'Πάνε καλύτερα κάθε εβδομάδα.', translation: '(Answer) Getting better each week.', phonetic: 'PA-ne ka-LEE-te-ra KA-the ev-tho-MA-tha', intuition: 'Optimistic. Variant: Πάνε σιγά σιγά. (going slowly).' },
+    { word: 'Έχω πρόοδο, αλλά είναι δύσκολα.', translation: "(Answer) I'm making progress, but it's hard.", phonetic: 'E-ho PRO-o-tho a-LA EE-ne THEES-ko-la', intuition: 'Honest. πρόοδος is feminine; here in acc.' },
+  ];
+  const TUTOR_QA_ENTRIES = makeSyntheticEntries(TUTOR_QA_VOCAB, 'Tutor Q&A', 'tutorqa');
+
+  // ── 🆘 Easy Outs — safety phrases when vocab fails ──
+  const EASY_OUTS_VOCAB = [
+    { word: 'Πώς λέγεται... στα ελληνικά;', translation: 'How do you say... in Greek?', phonetic: 'pos LE-ye-te... sta e-lee-nee-KA', intuition: 'Universal vocab-building question. Point + ask.' },
+    { word: 'Τι σημαίνει αυτό;', translation: 'What does this mean?', phonetic: 'tee see-ME-nee af-TO', intuition: 'For unknown words you hear.' },
+    { word: 'Ξέχασα τη λέξη.', translation: 'I forgot the word.', phonetic: 'KSE-ha-sa tee LE-ksee', intuition: 'Aorist ξέχασα. λέξη is feminine.' },
+    { word: 'Δεν θυμάμαι.', translation: "I don't remember.", phonetic: 'then thee-MA-me', intuition: 'Universal blanking phrase. θυμάμαι = I remember.' },
+    { word: 'Δεν ξέρω.', translation: "I don't know.", phonetic: 'then KSE-ro', intuition: 'High-frequency phrase. ξέρω = I know.' },
+    { word: 'Δεν καταλαβαίνω.', translation: "I don't understand.", phonetic: 'then ka-ta-la-VE-no', intuition: 'Survival phrase #1. Use freely.' },
+    { word: 'Σιγά σιγά, παρακαλώ.', translation: 'Slowly, please.', phonetic: 'see-GHA see-GHA pa-ra-ka-LO', intuition: 'Speed-control phrase. Native speakers default fast.' },
+    { word: 'Μπορείς να το πεις πάλι;', translation: 'Can you say it again? (informal)', phonetic: 'bo-REES na toh PEES PA-lee', intuition: 'Πες/πεις = say (perfective of λέω). πάλι = again.' },
+    { word: 'Μπορείτε να το επαναλάβετε;', translation: 'Can you repeat that? (formal)', phonetic: 'bo-REE-te na toh e-pa-na-LA-ve-te', intuition: 'Formal version for strangers / shopkeepers.' },
+    { word: 'Πώς το γράφουμε αυτό;', translation: 'How do we write this?', phonetic: 'pos toh GHRA-foo-me af-TO', intuition: 'When you hear a word and want the spelling.' },
+    { word: 'Ένα λεπτό, παρακαλώ.', translation: 'One moment, please.', phonetic: 'E-na lep-TO pa-ra-ka-LO', intuition: 'Buying thinking time. λεπτό = minute.' },
+    { word: 'Συγγνώμη, μπορείς να επαναλάβεις;', translation: "Sorry, can you repeat? (informal)", phonetic: 'see-GHNO-mee bo-REES na e-pa-na-LA-vis', intuition: 'Combo: συγγνώμη + repeat request.' },
+    { word: 'Πώς;', translation: 'What? / Pardon?', phonetic: 'pos', intuition: 'One-word "sorry?" Polite request to repeat the whole thing.' },
+    { word: 'Δεν ξέρω πώς να το πω.', translation: "I don't know how to say it.", phonetic: 'then KSE-ro pos na toh po', intuition: 'When you have the idea but not the words.' },
+    { word: 'Πιο αργά, σε παρακαλώ.', translation: 'More slowly, please.', phonetic: 'pyo ar-GA se pa-ra-ka-LO', intuition: 'πιο αργά = more slowly. Variant of σιγά σιγά.' },
+  ];
+  const EASY_OUTS_ENTRIES = makeSyntheticEntries(EASY_OUTS_VOCAB, 'Easy Outs', 'easyout');
+
+  // ── 🎨 Modifiers — the under-loaded category ──
+  // Adjectives + adverbs that make speech sound human (not robotic).
+  const MODIFIERS_VOCAB = [
+    // Evaluative adjectives (neuter form for general "it was X")
+    { word: 'ωραίο', translation: 'nice / lovely (n)', phonetic: 'o-RE-o', intuition: 'High-frequency positive. ωραίος/ωραία/ωραίο.' },
+    { word: 'ενδιαφέρον', translation: 'interesting (n)', phonetic: 'en-thee-a-FE-ron', intuition: 'ενδιαφέρων/ενδιαφέρουσα/ενδιαφέρον. Irregular forms.' },
+    { word: 'βαρετό', translation: 'boring (n)', phonetic: 'va-re-TO', intuition: 'βαρετός/βαρετή/βαρετό.' },
+    { word: 'περίεργο', translation: 'strange / weird (n)', phonetic: 'pe-RYER-gho', intuition: 'περίεργος/-η/-ο.' },
+    { word: 'εκπληκτικό', translation: 'amazing / surprising (n)', phonetic: 'ek-plee-ktee-KO', intuition: 'Stronger than ωραίο. εκπληκτικός/-η/-ο.' },
+    { word: 'τέλειο', translation: 'perfect / awesome (n)', phonetic: 'TE-lyo', intuition: 'Higher praise. τέλειος/-α/-ο.' },
+    { word: 'απίστευτο', translation: 'unbelievable / incredible (n)', phonetic: 'a-PEES-tef-toh', intuition: 'Strong reaction word. απίστευτος/-η/-ο.' },
+    { word: 'χάλια', translation: 'awful / lousy', phonetic: 'HA-lya', intuition: 'Negative reaction. Invariable in this colloquial use.' },
+    // Size / quantity
+    { word: 'μεγάλος', translation: 'big / large (m)', phonetic: 'me-GHA-los', intuition: 'μεγάλος/μεγάλη/μεγάλο. Also "important / long."' },
+    { word: 'μικρός', translation: 'small (m)', phonetic: 'mee-KROS', intuition: 'μικρός/μικρή/μικρό. Also "young."' },
+    { word: 'πολύς', translation: 'much / a lot of (m)', phonetic: 'po-LEES', intuition: 'πολύς/πολλή/πολύ. Note feminine has double λ.' },
+    { word: 'λίγος', translation: 'a little / few (m)', phonetic: 'LEE-ghos', intuition: 'λίγος/λίγη/λίγο.' },
+    // Quality
+    { word: 'δύσκολο', translation: 'difficult (n)', phonetic: 'THEES-ko-lo', intuition: 'δύσκολος/-η/-ο.' },
+    { word: 'εύκολο', translation: 'easy (n)', phonetic: 'EF-ko-lo', intuition: 'εύκολος/-η/-ο. ευ → "ef" before κ.' },
+    { word: 'ακριβό', translation: 'expensive (n)', phonetic: 'a-kree-VO', intuition: 'ακριβός/-η/-ο.' },
+    { word: 'φτηνό', translation: 'cheap (n)', phonetic: 'fti-NO', intuition: 'φτηνός/-η/-ο.' },
+    // Speed
+    { word: 'γρήγορος', translation: 'fast (m)', phonetic: 'GHREE-gho-ros', intuition: 'γρήγορος/-η/-ο.' },
+    { word: 'αργός', translation: 'slow (m)', phonetic: 'ar-GHOS', intuition: 'αργός/-ή/-ό.' },
+    // Comfort / state
+    { word: 'κουρασμένος', translation: 'tired (m)', phonetic: 'koo-ras-ME-nos', intuition: 'κουρασμένος/-η/-ο. High-frequency for tutor sessions.' },
+    { word: 'χαλαρός', translation: 'relaxed (m)', phonetic: 'ha-la-ROS', intuition: 'χαλαρός/-ή/-ό. Also describes vibe: χαλαρό σαββατοκύριακο.' },
+    { word: 'γεμάτος', translation: 'full / busy (m)', phonetic: 'ye-MA-tos', intuition: 'γεμάτος/-η/-ο. Schedules: γεμάτο πρόγραμμα.' },
+    // Adverbs — what makes the difference
+    { word: 'πολύ', translation: 'very / a lot', phonetic: 'po-LEE', intuition: 'Universal intensifier. πολύ καλά, πολύ κουρασμένος.' },
+    { word: 'λίγο', translation: 'a little', phonetic: 'LEE-gho', intuition: 'Softens any adjective. λίγο κουρασμένος = a little tired.' },
+    { word: 'πάρα πολύ', translation: 'very much / extremely', phonetic: 'PA-ra po-LEE', intuition: 'Stronger than πολύ.' },
+    { word: 'γρήγορα', translation: 'quickly', phonetic: 'GHREE-gho-ra', intuition: 'Adverb form of γρήγορος.' },
+    { word: 'σιγά', translation: 'slowly', phonetic: 'see-GHA', intuition: 'Doubled (σιγά σιγά) = take it easy.' },
+    { word: 'συχνά', translation: 'often / frequently', phonetic: 'see-HNA', intuition: 'Frequency adverb.' },
+    { word: 'σπάνια', translation: 'rarely', phonetic: 'SPA-nya', intuition: 'Frequency adverb.' },
+    { word: 'συνήθως', translation: 'usually', phonetic: 'see-NEE-thos', intuition: 'For habitual descriptions.' },
+    { word: 'πάντα', translation: 'always', phonetic: 'PAN-da', intuition: 'Positive frequency. Pair with present tense.' },
+    { word: 'ποτέ', translation: 'never', phonetic: 'po-TE', intuition: 'Requires δεν. δεν...ποτέ.' },
+    { word: 'μερικές φορές', translation: 'sometimes', phonetic: 'me-ree-KES fo-RES', intuition: '"A few times." Mid-frequency.' },
+    { word: 'καμιά φορά', translation: 'occasionally / once in a while', phonetic: 'ka-MYA fo-RA', intuition: 'Casual variant.' },
+    { word: 'τώρα', translation: 'now', phonetic: 'TO-ra', intuition: 'Temporal anchor.' },
+    { word: 'πρόσφατα', translation: 'recently', phonetic: 'PROS-fa-ta', intuition: 'For the "what did you do?" answer.' },
+    { word: 'τελευταία', translation: 'lately', phonetic: 'te-lef-TE-a', intuition: 'Casual variant of πρόσφατα.' },
+  ];
+  const MODIFIERS_ENTRIES = makeSyntheticEntries(MODIFIERS_VOCAB, 'Modifiers', 'mod');
+
+  // ── 🗓️ My Week — verbs of routine + time markers ──
+  const MY_WEEK_VOCAB = [
+    { word: 'κάθε μέρα', translation: 'every day', phonetic: 'KA-the ME-ra', intuition: 'Habitual frequency. κάθε + day.' },
+    { word: 'κάθε εβδομάδα', translation: 'every week', phonetic: 'KA-the ev-tho-MA-tha', intuition: 'Time frame.' },
+    { word: 'αυτή την εβδομάδα', translation: 'this week', phonetic: 'af-TEE teen ev-tho-MA-tha', intuition: 'Time scope for tutor answers.' },
+    { word: 'την περασμένη εβδομάδα', translation: 'last week', phonetic: 'teen pe-ras-ME-nee ev-tho-MA-tha', intuition: 'περασμένη = past (fem). Pair with aorist.' },
+    { word: 'σήμερα το πρωί', translation: 'this morning', phonetic: 'SEE-me-ra toh pro-EE', intuition: 'Time-of-day combo.' },
+    { word: 'χθες το βράδυ', translation: 'last night', phonetic: 'HTHES toh VRA-thee', intuition: 'βράδυ = evening/night. Pair with aorist verb.' },
+    { word: 'πριν λίγες μέρες', translation: 'a few days ago', phonetic: 'preen LEE-yes ME-res', intuition: 'πριν + duration = X ago.' },
+    { word: 'πριν δύο μέρες', translation: 'two days ago', phonetic: 'preen THEE-o ME-res', intuition: 'πριν + number + plural time unit.' },
+    // Routine verbs (1st person present)
+    { word: 'ξυπνάω', translation: 'I wake up', phonetic: 'ksee-PNA-o', intuition: 'Daily routine opener.' },
+    { word: 'πάω στη δουλειά', translation: 'I go to work', phonetic: 'PA-o stee thoo-LYA', intuition: 'σε + τη = στη before consonants. δουλειά is fem.' },
+    { word: 'δουλεύω από το σπίτι', translation: 'I work from home', phonetic: 'thoo-LE-vo a-PO toh SPEE-tee', intuition: 'WFH phrase. από + acc.' },
+    { word: 'τρώω μεσημεριανό', translation: 'I have lunch', phonetic: 'TRO-o me-see-me-rya-NO', intuition: 'μεσημεριανό = lunch (neuter, lit. "noon-ish").' },
+    { word: 'πάω για τρέξιμο', translation: 'I go for a run', phonetic: 'PA-o ya TRE-ksee-mo', intuition: 'τρέξιμο is neuter. για = for.' },
+    { word: 'πάω στο γυμναστήριο', translation: 'I go to the gym', phonetic: 'PA-o sto yim-nas-TEE-ree-o', intuition: 'σε + το = στο.' },
+    { word: 'μαγειρεύω', translation: 'I cook', phonetic: 'ma-yee-RE-vo', intuition: '-εύω verb, common Type A.' },
+    { word: 'βλέπω τηλεόραση', translation: 'I watch TV', phonetic: 'VLE-po tee-le-O-ra-see', intuition: 'τηλεόραση is fem accusative.' },
+    { word: 'κοιμάμαι', translation: 'I go to sleep / I sleep', phonetic: 'kee-MA-me', intuition: 'Passive verb. Past: κοιμήθηκα.' },
+    // Aorist routine verbs (for "what did you do?")
+    { word: 'πήγα στη δουλειά', translation: 'I went to work', phonetic: 'PEE-gha stee thoo-LYA', intuition: 'Aorist version of routine.' },
+    { word: 'συνάντησα φίλους', translation: 'I met friends', phonetic: 'see-NAN-dee-sa FEE-loos', intuition: 'Aorist of συναντάω. φίλους is acc plural.' },
+    { word: 'έκανα γιόγκα', translation: 'I did yoga', phonetic: 'E-ka-na YIO-ga', intuition: 'Activity report. γιόγκα is fem (loanword).' },
+    { word: 'πέρασα ωραία', translation: 'I had a good time', phonetic: 'PE-ra-sa o-RE-a', intuition: 'Universal positive evaluation.' },
+    { word: 'ξεκουράστηκα', translation: 'I rested / I relaxed', phonetic: 'kse-koo-RAS-tee-ka', intuition: 'Passive aorist. Often paired with το σαββατοκύριακο.' },
+    { word: 'βγήκα έξω', translation: 'I went out', phonetic: 'VYEE-ka E-kso', intuition: 'Past of βγαίνω + έξω (out).' },
+    { word: 'έμεινα σπίτι', translation: 'I stayed home', phonetic: 'E-mee-na SPEE-tee', intuition: 'σπίτι without article = "home" (general).' },
+  ];
+  const MY_WEEK_ENTRIES = makeSyntheticEntries(MY_WEEK_VOCAB, 'My Week', 'week');
+
+  // ── 👨‍👩‍👧 Family ──
+  const FAMILY_VOCAB = [
+    { word: 'η οικογένεια', translation: 'the family', phonetic: 'ee ee-ko-YE-nee-a', intuition: 'Feminine. Acc: την οικογένεια.' },
+    { word: 'ο πατέρας', translation: 'father', phonetic: 'o pa-TE-ras', intuition: 'Masc -ας. Acc: τον πατέρα (drops -ς).' },
+    { word: 'η μητέρα', translation: 'mother', phonetic: 'ee mee-TE-ra', intuition: 'Feminine.' },
+    { word: 'ο μπαμπάς', translation: 'dad / papa', phonetic: 'o ba-BAS', intuition: 'Casual/affectionate. μπ = "b".' },
+    { word: 'η μαμά', translation: 'mom', phonetic: 'ee ma-MA', intuition: 'Casual/affectionate.' },
+    { word: 'ο αδελφός', translation: 'brother', phonetic: 'o a-thel-FOS', intuition: 'Variant: αδερφός. Acc: τον αδελφό.' },
+    { word: 'η αδελφή', translation: 'sister', phonetic: 'ee a-thel-FEE', intuition: 'Variant: αδερφή.' },
+    { word: 'ο γιος', translation: 'son', phonetic: 'o yios', intuition: 'Masc. Acc: τον γιο.' },
+    { word: 'η κόρη', translation: 'daughter', phonetic: 'ee KO-ree', intuition: 'Feminine.' },
+    { word: 'ο παππούς', translation: 'grandfather', phonetic: 'o pa-POOS', intuition: 'Note double π.' },
+    { word: 'η γιαγιά', translation: 'grandmother', phonetic: 'ee ya-YA', intuition: '' },
+    { word: 'ο θείος', translation: 'uncle', phonetic: 'o THEE-os', intuition: 'Masc -ος.' },
+    { word: 'η θεία', translation: 'aunt', phonetic: 'ee THEE-a', intuition: '' },
+    { word: 'ο ξάδερφος', translation: 'cousin (m)', phonetic: 'o KSA-ther-fos', intuition: 'Variant: ξαδέρφι (neuter, both genders).' },
+    { word: 'η ξαδέρφη', translation: 'cousin (f)', phonetic: 'ee ksa-THER-fee', intuition: '' },
+    { word: 'ο σύζυγος', translation: 'husband', phonetic: 'o SEE-zee-ghos', intuition: 'Formal. Also άντρας informal.' },
+    { word: 'η σύζυγος', translation: 'wife', phonetic: 'ee SEE-zee-ghos', intuition: 'Formal. Also γυναίκα informal (lit. "woman").' },
+    // Phrases
+    { word: 'Έχω μία αδερφή.', translation: 'I have one sister.', phonetic: 'E-ho mya a-ther-FEE', intuition: 'μία (fem) for feminine noun.' },
+    { word: 'Έχω δύο αδερφούς.', translation: 'I have two brothers.', phonetic: 'E-ho THEE-o a-ther-FOOS', intuition: 'αδερφούς is acc plural masc.' },
+    { word: 'Ο πατέρας μου είναι Έλληνας.', translation: 'My father is Greek.', phonetic: 'o pa-TE-ras moo EE-ne E-lee-nas', intuition: 'Έλληνας is masc nationality.' },
+    { word: 'Η οικογένειά μου μένει στην Αμερική.', translation: 'My family lives in America.', phonetic: 'ee ee-ko-YE-nee-A moo ME-nee steen a-me-ree-KEE', intuition: 'Note double accent on οικογένειά when μου follows.' },
+    { word: 'Είμαι μισός Έλληνας.', translation: "I'm half Greek.", phonetic: 'EE-me mee-SOS E-lee-nas', intuition: 'μισός = half. Useful heritage statement.' },
+    { word: 'Πόσα παιδιά έχεις;', translation: 'How many kids do you have?', phonetic: 'PO-sa pe-THYA E-his', intuition: 'Common question. παιδιά is neut. plural.' },
+    { word: 'Δεν έχω παιδιά.', translation: "I don't have kids.", phonetic: 'then E-ho pe-THYA', intuition: 'Or: Έχω X παιδιά.' },
+  ];
+  const FAMILY_ENTRIES = makeSyntheticEntries(FAMILY_VOCAB, 'Family', 'fam');
+
+  // ── 💼 Work ──
+  const WORK_VOCAB = [
+    { word: 'η δουλειά', translation: 'work / job', phonetic: 'ee thoo-LYA', intuition: 'Feminine. δουλεύω = I work.' },
+    { word: 'το γραφείο', translation: 'office', phonetic: 'toh ghra-FEE-o', intuition: 'Neuter. ει diphthong.' },
+    { word: 'ο συνάδελφος', translation: 'colleague (m)', phonetic: 'o see-NA-thel-fos', intuition: 'Variant: συνάδερφος.' },
+    { word: 'η συνάδελφος', translation: 'colleague (f)', phonetic: 'ee see-NA-thel-fos', intuition: 'Same form, fem article.' },
+    { word: 'το αφεντικό', translation: 'boss', phonetic: 'toh a-fen-dee-KO', intuition: 'Neuter (despite being a person).' },
+    { word: 'η σύσκεψη', translation: 'meeting', phonetic: 'ee SEES-ke-psee', intuition: 'Feminine -ψη.' },
+    { word: 'το πρόβλημα', translation: 'problem', phonetic: 'toh PRO-vlee-ma', intuition: 'Neuter -μα.' },
+    { word: 'το project / έργο', translation: 'project', phonetic: 'toh ER-gho', intuition: 'έργο is the native word. project (English) widely used.' },
+    { word: 'ο πελάτης', translation: 'client / customer', phonetic: 'o pe-LA-tis', intuition: 'Masc -ης.' },
+    { word: 'η παρουσίαση', translation: 'presentation', phonetic: 'ee pa-roo-SEE-a-see', intuition: 'Feminine -ση.' },
+    { word: 'η προθεσμία', translation: 'deadline', phonetic: 'ee pro-thes-MEE-a', intuition: 'Feminine.' },
+    { word: 'ο μισθός', translation: 'salary', phonetic: 'o mees-THOS', intuition: 'Masc -ος.' },
+    // Action verbs
+    { word: 'δουλεύω από το σπίτι', translation: 'I work from home', phonetic: 'thoo-LE-vo a-PO toh SPEE-tee', intuition: 'WFH phrase.' },
+    { word: 'έχω μια σύσκεψη', translation: 'I have a meeting', phonetic: 'E-ho mya SEES-ke-psee', intuition: 'μία/μια (fem) for σύσκεψη.' },
+    { word: 'τελείωσα το project', translation: 'I finished the project', phonetic: 'te-LEE-o-sa toh ER-gho', intuition: 'Aorist of τελειώνω.' },
+    { word: 'γράφω ένα email', translation: 'I write an email', phonetic: 'GHRA-fo E-na e-mail', intuition: 'email is invariable.' },
+    { word: 'παρουσιάζω', translation: 'I present', phonetic: 'pa-roo-syA-zo', intuition: 'Type A -ζω verb.' },
+    { word: 'συναντάω πελάτες', translation: 'I meet clients', phonetic: 'see-nan-DA-o pe-LA-tes', intuition: 'Type B -άω verb. πελάτες is acc plural.' },
+    // Phrases
+    { word: 'Είχα γεμάτη μέρα.', translation: 'I had a busy day.', phonetic: 'EE-ha ye-MA-tee ME-ra', intuition: 'γεμάτη matches μέρα (fem).' },
+    { word: 'Έχω πολλή δουλειά τελευταία.', translation: 'I have a lot of work lately.', phonetic: 'E-ho po-LEE thoo-LYA te-lef-TE-a', intuition: 'πολλή (fem) + δουλειά (fem) + τελευταία.' },
+    { word: 'Δουλεύω για μια εταιρεία...', translation: 'I work for a company...', phonetic: 'thoo-LE-vo ya mya e-te-REE-a', intuition: 'Add your industry. εταιρεία = company (fem).' },
+  ];
+  const WORK_ENTRIES = makeSyntheticEntries(WORK_VOCAB, 'Work', 'work');
+
+  // ── 🍽️ Food I Like ──
+  const FOOD_VOCAB = [
+    { word: 'το φαγητό', translation: 'food / meal', phonetic: 'toh fa-yee-TO', intuition: 'Neuter.' },
+    { word: 'το πρωινό', translation: 'breakfast', phonetic: 'toh pro-ee-NO', intuition: 'Neuter. From πρωί (morning).' },
+    { word: 'το μεσημεριανό', translation: 'lunch', phonetic: 'toh me-see-me-rya-NO', intuition: 'Neuter. From μεσημέρι (noon).' },
+    { word: 'το βραδινό', translation: 'dinner', phonetic: 'toh vra-thee-NO', intuition: 'Neuter. From βράδυ (evening).' },
+    { word: 'το κρέας', translation: 'meat', phonetic: 'toh KRE-as', intuition: 'Neuter -ας (uncommon ending).' },
+    { word: 'το κοτόπουλο', translation: 'chicken', phonetic: 'toh ko-TO-poo-lo', intuition: 'Neuter.' },
+    { word: 'το ψάρι', translation: 'fish', phonetic: 'toh PSA-ree', intuition: 'Neuter -ι. ψ = "ps."' },
+    { word: 'η σαλάτα', translation: 'salad', phonetic: 'ee sa-LA-ta', intuition: 'Feminine.' },
+    { word: 'το ψωμί', translation: 'bread', phonetic: 'toh pso-MEE', intuition: 'Neuter.' },
+    { word: 'τα φρούτα', translation: 'fruits', phonetic: 'ta FROO-ta', intuition: 'Neut. plural.' },
+    { word: 'τα λαχανικά', translation: 'vegetables', phonetic: 'ta la-ha-nee-KA', intuition: 'Neut. plural.' },
+    { word: 'η σούπα', translation: 'soup', phonetic: 'ee SOO-pa', intuition: 'Feminine.' },
+    { word: 'το γλυκό', translation: 'dessert / sweet', phonetic: 'toh ghlee-KO', intuition: 'Neuter.' },
+    // Drinks
+    { word: 'ο καφές', translation: 'coffee', phonetic: 'o ka-FES', intuition: 'Masc. Acc: τον καφέ (drops -ς).' },
+    { word: 'το τσάι', translation: 'tea', phonetic: 'toh TSA-ee', intuition: 'Neuter.' },
+    { word: 'το νερό', translation: 'water', phonetic: 'toh ne-RO', intuition: 'Neuter.' },
+    { word: 'το κρασί', translation: 'wine', phonetic: 'toh kra-SEE', intuition: 'Neuter -ί.' },
+    { word: 'η μπίρα', translation: 'beer', phonetic: 'ee BEE-ra', intuition: 'Feminine. μπ = "b".' },
+    // Preferences
+    { word: 'Μου αρέσει το ψάρι.', translation: 'I like fish.', phonetic: 'moo a-RE-si toh PSA-ree', intuition: 'Singular thing → αρέσει.' },
+    { word: 'Μου αρέσουν τα γλυκά.', translation: 'I like sweets.', phonetic: 'moo a-RE-soon ta ghlee-KA', intuition: 'Plural thing → αρέσουν.' },
+    { word: 'Δεν τρώω κρέας.', translation: "I don't eat meat.", phonetic: 'then TRO-o KRE-as', intuition: 'Vegetarian declaration.' },
+    { word: 'Είμαι χορτοφάγος.', translation: "I'm vegetarian.", phonetic: 'EE-me hor-to-FA-ghos', intuition: 'Fem: χορτοφάγα.' },
+    { word: 'Είμαι αλλεργικός σε...', translation: "I'm allergic to...", phonetic: 'EE-me a-ler-yee-KOS se', intuition: 'σε + acc. Fem: αλλεργική.' },
+    { word: 'Τι θα προτείνεις;', translation: 'What do you recommend?', phonetic: 'tee tha pro-TEE-nis', intuition: 'Restaurant question. Future of προτείνω.' },
+  ];
+  const FOOD_ENTRIES = makeSyntheticEntries(FOOD_VOCAB, 'Food', 'food');
+
+  // ── 👤 Personal Profile (placeholder template — Anthony to customize) ──
+  // Placeholder entries with bracketed [your X] prompts. Drill the structure;
+  // swap in real details once user provides them.
+  const PROFILE_VOCAB = [
+    { word: 'Με λένε Άντονι.', translation: 'My name is Anthony.', phonetic: 'me LE-ne AN-do-nee', intuition: 'Literally "they call me." Swap to your preferred Greek spelling.' },
+    { word: 'Είμαι από τη Νέα Υόρκη.', translation: "I'm from New York.", phonetic: 'EE-me a-PO tee NE-a YOR-kee', intuition: '👉 Customize: swap "τη Νέα Υόρκη" for the city you\'re from (e.g. "το Σικάγο" / "το Λος Άντζελες").' },
+    { word: 'Μένω στη [city].', translation: 'I live in [city].', phonetic: 'ME-no stee', intuition: '👉 Customize the city. Most cities take στη/στο; feminine cities (Αθήνα, Νέα Υόρκη) take στη.' },
+    { word: 'Είμαι μισός Έλληνας.', translation: "I'm half Greek.", phonetic: 'EE-me mee-SOS E-lee-nas', intuition: 'Heritage statement. μισός = half. Fem: μισή.' },
+    { word: 'Ο πατέρας μου είναι από την Ελλάδα.', translation: 'My father is from Greece.', phonetic: 'o pa-TE-ras moo EE-ne a-PO teen e-LA-tha', intuition: 'High-frequency in first sessions. Add the city: από την [Αθήνα / Θεσσαλονίκη / etc.]' },
+    { word: 'Δουλεύω ως [your job].', translation: 'I work as [your job].', phonetic: 'thoo-LE-vo os', intuition: '👉 Customize: e.g. "ως μηχανικός" (engineer), "στην τεχνολογία" (in tech), "σε εταιρεία [X]." Tell me your job and I\'ll write the exact phrase.' },
+    { word: 'Δουλεύω από το σπίτι.', translation: 'I work from home.', phonetic: 'thoo-LE-vo a-PO toh SPEE-tee', intuition: 'Use if true. WFH context.' },
+    { word: 'Είμαι [married/single/in a relationship].', translation: 'I am [marital status].', phonetic: '', intuition: '👉 Pick one: παντρεμένος (m, married) / παντρεμένη (f) / ελεύθερος (m, single) / ελεύθερη (f) / σε σχέση (in a relationship).' },
+    { word: 'Έχω [X παιδιά] / Δεν έχω παιδιά.', translation: 'I have [X kids] / I have no kids.', phonetic: '', intuition: '👉 Pick: Δεν έχω παιδιά / Έχω ένα παιδί / Έχω δύο παιδιά.' },
+    { word: 'Μου αρέσει [hobby] στον ελεύθερο χρόνο μου.', translation: 'I enjoy [hobby] in my free time.', phonetic: '', intuition: '👉 Customize hobbies: e.g. "να διαβάζω" (to read), "να γυμνάζομαι" (to work out), "να ταξιδεύω" (to travel), "να μαγειρεύω" (to cook). Use να + verb.' },
+    { word: 'Πάω συχνά στο γυμναστήριο.', translation: 'I often go to the gym.', phonetic: 'PA-o see-HNA sto yim-nas-TEE-ree-o', intuition: 'Routine claim. Adjust frequency: συχνά / σπάνια / κάθε μέρα.' },
+    { word: 'Μαθαίνω ελληνικά για [reason].', translation: 'I\'m learning Greek for [reason].', phonetic: 'ma-THE-no e-lee-nee-KA ya', intuition: '👉 Customize: "για την οικογένειά μου" (for my family) / "γιατί ταξιδεύω συχνά στην Ελλάδα" (because I travel to Greece often) / "για να μιλάω με τον πατέρα μου."' },
+    { word: 'Πηγαίνω στην Ελλάδα τον Ιούλιο.', translation: "I'm going to Greece in July.", phonetic: 'pee-YE-no steen e-LA-tha ton ee-OO-lyo', intuition: 'Travel statement (uses present for near-certain plan). Customize the month.' },
+    { word: 'Ταξιδεύω συχνά για δουλειά.', translation: 'I travel often for work.', phonetic: 'ta-KSEE-the-vo see-HNA ya thoo-LYA', intuition: 'Use if applicable.' },
+    { word: 'Είμαι 30 χρονών.', translation: "I'm 30 years old.", phonetic: 'EE-me tree-AN-da hro-NON', intuition: '👉 Customize age. Number + χρονών (years old, genitive form).' },
+  ];
+  const PROFILE_ENTRIES = makeSyntheticEntries(PROFILE_VOCAB, 'Personal Profile', 'profile');
+
   const SMALL_TALK_ENTRIES = SMALL_TALK_VOCAB.map((v, i) => ({
     id: 'small-talk-' + (i + 1),
     lang: 'greek',
@@ -8517,7 +8791,15 @@
       .concat(COLLOQ_ENTRIES)
       .concat(SUBJ_ENTRIES)
       .concat(CONN_ENTRIES)
-      .concat(QSTART_ENTRIES);
+      .concat(QSTART_ENTRIES)
+      .concat(TUTOR_QA_ENTRIES)
+      .concat(EASY_OUTS_ENTRIES)
+      .concat(MODIFIERS_ENTRIES)
+      .concat(MY_WEEK_ENTRIES)
+      .concat(FAMILY_ENTRIES)
+      .concat(WORK_ENTRIES)
+      .concat(FOOD_ENTRIES)
+      .concat(PROFILE_ENTRIES);
     const merged = live
       .concat(dedupable.filter(v => !liveWords.has(v.word)))
       .concat(keepAll);
