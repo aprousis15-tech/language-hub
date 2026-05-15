@@ -2864,6 +2864,19 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('timesofday',this)">⏰ Times of day</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('greecetrip',this)">🏖️ Greece Trip</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('italkiopener',this)">🎓 iTalki Opener</button>
+      <!-- Tier 1 Greece-prep chips -->
+      <button class="practice-topic-chip" onclick="setPracticeTopic('aorist',this)">⏪ Past Tense</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('future',this)">⏩ Future θα</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('qwords',this)">❓ Question Words</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('objpro',this)">🪢 Object Pronouns</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('aresei',this)">❤️ μου αρέσει</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('numbers2',this)">💯 Numbers 1–100</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('imperative',this)">❗ Imperatives</button>
+      <!-- Tier 2 -->
+      <button class="practice-topic-chip" onclick="setPracticeTopic('formal',this)">🎩 Formal vs Informal</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('colloq',this)">💥 Colloquialisms</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('subjna',this)">🔗 Subjunctive να</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('connectors',this)">🔀 Connectors</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
@@ -6621,6 +6634,17 @@
       case 'timesofday': return v => v.topic === 'Times of Day';
       case 'greecetrip': return v => v.topic === 'Greece Trip';
       case 'italkiopener': return v => v.topic === 'iTalki Opener';
+      case 'aorist':     return v => v.topic === 'Aorist';
+      case 'future':     return v => v.topic === 'Future θα';
+      case 'qwords':     return v => v.topic === 'Question Words';
+      case 'objpro':     return v => v.topic === 'Object Pronouns';
+      case 'aresei':     return v => v.topic === 'μου αρέσει';
+      case 'numbers2':   return v => v.topic === 'Numbers';
+      case 'imperative': return v => v.topic === 'Imperatives';
+      case 'formal':     return v => v.topic === 'Formal vs Informal';
+      case 'colloq':     return v => v.topic === 'Colloquialisms';
+      case 'subjna':     return v => v.topic === 'Subjunctive να';
+      case 'connectors': return v => v.topic === 'Connectors';
       case 'all':
       default:           return v => true;
     }
@@ -7120,6 +7144,272 @@
     srs_due_at: null
   }));
 
+  // ─────────────────────────────────────────────────────────────────
+  // GREECE TRIP PREP — Tier 1 + Tier 2 from the May curriculum
+  // 11 topic chips covering past tense, future, question words, object pronouns,
+  // μου αρέσει, numbers, imperatives, formal/informal, colloquialisms, subjunctive,
+  // connectors. Each entry's intuition carries the rule/use-case context.
+  // ─────────────────────────────────────────────────────────────────
+
+  // T1.1 — Aorist (Past Tense)
+  const AORIST_VOCAB = [
+    // Regular -ω verbs forming aorist with stem change
+    { word: 'ταξίδεψα', translation: 'I traveled', phonetic: 'ta-KSEE-thep-sa', intuition: 'Aorist of ταξιδεύω. -εύω → -εψα. Stress shifts back.' },
+    { word: 'δούλεψα', translation: 'I worked', phonetic: 'THOO-lep-sa', intuition: 'Aorist of δουλεύω. Same -εύω → -εψα pattern.' },
+    { word: 'διάβασα', translation: 'I read (past)', phonetic: 'thee-A-va-sa', intuition: 'Aorist of διαβάζω. -ζω → -σα.' },
+    { word: 'αγόρασα', translation: 'I bought', phonetic: 'a-GHO-ra-sa', intuition: 'Aorist of αγοράζω.' },
+    { word: 'άκουσα', translation: 'I listened / heard', phonetic: 'A-koo-sa', intuition: 'Aorist of ακούω. Common in "did you hear?"' },
+    { word: 'έγραψα', translation: 'I wrote', phonetic: 'E-ghrap-sa', intuition: 'Aorist of γράφω. ε- augment + -ψα.' },
+    { word: 'έμαθα', translation: 'I learned', phonetic: 'E-ma-tha', intuition: 'Aorist of μαθαίνω. Irregular stem change.' },
+    { word: 'ξύπνησα', translation: 'I woke up', phonetic: 'KSEEP-nee-sa', intuition: 'Aorist of ξυπνάω. -άω → -ησα.' },
+    { word: 'περπάτησα', translation: 'I walked', phonetic: 'per-PA-tee-sa', intuition: 'Aorist of περπατάω.' },
+    { word: 'μίλησα', translation: 'I spoke', phonetic: 'MEE-lee-sa', intuition: 'Aorist of μιλάω.' },
+    { word: 'ρώτησα', translation: 'I asked', phonetic: 'RO-tee-sa', intuition: 'Aorist of ρωτάω.' },
+    { word: 'κοιμήθηκα', translation: 'I slept', phonetic: 'kee-MEE-thee-ka', intuition: 'Aorist of κοιμάμαι (passive verb). Different pattern: -θηκα.' },
+    // Irregular high-frequency aorists
+    { word: 'πήγα', translation: 'I went', phonetic: 'PEE-gha', intuition: 'Aorist of πάω. IRREGULAR — memorize as a shape.' },
+    { word: 'είδα', translation: 'I saw', phonetic: 'EE-tha', intuition: 'Aorist of βλέπω. IRREGULAR — totally different stem.' },
+    { word: 'έφαγα', translation: 'I ate', phonetic: 'E-fa-gha', intuition: 'Aorist of τρώω. IRREGULAR.' },
+    { word: 'ήπια', translation: 'I drank', phonetic: 'EE-pya', intuition: 'Aorist of πίνω. IRREGULAR — note η augment.' },
+    { word: 'έκανα', translation: 'I did / made', phonetic: 'E-ka-na', intuition: 'Aorist of κάνω. The ε- augment + -α.' },
+    { word: 'είχα', translation: 'I had', phonetic: 'EE-ha', intuition: 'Aorist (and imperfect) of έχω. IRREGULAR — same form used for both.' },
+    { word: 'ήμουν', translation: 'I was', phonetic: 'EE-moon', intuition: 'Past of είμαι. IRREGULAR. Use for "I was tired / there / hungry."' },
+    { word: 'είπα', translation: 'I said', phonetic: 'EE-pa', intuition: 'Aorist of λέω. IRREGULAR. Very high frequency.' },
+    { word: 'βρήκα', translation: 'I found', phonetic: 'VREE-ka', intuition: 'Aorist of βρίσκω. IRREGULAR.' },
+    { word: 'έδωσα', translation: 'I gave', phonetic: 'E-tho-sa', intuition: 'Aorist of δίνω.' },
+    { word: 'πήρα', translation: 'I took / got', phonetic: 'PEE-ra', intuition: 'Aorist of παίρνω. IRREGULAR. Useful: πήρα ταξί = I took a taxi.' },
+    { word: 'ήρθα', translation: 'I came / arrived', phonetic: 'EER-tha', intuition: 'Aorist of έρχομαι. IRREGULAR. ήρθα στην Αθήνα = I arrived in Athens.' },
+    // Example sentences
+    { word: 'Χθες πήγα στο γυμναστήριο.', translation: 'Yesterday I went to the gym.', phonetic: 'HTHES PEE-gha sto yim-nas-TEE-ree-o', intuition: 'Aorist + time marker (Χθες = yesterday) — the natural pairing.' },
+    { word: 'Είδα μια ωραία ταινία.', translation: 'I saw a nice movie.', phonetic: 'EE-tha mya o-RE-a te-NEE-a', intuition: 'Conversational past statement. Direct response to "what did you do?"' },
+    { word: 'Έφαγα ελληνικό φαγητό.', translation: 'I ate Greek food.', phonetic: 'E-fa-gha e-lee-nee-KO fa-yee-TO', intuition: 'High-frequency travel report.' },
+    { word: 'Δούλεψα πολύ αυτή την εβδομάδα.', translation: 'I worked a lot this week.', phonetic: 'THOO-lep-sa po-LEE af-TEE teen ev-tho-MA-tha', intuition: 'Catch-up phrase for italki openers.' },
+  ];
+
+  // T1.2 — Future tense (θα)
+  const FUTURE_VOCAB = [
+    { word: 'θα πάω', translation: 'I will go', phonetic: 'tha PA-o', intuition: 'Future = θα + perfective form. Note πάω is irregular: future stays πάω.' },
+    { word: 'θα είμαι', translation: 'I will be', phonetic: 'tha EE-me', intuition: 'είμαι is irregular — future is just θα + είμαι (same form).' },
+    { word: 'θα δω', translation: 'I will see', phonetic: 'tha tho', intuition: 'Future of βλέπω — uses the closed/perfective form δω.' },
+    { word: 'θα φάω', translation: 'I will eat', phonetic: 'tha FA-o', intuition: 'Future of τρώω — uses perfective φάω.' },
+    { word: 'θα έρθω', translation: 'I will come', phonetic: 'tha ER-tho', intuition: 'Future of έρχομαι — perfective έρθω.' },
+    { word: 'θα ταξιδέψω', translation: 'I will travel', phonetic: 'tha ta-ksee-THE-pso', intuition: 'Future of ταξιδεύω — perfective ταξιδέψω.' },
+    { word: 'θα δουλέψω', translation: 'I will work', phonetic: 'tha thoo-LE-pso', intuition: 'Future of δουλεύω.' },
+    { word: 'θα μάθω', translation: 'I will learn', phonetic: 'tha MA-tho', intuition: 'Future of μαθαίνω.' },
+    { word: 'θα μιλήσω', translation: 'I will speak', phonetic: 'tha mee-LEE-so', intuition: 'Future of μιλάω.' },
+    { word: 'θα σε δω σύντομα', translation: "I'll see you soon", phonetic: 'tha se tho SEEN-do-ma', intuition: 'Common parting phrase. σε = direct object pronoun "you."' },
+    { word: 'θα είμαι εκεί στις 8', translation: "I'll be there at 8", phonetic: 'tha EE-me e-KEE stees ok-TOH', intuition: 'Travel logistics. Note εκεί uses ει for "ee" sound.' },
+    { word: 'θα πάμε στην Ελλάδα', translation: "we'll go to Greece", phonetic: 'tha PA-me steen e-LA-tha', intuition: 'πάμε = we go (irregular plural of πάω).' },
+    { word: 'θα φάμε μαζί', translation: "we'll eat together", phonetic: 'tha FA-me ma-ZEE', intuition: 'Social planning. μαζί = together.' },
+    { word: 'θα τα πούμε', translation: "we'll talk", phonetic: 'tha ta POO-me', intuition: 'Casual sign-off. Literally "we will say them."' },
+  ];
+
+  // T1.3 — Question words
+  const QUESTION_WORDS_VOCAB = [
+    { word: 'Πού;', translation: 'Where?', phonetic: 'POO', intuition: 'No accent change; rises in tone like English. Πού is for location.' },
+    { word: 'Πότε;', translation: 'When?', phonetic: 'PO-te', intuition: 'Accent on first syllable. Distinguishes from ποτέ (never, last-syllable).' },
+    { word: 'Τι;', translation: 'What?', phonetic: 'tee', intuition: 'Universal "what" question word. Pairs with verbs: Τι κάνεις; / Τι θέλεις;' },
+    { word: 'Ποιος;', translation: 'Who? / Which? (masc)', phonetic: 'PYOS', intuition: 'Masculine "who." Feminine: Ποια; Neuter: Ποιο;' },
+    { word: 'Ποια;', translation: 'Who? / Which? (fem)', phonetic: 'PYA', intuition: 'Feminine. Use for asking about feminine nouns.' },
+    { word: 'Ποιο;', translation: 'Which? (neut)', phonetic: 'PYO', intuition: 'Neuter. "Which one?" for neuter nouns.' },
+    { word: 'Γιατί;', translation: 'Why?', phonetic: 'ya-TEE', intuition: 'Also means "because" — same word, context disambiguates.' },
+    { word: 'Πόσο;', translation: 'How much? / How long?', phonetic: 'PO-so', intuition: 'For amounts, prices, durations. Πόσο κάνει; = How much does it cost?' },
+    { word: 'Πόσα;', translation: 'How many? (neut. plural)', phonetic: 'PO-sa', intuition: 'Quantity question. Πόσα παιδιά έχεις; = How many kids do you have?' },
+    { word: 'Πώς;', translation: 'How?', phonetic: 'POS', intuition: 'Note ω (not ο) + accent. Πώς (with accent) ≠ πως (without, = "that").' },
+    // Real question examples
+    { word: 'Πού μένεις;', translation: 'Where do you live?', phonetic: 'POO ME-nis', intuition: 'Travel/intro question. μένω = I live/stay.' },
+    { word: 'Πότε φεύγεις;', translation: 'When do you leave?', phonetic: 'PO-te FEV-yis', intuition: 'Trip logistics. ευ → "ev."' },
+    { word: 'Τι θέλεις;', translation: 'What do you want?', phonetic: 'tee THE-lis', intuition: 'High-frequency. Restaurants, shops.' },
+    { word: 'Ποιος είσαι;', translation: 'Who are you?', phonetic: 'PYOS EE-se', intuition: 'Use Ποιος for masc subject. For female: Ποια είσαι;' },
+    { word: 'Γιατί όχι;', translation: 'Why not?', phonetic: 'ya-TEE O-hi', intuition: 'Conversational. Γιατί + όχι.' },
+    { word: 'Πόσο μακριά είναι;', translation: 'How far is it?', phonetic: 'PO-so mak-ree-A EE-ne', intuition: 'Travel distance question.' },
+    { word: 'Πώς λέγεται αυτό;', translation: "What's this called?", phonetic: 'POS LE-ye-te af-TO', intuition: 'Useful learning move. Point + ask.' },
+  ];
+
+  // T1.4 — Object pronouns
+  const OBJECT_PRONOUNS_VOCAB = [
+    { word: 'Το ξέρω.', translation: 'I know it.', phonetic: 'toh KSE-ro', intuition: 'Direct object pronoun το (it/that/him) BEFORE the verb. ξέρω = I know.' },
+    { word: 'Τον είδα.', translation: 'I saw him.', phonetic: 'ton EE-tha', intuition: 'τον = masc. acc. "him." Word order: pronoun BEFORE verb.' },
+    { word: 'Την είδα.', translation: 'I saw her.', phonetic: 'teen EE-tha', intuition: 'την = fem. acc. "her."' },
+    { word: 'Τους ξέρω.', translation: 'I know them (m).', phonetic: 'toos KSE-ro', intuition: 'τους = masc/mixed plural acc. "them."' },
+    { word: 'Τις ξέρω.', translation: 'I know them (f).', phonetic: 'tees KSE-ro', intuition: 'τις = fem. plural acc. "them."' },
+    { word: 'Τα ξέρω.', translation: 'I know them (n) / them all.', phonetic: 'ta KSE-ro', intuition: 'τα = neut. plural acc.' },
+    { word: 'Μου είπε.', translation: 'He told me.', phonetic: 'moo EE-pe', intuition: 'Indirect object: μου = "to me." Same form as the possessive μου.' },
+    { word: 'Σου είπα.', translation: 'I told you.', phonetic: 'soo EE-pa', intuition: 'σου = "to you" (sg./informal).' },
+    { word: 'Του είπα.', translation: 'I told him.', phonetic: 'too EE-pa', intuition: 'του = "to him."' },
+    { word: 'Της είπα.', translation: 'I told her.', phonetic: 'tees EE-pa', intuition: 'της = "to her."' },
+    { word: 'Μας έδωσε ένα δώρο.', translation: 'He gave us a gift.', phonetic: 'mas E-tho-se E-na THO-ro', intuition: 'μας = "to us."' },
+    { word: 'Σας ευχαριστώ.', translation: 'I thank you (formal/plural).', phonetic: 'sas ef-ha-ree-STO', intuition: 'σας = "you" (formal/plural). Sets formal register.' },
+    { word: 'Τους είπα την αλήθεια.', translation: 'I told them the truth.', phonetic: 'toos EE-pa teen a-LEE-thee-a', intuition: 'τους = "to them" (indirect).' },
+  ];
+
+  // T1.5 — μου αρέσει construction
+  const ARESEI_VOCAB = [
+    { word: 'Μου αρέσει ο καφές.', translation: 'I like coffee.', phonetic: 'moo a-RE-si o ka-FES', intuition: 'BACKWARDS from English. Literally "to me is pleasing the coffee." The subject of αρέσει is the THING liked.' },
+    { word: 'Μου αρέσουν τα ψάρια.', translation: 'I like fish (plural).', phonetic: 'moo a-RE-soon ta PSA-rya', intuition: 'Verb agrees with the thing liked, not "me." Plural thing → αρέσουν.' },
+    { word: 'Σου αρέσει το φαγητό;', translation: 'Do you like the food?', phonetic: 'soo a-RE-si toh fa-yee-TO', intuition: 'Question form. σου = "to you" (informal).' },
+    { word: 'Δεν μου αρέσει.', translation: "I don't like it.", phonetic: 'then moo a-RE-si', intuition: 'Negation pattern: δεν before the verb.' },
+    { word: 'Της αρέσει η Ελλάδα.', translation: 'She likes Greece.', phonetic: 'tees a-RE-si ee e-LA-tha', intuition: 'της = "to her."' },
+    { word: 'Του αρέσει το ποδόσφαιρο.', translation: 'He likes football.', phonetic: 'too a-RE-si toh po-THOS-fe-ro', intuition: 'του = "to him."' },
+    { word: 'Μας αρέσουν οι παραλίες.', translation: 'We like the beaches.', phonetic: 'mas a-RE-soon ee pa-ra-LEE-es', intuition: 'Plural object → αρέσουν.' },
+    { word: 'Σας αρέσει αυτό;', translation: 'Do you (pl./formal) like this?', phonetic: 'sas a-RE-si af-TO', intuition: 'Server question, formal register.' },
+    { word: 'Τους αρέσει το κρασί.', translation: 'They like wine.', phonetic: 'toos a-RE-si toh kra-SEE', intuition: 'τους = "to them."' },
+    { word: 'Πολύ μου αρέσει.', translation: 'I like it a lot.', phonetic: 'po-LEE moo a-RE-si', intuition: 'Add πολύ for emphasis. Word order: πολύ μου αρέσει.' },
+    { word: 'Τι σου αρέσει;', translation: 'What do you like?', phonetic: 'tee soo a-RE-si', intuition: 'Conversational opener.' },
+  ];
+
+  // T1.6 — Numbers (frequent set)
+  const NUMBERS_VOCAB = [
+    { word: 'ένα', translation: 'one', phonetic: 'E-na', intuition: 'Neuter form (used for counting). Masc: ένας. Fem: μία.' },
+    { word: 'δύο', translation: 'two', phonetic: 'THEE-o', intuition: 'Invariable for all genders.' },
+    { word: 'τρία', translation: 'three', phonetic: 'TREE-a', intuition: 'Neuter. Masc/fem: τρεις.' },
+    { word: 'τέσσερα', translation: 'four', phonetic: 'TE-se-ra', intuition: 'Neuter. Masc/fem: τέσσερις.' },
+    { word: 'πέντε', translation: 'five', phonetic: 'PEN-de', intuition: 'Invariable.' },
+    { word: 'έξι', translation: 'six', phonetic: 'EK-see', intuition: 'ξ = "ks."' },
+    { word: 'επτά / εφτά', translation: 'seven', phonetic: 'ep-TA / ef-TA', intuition: 'Both spellings used. εφτά more colloquial.' },
+    { word: 'οκτώ / οχτώ', translation: 'eight', phonetic: 'ok-TOH / oh-TOH', intuition: 'Note ω. Both spellings used.' },
+    { word: 'εννέα / εννιά', translation: 'nine', phonetic: 'e-NE-a / e-NYA', intuition: 'Double ν (rare exception). εννιά more colloquial.' },
+    { word: 'δέκα', translation: 'ten', phonetic: 'THE-ka', intuition: '' },
+    { word: 'έντεκα', translation: 'eleven', phonetic: 'EN-de-ka', intuition: 'Stress on first syllable.' },
+    { word: 'δώδεκα', translation: 'twelve', phonetic: 'THO-the-ka', intuition: 'Note δ-δ pattern.' },
+    { word: 'δεκατρία', translation: 'thirteen', phonetic: 'the-ka-TREE-a', intuition: 'δέκα + τρία fused. Pattern continues for 14-19.' },
+    { word: 'δεκαπέντε', translation: 'fifteen', phonetic: 'the-ka-PEN-de', intuition: 'Useful: half-hour expressions ("at 8:15" = στις οκτώ και δεκαπέντε).' },
+    { word: 'είκοσι', translation: 'twenty', phonetic: 'EE-ko-see', intuition: 'Tens start here. είκοσι + number for 21-29: είκοσι πέντε = 25.' },
+    { word: 'τριάντα', translation: 'thirty', phonetic: 'tree-AN-da', intuition: '' },
+    { word: 'σαράντα', translation: 'forty', phonetic: 'sa-RAN-da', intuition: '' },
+    { word: 'πενήντα', translation: 'fifty', phonetic: 'pe-NEEN-da', intuition: '' },
+    { word: 'εξήντα', translation: 'sixty', phonetic: 'ek-SEEN-da', intuition: '' },
+    { word: 'εβδομήντα', translation: 'seventy', phonetic: 'ev-tho-MEEN-da', intuition: 'ευ before voiced θ → "ev."' },
+    { word: 'ογδόντα', translation: 'eighty', phonetic: 'og-THON-da', intuition: '' },
+    { word: 'ενενήντα', translation: 'ninety', phonetic: 'e-ne-NEEN-da', intuition: '' },
+    { word: 'εκατό', translation: 'one hundred', phonetic: 'e-ka-TO', intuition: 'For 101+: εκατόν + number.' },
+    { word: 'χίλια', translation: 'one thousand', phonetic: 'HEE-lya', intuition: 'Neuter plural form. Counting form.' },
+    // Common price expressions
+    { word: 'πέντε ευρώ', translation: '5 euros', phonetic: 'PEN-de ev-RO', intuition: 'ευρώ is invariable.' },
+    { word: 'δέκα ευρώ', translation: '10 euros', phonetic: 'THE-ka ev-RO', intuition: '' },
+    { word: 'είκοσι πέντε ευρώ', translation: '25 euros', phonetic: 'EE-ko-see PEN-de ev-RO', intuition: 'Pattern: tens + ones + ευρώ.' },
+    { word: 'πενήντα ευρώ', translation: '50 euros', phonetic: 'pe-NEEN-da ev-RO', intuition: '' },
+    { word: 'εκατό ευρώ', translation: '100 euros', phonetic: 'e-ka-TO ev-RO', intuition: '' },
+    { word: 'οκτώ και πενήντα', translation: '8.50 (price)', phonetic: 'ok-TOH ke pe-NEEN-da', intuition: 'For decimal prices: integer + και + cents. "8 and 50" = 8.50.' },
+    { word: 'χίλια ευρώ', translation: '1000 euros', phonetic: 'HEE-lya ev-RO', intuition: '' },
+  ];
+
+  // T1.7 — Imperatives (comprehension first)
+  const IMPERATIVE_VOCAB = [
+    { word: 'Πάμε!', translation: "Let's go!", phonetic: 'PA-me', intuition: '1st-person plural imperative. The universal "shall we?"' },
+    { word: 'Έλα!', translation: 'Come!', phonetic: 'E-la', intuition: 'Informal singular imperative of έρχομαι. Also "come on!"' },
+    { word: 'Ελάτε!', translation: 'Come! (pl./formal)', phonetic: 'e-LA-te', intuition: 'Plural/formal version of Έλα.' },
+    { word: 'Πες μου.', translation: 'Tell me.', phonetic: 'pes moo', intuition: 'Imperative of λέω + indirect object μου.' },
+    { word: 'Δώσε μου.', translation: 'Give me.', phonetic: 'THO-se moo', intuition: 'Imperative of δίνω.' },
+    { word: 'Περίμενε.', translation: 'Wait.', phonetic: 'pe-REE-me-ne', intuition: 'Imperative of περιμένω. High-frequency.' },
+    { word: 'Κοίτα.', translation: 'Look.', phonetic: 'KEE-ta', intuition: 'Imperative of κοιτάω. Often softens to "you know" / "look here."' },
+    { word: 'Άκου.', translation: 'Listen.', phonetic: 'A-koo', intuition: 'Imperative of ακούω. Conversational lead-in.' },
+    { word: 'Σταμάτα.', translation: 'Stop.', phonetic: 'sta-MA-ta', intuition: 'Imperative of σταματάω.' },
+    { word: 'Καλώς ήρθες!', translation: 'Welcome! (informal)', phonetic: 'ka-LOS EER-thes', intuition: 'Literally "welcomely you came." Standard welcome.' },
+    { word: 'Καλώς ήρθατε!', translation: 'Welcome! (pl./formal)', phonetic: 'ka-LOS EER-tha-te', intuition: 'Formal/plural version. Used by shopkeepers.' },
+    { word: 'Πρόσεχε!', translation: 'Watch out! / Be careful!', phonetic: 'PRO-se-he', intuition: 'Imperative of προσέχω.' },
+    { word: 'Κάθισε.', translation: 'Sit down.', phonetic: 'KA-thee-se', intuition: 'Imperative of κάθομαι.' },
+    { word: 'Φύγε!', translation: 'Go away! / Leave!', phonetic: 'FEE-ye', intuition: 'Imperative of φεύγω.' },
+    { word: 'Μη μιλάς.', translation: "Don't talk.", phonetic: 'mee mee-LAS', intuition: 'Negative imperative: μη + 2nd-person present, NOT δεν.' },
+  ];
+
+  // T2.8 — Formal vs. Informal "you"
+  const FORMAL_INFORMAL_VOCAB = [
+    { word: 'εσύ vs. εσείς', translation: 'you (informal vs. formal/plural)', phonetic: 'e-SEE vs. e-SEES', intuition: 'Default to εσείς with anyone over ~30 you don\'t know. Informal is for friends, family, peers, kids.' },
+    { word: 'Τι κάνεις; (informal)', translation: 'How are you? (informal)', phonetic: 'tee KA-nis', intuition: 'For friends, family, your father, peers.' },
+    { word: 'Τι κάνετε; (formal)', translation: 'How are you? (formal/plural)', phonetic: 'tee KA-ne-te', intuition: 'For strangers, older people, shopkeepers. SAFE default.' },
+    { word: 'Πώς σε λένε; (informal)', translation: "What's your name? (informal)", phonetic: 'pos se LE-ne', intuition: 'With kids, peers, casual contexts.' },
+    { word: 'Πώς σας λένε; (formal)', translation: "What's your name? (formal)", phonetic: 'pos sas LE-ne', intuition: 'Default in shops, hotels, professional settings.' },
+    { word: 'Θέλεις (informal)', translation: 'you want (informal)', phonetic: 'THE-lis', intuition: 'Used with one person you know.' },
+    { word: 'Θέλετε (formal)', translation: 'you want (formal/plural)', phonetic: 'THE-le-te', intuition: 'For strangers OR multiple people.' },
+    { word: 'Έχεις (informal)', translation: 'you have (informal)', phonetic: 'E-his', intuition: 'Singular informal.' },
+    { word: 'Έχετε (formal)', translation: 'you have (formal/plural)', phonetic: 'E-he-te', intuition: 'Use for strangers. Shopkeeper asking "do you have X?" uses έχετε.' },
+    { word: 'Παρακαλώ, καθίστε.', translation: 'Please, sit down. (formal)', phonetic: 'pa-ra-ka-LO ka-THEES-te', intuition: 'καθίστε = formal/plural imperative. Restaurant host phrase.' },
+    { word: 'Μπορείτε να με βοηθήσετε;', translation: 'Can you help me? (formal)', phonetic: 'bo-REE-te na me vo-ee-THEE-se-te', intuition: 'Polite request to a stranger.' },
+    { word: 'Συγγνώμη, μιλάτε αγγλικά;', translation: 'Excuse me, do you speak English? (formal)', phonetic: 'see-GHNO-mee mee-LA-te ang-glee-KA', intuition: 'μιλάτε is formal 2nd-person. Use with strangers.' },
+  ];
+
+  // T2.9 — Colloquialisms (pre-populated guesses; revise once your father gives the list)
+  const COLLOQUIALISMS_VOCAB = [
+    { word: 'Τι κάνεις;', translation: 'How are you? (lit. "what are you doing?")', phonetic: 'tee KA-nis', intuition: 'Not literal — this is "how are you" in casual speech.' },
+    { word: 'Ό,τι θέλεις.', translation: 'Whatever you want.', phonetic: 'O-tee THE-lis', intuition: 'Accommodating response. Note the comma between Ό and τι.' },
+    { word: 'Σιγά σιγά.', translation: 'Slowly / take it easy.', phonetic: 'see-GHA see-GHA', intuition: 'Doubled adverb for emphasis. Used to chill someone out.' },
+    { word: 'Καλά είμαι.', translation: "I'm fine. / I'm doing well.", phonetic: 'ka-LA EE-me', intuition: 'Standard response to "how are you?"' },
+    { word: 'Δεν πειράζει.', translation: "It doesn't matter / no worries.", phonetic: 'then pi-RA-zi', intuition: 'Response to apology. Reassuring filler.' },
+    { word: 'Έλα ντε!', translation: 'Right?! / Exactly!', phonetic: 'E-la de', intuition: 'Conversational agreement. ντε intensifies.' },
+    { word: 'Άντε!', translation: 'Come on! / OK then!', phonetic: 'AN-de', intuition: 'Multipurpose conversational nudge.' },
+    { word: 'Έλα τώρα!', translation: 'Come on! (incredulous)', phonetic: 'E-la TO-ra', intuition: 'Skeptical "really?" Like English "come on, seriously?"' },
+    { word: 'Τι λες;', translation: 'What do you say? / Really?', phonetic: 'tee LES', intuition: 'Conversational. Can be genuine question OR surprised reaction.' },
+    { word: 'Τέλεια!', translation: 'Perfect! / Awesome!', phonetic: 'TE-lya', intuition: 'Enthusiastic agreement.' },
+    { word: 'Ωραία!', translation: 'Nice! / Cool!', phonetic: 'o-RE-a', intuition: 'Casual positive reaction.' },
+    { word: 'Μια χαρά.', translation: 'Great / wonderful.', phonetic: 'mya ha-RA', intuition: 'Literally "a joy." Strong positive.' },
+    { word: 'Καμία σχέση.', translation: 'No way / completely different.', phonetic: 'ka-MEE-a SHE-see', intuition: 'Literally "no relation." Dismissive comparison.' },
+    { word: 'Δεν βαριέσαι!', translation: "Whatever, don't worry about it.", phonetic: 'then va-RYE-se', intuition: 'Untranslatable resigned shrug. Literally "you don\'t get bored."' },
+    { word: 'Όπα!', translation: 'Whoa! / Watch it!', phonetic: 'O-pa', intuition: 'Surprise, attention, or playful warning. Also exclamation at parties.' },
+    { word: 'Έχεις δίκιο.', translation: "You're right.", phonetic: 'E-his THEE-kyo', intuition: 'Concession. δίκιο = (your) right / justice.' },
+    { word: 'Με πιάνεις;', translation: 'You get me? / Catch my drift?', phonetic: 'me PYA-nis', intuition: 'Literally "you catch me?" Checks comprehension informally.' },
+    { word: 'Άσε με!', translation: 'Leave me alone! / Get out of here!', phonetic: 'A-se me', intuition: 'Used playfully or seriously. Context matters.' },
+    { word: 'Πάμε γερά!', translation: "Let's go strong! / Let's do this!", phonetic: 'PA-me ye-RA', intuition: 'Motivational. γερά = strongly.' },
+    { word: 'Καλημερούδια!', translation: 'Good morning! (cute/diminutive)', phonetic: 'ka-lee-me-ROO-thya', intuition: 'Affectionate diminutive of καλημέρα. Slightly playful.' },
+  ];
+
+  // T2.10 — Subjunctive (να + verb)
+  const SUBJUNCTIVE_VOCAB = [
+    { word: 'θέλω να', translation: 'I want to (+ verb)', phonetic: 'THE-lo na', intuition: 'Most common subjunctive trigger. θέλω + να + perfective form.' },
+    { word: 'πρέπει να', translation: 'I have to / must (+ verb)', phonetic: 'PRE-pee na', intuition: 'Obligation. πρέπει = it is necessary.' },
+    { word: 'μπορώ να', translation: 'I can (+ verb)', phonetic: 'bo-RO na', intuition: 'Ability/permission. μπ = "b."' },
+    { word: 'Θέλω να πάω.', translation: 'I want to go.', phonetic: 'THE-lo na PA-o', intuition: 'Standard pattern. πάω is irregular — same form in subjunctive.' },
+    { word: 'Πρέπει να φύγω.', translation: 'I have to leave.', phonetic: 'PRE-pee na FEE-gho', intuition: 'φύγω = perfective of φεύγω.' },
+    { word: 'Μπορώ να σε βοηθήσω;', translation: 'Can I help you?', phonetic: 'bo-RO na se vo-ee-THEE-so', intuition: 'Shopkeeper / waiter question. βοηθήσω = perfective.' },
+    { word: 'Θέλεις να φάμε μαζί;', translation: 'Do you want to eat together?', phonetic: 'THE-lis na FA-me ma-ZEE', intuition: 'Social invitation. φάμε = we eat (perfective plural).' },
+    { word: 'Πρέπει να ξυπνήσω νωρίς.', translation: 'I have to wake up early.', phonetic: 'PRE-pee na ksee-PNEE-so no-REES', intuition: 'Daily routine.' },
+    { word: 'Μπορείς να με βοηθήσεις;', translation: 'Can you help me? (informal)', phonetic: 'bo-REES na me vo-ee-THEE-sis', intuition: 'Asking for help. με = direct object "me."' },
+    { word: 'Θέλω να μάθω ελληνικά.', translation: 'I want to learn Greek.', phonetic: 'THE-lo na MA-tho e-lee-nee-KA', intuition: 'Self-introduction phrase. μάθω = perfective.' },
+  ];
+
+  // T2.11 — Connector words
+  const CONNECTORS_VOCAB = [
+    { word: 'και', translation: 'and', phonetic: 'ke', intuition: 'Most common connector. Note: αι sounds "eh."' },
+    { word: 'αλλά', translation: 'but', phonetic: 'a-LA', intuition: 'Standard contrast. Stronger than όμως.' },
+    { word: 'όμως', translation: 'however / but', phonetic: 'O-mos', intuition: 'Slightly more formal contrast. Often comes mid-sentence.' },
+    { word: 'επειδή', translation: 'because', phonetic: 'e-pee-THEE', intuition: 'Provides reason. Use at start of subordinate clause.' },
+    { word: 'γιατί (as connector)', translation: 'because / why', phonetic: 'ya-TEE', intuition: 'Same word as "why?" but mid-sentence = "because."' },
+    { word: 'αν', translation: 'if', phonetic: 'an', intuition: 'Conditional. Pairs with future or subjunctive.' },
+    { word: 'όταν', translation: 'when', phonetic: 'O-tan', intuition: 'Temporal subordinator. Not the question word πότε.' },
+    { word: 'επίσης', translation: 'also', phonetic: 'e-PEE-sis', intuition: 'Additive. Adds another fact.' },
+    { word: 'λοιπόν', translation: 'so / well / anyway', phonetic: 'lee-PON', intuition: 'High-frequency conversational starter or transition.' },
+    { word: 'πρώτα', translation: 'first', phonetic: 'PRO-ta', intuition: 'Sequencing.' },
+    { word: 'μετά', translation: 'then / afterwards', phonetic: 'me-TA', intuition: 'Follow-up. Πρώτα... μετά... = First... then...' },
+    { word: 'Είμαι κουρασμένος, αλλά καλά.', translation: "I'm tired, but okay.", phonetic: 'EE-me koo-ras-ME-nos a-LA ka-LA', intuition: 'αλλά bridges contrast.' },
+    { word: 'Δεν πάω, επειδή είμαι άρρωστος.', translation: "I'm not going because I'm sick.", phonetic: 'then PA-o e-pee-THEE EE-me A-ros-tos', intuition: 'επειδή gives reason.' },
+    { word: 'Πρώτα τρώω, μετά κοιμάμαι.', translation: 'First I eat, then I sleep.', phonetic: 'PRO-ta TRO-o me-TA kee-MA-me', intuition: 'Sequencing.' },
+  ];
+
+  function makeSyntheticEntries(arr, topic, idPrefix) {
+    return arr.map((v, i) => ({
+      id: idPrefix + '-' + (i + 1),
+      lang: 'greek',
+      topic,
+      word: v.word,
+      translation: v.translation,
+      phonetic: v.phonetic || null,
+      part_of_speech: v.part_of_speech || (v.word.length > 18 ? 'phrase' : null),
+      intuition: v.intuition || null,
+      srs_due_at: null
+    }));
+  }
+  const AORIST_ENTRIES = makeSyntheticEntries(AORIST_VOCAB, 'Aorist', 'aorist');
+  const FUTURE_ENTRIES = makeSyntheticEntries(FUTURE_VOCAB, 'Future θα', 'future');
+  const QWORDS_ENTRIES = makeSyntheticEntries(QUESTION_WORDS_VOCAB, 'Question Words', 'qword');
+  const OBJPRO_ENTRIES = makeSyntheticEntries(OBJECT_PRONOUNS_VOCAB, 'Object Pronouns', 'objpro');
+  const ARESEI_ENTRIES = makeSyntheticEntries(ARESEI_VOCAB, 'μου αρέσει', 'aresei');
+  const NUMBERS_ENTRIES = makeSyntheticEntries(NUMBERS_VOCAB, 'Numbers', 'num');
+  const IMPERATIVE_ENTRIES = makeSyntheticEntries(IMPERATIVE_VOCAB, 'Imperatives', 'imp');
+  const FORMAL_ENTRIES = makeSyntheticEntries(FORMAL_INFORMAL_VOCAB, 'Formal vs Informal', 'formal');
+  const COLLOQ_ENTRIES = makeSyntheticEntries(COLLOQUIALISMS_VOCAB, 'Colloquialisms', 'colloq');
+  const SUBJ_ENTRIES = makeSyntheticEntries(SUBJUNCTIVE_VOCAB, 'Subjunctive να', 'subj');
+  const CONN_ENTRIES = makeSyntheticEntries(CONNECTORS_VOCAB, 'Connectors', 'conn');
+
   const SMALL_TALK_ENTRIES = SMALL_TALK_VOCAB.map((v, i) => ({
     id: 'small-talk-' + (i + 1),
     lang: 'greek',
@@ -7194,7 +7484,18 @@
       .concat(MAY14_TIME_TRIAGE_ENTRIES)
       .concat(MAY14_TIMES_ENTRIES)
       .concat(GREECE_TRIP_ENTRIES)
-      .concat(ITALKI_OPENER_ENTRIES);
+      .concat(ITALKI_OPENER_ENTRIES)
+      .concat(AORIST_ENTRIES)
+      .concat(FUTURE_ENTRIES)
+      .concat(QWORDS_ENTRIES)
+      .concat(OBJPRO_ENTRIES)
+      .concat(ARESEI_ENTRIES)
+      .concat(NUMBERS_ENTRIES)
+      .concat(IMPERATIVE_ENTRIES)
+      .concat(FORMAL_ENTRIES)
+      .concat(COLLOQ_ENTRIES)
+      .concat(SUBJ_ENTRIES)
+      .concat(CONN_ENTRIES);
     const merged = live
       .concat(dedupable.filter(v => !liveWords.has(v.word)))
       .concat(keepAll);
