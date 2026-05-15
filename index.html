@@ -2642,6 +2642,8 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past Tense (Aorist)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
     </div>
 
@@ -2692,6 +2694,44 @@
       <div class="grammar-progress">
         <span id="neg-progress">Question 1</span>
         <span class="grammar-score" id="neg-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Aorist Past Tense drill -->
+    <div id="grammar-aorist" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="aorist-en">…</div>
+        <div class="grammar-prompt-greek" id="aorist-prompt">…</div>
+        <div class="grammar-options" id="aorist-options"></div>
+        <div class="grammar-feedback" id="aorist-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gAoristBack()">← Back</button>
+        <button class="grammar-btn" onclick="gAoristNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gAoristShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="aorist-progress">Question 1</span>
+        <span class="grammar-score" id="aorist-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Question Words drill -->
+    <div id="grammar-qwords" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="qwords-en">…</div>
+        <div class="grammar-prompt-greek" id="qwords-prompt">…</div>
+        <div class="grammar-options" id="qwords-options"></div>
+        <div class="grammar-feedback" id="qwords-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gQwordsBack()">← Back</button>
+        <button class="grammar-btn" onclick="gQwordsNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gQwordsShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="qwords-progress">Question 1</span>
+        <span class="grammar-score" id="qwords-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -5857,6 +5897,31 @@
         <tr><td><span class="rule-greek">όχι</span></td><td>Nouns, adverbs, standalone</td><td><span class="rule-greek">Όχι σήμερα</span></td></tr>
       </table>
       <strong>Double negation is REQUIRED</strong> with ποτέ / τίποτα / κανείς / πουθενά. <span class="rule-greek">Δεν θέλω τίποτα</span> (never just "τίποτα").
+    `,
+    aorist: `
+      <strong>Aorist (simple past) — regular patterns:</strong>
+      <table>
+        <tr><th>Present</th><th>Aorist (I-form)</th><th>Pattern</th></tr>
+        <tr><td><span class="rule-greek">ταξιδεύω</span></td><td><span class="rule-greek">ταξίδεψα</span></td><td>-εύω → -εψα</td></tr>
+        <tr><td><span class="rule-greek">διαβάζω</span></td><td><span class="rule-greek">διάβασα</span></td><td>-ζω → -σα</td></tr>
+        <tr><td><span class="rule-greek">μιλάω</span></td><td><span class="rule-greek">μίλησα</span></td><td>-άω → -ησα</td></tr>
+        <tr><td><span class="rule-greek">κάνω</span></td><td><span class="rule-greek">έκανα</span></td><td>ε- augment</td></tr>
+      </table>
+      <strong>Critical irregulars:</strong> πάω → <span class="rule-greek">πήγα</span> · βλέπω → <span class="rule-greek">είδα</span> · τρώω → <span class="rule-greek">έφαγα</span> · πίνω → <span class="rule-greek">ήπια</span> · έχω → <span class="rule-greek">είχα</span> · είμαι → <span class="rule-greek">ήμουν</span> · λέω → <span class="rule-greek">είπα</span> · βρίσκω → <span class="rule-greek">βρήκα</span> · παίρνω → <span class="rule-greek">πήρα</span> · έρχομαι → <span class="rule-greek">ήρθα</span>.
+    `,
+    qwords: `
+      <strong>Six question words to memorize cold:</strong>
+      <table>
+        <tr><th>Greek</th><th>English</th><th>Trap</th></tr>
+        <tr><td><span class="rule-greek">Πού;</span></td><td>Where?</td><td>Location</td></tr>
+        <tr><td><span class="rule-greek">Πότε;</span></td><td>When?</td><td>Accent on first — vs. ποτέ (never)</td></tr>
+        <tr><td><span class="rule-greek">Τι;</span></td><td>What?</td><td>Universal</td></tr>
+        <tr><td><span class="rule-greek">Ποιος / Ποια / Ποιο;</span></td><td>Who? / Which?</td><td>Matches noun gender</td></tr>
+        <tr><td><span class="rule-greek">Γιατί;</span></td><td>Why?</td><td>Also "because" mid-sentence</td></tr>
+        <tr><td><span class="rule-greek">Πόσο; / Πόσα;</span></td><td>How much? / How many?</td><td>Amount vs. count</td></tr>
+        <tr><td><span class="rule-greek">Πώς;</span></td><td>How?</td><td>ω + accent. πως (no accent) = "that"</td></tr>
+      </table>
+      <strong>Questions = intonation only.</strong> No auxiliary shuffle: <span class="rule-greek">Έχεις ψωμί.</span> → <span class="rule-greek">Έχεις ψωμί;</span> (same words, rising tone).
     `
   };
 
@@ -5902,6 +5967,8 @@
     document.getElementById('grammar-typea').style.display = mode === 'typea' ? '' : 'none';
     document.getElementById('grammar-time').style.display = mode === 'time' ? '' : 'none';
     document.getElementById('grammar-neg').style.display = mode === 'neg' ? '' : 'none';
+    document.getElementById('grammar-aorist').style.display = mode === 'aorist' ? '' : 'none';
+    document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -5912,12 +5979,14 @@
     if (mode === 'typea') initTypeADrill();
     if (mode === 'time') initTimeDrill();
     if (mode === 'neg') initNegDrill();
+    if (mode === 'aorist') initAoristDrill();
+    if (mode === 'qwords') initQwordsDrill();
   }
 
   // Pick a random non-Random drill mode. Reuses setGrammarMode so all the
   // visibility + init wiring stays in one place.
   function setRandomGrammarMode() {
-    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg'];
+    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords'];
     const pick = modes[Math.floor(Math.random() * modes.length)];
     const btn = [...document.querySelectorAll('.grammar-mode-btn')]
       .find(b => {
@@ -6438,6 +6507,186 @@
   function gNegShuffle() {
     initNegDrill();
   }
+
+  // ── Aorist Past Tense drill ──
+  // Show English ("I went"), 4 options including the correct aorist + 3 distractors:
+  //   wrong-person aorist, present-tense form, and similar-but-wrong verb aorist.
+  const AORIST_QUESTIONS = [
+    { en: 'I went (to the gym)',     prompt: 'Χθες ___ στο γυμναστήριο.',   answer: 'πήγα',     options: ['πήγα','πήγες','πάω','έφαγα'],          hint: '⚡ πάω → πήγα. IRREGULAR. πήγες = you went; πάω = present "I go"; έφαγα = I ate (wrong verb).' },
+    { en: 'I saw a movie',           prompt: 'Χθες ___ μια ταινία.',         answer: 'είδα',     options: ['είδα','είδες','βλέπω','έκανα'],         hint: '⚡ βλέπω → είδα. IRREGULAR. είδες = you saw; βλέπω = present.' },
+    { en: 'I ate Greek food',        prompt: 'Χθες ___ ελληνικό φαγητό.',    answer: 'έφαγα',    options: ['έφαγα','έφαγες','τρώω','πήγα'],         hint: '⚡ τρώω → έφαγα. IRREGULAR. The augment is ε-.' },
+    { en: 'I drank wine',            prompt: 'Χθες ___ κρασί.',              answer: 'ήπια',     options: ['ήπια','ήπιες','πίνω','έπινα'],          hint: '⚡ πίνω → ήπια. IRREGULAR. ήπιες = you drank; έπινα = imperfect "I was drinking".' },
+    { en: 'I had a long day',        prompt: 'Χθες ___ μια μεγάλη μέρα.',    answer: 'είχα',     options: ['είχα','είχες','έχω','είμαι'],           hint: '⚡ έχω → είχα. IRREGULAR. Used for both aorist AND imperfect of έχω.' },
+    { en: 'I was tired',             prompt: 'Χθες ___ κουρασμένος.',        answer: 'ήμουν',    options: ['ήμουν','ήσουν','είμαι','είχα'],         hint: '⚡ είμαι → ήμουν. IRREGULAR past of "to be".' },
+    { en: 'I traveled',              prompt: 'Πέρυσι ___ στην Ελλάδα.',      answer: 'ταξίδεψα', options: ['ταξίδεψα','ταξιδεύω','ταξίδεψες','είδα'], hint: '✅ ταξιδεύω → ταξίδεψα. Regular -εύω → -εψα pattern.' },
+    { en: 'I worked a lot',          prompt: 'Αυτή την εβδομάδα ___ πολύ.',  answer: 'δούλεψα',  options: ['δούλεψα','δουλεύω','δούλεψες','έκανα'], hint: '✅ δουλεύω → δούλεψα. Same -εύω → -εψα pattern.' },
+    { en: 'I wrote a letter',        prompt: 'Σήμερα ___ ένα γράμμα.',       answer: 'έγραψα',   options: ['έγραψα','γράφω','έγραψες','διάβασα'],   hint: '✅ γράφω → έγραψα. -φω → -ψα. ε- augment.' },
+    { en: 'I read a book',           prompt: 'Χθες ___ ένα βιβλίο.',         answer: 'διάβασα',  options: ['διάβασα','διαβάζω','διάβασες','έγραψα'], hint: '✅ διαβάζω → διάβασα. -ζω → -σα.' },
+    { en: 'I bought coffee',         prompt: 'Σήμερα ___ καφέ.',             answer: 'αγόρασα',  options: ['αγόρασα','αγοράζω','αγόρασες','έφαγα'], hint: '✅ αγοράζω → αγόρασα. -ζω → -σα.' },
+    { en: 'I learned Greek',         prompt: 'Πέρυσι ___ ελληνικά.',         answer: 'έμαθα',    options: ['έμαθα','μαθαίνω','έμαθες','δίδαξα'],    hint: '⚡ μαθαίνω → έμαθα. Stem change. ε- augment.' },
+    { en: 'I woke up early',         prompt: 'Σήμερα ___ νωρίς.',            answer: 'ξύπνησα',  options: ['ξύπνησα','ξυπνάω','ξύπνησες','κοιμήθηκα'], hint: '✅ ξυπνάω → ξύπνησα. -άω → -ησα.' },
+    { en: 'I slept well',            prompt: 'Χθες ___ καλά.',               answer: 'κοιμήθηκα',options: ['κοιμήθηκα','κοιμάμαι','κοιμήθηκες','ξύπνησα'], hint: '⚡ κοιμάμαι → κοιμήθηκα. Passive verb, -θηκα pattern.' },
+    { en: 'I spoke with Niko',       prompt: 'Χθες ___ με τον Νίκο.',        answer: 'μίλησα',   options: ['μίλησα','μιλάω','μίλησες','άκουσα'],    hint: '✅ μιλάω → μίλησα. -άω → -ησα.' },
+    { en: 'I heard the news',        prompt: 'Σήμερα ___ τα νέα.',           answer: 'άκουσα',   options: ['άκουσα','ακούω','άκουσες','μίλησα'],    hint: '✅ ακούω → άκουσα. Note ε- not added (initial vowel).' },
+    { en: 'I said yes',              prompt: '___ ναι.',                     answer: 'Είπα',     options: ['Είπα','Λέω','Είπες','Έκανα'],           hint: '⚡ λέω → είπα. IRREGULAR. Very high frequency.' },
+    { en: 'I found my keys',         prompt: '___ τα κλειδιά μου.',          answer: 'Βρήκα',    options: ['Βρήκα','Βρίσκω','Βρήκες','Είδα'],       hint: '⚡ βρίσκω → βρήκα. IRREGULAR.' },
+    { en: 'I gave her a gift',       prompt: '___ της ένα δώρο.',            answer: 'Έδωσα',    options: ['Έδωσα','Δίνω','Έδωσες','Πήρα'],         hint: '✅ δίνω → έδωσα. -νω → -σα with ε- augment.' },
+    { en: 'I took a taxi',           prompt: '___ ταξί.',                    answer: 'Πήρα',     options: ['Πήρα','Παίρνω','Πήρες','Πήγα'],         hint: '⚡ παίρνω → πήρα. IRREGULAR. Common: πήρα ταξί / πήρα τηλέφωνο.' },
+    { en: 'I came at 8',             prompt: '___ στις οκτώ.',               answer: 'Ήρθα',     options: ['Ήρθα','Έρχομαι','Ήρθες','Πήγα'],        hint: '⚡ έρχομαι → ήρθα. IRREGULAR. ήρθα στην Αθήνα = I arrived in Athens.' },
+    { en: 'I asked a question',      prompt: '___ μια ερώτηση.',             answer: 'Ρώτησα',   options: ['Ρώτησα','Ρωτάω','Ρώτησες','Είπα'],      hint: '✅ ρωτάω → ρώτησα. -άω → -ησα.' },
+    { en: 'I walked to the office',  prompt: '___ στο γραφείο.',             answer: 'Περπάτησα',options: ['Περπάτησα','Περπατάω','Περπάτησες','Πήγα'], hint: '✅ περπατάω → περπάτησα. -άω → -ησα.' },
+    { en: 'I did the homework',      prompt: '___ τα μαθήματα.',             answer: 'Έκανα',    options: ['Έκανα','Κάνω','Έκανες','Πήγα'],         hint: '✅ κάνω → έκανα. ε- augment, -α ending.' },
+  ];
+
+  let gAoristDeck = [], gAoristIndex = 0, gAoristCorrect = 0, gAoristTotal = 0, gAoristAnswered = false;
+
+  function initAoristDrill() {
+    gAoristDeck = [...AORIST_QUESTIONS].sort(() => Math.random() - 0.5);
+    gAoristIndex = 0;
+    gAoristCorrect = 0;
+    gAoristTotal = 0;
+    gAoristAnswered = false;
+    showAoristCard();
+  }
+
+  function showAoristCard() {
+    const q = gAoristDeck[gAoristIndex];
+    if (!q) return;
+    document.getElementById('aorist-en').textContent = q.en;
+    document.getElementById('aorist-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('aorist-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('aorist-options');
+    optsHost.innerHTML = '';
+    // Shuffle the options so the correct one isn't always in the same position
+    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gAoristAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('aorist-progress').textContent = `Question ${gAoristIndex + 1} of ${gAoristDeck.length}`;
+    document.getElementById('aorist-score').textContent = `Score: ${gAoristCorrect}/${gAoristTotal}`;
+    gAoristAnswered = false;
+  }
+
+  function gAoristAnswer(picked, btnEl, q) {
+    if (gAoristAnswered) return;
+    gAoristAnswered = true;
+    gAoristTotal++;
+    if (picked === q.answer) gAoristCorrect++;
+    else recordMistake({
+      drill_type: 'verbs', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'aorist', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#aorist-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('aorist-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('aorist-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('aorist-score').textContent = `Score: ${gAoristCorrect}/${gAoristTotal}`;
+  }
+
+  function gAoristNext() {
+    gAoristIndex = (gAoristIndex + 1) % gAoristDeck.length;
+    showAoristCard();
+  }
+  function gAoristBack() {
+    gAoristIndex = (gAoristIndex - 1 + gAoristDeck.length) % gAoristDeck.length;
+    showAoristCard();
+  }
+  function gAoristShuffle() { initAoristDrill(); }
+
+  // ── Question Words drill ──
+  // Show English question ("Where do you live?"), 4 options for question word.
+  const QWORDS_QUESTIONS = [
+    { en: 'Where do you live?',           prompt: '___ μένεις;',                 answer: 'Πού',  options: ['Πού','Πότε','Πώς','Γιατί'],         hint: 'Πού = Where. Location question.' },
+    { en: 'When do you leave?',           prompt: '___ φεύγεις;',                answer: 'Πότε', options: ['Πού','Πότε','Πώς','Γιατί'],         hint: 'Πότε (accent on first) = When. Don\'t confuse with ποτέ (never, accent on last).' },
+    { en: 'What do you want?',            prompt: '___ θέλεις;',                 answer: 'Τι',   options: ['Τι','Πώς','Ποιος','Πόσο'],          hint: 'Τι = What. Universal.' },
+    { en: 'Who is calling?',              prompt: '___ τηλεφωνεί;',              answer: 'Ποιος',options: ['Ποιος','Ποια','Τι','Πού'],          hint: 'Ποιος = Who (masc). For female caller use Ποια.' },
+    { en: 'Why are you tired?',           prompt: '___ είσαι κουρασμένος;',      answer: 'Γιατί',options: ['Γιατί','Πώς','Πότε','Τι'],          hint: 'Γιατί = Why. Mid-sentence γιατί = "because" — same word, context differs.' },
+    { en: 'How much does it cost?',       prompt: '___ κάνει;',                  answer: 'Πόσο', options: ['Πόσο','Πώς','Τι','Ποιο'],           hint: 'Πόσο = How much. Universal price question. πόσο κάνει = "how much does it make / cost."' },
+    { en: 'How are you?',                 prompt: '___ είσαι;',                  answer: 'Πώς',  options: ['Πώς','Πού','Πότε','Τι'],            hint: 'Πώς (with ω + accent) = How. πως without accent = "that" conjunction.' },
+    { en: 'Where is the bathroom?',       prompt: '___ είναι η τουαλέτα;',       answer: 'Πού',  options: ['Πού','Πότε','Πώς','Ποια'],          hint: 'Πού = Where. Survival travel question.' },
+    { en: 'When does the museum open?',   prompt: '___ ανοίγει το μουσείο;',     answer: 'Πότε', options: ['Πού','Πότε','Πώς','Πόσο'],          hint: 'Πότε = When. Use πότε ανοίγει / κλείνει for opening hours.' },
+    { en: 'What time is it?',             prompt: '___ ώρα είναι;',              answer: 'Τι',   options: ['Τι','Πώς','Πότε','Ποια'],           hint: 'Τι ώρα είναι; — set phrase for "what time is it?"' },
+    { en: 'Which one do you want?',       prompt: '___ θέλεις;',                 answer: 'Ποιο', options: ['Ποιο','Ποια','Ποιος','Τι'],         hint: 'Ποιο (neut) = which one. Match gender to the thing asked about.' },
+    { en: 'Why not?',                     prompt: '___ όχι;',                    answer: 'Γιατί',options: ['Γιατί','Πώς','Πότε','Τι'],          hint: 'Γιατί όχι; — classic two-word question. High-frequency.' },
+    { en: 'How far is it?',               prompt: '___ μακριά είναι;',           answer: 'Πόσο', options: ['Πόσο','Πώς','Πότε','Πού'],          hint: 'Πόσο μακριά — distance question. πόσο does duty for "how much / long / far."' },
+    { en: 'How do you say this?',         prompt: '___ λέγεται αυτό;',           answer: 'Πώς',  options: ['Πώς','Πού','Πότε','Τι'],            hint: 'Πώς λέγεται — "how is it called." Useful learning move.' },
+    { en: 'How many days?',               prompt: '___ μέρες;',                  answer: 'Πόσες',options: ['Πόσες','Πόσα','Πόσο','Πού'],        hint: 'πόσες = how many (fem. plural to match μέρες, fem.). Match gender + number of the noun.' },
+    { en: 'Where are you from?',          prompt: '___ είσαι;',                  answer: 'Από πού',options: ['Από πού','Πότε','Πώς','Γιατί'],   hint: 'Από πού = from where. Note: από comes BEFORE πού in this idiom.' },
+  ];
+
+  let gQwordsDeck = [], gQwordsIndex = 0, gQwordsCorrect = 0, gQwordsTotal = 0, gQwordsAnswered = false;
+
+  function initQwordsDrill() {
+    gQwordsDeck = [...QWORDS_QUESTIONS].sort(() => Math.random() - 0.5);
+    gQwordsIndex = 0;
+    gQwordsCorrect = 0;
+    gQwordsTotal = 0;
+    gQwordsAnswered = false;
+    showQwordsCard();
+  }
+
+  function showQwordsCard() {
+    const q = gQwordsDeck[gQwordsIndex];
+    if (!q) return;
+    document.getElementById('qwords-en').textContent = q.en;
+    document.getElementById('qwords-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('qwords-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('qwords-options');
+    optsHost.innerHTML = '';
+    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gQwordsAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('qwords-progress').textContent = `Question ${gQwordsIndex + 1} of ${gQwordsDeck.length}`;
+    document.getElementById('qwords-score').textContent = `Score: ${gQwordsCorrect}/${gQwordsTotal}`;
+    gQwordsAnswered = false;
+  }
+
+  function gQwordsAnswer(picked, btnEl, q) {
+    if (gQwordsAnswered) return;
+    gQwordsAnswered = true;
+    gQwordsTotal++;
+    if (picked === q.answer) gQwordsCorrect++;
+    else recordMistake({
+      drill_type: 'articles', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'question-words', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#qwords-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('qwords-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('qwords-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('qwords-score').textContent = `Score: ${gQwordsCorrect}/${gQwordsTotal}`;
+  }
+
+  function gQwordsNext() {
+    gQwordsIndex = (gQwordsIndex + 1) % gQwordsDeck.length;
+    showQwordsCard();
+  }
+  function gQwordsBack() {
+    gQwordsIndex = (gQwordsIndex - 1 + gQwordsDeck.length) % gQwordsDeck.length;
+    showQwordsCard();
+  }
+  function gQwordsShuffle() { initQwordsDrill(); }
 
   // Prepositions drill — Greek prepositions are mostly simple words but they
   // collocate in non-obvious ways. Drill presents a sentence with a blank, English
