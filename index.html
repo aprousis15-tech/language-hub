@@ -2646,6 +2646,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα + verb)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('days',this)">📅 Days of Week</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('qstart',this)">🙋 Question Starters</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
     </div>
 
@@ -2772,6 +2773,25 @@
       <div class="grammar-progress">
         <span id="days-progress">Question 1</span>
         <span class="grammar-score" id="days-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Question Starters drill (phrase-level question openers) -->
+    <div id="grammar-qstart" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="qstart-en">…</div>
+        <div class="grammar-prompt-greek" id="qstart-prompt">…</div>
+        <div class="grammar-options" id="qstart-options"></div>
+        <div class="grammar-feedback" id="qstart-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gQstartBack()">← Back</button>
+        <button class="grammar-btn" onclick="gQstartNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gQstartShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="qstart-progress">Question 1</span>
+        <span class="grammar-score" id="qstart-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -2957,6 +2977,7 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('colloq',this)">💥 Colloquialisms</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('subjna',this)">🔗 Subjunctive να</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('connectors',this)">🔀 Connectors</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('qstart',this)">🙋 Question Starters</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
@@ -3836,6 +3857,39 @@
           </table>
           <div class="rule-callout">
             <strong>The verb after να is the PERFECTIVE (closed) form</strong>, not the present. <span class="rule-greek">πάω → να πάω</span>, <span class="rule-greek">φεύγω → να φύγω</span>, <span class="rule-greek">βοηθάω → να βοηθήσω</span>.
+          </div>
+        </div>
+      </div>
+
+      <!-- T1.3b — Question Starters (phrase-level question openers) -->
+      <div class="rule-card">
+        <div class="rule-card-title">
+          <span class="rule-code-badge">T1.3b</span><span class="rule-severity critical">🔴 critical</span>Question Starters — the templates real questions begin with
+        </div>
+        <div class="rule-card-body">
+          Single question words (πού / πότε / τι) are the building blocks. <strong>These are the assembled openers</strong> you use every day in Greece.
+          <table class="rule-table">
+            <tr><th>Pattern</th><th>Use</th><th>Example</th></tr>
+            <tr><td><span class="rule-greek">Πού είναι...;</span></td><td>Locate something</td><td><span class="rule-greek">Πού είναι η τουαλέτα;</span></td></tr>
+            <tr><td><span class="rule-greek">Πόσο κάνει;</span></td><td>Ask price</td><td><span class="rule-greek">Πόσο κάνει ο καφές;</span></td></tr>
+            <tr><td><span class="rule-greek">Τι ώρα...;</span></td><td>Time / opening hours</td><td><span class="rule-greek">Τι ώρα ανοίγει;</span></td></tr>
+            <tr><td><span class="rule-greek">Μπορώ να...;</span></td><td>Permission / request</td><td><span class="rule-greek">Μπορώ να δω το μενού;</span></td></tr>
+            <tr><td><span class="rule-greek">Μπορείτε να...;</span></td><td>Polite request (formal)</td><td><span class="rule-greek">Μπορείτε να με βοηθήσετε;</span></td></tr>
+            <tr><td><span class="rule-greek">Έχετε...;</span></td><td>"Do you have..." (shops)</td><td><span class="rule-greek">Έχετε νερό;</span></td></tr>
+            <tr><td><span class="rule-greek">Πώς πάω στο...;</span></td><td>Directions</td><td><span class="rule-greek">Πώς πάω στο μουσείο;</span></td></tr>
+            <tr><td><span class="rule-greek">Πώς λέγεται...;</span></td><td>What's this called?</td><td><span class="rule-greek">Πώς λέγεται αυτό;</span></td></tr>
+            <tr><td><span class="rule-greek">Από πού...;</span></td><td>Origin</td><td><span class="rule-greek">Από πού είσαι;</span></td></tr>
+          </table>
+          <div class="rule-callout">
+            <strong>Politeness shields</strong> — stick any of these in front of a question and it softens the whole thing:<br>
+            <span class="rule-greek">Συγγνώμη,...;</span> = Excuse me,...?<br>
+            <span class="rule-greek">Με συγχωρείτε,...;</span> = Excuse me,... (formal)<br>
+            <span class="rule-greek">Παρακαλώ,...;</span> = Please,...?<br>
+            <span class="rule-greek">Μπορώ να σε ρωτήσω...;</span> = Can I ask you...?
+          </div>
+          <div class="rule-callout">
+            <strong>Yes/no questions = intonation only.</strong> Same word order as a statement, just rising tone at the end:<br>
+            <span class="rule-greek">Έχεις χρόνο.</span> (statement) → <span class="rule-greek">Έχεις χρόνο;</span> (question)
           </div>
         </div>
       </div>
@@ -5949,6 +6003,21 @@
       </table>
       <strong>Critical irregulars:</strong> πάω → <span class="rule-greek">πήγα</span> · βλέπω → <span class="rule-greek">είδα</span> · τρώω → <span class="rule-greek">έφαγα</span> · πίνω → <span class="rule-greek">ήπια</span> · έχω → <span class="rule-greek">είχα</span> · είμαι → <span class="rule-greek">ήμουν</span> · λέω → <span class="rule-greek">είπα</span> · βρίσκω → <span class="rule-greek">βρήκα</span> · παίρνω → <span class="rule-greek">πήρα</span> · έρχομαι → <span class="rule-greek">ήρθα</span>.
     `,
+    qstart: `
+      <strong>Question Starters — the templates real questions begin with.</strong>
+      <table>
+        <tr><th>Pattern</th><th>Use</th><th>Example</th></tr>
+        <tr><td><span class="rule-greek">Πού είναι...;</span></td><td>Locate</td><td><span class="rule-greek">Πού είναι η τουαλέτα;</span></td></tr>
+        <tr><td><span class="rule-greek">Πόσο κάνει;</span></td><td>Ask price</td><td><span class="rule-greek">Πόσο κάνει ο καφές;</span></td></tr>
+        <tr><td><span class="rule-greek">Τι ώρα...;</span></td><td>Time</td><td><span class="rule-greek">Τι ώρα ανοίγει;</span></td></tr>
+        <tr><td><span class="rule-greek">Μπορώ να...;</span></td><td>Permission</td><td><span class="rule-greek">Μπορώ να δω;</span></td></tr>
+        <tr><td><span class="rule-greek">Μπορείτε να...;</span></td><td>Polite request</td><td><span class="rule-greek">Μπορείτε να με βοηθήσετε;</span></td></tr>
+        <tr><td><span class="rule-greek">Έχετε...;</span></td><td>"Do you have…" in shops</td><td><span class="rule-greek">Έχετε νερό;</span></td></tr>
+        <tr><td><span class="rule-greek">Πώς πάω στο...;</span></td><td>Directions</td><td><span class="rule-greek">Πώς πάω στο μουσείο;</span></td></tr>
+        <tr><td><span class="rule-greek">Από πού είσαι;</span></td><td>Origin</td><td>Note: από COMES FIRST</td></tr>
+      </table>
+      <strong>Politeness shields:</strong> stick <span class="rule-greek">Συγγνώμη,…</span> / <span class="rule-greek">Με συγχωρείτε,…</span> / <span class="rule-greek">Παρακαλώ,…</span> in front of any question to soften it.
+    `,
     days: `
       <strong>Days of the week — accusative form, article-only, no preposition.</strong>
       <table>
@@ -6042,6 +6111,7 @@
     document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
     document.getElementById('grammar-days').style.display = mode === 'days' ? '' : 'none';
+    document.getElementById('grammar-qstart').style.display = mode === 'qstart' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -6056,12 +6126,13 @@
     if (mode === 'qwords') initQwordsDrill();
     if (mode === 'future') initFutureDrill();
     if (mode === 'days') initDaysDrill();
+    if (mode === 'qstart') initQstartDrill();
   }
 
   // Pick a random non-Random drill mode. Reuses setGrammarMode so all the
   // visibility + init wiring stays in one place.
   function setRandomGrammarMode() {
-    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords', 'future', 'days'];
+    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords', 'future', 'days', 'qstart'];
     const pick = modes[Math.floor(Math.random() * modes.length)];
     const btn = [...document.querySelectorAll('.grammar-mode-btn')]
       .find(b => {
@@ -6964,6 +7035,108 @@
   }
   function gDaysShuffle() { initDaysDrill(); }
 
+  // ── Question Starters drill ──
+  // Tests picking the right phrase-level opener for a context. Distractors include
+  // wrong-template (e.g. Πού είναι when asking price) and wrong-formality (informal
+  // when context demands formal).
+  const QSTART_QUESTIONS = [
+    // Where / locate
+    { en: 'Where is the bathroom?',           prompt: '___ η τουαλέτα;',                 answer: 'Πού είναι',     options: ['Πού είναι','Πόσο κάνει','Τι ώρα','Από πού'],          hint: 'Πού είναι ___; — universal "Where is...?" opener.' },
+    { en: 'Where is the pharmacy?',           prompt: '___ το φαρμακείο;',               answer: 'Πού είναι',     options: ['Πού είναι','Πώς πάω','Τι ώρα','Πόσο'],                hint: 'Static location → Πού είναι. (For directions/route to it, use Πώς πάω στο.)' },
+    // Price
+    { en: 'How much does the coffee cost?',   prompt: '___ ο καφές;',                    answer: 'Πόσο κάνει',    options: ['Πόσο κάνει','Πόσο είναι','Πώς κάνει','Τι κάνει'],     hint: 'Πόσο κάνει = "how much does it make/cost." Πόσο είναι is also OK but less idiomatic.' },
+    { en: 'How much do they cost?',           prompt: '___ αυτά;',                       answer: 'Πόσο κάνουν',   options: ['Πόσο κάνουν','Πόσο κάνει','Πόσα είναι','Πόσο πολλά'], hint: 'Plural items → πόσο κάνουν (verb agrees in plural).' },
+    // Time / opening hours
+    { en: 'What time is it?',                 prompt: '___ είναι;',                      answer: 'Τι ώρα',        options: ['Τι ώρα','Πότε','Πόσο','Πώς'],                         hint: 'Set phrase: Τι ώρα είναι; — never use Πότε for "what time is it."' },
+    { en: 'What time does it open?',          prompt: '___ ανοίγει;',                    answer: 'Τι ώρα',        options: ['Τι ώρα','Πότε','Πόσο','Πού'],                         hint: 'For specific clock times → Τι ώρα. (Πότε is "when" — for day/date.)' },
+    { en: 'When are you leaving?',            prompt: '___ φεύγεις;',                    answer: 'Πότε',          options: ['Πότε','Τι ώρα','Πού','Πώς'],                          hint: 'Πότε = when (day/general). For exact time use Τι ώρα.' },
+    // Permission / requests
+    { en: 'Can I see the menu?',              prompt: '___ δω το μενού;',                answer: 'Μπορώ να',      options: ['Μπορώ να','Μπορείς να','Θέλω να','Έχω να'],           hint: 'Μπορώ να = "Can I." Permission/request opener. + perfective verb (δω).' },
+    { en: 'Can you help me? (formal)',        prompt: '___ με βοηθήσετε;',               answer: 'Μπορείτε να',   options: ['Μπορείτε να','Μπορείς να','Θέλεις να','Θέλετε να'],   hint: 'Μπορείτε να = formal "can you." Default with strangers, shopkeepers, older people.' },
+    { en: 'Can you help me? (informal)',      prompt: '___ με βοηθήσεις;',               answer: 'Μπορείς να',    options: ['Μπορείς να','Μπορείτε να','Θέλεις να','Θέλω να'],     hint: 'Μπορείς να = informal "can you." With friends/peers. Verb in 2nd-sing.' },
+    // Yes/no (intonation only)
+    { en: 'Do you have water? (formal)',      prompt: '___ νερό;',                       answer: 'Έχετε',         options: ['Έχετε','Έχεις','Είναι','Θέλεις'],                     hint: 'Yes/no = intonation only. Shopkeeper default = formal Έχετε.' },
+    { en: 'Do you want coffee? (informal)',   prompt: '___ καφέ;',                       answer: 'Θέλεις',        options: ['Θέλεις','Θέλετε','Έχεις','Μπορείς'],                  hint: 'Informal offer to a friend → Θέλεις. Plain intonation question.' },
+    { en: 'Do you know where it is?',         prompt: '___ πού είναι;',                  answer: 'Ξέρεις',        options: ['Ξέρεις','Έχεις','Είσαι','Θέλεις'],                    hint: 'For facts → ξέρω (to know). Ξέρεις πού... = Do you know where...' },
+    // Directions
+    { en: 'How do I get to the museum?',      prompt: '___ μουσείο;',                    answer: 'Πώς πάω στο',   options: ['Πώς πάω στο','Πού είναι το','Πόσο κάνει','Τι ώρα στο'], hint: 'Asking for route → Πώς πάω στο/στη + destination. (Πού είναι asks LOCATION not route.)' },
+    { en: 'How is this called?',              prompt: '___ αυτό;',                       answer: 'Πώς λέγεται',   options: ['Πώς λέγεται','Τι είναι','Πώς είναι','Τι σημαίνει'],   hint: 'Πώς λέγεται = "how is it called." Universal vocab-building question.' },
+    { en: 'What does this mean?',             prompt: '___ αυτό;',                       answer: 'Τι σημαίνει',   options: ['Τι σημαίνει','Πώς λέγεται','Τι είναι','Πώς πάει'],    hint: 'For meaning of a word/phrase → Τι σημαίνει. (Πώς λέγεται is for "what\'s it called.")' },
+    // Origin
+    { en: 'Where are you from?',              prompt: '___ είσαι;',                      answer: 'Από πού',       options: ['Από πού','Πού','Πότε','Από πότε'],                    hint: '⚠️ από COMES FIRST in this idiom. Από πού είσαι; — not Πού από είσαι.' },
+    // Politeness shields
+    { en: 'Excuse me, where is the exit?',    prompt: '___ , πού είναι η έξοδος;',       answer: 'Συγγνώμη',      options: ['Συγγνώμη','Παρακαλώ','Ευχαριστώ','Γεια σας'],         hint: 'Συγγνώμη opens any question to a stranger politely. Drop it once you have their attention.' },
+    { en: 'Excuse me, may I ask…? (formal)',  prompt: '___ , μπορώ να σας ρωτήσω;',      answer: 'Με συγχωρείτε', options: ['Με συγχωρείτε','Συγγνώμη','Παρακαλώ','Γεια σας'],     hint: 'Με συγχωρείτε is more formal than συγγνώμη — for older strangers or professional contexts.' },
+    // Reaction / clarification
+    { en: 'Sorry, what did you say?',         prompt: 'Συγγνώμη, ___;',                  answer: 'τι είπες',      options: ['τι είπες','τι ξέρεις','τι θέλεις','τι κάνεις'],       hint: 'Τι είπες; = "what did you say?" Useful when you missed something.' },
+    // Day/date questions
+    { en: 'What day is it?',                  prompt: 'Τι ___ είναι σήμερα;',            answer: 'μέρα',          options: ['μέρα','ώρα','ημερομηνία','χρόνος'],                   hint: 'Τι μέρα; = what day. (Τι ώρα; = what time.)' },
+  ];
+
+  let gQstartDeck = [], gQstartIndex = 0, gQstartCorrect = 0, gQstartTotal = 0, gQstartAnswered = false;
+
+  function initQstartDrill() {
+    gQstartDeck = [...QSTART_QUESTIONS].sort(() => Math.random() - 0.5);
+    gQstartIndex = 0;
+    gQstartCorrect = 0;
+    gQstartTotal = 0;
+    gQstartAnswered = false;
+    showQstartCard();
+  }
+
+  function showQstartCard() {
+    const q = gQstartDeck[gQstartIndex];
+    if (!q) return;
+    document.getElementById('qstart-en').textContent = q.en;
+    document.getElementById('qstart-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('qstart-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('qstart-options');
+    optsHost.innerHTML = '';
+    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gQstartAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('qstart-progress').textContent = `Question ${gQstartIndex + 1} of ${gQstartDeck.length}`;
+    document.getElementById('qstart-score').textContent = `Score: ${gQstartCorrect}/${gQstartTotal}`;
+    gQstartAnswered = false;
+  }
+
+  function gQstartAnswer(picked, btnEl, q) {
+    if (gQstartAnswered) return;
+    gQstartAnswered = true;
+    gQstartTotal++;
+    if (picked === q.answer) gQstartCorrect++;
+    else recordMistake({
+      drill_type: 'articles', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'question-starters', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#qstart-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('qstart-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('qstart-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('qstart-score').textContent = `Score: ${gQstartCorrect}/${gQstartTotal}`;
+  }
+
+  function gQstartNext() {
+    gQstartIndex = (gQstartIndex + 1) % gQstartDeck.length;
+    showQstartCard();
+  }
+  function gQstartBack() {
+    gQstartIndex = (gQstartIndex - 1 + gQstartDeck.length) % gQstartDeck.length;
+    showQstartCard();
+  }
+  function gQstartShuffle() { initQstartDrill(); }
+
   // Prepositions drill — Greek prepositions are mostly simple words but they
   // collocate in non-obvious ways. Drill presents a sentence with a blank, English
   // translation, and 4 candidate prepositions.
@@ -7431,6 +7604,7 @@
       case 'colloq':     return v => v.topic === 'Colloquialisms';
       case 'subjna':     return v => v.topic === 'Subjunctive να';
       case 'connectors': return v => v.topic === 'Connectors';
+      case 'qstart':     return v => v.topic === 'Question Starters';
       case 'all':
       default:           return v => true;
     }
@@ -8196,6 +8370,52 @@
   const SUBJ_ENTRIES = makeSyntheticEntries(SUBJUNCTIVE_VOCAB, 'Subjunctive να', 'subj');
   const CONN_ENTRIES = makeSyntheticEntries(CONNECTORS_VOCAB, 'Connectors', 'conn');
 
+  // ── Question Starters — multi-word phrase-level question openers ──
+  // Distinct from the Question Words chip (single words: Πού, Πότε, Τι...).
+  // These are the templates real questions actually open with.
+  const QUESTION_STARTERS_VOCAB = [
+    // Permission / can I / can you
+    { word: 'Μπορώ να...;', translation: 'Can I...?', phonetic: 'bo-RO na', intuition: 'Permission/ability opener. Add a verb in perfective: Μπορώ να δω το μενού; (Can I see the menu?)' },
+    { word: 'Μπορείς να...;', translation: 'Can you...? (informal)', phonetic: 'bo-REES na', intuition: 'Informal request. With friends/peers. + perfective verb.' },
+    { word: 'Μπορείτε να...;', translation: 'Can you...? (formal/plural)', phonetic: 'bo-REE-te na', intuition: 'Polite/stranger version — DEFAULT in shops/hotels/restaurants.' },
+    { word: 'Πώς μπορώ να...;', translation: 'How can I...?', phonetic: 'pos bo-RO na', intuition: 'Asking for method/way. Πώς μπορώ να πάω εκεί; (How can I get there?)' },
+    // Location / where
+    { word: 'Πού είναι...;', translation: 'Where is...?', phonetic: 'POO EE-ne', intuition: 'Most useful question on Earth. Pair with the/a + noun. Πού είναι η τουαλέτα;' },
+    { word: 'Πού πάει...;', translation: 'Where does... go?', phonetic: 'POO PA-i', intuition: 'For routes/buses. Πού πάει αυτό το λεωφορείο; (Where does this bus go?)' },
+    { word: 'Από πού...;', translation: 'From where...?', phonetic: 'a-PO POO', intuition: 'από COMES FIRST in this idiom. Από πού είσαι; (Where are you from?)' },
+    // Time / when
+    { word: 'Τι ώρα...;', translation: 'What time...?', phonetic: 'tee O-ra', intuition: 'Set phrase. Τι ώρα είναι; (What time is it?) / Τι ώρα ανοίγει; (What time does it open?)' },
+    { word: 'Πότε...;', translation: 'When...?', phonetic: 'PO-te', intuition: 'Accent on first syllable. Πότε φεύγεις; (When are you leaving?)' },
+    { word: 'Σε πόση ώρα...;', translation: 'In how long...?', phonetic: 'se PO-see O-ra', intuition: 'Duration question. Σε πόση ώρα φτάνουμε; (In how long do we arrive?)' },
+    // Price / quantity
+    { word: 'Πόσο κάνει;', translation: 'How much does it cost?', phonetic: 'PO-so KA-ni', intuition: 'Universal price question. Drop the subject — assumed.' },
+    { word: 'Πόσο κάνουν;', translation: 'How much do they cost?', phonetic: 'PO-so KA-noon', intuition: 'For plural items. Verb agrees with the things priced.' },
+    { word: 'Πόσα...;', translation: 'How many...?', phonetic: 'PO-sa', intuition: 'For neuter plural nouns. Πόσα παιδιά έχεις;' },
+    { word: 'Πόσες...;', translation: 'How many...? (fem. plural)', phonetic: 'PO-ses', intuition: 'For feminine plural. Πόσες μέρες; (How many days?)' },
+    { word: 'Πόσοι...;', translation: 'How many...? (masc. plural)', phonetic: 'PO-see', intuition: 'For masculine plural. Πόσοι άνθρωποι; (How many people?)' },
+    // Yes/no questions (intonation only, no auxiliary)
+    { word: 'Έχεις...;', translation: 'Do you have...?', phonetic: 'E-his', intuition: 'Yes/no question = intonation only. SAME word order as statement. Έχεις χρόνο; (Do you have time?)' },
+    { word: 'Έχετε...;', translation: 'Do you have...? (formal)', phonetic: 'E-he-te', intuition: 'Shopkeeper default. Έχετε νερό; (Do you have water?)' },
+    { word: 'Ξέρεις...;', translation: 'Do you know...?', phonetic: 'KSE-ris', intuition: 'For facts. Ξέρεις πού είναι...; (Do you know where ... is?)' },
+    { word: 'Θέλεις...;', translation: 'Do you want...?', phonetic: 'THE-lis', intuition: 'Offer/invitation. Θέλεις καφέ; (Want some coffee?)' },
+    { word: 'Είναι...;', translation: 'Is it / are they...?', phonetic: 'EE-ne', intuition: 'Yes/no with copula. Είναι μακριά; (Is it far?) / Είναι ανοιχτά; (Is it open?)' },
+    // Politeness shields (the openers that soften any question)
+    { word: 'Συγγνώμη,...;', translation: 'Excuse me,...?', phonetic: 'see-GHNO-mee', intuition: 'Universal polite opener. Use before any question to a stranger.' },
+    { word: 'Με συγχωρείτε,...;', translation: 'Excuse me,...? (formal)', phonetic: 'me see-gho-REE-te', intuition: 'More formal than συγγνώμη. Older strangers, professional contexts.' },
+    { word: 'Παρακαλώ,...;', translation: 'Please,...?', phonetic: 'pa-ra-ka-LO', intuition: 'Also "may I help you?" — shopkeeper greeting. As an opener: Παρακαλώ, πού είναι...;' },
+    { word: 'Μπορώ να σε ρωτήσω...;', translation: 'Can I ask you...?', phonetic: 'bo-RO na se ro-TEE-so', intuition: 'Lead-in for sensitive/polite questions.' },
+    { word: 'Θα ήθελα να ξέρω...;', translation: "I'd like to know...?", phonetic: 'tha EE-the-la na KSE-ro', intuition: 'Very polite. Θα ήθελα = "I would like" (more polite than θέλω).' },
+    // Direction / how
+    { word: 'Πώς πάω στο...;', translation: 'How do I get to...?', phonetic: 'pos PA-o sto', intuition: 'Direction-asking template. Add destination after στο/στη.' },
+    { word: 'Πώς λέγεται...;', translation: 'How is ... called?', phonetic: 'pos LE-ye-te', intuition: 'Learning move. Point at thing + ask. Universal way to grow vocab in-country.' },
+    { word: 'Τι σημαίνει...;', translation: 'What does ... mean?', phonetic: 'tee see-ME-ni', intuition: 'For unknown words. τι σημαίνει αυτό; (What does this mean?)' },
+    { word: 'Γιατί...;', translation: 'Why...?', phonetic: 'ya-TEE', intuition: 'Causal question. Same word as "because" mid-sentence — context disambiguates.' },
+    // Reaction / clarification
+    { word: 'Τι είπες;', translation: 'What did you say?', phonetic: 'tee EE-pes', intuition: '"Sorry, what?" Useful when you missed something.' },
+    { word: 'Πώς;', translation: 'How? (Excuse me?)', phonetic: 'pos', intuition: 'One-word "what?" / "excuse me?" Polite request to repeat.' },
+  ];
+  const QSTART_ENTRIES = makeSyntheticEntries(QUESTION_STARTERS_VOCAB, 'Question Starters', 'qstart');
+
   const SMALL_TALK_ENTRIES = SMALL_TALK_VOCAB.map((v, i) => ({
     id: 'small-talk-' + (i + 1),
     lang: 'greek',
@@ -8281,7 +8501,8 @@
       .concat(FORMAL_ENTRIES)
       .concat(COLLOQ_ENTRIES)
       .concat(SUBJ_ENTRIES)
-      .concat(CONN_ENTRIES);
+      .concat(CONN_ENTRIES)
+      .concat(QSTART_ENTRIES);
     const merged = live
       .concat(dedupable.filter(v => !liveWords.has(v.word)))
       .concat(keepAll);
