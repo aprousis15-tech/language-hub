@@ -4575,24 +4575,571 @@
       </div>
     </div>
 
-    <!-- ──────────── NOUNS (placeholder for commit 2) ──────────── -->
+    <!-- ──────────── NOUNS ──────────── -->
     <div id="foundations-nouns" class="foundations-section" style="display:none;">
-      <div class="found-intro">📦 Nouns section — content being written. Check back after the next deploy.</div>
+      <div class="found-intro">
+        Nouns are the people, places, things, and ideas in a sentence. <strong>Every Greek noun has a gender</strong> (masc / fem / neut) — and the gender controls everything: which article it takes, what adjective form goes with it, how it changes shape across cases. Once you know the gender of a noun, the rest follows mechanically.
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 1: What a noun is — and why Greek nouns are harder</button>
+        <div class="found-part-body" style="display:none;">
+          <p>A noun is a word for a person, place, thing, or idea. <em>House, woman, idea, Athens.</em></p>
+          <p>In English, nouns are simple. They change for plural (one cat → two cats) and that's it. Greek nouns carry FOUR pieces of information inside the word:</p>
+          <ol>
+            <li><strong>Gender</strong> — masculine, feminine, or neuter (assigned, not biological)</li>
+            <li><strong>Number</strong> — singular or plural</li>
+            <li><strong>Case</strong> — nominative, accusative, genitive, vocative (the noun's role in the sentence)</li>
+            <li><strong>Article</strong> — almost every noun comes with one (the / a)</li>
+          </ol>
+          <p>So a single Greek noun like <span class="rule-greek">τον φίλο</span> tells you: it's masculine, singular, accusative, and definite. The English equivalent "the friend" only tells you "definite."</p>
+          <div class="found-callout"><strong>Key habit:</strong> when you learn a new Greek noun, always memorize it WITH its article. Not <span class="rule-greek">σπίτι</span> — learn <span class="rule-greek">το σπίτι</span>. The article tells you the gender, and the gender tells you everything else.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 2: Gender — three categories, mostly predictable from the ending</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Every Greek noun is masculine, feminine, or neuter. Gender is grammatical, not biological — <span class="rule-greek">το κορίτσι</span> (the girl) is neuter, <span class="rule-greek">η οδός</span> (the street) is feminine.</p>
+          <p><strong>Spot the gender from the noun's ending:</strong></p>
+          <table>
+            <tr><th>Ending</th><th>Usual gender</th><th>Article</th><th>Examples</th></tr>
+            <tr><td><span class="rule-greek">-ος</span></td><td>Masculine</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">ο φίλος, ο καιρός, ο άνθρωπος</span></td></tr>
+            <tr><td><span class="rule-greek">-ας</span></td><td>Masculine</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">ο πατέρας, ο άντρας, ο μήνας</span></td></tr>
+            <tr><td><span class="rule-greek">-ης</span></td><td>Masculine</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">ο μαθητής, ο πελάτης</span></td></tr>
+            <tr><td><span class="rule-greek">-α</span></td><td>Feminine</td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">η μέρα, η ώρα, η μητέρα</span></td></tr>
+            <tr><td><span class="rule-greek">-η</span></td><td>Feminine</td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">η φίλη, η αδερφή, η τέχνη</span></td></tr>
+            <tr><td><span class="rule-greek">-ση / -ξη / -ψη</span></td><td>Feminine</td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">η απόφαση, η λέξη</span></td></tr>
+            <tr><td><span class="rule-greek">-ο</span></td><td>Neuter</td><td><span class="rule-greek">το</span></td><td><span class="rule-greek">το βιβλίο, το σπίτι (no), wait — -ι is neuter</span></td></tr>
+            <tr><td><span class="rule-greek">-ι</span></td><td>Neuter</td><td><span class="rule-greek">το</span></td><td><span class="rule-greek">το παιδί, το τσάι, το σπίτι</span></td></tr>
+            <tr><td><span class="rule-greek">-μα</span></td><td>Neuter</td><td><span class="rule-greek">το</span></td><td><span class="rule-greek">το μάθημα, το πρόβλημα, το όνομα</span></td></tr>
+            <tr><td><span class="rule-greek">-ος</span> ⚠️</td><td>Sometimes neuter</td><td><span class="rule-greek">το</span></td><td><span class="rule-greek">το λάθος, το μέρος, το δάσος</span></td></tr>
+          </table>
+          <div class="found-callout">
+            <strong>The trap:</strong> most -ος words are masculine, but a small set is neuter (<span class="rule-greek">λάθος</span> = mistake, <span class="rule-greek">μέρος</span> = place, <span class="rule-greek">δάσος</span> = forest). And the famous outlier <span class="rule-greek">η οδός</span> (the street) is feminine despite the -ος ending. <strong>Always learn the article with the noun.</strong>
+          </div>
+          <p><strong>-μα is the most reliable ending in Greek:</strong> if a noun ends in -μα, it's ALWAYS neuter. Lock this rule and a whole class of gender errors disappears.</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 3: The article system — definite vs indefinite</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Greek uses articles much more than English. Possessives, proper nouns after prepositions, time expressions, abstract concepts — all need articles in Greek that English drops.</p>
+          <p><strong>Definite article (the):</strong></p>
+          <table>
+            <tr><th>Case</th><th>Masc.</th><th>Fem.</th><th>Neut.</th><th>Pl. m / f / n</th></tr>
+            <tr><td>Nominative</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">το</span></td><td><span class="rule-greek">οι / οι / τα</span></td></tr>
+            <tr><td>Accusative</td><td><span class="rule-greek">τον</span></td><td><span class="rule-greek">την</span></td><td><span class="rule-greek">το</span></td><td><span class="rule-greek">τους / τις / τα</span></td></tr>
+            <tr><td>Genitive</td><td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td><td><span class="rule-greek">των / των / των</span></td></tr>
+          </table>
+          <p><strong>Indefinite article (a / an):</strong></p>
+          <table>
+            <tr><th>Case</th><th>Masc.</th><th>Fem.</th><th>Neut.</th></tr>
+            <tr><td>Nominative</td><td><span class="rule-greek">ένας</span></td><td><span class="rule-greek">μία / μια</span></td><td><span class="rule-greek">ένα</span></td></tr>
+            <tr><td>Accusative</td><td><span class="rule-greek">έναν</span></td><td><span class="rule-greek">μία / μια</span></td><td><span class="rule-greek">ένα</span></td></tr>
+            <tr><td>Genitive</td><td><span class="rule-greek">ενός</span></td><td><span class="rule-greek">μιας</span></td><td><span class="rule-greek">ενός</span></td></tr>
+          </table>
+          <div class="found-callout"><strong>No plural indefinite article.</strong> "Some friends" / "friends" → drop the article entirely, or use <span class="rule-greek">μερικοί / μερικές / μερικά</span> (some / a few).</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 4: Cases — the noun's role in the sentence</button>
+        <div class="found-part-body" style="display:none;">
+          <p><strong>Case</strong> = the form a noun takes based on what job it's doing. English uses word order for this; Greek changes the noun's ending.</p>
+          <table>
+            <tr><th>Case</th><th>What it does</th><th>Example role</th></tr>
+            <tr><td><strong>Nominative</strong></td><td>The subject — who/what is doing the action</td><td>"The cat sleeps."</td></tr>
+            <tr><td><strong>Accusative</strong></td><td>The direct object, or after most prepositions</td><td>"I see the cat." / "with the cat"</td></tr>
+            <tr><td><strong>Genitive</strong></td><td>Possession ("of the…"), or some preps</td><td>"the cat's tail" = "the tail of the cat"</td></tr>
+            <tr><td><strong>Vocative</strong></td><td>Calling/addressing someone</td><td>"Hey, friend!"</td></tr>
+          </table>
+
+          <p><strong>How nouns change endings:</strong> mostly the article changes, but masculine nouns drop their final -ς in the accusative.</p>
+          <table>
+            <tr><th>Gender</th><th>Nom.</th><th>Acc.</th><th>Gen.</th></tr>
+            <tr><td>Masc. (-ος)</td><td><span class="rule-greek">ο φίλος</span></td><td><span class="rule-greek">τον φίλο</span> (drops -ς)</td><td><span class="rule-greek">του φίλου</span></td></tr>
+            <tr><td>Masc. (-ας)</td><td><span class="rule-greek">ο πατέρας</span></td><td><span class="rule-greek">τον πατέρα</span> (drops -ς)</td><td><span class="rule-greek">του πατέρα</span></td></tr>
+            <tr><td>Fem. (-α)</td><td><span class="rule-greek">η μέρα</span></td><td><span class="rule-greek">τη(ν) μέρα</span> (same)</td><td><span class="rule-greek">της μέρας</span></td></tr>
+            <tr><td>Fem. (-η)</td><td><span class="rule-greek">η φίλη</span></td><td><span class="rule-greek">τη(ν) φίλη</span> (same)</td><td><span class="rule-greek">της φίλης</span></td></tr>
+            <tr><td>Neut. (-ο)</td><td><span class="rule-greek">το βιβλίο</span></td><td><span class="rule-greek">το βιβλίο</span> (same)</td><td><span class="rule-greek">του βιβλίου</span></td></tr>
+            <tr><td>Neut. (-ι)</td><td><span class="rule-greek">το παιδί</span></td><td><span class="rule-greek">το παιδί</span> (same)</td><td><span class="rule-greek">του παιδιού</span></td></tr>
+          </table>
+          <div class="found-callout"><strong>The big rule:</strong> Masculine drops the final -ς in accusative. Feminine and neuter don't change the noun — only the article shifts.</div>
+          <p>For most of your first conversations you only need <strong>nominative and accusative</strong>. Genitive comes later. Vocative is mostly for calling names: <span class="rule-greek">Γιώργο!</span> (Hey George!).</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 5: σε + article contractions</button>
+        <div class="found-part-body" style="display:none;">
+          <p>The preposition <span class="rule-greek">σε</span> (to / at / in) always contracts with the following article. You'll see these constantly.</p>
+          <table>
+            <tr><th>σε + article</th><th>Result</th><th>Example</th></tr>
+            <tr><td>σε + τον</td><td><span class="rule-greek">στον</span></td><td><span class="rule-greek">στον φίλο</span> (to the friend)</td></tr>
+            <tr><td>σε + την</td><td><span class="rule-greek">στην</span></td><td><span class="rule-greek">στην Αθήνα</span> (to Athens)</td></tr>
+            <tr><td>σε + το</td><td><span class="rule-greek">στο</span></td><td><span class="rule-greek">στο σπίτι</span> (at home)</td></tr>
+            <tr><td>σε + τους</td><td><span class="rule-greek">στους</span></td><td><span class="rule-greek">στους φίλους</span></td></tr>
+            <tr><td>σε + τις</td><td><span class="rule-greek">στις</span></td><td><span class="rule-greek">στις οκτώ</span> (at 8)</td></tr>
+            <tr><td>σε + τα</td><td><span class="rule-greek">στα</span></td><td><span class="rule-greek">στα βόρεια</span></td></tr>
+          </table>
+          <div class="found-callout">Never write <span class="rule-greek">σε ο</span>, <span class="rule-greek">σε τη</span>, etc. The contraction is mandatory. Also: <span class="rule-greek">στιν</span> is NOT a valid form (it's a mashup of στη + την that some learners produce).</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 6: Possessives — "my friend" = "the friend my"</button>
+        <div class="found-part-body" style="display:none;">
+          <p>To say "my X" / "your X" / "his X," Greek uses two structures depending on emphasis:</p>
+          <p><strong>(1) The everyday way — possessive pronoun AFTER the noun:</strong></p>
+          <table>
+            <tr><th>English</th><th>Greek</th></tr>
+            <tr><td>my friend</td><td><span class="rule-greek">ο φίλος <strong>μου</strong></span></td></tr>
+            <tr><td>your friend</td><td><span class="rule-greek">ο φίλος <strong>σου</strong></span></td></tr>
+            <tr><td>his friend</td><td><span class="rule-greek">ο φίλος <strong>του</strong></span></td></tr>
+            <tr><td>her friend</td><td><span class="rule-greek">ο φίλος <strong>της</strong></span></td></tr>
+            <tr><td>our friend</td><td><span class="rule-greek">ο φίλος <strong>μας</strong></span></td></tr>
+            <tr><td>your (pl) friend</td><td><span class="rule-greek">ο φίλος <strong>σας</strong></span></td></tr>
+            <tr><td>their friend</td><td><span class="rule-greek">ο φίλος <strong>τους</strong></span></td></tr>
+          </table>
+          <p>The noun still keeps its article. Greek literally says "the friend my."</p>
+          <p><strong>(2) Emphatic — δικός μου ("of mine") agreeing in gender:</strong> <span class="rule-greek">ο δικός μου φίλος</span> = "MY friend (not yours)."</p>
+          <div class="found-callout"><strong>Critical:</strong> the same pronoun μου/σου/του/της/μας/σας/τους doubles as the <em>indirect object pronoun</em> when placed BEFORE a verb: <span class="rule-greek">Μου είπε</span> = "He told me." Position changes the meaning.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 7: Number — singular vs plural</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Greek pluralizes by changing the ending AND the article.</p>
+          <table>
+            <tr><th>Gender</th><th>Sing. nom.</th><th>Plural nom.</th><th>Sing. acc.</th><th>Plural acc.</th></tr>
+            <tr><td>Masc. (-ος)</td><td><span class="rule-greek">ο φίλος</span></td><td><span class="rule-greek">οι φίλοι</span></td><td><span class="rule-greek">τον φίλο</span></td><td><span class="rule-greek">τους φίλους</span></td></tr>
+            <tr><td>Masc. (-ας)</td><td><span class="rule-greek">ο πατέρας</span></td><td><span class="rule-greek">οι πατέρες</span></td><td><span class="rule-greek">τον πατέρα</span></td><td><span class="rule-greek">τους πατέρες</span></td></tr>
+            <tr><td>Fem. (-α)</td><td><span class="rule-greek">η μέρα</span></td><td><span class="rule-greek">οι μέρες</span></td><td><span class="rule-greek">τη μέρα</span></td><td><span class="rule-greek">τις μέρες</span></td></tr>
+            <tr><td>Fem. (-η)</td><td><span class="rule-greek">η φίλη</span></td><td><span class="rule-greek">οι φίλες</span></td><td><span class="rule-greek">τη φίλη</span></td><td><span class="rule-greek">τις φίλες</span></td></tr>
+            <tr><td>Neut. (-ο)</td><td><span class="rule-greek">το βιβλίο</span></td><td><span class="rule-greek">τα βιβλία</span></td><td><span class="rule-greek">το βιβλίο</span></td><td><span class="rule-greek">τα βιβλία</span></td></tr>
+            <tr><td>Neut. (-ι)</td><td><span class="rule-greek">το παιδί</span></td><td><span class="rule-greek">τα παιδιά</span></td><td><span class="rule-greek">το παιδί</span></td><td><span class="rule-greek">τα παιδιά</span></td></tr>
+            <tr><td>Neut. (-μα)</td><td><span class="rule-greek">το μάθημα</span></td><td><span class="rule-greek">τα μαθήματα</span></td><td><span class="rule-greek">το μάθημα</span></td><td><span class="rule-greek">τα μαθήματα</span></td></tr>
+          </table>
+          <p>Plural is easier than singular: feminine and neuter plural have IDENTICAL nominative and accusative forms.</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>🎯 What to internalize first</button>
+        <div class="found-part-body" style="display:none;">
+          <ol>
+            <li><strong>Learn every new noun with its article.</strong> Not σπίτι, learn το σπίτι. Not φίλος, learn ο φίλος. The article tells you the gender — everything else follows.</li>
+            <li><strong>Memorize the gender-by-ending table.</strong> 80% of nouns follow it. The exceptions (η οδός, το λάθος) you learn as oddballs.</li>
+            <li><strong>-μα is ALWAYS neuter.</strong> One ironclad rule.</li>
+            <li><strong>Masculine drops -ς in accusative.</strong> ο φίλος → τον φίλο, ο πατέρας → τον πατέρα. Drill it.</li>
+            <li><strong>σε + article contractions.</strong> Never write σε + article uncontracted: στο / στη(ν) / στον / στους / στις / στα.</li>
+            <li><strong>Possessive pronoun comes AFTER the noun.</strong> Same word doubles as indirect object BEFORE a verb. Position = meaning.</li>
+          </ol>
+          <p><a class="review-link" onclick="switchLang('grammar')" style="cursor:pointer;">→ Drill these in the Articles + Gender Tap Grammar Drill modes</a></p>
+        </div>
+      </div>
     </div>
 
-    <!-- ──────────── ADJECTIVES (placeholder) ──────────── -->
+    <!-- ──────────── ADJECTIVES ──────────── -->
     <div id="foundations-adj" class="foundations-section" style="display:none;">
-      <div class="found-intro">🎨 Adjectives section — content being written. Check back after the next deploy.</div>
+      <div class="found-intro">
+        Adjectives describe nouns (big, red, tired, beautiful). In Greek, <strong>adjectives change form to match the noun</strong> in gender, number, and case. Once you can identify a noun's gender, the adjective ending follows mechanically. The adjective is the GLUE that binds the article and noun together — get them to agree and your Greek immediately stops sounding broken.
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 1: The agreement principle</button>
+        <div class="found-part-body" style="display:none;">
+          <p>In English, "big" is "big" no matter what noun follows: <em>a big house, a big car, a big dog, big houses.</em> The adjective never changes.</p>
+          <p>In Greek, every adjective has at least THREE forms — one for each gender — and changes for plural and case too:</p>
+          <table>
+            <tr><th>Noun</th><th>Greek</th><th>Adj. ending</th></tr>
+            <tr><td>A big friend (m)</td><td><span class="rule-greek">ένας μεγάλ<strong>ος</strong> φίλος</span></td><td>-ος (masc)</td></tr>
+            <tr><td>A big day (f)</td><td><span class="rule-greek">μια μεγάλ<strong>η</strong> μέρα</span></td><td>-η (fem)</td></tr>
+            <tr><td>A big problem (n)</td><td><span class="rule-greek">ένα μεγάλ<strong>ο</strong> πρόβλημα</span></td><td>-ο (neut)</td></tr>
+          </table>
+          <p>Same word, three endings. The chain is <strong>article + adjective + noun</strong>, and all three must agree.</p>
+          <div class="found-callout"><strong>The rule of three:</strong> if you know the noun's gender, the adjective ending follows automatically. Mismatch and your speech reads as broken Greek even if everything else is right.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 2: The most common adjective pattern (-ος / -η / -ο)</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Most Greek adjectives follow this pattern:</p>
+          <table>
+            <tr><th>Gender</th><th>Singular</th><th>Plural</th></tr>
+            <tr><td>Masculine</td><td><span class="rule-greek">καλ<strong>ός</strong></span></td><td><span class="rule-greek">καλ<strong>οί</strong></span></td></tr>
+            <tr><td>Feminine</td><td><span class="rule-greek">καλ<strong>ή</strong></span></td><td><span class="rule-greek">καλ<strong>ές</strong></span></td></tr>
+            <tr><td>Neuter</td><td><span class="rule-greek">καλ<strong>ό</strong></span></td><td><span class="rule-greek">καλ<strong>ά</strong></span></td></tr>
+          </table>
+          <p>Examples — all decline this same way:</p>
+          <ul>
+            <li><span class="rule-greek">μεγάλος / μεγάλη / μεγάλο</span> — big</li>
+            <li><span class="rule-greek">μικρός / μικρή / μικρό</span> — small</li>
+            <li><span class="rule-greek">νέος / νέα / νέο</span> — new (irregular: fem ends in -α)</li>
+            <li><span class="rule-greek">κουρασμένος / κουρασμένη / κουρασμένο</span> — tired</li>
+            <li><span class="rule-greek">ωραίος / ωραία / ωραίο</span> — nice / beautiful (fem in -α)</li>
+            <li><span class="rule-greek">δύσκολος / δύσκολη / δύσκολο</span> — difficult</li>
+            <li><span class="rule-greek">πλούσιος / πλούσια / πλούσιο</span> — rich (fem in -α)</li>
+          </ul>
+          <div class="found-callout"><strong>Pattern variant:</strong> some adjectives use feminine -α instead of -η (νέα, ωραία, πλούσια). Just memorize which is which when you learn the adjective.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 3: Adjectives across είναι (predicate agreement)</button>
+        <div class="found-part-body" style="display:none;">
+          <p>When you say "X is Y" — the adjective still agrees with X, even with the verb είναι in between. <strong>είναι is gender-invisible</strong>; the adjective looks back at the subject.</p>
+          <ul>
+            <li><span class="rule-greek">Ο καιρός είναι κακ<strong>ός</strong>.</span> — The weather is bad. (καιρός is masc → κακός)</li>
+            <li><span class="rule-greek">Η εργασία είναι δύσκολ<strong>η</strong>.</span> — The homework is difficult. (εργασία is fem → δύσκολη)</li>
+            <li><span class="rule-greek">Το μάθημα είναι δύσκολ<strong>ο</strong>.</span> — The lesson is difficult. (μάθημα is neut → δύσκολο)</li>
+          </ul>
+          <div class="found-callout"><strong>Gender carries across sentences too.</strong> If the conversation is about <span class="rule-greek">ο καιρός</span>, and you say "It's bad," that "bad" must be masculine: <span class="rule-greek">Είναι κακός</span>. NOT κακό (neuter default), even though English "it" is neuter.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 4: Position — adjectives come BEFORE the noun</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Default order: <strong>article + adjective + noun.</strong></p>
+          <ul>
+            <li><span class="rule-greek">η ωραία μέρα</span> — the beautiful day</li>
+            <li><span class="rule-greek">ένα μικρό σπίτι</span> — a small house</li>
+            <li><span class="rule-greek">οι κουρασμένοι φίλοι</span> — the tired friends</li>
+          </ul>
+          <p><strong>Adjective AFTER the noun</strong> happens in two cases:</p>
+          <ol>
+            <li><strong>Predicate position</strong> (with είναι): <span class="rule-greek">Η μέρα είναι ωραία.</span></li>
+            <li><strong>Emphasis or definite article repetition:</strong> <span class="rule-greek">η μέρα η ωραία</span> = "the day — the beautiful one." Rare in normal speech.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 5: Adjectives as adverbs — the -α drop</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Most Greek adverbs are formed from adjectives by changing the ending to -α (or using the neuter plural form). The adjective <span class="rule-greek">καλός</span> (good) becomes the adverb <span class="rule-greek">καλά</span> (well).</p>
+          <table>
+            <tr><th>Adjective (m / f / n)</th><th>Adverb</th><th>Meaning</th></tr>
+            <tr><td><span class="rule-greek">καλός / καλή / καλό</span></td><td><span class="rule-greek">καλά</span></td><td>good → well</td></tr>
+            <tr><td><span class="rule-greek">γρήγορος / -η / -ο</span></td><td><span class="rule-greek">γρήγορα</span></td><td>fast → quickly</td></tr>
+            <tr><td><span class="rule-greek">αργός / -ή / -ό</span></td><td><span class="rule-greek">αργά</span></td><td>slow → slowly</td></tr>
+            <tr><td><span class="rule-greek">ωραίος / -α / -ο</span></td><td><span class="rule-greek">ωραία</span></td><td>nice → nicely</td></tr>
+            <tr><td><span class="rule-greek">εύκολος / -η / -ο</span></td><td><span class="rule-greek">εύκολα</span></td><td>easy → easily</td></tr>
+          </table>
+          <p>This is why the same word <span class="rule-greek">καλά</span> appears in "Τι κάνεις;" → "Καλά, εσύ;" — it's literally "Well, you?" using the adverb form.</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 6: Irregular & high-frequency adjectives</button>
+        <div class="found-part-body" style="display:none;">
+          <p>A few high-frequency adjectives don't follow the -ος/-η/-ο pattern. Memorize them:</p>
+          <table>
+            <tr><th>Meaning</th><th>Masc.</th><th>Fem.</th><th>Neut.</th></tr>
+            <tr><td>much / many / very</td><td><span class="rule-greek">πολύς</span></td><td><span class="rule-greek">πολλή</span></td><td><span class="rule-greek">πολύ</span></td></tr>
+            <tr><td>tall / high / long</td><td><span class="rule-greek">μακρύς</span></td><td><span class="rule-greek">μακριά</span></td><td><span class="rule-greek">μακρύ</span></td></tr>
+            <tr><td>young / new</td><td><span class="rule-greek">νέος</span></td><td><span class="rule-greek">νέα</span></td><td><span class="rule-greek">νέο</span></td></tr>
+            <tr><td>interesting</td><td><span class="rule-greek">ενδιαφέρων</span></td><td><span class="rule-greek">ενδιαφέρουσα</span></td><td><span class="rule-greek">ενδιαφέρον</span></td></tr>
+          </table>
+          <div class="found-callout"><span class="rule-greek">πολύ</span> is the trap: <em>πολύς</em> agrees with the masc noun, <em>πολλή</em> (double λ!) with fem, <em>πολύ</em> with neuter AND as a universal "very" intensifier. Most beginners just use <span class="rule-greek">πολύ</span> as "very" without worrying about the agreement.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 7: Comparative & superlative ("bigger / biggest")</button>
+        <div class="found-part-body" style="display:none;">
+          <p><strong>Comparative ("more X / X-er")</strong> — use <span class="rule-greek">πιο</span> + adjective:</p>
+          <ul>
+            <li><span class="rule-greek">πιο μεγάλος</span> — bigger</li>
+            <li><span class="rule-greek">πιο γρήγορος</span> — faster</li>
+            <li><span class="rule-greek">πιο ωραίος</span> — nicer</li>
+          </ul>
+          <p>"Than" is <span class="rule-greek">από</span> + accusative or <span class="rule-greek">παρά</span>:<br>
+            <span class="rule-greek">Είναι πιο μεγάλος από εμένα.</span> — He's bigger than me.</p>
+          <p><strong>Superlative ("the most X / X-est")</strong> — use article + <span class="rule-greek">πιο</span> + adjective:</p>
+          <ul>
+            <li><span class="rule-greek">ο πιο μεγάλος</span> — the biggest</li>
+            <li><span class="rule-greek">το πιο ωραίο σπίτι</span> — the nicest house</li>
+          </ul>
+          <div class="found-callout">There's also a single-word comparative (<span class="rule-greek">μεγαλύτερος</span> = bigger) but the <span class="rule-greek">πιο +</span> adjective form works for any adjective and is what beginners use 95% of the time.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>🎯 What to internalize first</button>
+        <div class="found-part-body" style="display:none;">
+          <ol>
+            <li><strong>The -ος / -η / -ο pattern.</strong> If you know one, you know dozens. Drill the chain: <span class="rule-greek">καλός / καλή / καλό</span>.</li>
+            <li><strong>Adjective ending matches the noun.</strong> Article + adjective + noun all in the same gender. Mismatch = broken Greek.</li>
+            <li><strong>είναι is gender-invisible.</strong> <span class="rule-greek">Ο καιρός είναι κακός</span>, NOT κακό. The adjective looks back to the subject.</li>
+            <li><strong>Adjective comes BEFORE the noun.</strong> After means predicate ("X is Y").</li>
+            <li><strong>πολύ as universal intensifier.</strong> Don't worry about agreement when using it adverbially.</li>
+            <li><strong>Comparative = πιο + adjective.</strong> Single rule unlocks all comparisons.</li>
+          </ol>
+          <p><a class="review-link" onclick="switchLang('grammar')" style="cursor:pointer;">→ Drill in the Adjective Agreement Grammar Drill mode</a></p>
+        </div>
+      </div>
     </div>
 
-    <!-- ──────────── ADVERBS (placeholder) ──────────── -->
+    <!-- ──────────── ADVERBS ──────────── -->
     <div id="foundations-adv" class="foundations-section" style="display:none;">
-      <div class="found-intro">⚡ Adverbs section — content being written. Check back after the next deploy.</div>
+      <div class="found-intro">
+        Adverbs are the easiest part of Greek for English speakers. They <strong>don't change form</strong> — no gender, no number, no case. Memorize the word once and you're done. They modify verbs, adjectives, or whole sentences.
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 1: What an adverb is</button>
+        <div class="found-part-body" style="display:none;">
+          <p>An adverb modifies a verb, an adjective, or another adverb. In English: <em>slowly, often, very, today, here.</em></p>
+          <p>Adverbs answer questions like:</p>
+          <ul>
+            <li><strong>How?</strong> — <span class="rule-greek">καλά</span> (well), <span class="rule-greek">γρήγορα</span> (quickly), <span class="rule-greek">σιγά</span> (slowly)</li>
+            <li><strong>When?</strong> — <span class="rule-greek">σήμερα</span> (today), <span class="rule-greek">αύριο</span> (tomorrow), <span class="rule-greek">τώρα</span> (now)</li>
+            <li><strong>Where?</strong> — <span class="rule-greek">εδώ</span> (here), <span class="rule-greek">εκεί</span> (there)</li>
+            <li><strong>How often?</strong> — <span class="rule-greek">πάντα</span> (always), <span class="rule-greek">συχνά</span> (often), <span class="rule-greek">ποτέ</span> (never)</li>
+            <li><strong>How much?</strong> — <span class="rule-greek">πολύ</span> (very), <span class="rule-greek">λίγο</span> (a little)</li>
+          </ul>
+          <div class="found-callout"><strong>The good news:</strong> Greek adverbs are INVARIABLE. They never agree with anything. Once you know <span class="rule-greek">γρήγορα</span>, that's it — no plural form, no feminine form, no case changes.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 2: Forming adverbs from adjectives — the -α ending</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Most "manner" adverbs come from adjectives by changing the ending to -α (or -ά if the stress is at the end). It's the same as English adding "-ly":</p>
+          <table>
+            <tr><th>Adjective</th><th>Adverb</th><th>English</th></tr>
+            <tr><td><span class="rule-greek">καλός</span> (good)</td><td><span class="rule-greek">καλά</span></td><td>well</td></tr>
+            <tr><td><span class="rule-greek">γρήγορος</span> (fast)</td><td><span class="rule-greek">γρήγορα</span></td><td>quickly</td></tr>
+            <tr><td><span class="rule-greek">αργός</span> (slow)</td><td><span class="rule-greek">αργά</span></td><td>slowly</td></tr>
+            <tr><td><span class="rule-greek">ωραίος</span> (nice)</td><td><span class="rule-greek">ωραία</span></td><td>nicely</td></tr>
+            <tr><td><span class="rule-greek">εύκολος</span> (easy)</td><td><span class="rule-greek">εύκολα</span></td><td>easily</td></tr>
+            <tr><td><span class="rule-greek">δύσκολος</span> (hard)</td><td><span class="rule-greek">δύσκολα</span></td><td>with difficulty</td></tr>
+            <tr><td><span class="rule-greek">ζεστός</span> (warm)</td><td><span class="rule-greek">ζεστά</span></td><td>warmly</td></tr>
+            <tr><td><span class="rule-greek">όμορφος</span> (beautiful)</td><td><span class="rule-greek">όμορφα</span></td><td>beautifully</td></tr>
+          </table>
+          <div class="found-callout"><strong>Trap:</strong> the adverb form (<span class="rule-greek">καλά</span>) is identical to the neuter plural adjective form. Context tells you which: "Τα παιδιά είναι καλά" = "The kids are good (well)" — could be either reading.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 3: Adverbs by category — your daily working set</button>
+        <div class="found-part-body" style="display:none;">
+          <p><strong>Time</strong></p>
+          <ul>
+            <li><span class="rule-greek">σήμερα</span> — today</li>
+            <li><span class="rule-greek">αύριο</span> — tomorrow</li>
+            <li><span class="rule-greek">χθες</span> — yesterday</li>
+            <li><span class="rule-greek">τώρα</span> — now</li>
+            <li><span class="rule-greek">μετά</span> — after</li>
+            <li><span class="rule-greek">πριν</span> — before</li>
+            <li><span class="rule-greek">νωρίς</span> — early</li>
+            <li><span class="rule-greek">αργότερα</span> — later</li>
+            <li><span class="rule-greek">απόψε</span> — tonight</li>
+          </ul>
+          <p><strong>Place</strong></p>
+          <ul>
+            <li><span class="rule-greek">εδώ</span> — here</li>
+            <li><span class="rule-greek">εκεί</span> — there</li>
+            <li><span class="rule-greek">πάνω</span> — up / on top</li>
+            <li><span class="rule-greek">κάτω</span> — down / below</li>
+            <li><span class="rule-greek">μέσα</span> — inside</li>
+            <li><span class="rule-greek">έξω</span> — outside</li>
+            <li><span class="rule-greek">κοντά</span> — near</li>
+            <li><span class="rule-greek">μακριά</span> — far</li>
+          </ul>
+          <p><strong>Frequency</strong></p>
+          <ul>
+            <li><span class="rule-greek">πάντα</span> — always</li>
+            <li><span class="rule-greek">συνήθως</span> — usually</li>
+            <li><span class="rule-greek">συχνά</span> — often</li>
+            <li><span class="rule-greek">μερικές φορές</span> — sometimes</li>
+            <li><span class="rule-greek">σπάνια</span> — rarely</li>
+            <li><span class="rule-greek">ποτέ</span> — never (with δεν!)</li>
+          </ul>
+          <p><strong>Quantity / intensity</strong></p>
+          <ul>
+            <li><span class="rule-greek">πολύ</span> — very / a lot</li>
+            <li><span class="rule-greek">πάρα πολύ</span> — very much</li>
+            <li><span class="rule-greek">λίγο</span> — a little</li>
+            <li><span class="rule-greek">σχεδόν</span> — almost</li>
+            <li><span class="rule-greek">μόνο</span> — only</li>
+            <li><span class="rule-greek">περίπου</span> — about / approximately</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 4: Adverbs NEVER take articles</button>
+        <div class="found-part-body" style="display:none;">
+          <p><strong>This is a top-3 beginner trap.</strong> English doesn't use articles with adverbs ("today," not "the today") — same in Greek. But because Greek loves articles in so many other places, beginners sometimes over-apply.</p>
+          <ul>
+            <li>❌ <span class="rule-greek">η σήμερα</span></li>
+            <li>✅ <span class="rule-greek">σήμερα</span></li>
+            <li>❌ <span class="rule-greek">το αύριο</span></li>
+            <li>✅ <span class="rule-greek">αύριο</span></li>
+          </ul>
+          <p>"Today is Monday" = <span class="rule-greek">Σήμερα είναι Δευτέρα.</span> No article before σήμερα.</p>
+          <div class="found-callout"><strong>Exception:</strong> when an adverb is used as a noun-equivalent ("the today" = "today's news/edition"), Greek does add the article. But this is rare and you don't need it.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 5: Position — adverbs are flexible</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Greek word order is more flexible than English. Adverbs can usually go in several positions:</p>
+          <ul>
+            <li><span class="rule-greek">Σήμερα δουλεύω.</span> (At-the-start emphasis)</li>
+            <li><span class="rule-greek">Δουλεύω σήμερα.</span> (At-the-end, standard)</li>
+            <li><span class="rule-greek">Δουλεύω πολύ σήμερα.</span> (Mid-sentence, between verb and another modifier)</li>
+          </ul>
+          <p><strong>Common patterns:</strong></p>
+          <ul>
+            <li>Time adverbs often start or end sentences: <span class="rule-greek">Αύριο φεύγω.</span> / <span class="rule-greek">Φεύγω αύριο.</span></li>
+            <li>Intensifiers come right before what they modify: <span class="rule-greek">είμαι πολύ κουρασμένος</span></li>
+            <li>Frequency adverbs typically come right before the verb: <span class="rule-greek">Πάντα ξυπνάω νωρίς.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>🎯 What to internalize first</button>
+        <div class="found-part-body" style="display:none;">
+          <ol>
+            <li><strong>Adverbs don't change.</strong> No agreement. Memorize the word once, use it forever.</li>
+            <li><strong>Most "how" adverbs come from adjectives by changing -ος → -α.</strong> καλός → καλά, γρήγορος → γρήγορα.</li>
+            <li><strong>NEVER put an article in front of an adverb.</strong> <span class="rule-greek">σήμερα</span>, not <span class="rule-greek">η σήμερα</span>.</li>
+            <li><strong>πολύ as a universal intensifier.</strong> πολύ κουρασμένος = very tired. Works on any adjective.</li>
+            <li><strong>Negation pairs.</strong> ποτέ / κανείς / τίποτα / πουθενά ALWAYS take δεν before the verb.</li>
+            <li><strong>Build a daily set:</strong> the 30-or-so adverbs in Part 3 cover ~90% of everyday conversation.</li>
+          </ol>
+          <p><a class="review-link" onclick="switchLang('practice')" style="cursor:pointer;">→ Drill in the 🎨 Modifiers chip in Practice</a></p>
+        </div>
+      </div>
     </div>
 
-    <!-- ──────────── IMPERATIVES (placeholder) ──────────── -->
+    <!-- ──────────── IMPERATIVES ──────────── -->
     <div id="foundations-imp" class="foundations-section" style="display:none;">
-      <div class="found-intro">❗ Imperatives section — content being written. Check back after the next deploy.</div>
+      <div class="found-intro">
+        Imperatives are the form you use to give commands or instructions ("Come!", "Wait!", "Tell me!"). In Greek they're a special mood of the verb with their own endings. <strong>Comprehension matters more than production</strong> at first — you'll hear imperatives constantly even if you rarely produce them.
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 1: What an imperative is</button>
+        <div class="found-part-body" style="display:none;">
+          <p>An imperative is a command, request, instruction, or invitation directed at someone. In English: <em>Come! Wait. Sit down. Please pass the salt.</em></p>
+          <p>Greek imperatives exist in only TWO forms — 2nd singular and 2nd plural. You can only command someone you're addressing directly; you can't issue an imperative to yourself or a third person (for that, Greek uses subjunctive with να).</p>
+          <table>
+            <tr><th>Person</th><th>Used for</th><th>Example</th></tr>
+            <tr><td>2nd singular (informal)</td><td>One person, friend/family/kid</td><td><span class="rule-greek">Έλα!</span> (Come!)</td></tr>
+            <tr><td>2nd plural (formal or many)</td><td>Stranger, elder, OR group</td><td><span class="rule-greek">Ελάτε!</span> (Come! formal/plural)</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 2: How to form imperatives</button>
+        <div class="found-part-body" style="display:none;">
+          <p>The most common pattern: take the <strong>aorist (perfective) stem</strong> and add <strong>-ε</strong> (singular) or <strong>-τε</strong> (plural).</p>
+          <table>
+            <tr><th>Verb</th><th>Aorist stem</th><th>Singular imp.</th><th>Plural imp.</th></tr>
+            <tr><td><span class="rule-greek">γράφω</span> (write)</td><td><span class="rule-greek">γράψ-</span></td><td><span class="rule-greek">γράψε!</span></td><td><span class="rule-greek">γράψτε!</span></td></tr>
+            <tr><td><span class="rule-greek">τρώω</span> (eat)</td><td><span class="rule-greek">φά-</span></td><td><span class="rule-greek">φάε!</span></td><td><span class="rule-greek">φάτε!</span></td></tr>
+            <tr><td><span class="rule-greek">πίνω</span> (drink)</td><td><span class="rule-greek">πι-</span></td><td><span class="rule-greek">πιες!</span></td><td><span class="rule-greek">πιείτε!</span></td></tr>
+            <tr><td><span class="rule-greek">βλέπω</span> (see)</td><td><span class="rule-greek">δ-</span></td><td><span class="rule-greek">δες!</span></td><td><span class="rule-greek">δείτε!</span></td></tr>
+            <tr><td><span class="rule-greek">λέω</span> (say)</td><td><span class="rule-greek">πει-</span></td><td><span class="rule-greek">πες!</span></td><td><span class="rule-greek">πείτε!</span></td></tr>
+            <tr><td><span class="rule-greek">παίρνω</span> (take)</td><td><span class="rule-greek">πάρ-</span></td><td><span class="rule-greek">πάρε!</span></td><td><span class="rule-greek">πάρτε!</span></td></tr>
+            <tr><td><span class="rule-greek">έρχομαι</span> (come)</td><td>irregular</td><td><span class="rule-greek">έλα!</span></td><td><span class="rule-greek">ελάτε!</span></td></tr>
+          </table>
+          <div class="found-callout"><strong>The connection to aspect:</strong> imperatives default to the perfective (one-time-action) form because you're usually commanding ONE specific instance. There's also an imperfective imperative for "do it repeatedly / habitually," but you can ignore it as a beginner.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 3: The everyday imperatives you'll hear constantly</button>
+        <div class="found-part-body" style="display:none;">
+          <p>These are the imperatives Greeks use every day. <strong>Prioritize understanding over producing.</strong></p>
+          <table>
+            <tr><th>Greek</th><th>English</th><th>Where you'll hear it</th></tr>
+            <tr><td><span class="rule-greek">Πάμε!</span></td><td>Let's go!</td><td>Universal "shall we?"</td></tr>
+            <tr><td><span class="rule-greek">Έλα!</span></td><td>Come! / Come on!</td><td>Server, host, parent</td></tr>
+            <tr><td><span class="rule-greek">Ελάτε!</span></td><td>Come! (pl/formal)</td><td>Restaurant: "ελάτε, ελάτε!"</td></tr>
+            <tr><td><span class="rule-greek">Πες μου.</span></td><td>Tell me.</td><td>Tutor, friend</td></tr>
+            <tr><td><span class="rule-greek">Δώσε μου.</span></td><td>Give me.</td><td>Anywhere</td></tr>
+            <tr><td><span class="rule-greek">Πάρε.</span></td><td>Take it. / Here you go.</td><td>Hand-off / offering</td></tr>
+            <tr><td><span class="rule-greek">Περίμενε.</span></td><td>Wait.</td><td>Service contexts</td></tr>
+            <tr><td><span class="rule-greek">Κοίτα.</span></td><td>Look. / Listen here.</td><td>Conversational lead-in</td></tr>
+            <tr><td><span class="rule-greek">Άκου.</span></td><td>Listen.</td><td>Conversational lead-in</td></tr>
+            <tr><td><span class="rule-greek">Σταμάτα.</span></td><td>Stop.</td><td>Traffic, kids</td></tr>
+            <tr><td><span class="rule-greek">Καλώς ήρθες!</span></td><td>Welcome! (sg)</td><td>Hospitality</td></tr>
+            <tr><td><span class="rule-greek">Καλώς ήρθατε!</span></td><td>Welcome! (pl/formal)</td><td>Shops, restaurants</td></tr>
+            <tr><td><span class="rule-greek">Πρόσεχε!</span></td><td>Watch out! / Be careful!</td><td>Warnings</td></tr>
+            <tr><td><span class="rule-greek">Κάθισε.</span></td><td>Sit down.</td><td>Restaurant host</td></tr>
+            <tr><td><span class="rule-greek">Φύγε!</span></td><td>Go away! / Leave!</td><td>Playful or angry</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 4: Negative imperatives — use μην, NOT δεν</button>
+        <div class="found-part-body" style="display:none;">
+          <p>To say "don't do X," Greek <strong>does not</strong> use the imperative form. It uses <span class="rule-greek">μην</span> + <strong>subjunctive verb form</strong>.</p>
+          <table>
+            <tr><th>Don't (sg)</th><th>Don't (pl)</th><th>English</th></tr>
+            <tr><td><span class="rule-greek">Μη μιλάς!</span></td><td><span class="rule-greek">Μη μιλάτε!</span></td><td>Don't talk!</td></tr>
+            <tr><td><span class="rule-greek">Μη φύγεις!</span></td><td><span class="rule-greek">Μη φύγετε!</span></td><td>Don't leave!</td></tr>
+            <tr><td><span class="rule-greek">Μη το πεις.</span></td><td><span class="rule-greek">Μη το πείτε.</span></td><td>Don't say it.</td></tr>
+            <tr><td><span class="rule-greek">Μην ανησυχείς.</span></td><td><span class="rule-greek">Μην ανησυχείτε.</span></td><td>Don't worry.</td></tr>
+            <tr><td><span class="rule-greek">Μη φοβάσαι.</span></td><td><span class="rule-greek">Μη φοβάστε.</span></td><td>Don't be afraid.</td></tr>
+          </table>
+          <div class="found-callout"><strong>Why μη and not δεν?</strong> δεν is for indicative statements ("I don't go"). μη(ν) is for the subjunctive / non-real mood. Imperatives, prohibitions, hypotheticals — all use μη(ν).<br><br>
+            <strong>μη vs μην:</strong> the ν is dropped before consonants in modern Greek, kept before vowels. <span class="rule-greek">Μη μιλάς</span> (consonant after) vs <span class="rule-greek">Μην ανησυχείς</span> (vowel after).
+          </div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 5: Polite alternatives to imperatives</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Direct imperatives can sound blunt. To soften:</p>
+          <p><strong>(1) Use the plural/formal form:</strong> <span class="rule-greek">Δώστε μου</span> (give me, formal) sounds politer than <span class="rule-greek">Δώσε μου</span>.</p>
+          <p><strong>(2) Use a question with μπορείς να / μπορείτε να:</strong></p>
+          <ul>
+            <li><span class="rule-greek">Μπορείτε να μου δώσετε τον λογαριασμό;</span> — Can you give me the bill?</li>
+            <li><span class="rule-greek">Μπορείς να με βοηθήσεις;</span> — Can you help me?</li>
+          </ul>
+          <p><strong>(3) Use θα ήθελα να ("I would like to"):</strong></p>
+          <ul>
+            <li><span class="rule-greek">Θα ήθελα να δω το μενού.</span> — I'd like to see the menu.</li>
+            <li><span class="rule-greek">Θα ήθελα έναν καφέ, παρακαλώ.</span> — I'd like a coffee, please.</li>
+          </ul>
+          <p><strong>(4) Add παρακαλώ:</strong></p>
+          <ul>
+            <li><span class="rule-greek">Πες μου, παρακαλώ.</span> — Tell me, please.</li>
+            <li><span class="rule-greek">Περίμενε λίγο, παρακαλώ.</span> — Wait a moment, please.</li>
+          </ul>
+          <div class="found-callout">In professional and service contexts, default to <strong>μπορείτε να + verb</strong>. It's never wrong and always polite.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>🎯 What to internalize first</button>
+        <div class="found-part-body" style="display:none;">
+          <ol>
+            <li><strong>Comprehension first, production second.</strong> Recognize the 15 daily imperatives in Part 3 — don't worry about producing them.</li>
+            <li><strong>Singular vs plural.</strong> Drill the pair: <span class="rule-greek">Έλα! / Ελάτε!</span> — one informal, one formal.</li>
+            <li><strong>Negative = μη(ν) + subjunctive.</strong> NOT δεν. Drill <span class="rule-greek">Μη μιλάς / Μην ανησυχείς</span> as fixed shapes.</li>
+            <li><strong>Polite version: μπορείς/μπορείτε να + verb.</strong> Universal request softener. Use it freely.</li>
+            <li><strong>παρακαλώ added to ANY command.</strong> Even a curt <span class="rule-greek">Πες μου</span> becomes polite with <span class="rule-greek">, παρακαλώ</span> tagged on.</li>
+          </ol>
+          <p><a class="review-link" onclick="switchLang('practice')" style="cursor:pointer;">→ Drill in the ❗ Imperatives chip in Practice</a></p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
