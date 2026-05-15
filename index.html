@@ -2645,6 +2645,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past Tense (Aorist)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα + verb)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('days',this)">📅 Days of Week</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
     </div>
 
@@ -2752,6 +2753,25 @@
       <div class="grammar-progress">
         <span id="future-progress">Question 1</span>
         <span class="grammar-score" id="future-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Days of Week drill -->
+    <div id="grammar-days" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="days-en">…</div>
+        <div class="grammar-prompt-greek" id="days-prompt">…</div>
+        <div class="grammar-options" id="days-options"></div>
+        <div class="grammar-feedback" id="days-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gDaysBack()">← Back</button>
+        <button class="grammar-btn" onclick="gDaysNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gDaysShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="days-progress">Question 1</span>
+        <span class="grammar-score" id="days-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -5929,6 +5949,20 @@
       </table>
       <strong>Critical irregulars:</strong> πάω → <span class="rule-greek">πήγα</span> · βλέπω → <span class="rule-greek">είδα</span> · τρώω → <span class="rule-greek">έφαγα</span> · πίνω → <span class="rule-greek">ήπια</span> · έχω → <span class="rule-greek">είχα</span> · είμαι → <span class="rule-greek">ήμουν</span> · λέω → <span class="rule-greek">είπα</span> · βρίσκω → <span class="rule-greek">βρήκα</span> · παίρνω → <span class="rule-greek">πήρα</span> · έρχομαι → <span class="rule-greek">ήρθα</span>.
     `,
+    days: `
+      <strong>Days of the week — accusative form, article-only, no preposition.</strong>
+      <table>
+        <tr><th>English</th><th>"On X" (most common form)</th><th>Article</th></tr>
+        <tr><td>on Monday</td><td><span class="rule-greek">τη Δευτέρα</span></td><td>fem → τη</td></tr>
+        <tr><td>on Tuesday</td><td><span class="rule-greek">την Τρίτη</span></td><td>fem → την</td></tr>
+        <tr><td>on Wednesday</td><td><span class="rule-greek">την Τετάρτη</span></td><td>fem → την</td></tr>
+        <tr><td>on Thursday</td><td><span class="rule-greek">την Πέμπτη</span></td><td>fem → την</td></tr>
+        <tr><td>on Friday</td><td><span class="rule-greek">την Παρασκευή</span></td><td>fem → την</td></tr>
+        <tr><td>on Saturday</td><td><span class="rule-greek">το Σάββατο</span></td><td><strong>neuter</strong> → το ⚠️</td></tr>
+        <tr><td>on Sunday</td><td><span class="rule-greek">την Κυριακή</span></td><td>fem → την</td></tr>
+      </table>
+      <strong>The trap:</strong> Greek uses the article ONLY — no preposition. NOT <span class="rule-greek">στη Δευτέρα</span>. Just <span class="rule-greek">τη Δευτέρα</span>. <strong>Σάββατο is the lone neuter</strong> — uses το, not τη.
+    `,
     future: `
       <strong>Future = θα + verb. But the verb usually CHANGES form.</strong>
       <table>
@@ -6007,6 +6041,7 @@
     document.getElementById('grammar-aorist').style.display = mode === 'aorist' ? '' : 'none';
     document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
+    document.getElementById('grammar-days').style.display = mode === 'days' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -6020,12 +6055,13 @@
     if (mode === 'aorist') initAoristDrill();
     if (mode === 'qwords') initQwordsDrill();
     if (mode === 'future') initFutureDrill();
+    if (mode === 'days') initDaysDrill();
   }
 
   // Pick a random non-Random drill mode. Reuses setGrammarMode so all the
   // visibility + init wiring stays in one place.
   function setRandomGrammarMode() {
-    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords', 'future'];
+    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords', 'future', 'days'];
     const pick = modes[Math.floor(Math.random() * modes.length)];
     const btn = [...document.querySelectorAll('.grammar-mode-btn')]
       .find(b => {
@@ -6830,6 +6866,103 @@
     showFutureCard();
   }
   function gFutureShuffle() { initFutureDrill(); }
+
+  // ── Days of Week drill ──
+  // Tests three things: which day matches the English, the article (most fem,
+  // Σάββατο neuter), and the "no preposition" rule (την Δευτέρα, NOT στη Δευτέρα).
+  const DAYS_QUESTIONS = [
+    // Day-name recognition (English → which Greek day)
+    { en: 'on Monday',         prompt: 'Δουλεύω ___.',                  answer: 'τη Δευτέρα',    options: ['τη Δευτέρα','την Τρίτη','την Πέμπτη','το Σάββατο'], hint: 'Δευτέρα = Monday. τη + Δευτέρα (fem.). No preposition.' },
+    { en: 'on Tuesday',        prompt: 'Έχω μάθημα ___.',               answer: 'την Τρίτη',     options: ['τη Δευτέρα','την Τρίτη','την Τετάρτη','την Πέμπτη'], hint: 'Τρίτη = Tuesday. fem. → την. Literally "third" (3rd day after Sunday).' },
+    { en: 'on Wednesday',      prompt: 'Πάμε σινεμά ___.',              answer: 'την Τετάρτη',   options: ['την Τρίτη','την Τετάρτη','την Πέμπτη','την Παρασκευή'], hint: 'Τετάρτη = Wednesday. fem. → την. Literally "fourth."' },
+    { en: 'on Thursday',       prompt: 'Φεύγω ___.',                    answer: 'την Πέμπτη',    options: ['την Τετάρτη','την Πέμπτη','την Παρασκευή','την Κυριακή'], hint: 'Πέμπτη = Thursday. fem. → την. Literally "fifth."' },
+    { en: 'on Friday',         prompt: 'Βγαίνουμε ___.',                answer: 'την Παρασκευή', options: ['την Πέμπτη','την Παρασκευή','το Σάββατο','την Κυριακή'], hint: 'Παρασκευή = Friday. fem. → την. ευ → "ev" (pa-ra-ske-VEE).' },
+    { en: 'on Saturday',       prompt: 'Δεν δουλεύω ___.',              answer: 'το Σάββατο',    options: ['τη Σάββατο','το Σάββατο','στο Σάββατο','την Σάββατο'], hint: '⚠️ Σάββατο is the ONLY NEUTER day — uses το, not τη. Double β exception. Also: no preposition.' },
+    { en: 'on Sunday',         prompt: 'Πηγαίνουμε εκκλησία ___.',      answer: 'την Κυριακή',   options: ['την Παρασκευή','το Σάββατο','την Κυριακή','τη Δευτέρα'], hint: 'Κυριακή = Sunday. fem. → την. Root: Κύριος (Lord) — "Lord\'s day."' },
+
+    // The "no preposition" trap (στη vs τη)
+    { en: 'on Monday',         prompt: 'Φεύγω για ταξίδι ___.',         answer: 'τη Δευτέρα',    options: ['στη Δευτέρα','στην Δευτέρα','τη Δευτέρα','τη Δευτέρας'], hint: '⚠️ No preposition! English "on" does NOT map to στη(ν). Days take just the article: τη Δευτέρα.' },
+    { en: 'on Tuesday',        prompt: 'Σε βλέπω ___.',                 answer: 'την Τρίτη',     options: ['στην Τρίτη','την Τρίτη','τη Τρίτη','της Τρίτης'], hint: '⚠️ Same rule. τη / την, never στη / στην for days.' },
+    { en: 'on Saturday',       prompt: 'Πήγα μουσείο ___.',             answer: 'το Σάββατο',    options: ['στο Σάββατο','το Σάββατο','τη Σάββατο','την Σάββατο'], hint: '⚠️ Double trap: neuter (το, not τη) AND no preposition (not στο).' },
+
+    // Today/tomorrow/yesterday context
+    { en: 'Today is Friday.',  prompt: 'Σήμερα είναι ___.',             answer: 'Παρασκευή',     options: ['Παρασκευή','την Παρασκευή','στην Παρασκευή','Πέμπτη'], hint: 'After είναι ("is"), the day is a predicate — NO article. Just Παρασκευή.' },
+    { en: 'Tomorrow is Sunday.', prompt: 'Αύριο είναι ___.',            answer: 'Κυριακή',       options: ['Κυριακή','την Κυριακή','το Σάββατο','Δευτέρα'], hint: 'Same rule: predicate after είναι, no article.' },
+    { en: 'What day is it?',   prompt: 'Τι ___ είναι σήμερα;',          answer: 'μέρα',          options: ['μέρα','την μέρα','ώρα','Δευτέρα'], hint: '"What day is it?" uses μέρα ("day"), not a specific day name. fem.' },
+
+    // Every-day frequency (κάθε + day)
+    { en: 'every Tuesday',     prompt: 'Έχω γυμναστήριο ___.',          answer: 'κάθε Τρίτη',    options: ['κάθε Τρίτη','την Τρίτη','κάθε την Τρίτη','κάθε Τρίτης'], hint: 'κάθε = every. No article between κάθε and the day. Just κάθε Τρίτη.' },
+    { en: 'every Sunday',      prompt: 'Βλέπω την οικογένειά μου ___.', answer: 'κάθε Κυριακή',  options: ['κάθε Κυριακή','την Κυριακή','κάθε την Κυριακή','την κάθε Κυριακή'], hint: 'Same rule. κάθε + day-name only.' },
+    { en: 'every Saturday',    prompt: 'Παίζω μπάλα ___.',              answer: 'κάθε Σάββατο',  options: ['κάθε Σάββατο','το Σάββατο','κάθε το Σάββατο','κάθε τη Σάββατο'], hint: 'κάθε + neuter day = κάθε Σάββατο. No article between them.' },
+
+    // Sequence (which day comes after X)
+    { en: 'After Monday comes…', prompt: 'Μετά τη Δευτέρα είναι η ___.', answer: 'Τρίτη',         options: ['Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή'], hint: 'Τρίτη ("third") follows Δευτέρα ("second"). Days are numbered from Sunday.' },
+    { en: 'After Friday comes…', prompt: 'Μετά την Παρασκευή είναι το ___.', answer: 'Σάββατο',  options: ['Σάββατο','Κυριακή','Δευτέρα','Παρασκευή'], hint: 'Σάββατο is the only neuter — note το (not η) in the prompt.' },
+  ];
+
+  let gDaysDeck = [], gDaysIndex = 0, gDaysCorrect = 0, gDaysTotal = 0, gDaysAnswered = false;
+
+  function initDaysDrill() {
+    gDaysDeck = [...DAYS_QUESTIONS].sort(() => Math.random() - 0.5);
+    gDaysIndex = 0;
+    gDaysCorrect = 0;
+    gDaysTotal = 0;
+    gDaysAnswered = false;
+    showDaysCard();
+  }
+
+  function showDaysCard() {
+    const q = gDaysDeck[gDaysIndex];
+    if (!q) return;
+    document.getElementById('days-en').textContent = q.en;
+    document.getElementById('days-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('days-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('days-options');
+    optsHost.innerHTML = '';
+    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gDaysAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('days-progress').textContent = `Question ${gDaysIndex + 1} of ${gDaysDeck.length}`;
+    document.getElementById('days-score').textContent = `Score: ${gDaysCorrect}/${gDaysTotal}`;
+    gDaysAnswered = false;
+  }
+
+  function gDaysAnswer(picked, btnEl, q) {
+    if (gDaysAnswered) return;
+    gDaysAnswered = true;
+    gDaysTotal++;
+    if (picked === q.answer) gDaysCorrect++;
+    else recordMistake({
+      drill_type: 'articles', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'days', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#days-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('days-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('days-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('days-score').textContent = `Score: ${gDaysCorrect}/${gDaysTotal}`;
+  }
+
+  function gDaysNext() {
+    gDaysIndex = (gDaysIndex + 1) % gDaysDeck.length;
+    showDaysCard();
+  }
+  function gDaysBack() {
+    gDaysIndex = (gDaysIndex - 1 + gDaysDeck.length) % gDaysDeck.length;
+    showDaysCard();
+  }
+  function gDaysShuffle() { initDaysDrill(); }
 
   // Prepositions drill — Greek prepositions are mostly simple words but they
   // collocate in non-obvious ways. Drill presents a sentence with a blank, English
