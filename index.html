@@ -1272,6 +1272,12 @@
   }
   .practice-topic-chip:hover { background: #fdeaf2; }
   .practice-topic-chip.active { background: #ad1457; color: white; border-color: #ad1457; }
+  .practice-topic-group-label {
+    width: 100%; text-align: center; font-size: 0.72rem; color: #7a4060;
+    font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    margin: 6px 0 -2px; opacity: 0.75;
+  }
+  .practice-topic-group-label:first-child { margin-top: 0; }
   .practice-topic-label {
     text-align: center; font-size: 0.75rem; color: #7a4060;
     margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
@@ -2942,42 +2948,51 @@
 
     <div class="practice-topic-label">Filter by topic</div>
     <div class="practice-topic-bar">
+      <div class="practice-topic-group-label">▸ Targets</div>
       <button class="practice-topic-chip active" onclick="setPracticeTopic('all',this)">🌐 All</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('mistakes',this)">🎯 My Mistakes</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('due',this)">📅 Due Today</button>
+
+      <div class="practice-topic-group-label">▸ Phone & Apps</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('iphone',this)">📱 iPhone</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('messages',this)">💬 Messages</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('spotify',this)">🎵 Spotify</button>
+
+      <div class="practice-topic-group-label">▸ Greece Prep</div>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('greecetrip',this)">🏖️ Greece Trip</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('restaurant',this)">🍽️ Restaurant</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('survival',this)">🆘 Survival</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('smalltalk',this)">💬 Small Talk</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('numbers',this)">🔢 Numbers</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('transport',this)">🚗 Transport</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('shopping',this)">🛍️ Shopping</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('italki',this)">📝 iTalki 11/05</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('writing',this)">✍️ Writing 11/05</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('pino',this)">🥤 πίνω (drink)</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('numbers',this)">🔢 Numbers</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('numbers2',this)">💯 Numbers 1–100</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('days',this)">📅 Days</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('months',this)">🗓️ Months</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('denreflex',this)">🚫 δεν reflex</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('timetriage',this)">🕐 Time triage</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('timesofday',this)">⏰ Times of day</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('greecetrip',this)">🏖️ Greece Trip</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('italkiopener',this)">🎓 iTalki Opener</button>
-      <!-- Tier 1 Greece-prep chips -->
+      <button class="practice-topic-chip" onclick="setPracticeTopic('timetriage',this)">🕐 Time triage</button>
+
+      <div class="practice-topic-group-label">▸ Grammar Focus</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('aorist',this)">⏪ Past Tense</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('future',this)">⏩ Future θα</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('qwords',this)">❓ Question Words</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('qstart',this)">🙋 Question Starters</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('objpro',this)">🪢 Object Pronouns</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('aresei',this)">❤️ μου αρέσει</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('numbers2',this)">💯 Numbers 1–100</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('imperative',this)">❗ Imperatives</button>
-      <!-- Tier 2 -->
-      <button class="practice-topic-chip" onclick="setPracticeTopic('formal',this)">🎩 Formal vs Informal</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('colloq',this)">💥 Colloquialisms</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('subjna',this)">🔗 Subjunctive να</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('connectors',this)">🔀 Connectors</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('qstart',this)">🙋 Question Starters</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('formal',this)">🎩 Formal vs Informal</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('denreflex',this)">🚫 δεν reflex</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pino',this)">🥤 πίνω (drink)</button>
+
+      <div class="practice-topic-group-label">▸ Conversations</div>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('smalltalk',this)">💬 Small Talk</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('italkiopener',this)">🎓 iTalki Opener</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('colloq',this)">💥 Colloquialisms</button>
+
+      <div class="practice-topic-group-label">▸ Session Notes</div>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('italki',this)">📝 iTalki 11/05</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('writing',this)">✍️ Writing 11/05</button>
     </div>
     <div class="practice-topic-warning" id="practice-topic-warning" style="display:none;"></div>
 
