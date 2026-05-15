@@ -4903,7 +4903,7 @@
   }
 
   function fcShuffle() {
-    fcDeck = [...LETTERS].sort(() => Math.random() - 0.5);
+    fcDeck = shuffled(LETTERS);
     fcIndex = 0;
     showCard();
   }
@@ -4919,8 +4919,8 @@
     const count = 6;
     const totalEl = document.getElementById('match-total');
     if (totalEl) totalEl.textContent = count;
-    const subset = [...LETTERS].sort(() => Math.random() - 0.5).slice(0, count);
-    const sounds = [...subset].sort(() => Math.random() - 0.5);
+    const subset = shuffled(LETTERS).slice(0, count);
+    const sounds = shuffled(subset);
     const lettersEl = document.getElementById('match-letters');
     const soundsEl = document.getElementById('match-sounds');
     if (!lettersEl || !soundsEl) return;
@@ -6290,7 +6290,7 @@
   let gArtDeck = [], gArtIndex = 0, gArtCorrect = 0, gArtTotal = 0, gArtAnswered = false;
 
   function initArticlesDrill() {
-    gArtDeck = [...ART_QUESTIONS].sort(() => Math.random() - 0.5);
+    gArtDeck = shuffled(ART_QUESTIONS);
     gArtIndex = 0;
     gArtCorrect = 0;
     gArtTotal = 0;
@@ -6391,7 +6391,7 @@
   let gVerbDeck = [], gVerbIndex = 0, gVerbCorrect = 0, gVerbTotal = 0, gVerbAnswered = false, gVerbTargetPerson = null;
 
   function initVerbsDrill() {
-    gVerbDeck = [...TYPE_B_VERBS].sort(() => Math.random() - 0.5);
+    gVerbDeck = shuffled(TYPE_B_VERBS);
     gVerbIndex = 0;
     gVerbCorrect = 0;
     gVerbTotal = 0;
@@ -6413,7 +6413,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('verb-options');
     optsHost.innerHTML = '';
-    const formsShuffled = [...PERSON_KEYS].sort(() => Math.random() - 0.5);
+    const formsShuffled = shuffled(PERSON_KEYS);
     formsShuffled.forEach(pk => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
@@ -6492,7 +6492,7 @@
   let gTypeADeck = [], gTypeAIndex = 0, gTypeACorrect = 0, gTypeATotal = 0, gTypeAAnswered = false, gTypeATargetPerson = null;
 
   function initTypeADrill() {
-    gTypeADeck = [...TYPE_A_VERBS].sort(() => Math.random() - 0.5);
+    gTypeADeck = shuffled(TYPE_A_VERBS);
     gTypeAIndex = 0;
     gTypeACorrect = 0;
     gTypeATotal = 0;
@@ -6514,7 +6514,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('typea-options');
     optsHost.innerHTML = '';
-    const formsShuffled = [...PERSON_KEYS].sort(() => Math.random() - 0.5);
+    const formsShuffled = shuffled(PERSON_KEYS);
     formsShuffled.forEach(pk => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
@@ -6606,7 +6606,7 @@
   let gTimeDeck = [], gTimeIndex = 0, gTimeCorrect = 0, gTimeTotal = 0, gTimeAnswered = false;
 
   function initTimeDrill() {
-    gTimeDeck = [...TIME_QUESTIONS].sort(() => Math.random() - 0.5);
+    gTimeDeck = shuffled(TIME_QUESTIONS);
     gTimeIndex = 0;
     gTimeCorrect = 0;
     gTimeTotal = 0;
@@ -6698,7 +6698,7 @@
   let gNegDeck = [], gNegIndex = 0, gNegCorrect = 0, gNegTotal = 0, gNegAnswered = false;
 
   function initNegDrill() {
-    gNegDeck = [...NEG_QUESTIONS].sort(() => Math.random() - 0.5);
+    gNegDeck = shuffled(NEG_QUESTIONS);
     gNegIndex = 0;
     gNegCorrect = 0;
     gNegTotal = 0;
@@ -6796,7 +6796,7 @@
   let gAoristDeck = [], gAoristIndex = 0, gAoristCorrect = 0, gAoristTotal = 0, gAoristAnswered = false;
 
   function initAoristDrill() {
-    gAoristDeck = [...AORIST_QUESTIONS].sort(() => Math.random() - 0.5);
+    gAoristDeck = shuffled(AORIST_QUESTIONS);
     gAoristIndex = 0;
     gAoristCorrect = 0;
     gAoristTotal = 0;
@@ -6815,7 +6815,7 @@
     const optsHost = document.getElementById('aorist-options');
     optsHost.innerHTML = '';
     // Shuffle the options so the correct one isn't always in the same position
-    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+    shuffled(q.options).forEach(opt => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
       b.textContent = opt;
@@ -6882,7 +6882,7 @@
   let gQwordsDeck = [], gQwordsIndex = 0, gQwordsCorrect = 0, gQwordsTotal = 0, gQwordsAnswered = false;
 
   function initQwordsDrill() {
-    gQwordsDeck = [...QWORDS_QUESTIONS].sort(() => Math.random() - 0.5);
+    gQwordsDeck = shuffled(QWORDS_QUESTIONS);
     gQwordsIndex = 0;
     gQwordsCorrect = 0;
     gQwordsTotal = 0;
@@ -6900,7 +6900,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('qwords-options');
     optsHost.innerHTML = '';
-    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+    shuffled(q.options).forEach(opt => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
       b.textContent = opt;
@@ -6986,7 +6986,7 @@
   let gFutureDeck = [], gFutureIndex = 0, gFutureCorrect = 0, gFutureTotal = 0, gFutureAnswered = false;
 
   function initFutureDrill() {
-    gFutureDeck = [...FUTURE_QUESTIONS].sort(() => Math.random() - 0.5);
+    gFutureDeck = shuffled(FUTURE_QUESTIONS);
     gFutureIndex = 0;
     gFutureCorrect = 0;
     gFutureTotal = 0;
@@ -7004,7 +7004,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('future-options');
     optsHost.innerHTML = '';
-    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+    shuffled(q.options).forEach(opt => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
       b.textContent = opt;
@@ -7083,7 +7083,7 @@
   let gDaysDeck = [], gDaysIndex = 0, gDaysCorrect = 0, gDaysTotal = 0, gDaysAnswered = false;
 
   function initDaysDrill() {
-    gDaysDeck = [...DAYS_QUESTIONS].sort(() => Math.random() - 0.5);
+    gDaysDeck = shuffled(DAYS_QUESTIONS);
     gDaysIndex = 0;
     gDaysCorrect = 0;
     gDaysTotal = 0;
@@ -7101,7 +7101,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('days-options');
     optsHost.innerHTML = '';
-    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+    shuffled(q.options).forEach(opt => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
       b.textContent = opt;
@@ -7185,7 +7185,7 @@
   let gQstartDeck = [], gQstartIndex = 0, gQstartCorrect = 0, gQstartTotal = 0, gQstartAnswered = false;
 
   function initQstartDrill() {
-    gQstartDeck = [...QSTART_QUESTIONS].sort(() => Math.random() - 0.5);
+    gQstartDeck = shuffled(QSTART_QUESTIONS);
     gQstartIndex = 0;
     gQstartCorrect = 0;
     gQstartTotal = 0;
@@ -7203,7 +7203,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('qstart-options');
     optsHost.innerHTML = '';
-    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+    shuffled(q.options).forEach(opt => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
       b.textContent = opt;
@@ -7273,7 +7273,7 @@
   let gPrepDeck = [], gPrepIndex = 0, gPrepCorrect = 0, gPrepTotal = 0, gPrepAnswered = false;
 
   function initPrepsDrill() {
-    gPrepDeck = [...PREP_QUESTIONS].sort(() => Math.random() - 0.5);
+    gPrepDeck = shuffled(PREP_QUESTIONS);
     gPrepIndex = 0;
     gPrepCorrect = 0;
     gPrepTotal = 0;
@@ -7291,8 +7291,8 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('prep-options');
     optsHost.innerHTML = '';
-    const shuffled = [...q.options].sort(() => Math.random() - 0.5);
-    shuffled.forEach(opt => {
+    const opts = shuffled(q.options);
+    opts.forEach(opt => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
       b.textContent = opt;
@@ -7410,7 +7410,7 @@
     fb.classList.remove('show');
     const optsHost = document.getElementById('adj-options');
     optsHost.innerHTML = '';
-    const formsShuffled = ['m','f','n'].sort(() => Math.random() - 0.5);
+    const formsShuffled = shuffled(['m','f','n']);
     formsShuffled.forEach(g => {
       const b = document.createElement('button');
       b.className = 'grammar-option';
@@ -7508,7 +7508,7 @@
       if (!stem || stem.length < 2) continue;
       pool.push({ stem, gender, full: v.word, en: v.translation });
     }
-    return pool.sort(() => Math.random() - 0.5);
+    return shuffled(pool);
   }
 
   function gtapStart() {
@@ -7550,7 +7550,7 @@
     if (!gGtapState) return;
     if (gGtapState.idx >= gGtapState.pool.length) {
       // Reshuffle and continue (rare — would need ~3+ taps/sec)
-      gGtapState.pool = gGtapState.pool.sort(() => Math.random() - 0.5);
+      gGtapState.pool = gGtapState.shuffled(pool);
       gGtapState.idx = 0;
     }
     const item = gGtapState.pool[gGtapState.idx];
@@ -7629,6 +7629,19 @@
 
   // ── PRACTICE (Listen + Production) ──
   // Shared vocab cache — populated on first practice tab open, reused across modes
+  // Proper Fisher-Yates shuffle. The Math.random()-0.5 sort pattern is biased —
+  // it leaves elements roughly in their input order, which is why earlier drills
+  // kept surfacing the same words even though 1245 were in the pool. Drop-in
+  // replacement: `shuffled(arr)` returns a new uniformly-shuffled array.
+  function shuffled(arr) {
+    const a = arr.slice ? arr.slice() : [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   let gPracticeVocab = null;
   let gPracticeVocabLoaded = false;
   let gGreekVoice = null;
@@ -9146,7 +9159,7 @@
         }
       });
     }
-    gListenDeck = getFilteredPracticeVocab().sort(() => Math.random() - 0.5);
+    gListenDeck = shuffled(getFilteredPracticeVocab());
     gListenIndex = 0;
     gListenCorrect = 0;
     gListenTotal = 0;
@@ -9168,8 +9181,8 @@
     const correct = v.translation;
     const samePOS = gPracticeVocab.filter(x => x.part_of_speech === v.part_of_speech && x.translation !== correct);
     const pool = samePOS.length >= 3 ? samePOS : gPracticeVocab.filter(x => x.translation !== correct);
-    const distractors = [...pool].sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.translation);
-    const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+    const distractors = shuffled(pool).slice(0, 3).map(x => x.translation);
+    const options = shuffled([correct, ...distractors]);
     const optsHost = document.getElementById('listen-options');
     optsHost.innerHTML = '';
     options.forEach(opt => {
@@ -9328,7 +9341,7 @@
       v.part_of_speech !== 'phrase' &&
       v.word && v.word.length <= 30
     );
-    gTypeDeck = filtered.sort(() => Math.random() - 0.5);
+    gTypeDeck = shuffled(filtered);
     gTypeIndex = 0;
     gTypeCorrect = 0;
     gTypeTotal = 0;
@@ -9471,7 +9484,7 @@
     }
     const filtered = getFilteredPracticeVocab().filter(v => v.word && v.word.length <= 60);
     gSpeedState = {
-      deck: [...filtered].sort(() => Math.random() - 0.5),
+      deck: shuffled(filtered),
       idx: 0,
       hits: 0,
       misses: 0,
@@ -9630,7 +9643,7 @@
       return;
     }
     // Apply topic filter, then skip very long phrases (poor flashcard fit)
-    gFlashDeck = getFilteredPracticeVocab().filter(v => v.word && v.word.length <= 35).sort(() => Math.random() - 0.5);
+    gFlashDeck = shuffled(getFilteredPracticeVocab().filter(v => v.word && v.word.length <= 35));
     gFlashIndex = 0;
     gFlashReviewed = 0;
     gFlashFlipped = false;
@@ -10000,8 +10013,8 @@
 
   function buildLessonDeck() {
     const pool = getFilteredPracticeVocab().filter(v => v.word && v.word.length <= 60);
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    gLessonState.deck = shuffled.slice(0, gLessonState.settings.length);
+    const shuffledPool = shuffled(pool);
+    gLessonState.deck = shuffledPool.slice(0, gLessonState.settings.length);
     gLessonState.idx = 0;
   }
 
