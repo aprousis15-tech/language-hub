@@ -1214,6 +1214,68 @@
   /* ── PRACTICE (Listening + Production) ── */
   .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
+  .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
+
+  /* Foundations tab */
+  .foundations-header { text-align: center; margin: 8px 0 22px; }
+  .foundations-header h2 { color: #5d4037; margin: 0 0 6px; }
+  .foundations-header p { color: #6d4c41; font-size: 0.92rem; margin: 0; max-width: 640px; margin-left: auto; margin-right: auto; }
+  .foundations-nav {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .foundations-nav-btn {
+    padding: 8px 18px; border-radius: 99px; border: 1px solid #d7ccc8;
+    background: white; color: #5d4037; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .foundations-nav-btn:hover { background: #efebe9; }
+  .foundations-nav-btn.active { background: #5d4037; color: white; border-color: #5d4037; }
+  .foundations-section { max-width: 760px; margin: 0 auto; }
+  .found-intro {
+    background: #efebe9; border-left: 4px solid #5d4037; border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 20px; color: #3e2723; font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .found-part {
+    background: white; border: 1px solid #e8e0db; border-radius: 10px;
+    margin-bottom: 12px; overflow: hidden;
+  }
+  .found-part-toggle {
+    width: 100%; padding: 14px 18px; background: transparent; border: none;
+    text-align: left; cursor: pointer; font-family: 'Lato', sans-serif;
+    font-size: 1.02rem; font-weight: 700; color: #3e2723;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .found-part-toggle:hover { background: #f5efed; }
+  .found-part-chev {
+    color: #8d6e63; transition: transform 0.2s; flex-shrink: 0; font-size: 0.78rem;
+  }
+  .found-part-chev.open { transform: rotate(180deg); }
+  .found-part-body {
+    padding: 0 22px 18px; color: #4e342e; font-size: 0.94rem; line-height: 1.65;
+  }
+  .found-part-body p { margin: 0 0 12px; }
+  .found-part-body strong { color: #3e2723; }
+  .found-part-body em { color: #5d4037; }
+  .found-part-body ul, .found-part-body ol { margin: 8px 0 12px; padding-left: 22px; }
+  .found-part-body li { margin-bottom: 4px; }
+  .found-part-body .rule-greek {
+    font-family: 'Georgia', serif; color: #00695c; font-weight: 600;
+  }
+  .found-part-body table {
+    width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9rem;
+  }
+  .found-part-body table th, .found-part-body table td {
+    padding: 7px 10px; text-align: left; border-bottom: 1px solid #efebe9;
+  }
+  .found-part-body table th {
+    background: #efebe9; color: #3e2723; font-weight: 700;
+  }
+  .found-part-body .found-callout {
+    background: #fff8e1; border-left: 3px solid #f9a825; border-radius: 6px;
+    padding: 10px 14px; margin: 10px 0; color: #5d4a14; font-size: 0.9rem;
+  }
 
   /* Rules tab */
   .rules-header { text-align: center; margin: 8px 0 22px; }
@@ -1784,6 +1846,7 @@
   <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
+  <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -4201,6 +4264,339 @@
   </div>
 </div>
 
+<!-- FOUNDATIONS PANEL — beginner pedagogy for verbs / nouns / adj / adv / imperatives -->
+<div class="lang-panel" id="panel-foundations">
+  <div class="container">
+    <div class="foundations-header">
+      <h2>📖 Foundations of Greek Grammar</h2>
+      <p>Beginner-level explainers. Start here if you've never built a Greek sentence from first principles — these walk through the WHY behind everything you've been drilling.</p>
+    </div>
+
+    <div class="foundations-nav">
+      <button class="foundations-nav-btn active" onclick="setFoundationsSection('verbs',this)">🔥 Verbs</button>
+      <button class="foundations-nav-btn" onclick="setFoundationsSection('nouns',this)">📦 Nouns</button>
+      <button class="foundations-nav-btn" onclick="setFoundationsSection('adj',this)">🎨 Adjectives</button>
+      <button class="foundations-nav-btn" onclick="setFoundationsSection('adv',this)">⚡ Adverbs</button>
+      <button class="foundations-nav-btn" onclick="setFoundationsSection('imp',this)">❗ Imperatives</button>
+    </div>
+
+    <!-- ──────────── VERBS ──────────── -->
+    <div id="foundations-verbs" class="foundations-section">
+      <div class="found-intro">
+        Verbs carry more information inside the word in Greek than in English. <strong>The ending of the verb tells you WHO is doing the action</strong> — so the pronoun is optional. Learn one verb's six person-endings and you've cracked the system. Click any part below to expand.
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 1: What a verb even is</button>
+        <div class="found-part-body" style="display:none;">
+          <p>A verb is a word that names an action or a state of being. In English: <em>I walk, you eat, she is, they sleep</em>. Greek works the same way — every sentence has a verb at its core.</p>
+          <p>But Greek verbs carry far more information inside the word itself than English verbs do. <strong>This is the single most important thing to internalize.</strong></p>
+          <p>In English, the verb "walk" tells you almost nothing on its own. You need a separate pronoun:</p>
+          <p style="padding-left:16px;"><em>I walk, you walk, we walk, they walk — same word "walk," four different meanings.</em></p>
+          <p>In Greek, the verb itself tells you who's doing it. The ending changes:</p>
+          <table>
+            <tr><th>Greek</th><th>English</th><th>What the ending means</th></tr>
+            <tr><td><span class="rule-greek">περπατάω</span></td><td>I walk</td><td>-ω = "I"</td></tr>
+            <tr><td><span class="rule-greek">περπατάς</span></td><td>you walk</td><td>-ας = "you"</td></tr>
+            <tr><td><span class="rule-greek">περπατάει</span></td><td>he/she/it walks</td><td>-αει = "he/she/it"</td></tr>
+            <tr><td><span class="rule-greek">περπατάμε</span></td><td>we walk</td><td>-αμε = "we"</td></tr>
+            <tr><td><span class="rule-greek">περπατάτε</span></td><td>you all walk</td><td>-ατε = "you all"</td></tr>
+            <tr><td><span class="rule-greek">περπατάνε</span></td><td>they walk</td><td>-ανε = "they"</td></tr>
+          </table>
+          <p>You don't say <span class="rule-greek">εγώ περπατάω</span> the way you say "I walk" in English. The <span class="rule-greek">εγώ</span> is <em>optional and usually dropped</em>, because the -ω ending already tells you "I."</p>
+          <div class="found-callout"><strong>The first mental shift:</strong> in Greek, the ending of the verb IS the subject pronoun. You're not learning a verb — you're learning six forms of every verb.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 2: The six "persons"</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Every verb in every language can be conjugated for six grammatical "persons." Memorize these labels — every Greek grammar book uses them.</p>
+          <table>
+            <tr><th>Person</th><th>Greek pronoun</th><th>English</th><th>Example</th></tr>
+            <tr><td>1st singular</td><td><span class="rule-greek">εγώ</span></td><td>I</td><td>I walk</td></tr>
+            <tr><td>2nd singular</td><td><span class="rule-greek">εσύ</span></td><td>you (one person)</td><td>you walk</td></tr>
+            <tr><td>3rd singular</td><td><span class="rule-greek">αυτός / αυτή / αυτό</span></td><td>he / she / it</td><td>he walks</td></tr>
+            <tr><td>1st plural</td><td><span class="rule-greek">εμείς</span></td><td>we</td><td>we walk</td></tr>
+            <tr><td>2nd plural</td><td><span class="rule-greek">εσείς</span></td><td>you all (or formal "you")</td><td>you all walk</td></tr>
+            <tr><td>3rd plural</td><td><span class="rule-greek">αυτοί / αυτές / αυτά</span></td><td>they</td><td>they walk</td></tr>
+          </table>
+          <div class="found-callout"><strong>Important:</strong> 2nd plural (<span class="rule-greek">εσείς</span>) is also the <em>formal</em> "you" for a single person — like French <em>vous</em> or Spanish <em>usted</em>. Use it with strangers, shopkeepers, older people.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 3: The dictionary form</button>
+        <div class="found-part-body" style="display:none;">
+          <p>When you look up a verb in a Greek dictionary, you find the <strong>1st person singular present</strong> form. So the dictionary entry is "I ___," not "to ___."</p>
+          <p>"To walk" in a Greek dictionary appears as <span class="rule-greek">περπατάω</span>, literally "I walk."</p>
+          <p>Greek has <strong>no infinitive ("to walk") at all</strong> in modern usage — it was lost over the centuries. We'll see what replaced it in Part 8.</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 4: Conjugation classes (the three families)</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Greek verbs fall into a few conjugation patterns. Which pattern depends on where the stress lands and what the 1st singular looks like.</p>
+
+          <p><strong>Family A — stress on the stem, unstressed -ω ending</strong><br>Example: <span class="rule-greek">γράφω</span> (I write). GRAH-fo — stress on stem.</p>
+          <table>
+            <tr><th>Form</th><th>Phonetic</th><th>Meaning</th></tr>
+            <tr><td><span class="rule-greek">γράφω</span></td><td>GRAH-fo</td><td>I write</td></tr>
+            <tr><td><span class="rule-greek">γράφεις</span></td><td>GRAH-fees</td><td>you write</td></tr>
+            <tr><td><span class="rule-greek">γράφει</span></td><td>GRAH-fee</td><td>he/she writes</td></tr>
+            <tr><td><span class="rule-greek">γράφουμε</span></td><td>GRAH-foo-me</td><td>we write</td></tr>
+            <tr><td><span class="rule-greek">γράφετε</span></td><td>GRAH-fe-te</td><td>you all write</td></tr>
+            <tr><td><span class="rule-greek">γράφουν</span></td><td>GRAH-foon</td><td>they write</td></tr>
+          </table>
+          <p>Endings: <strong>-ω, -εις, -ει, -ουμε, -ετε, -ουν</strong>. Most Greek verbs are Family A: <span class="rule-greek">βλέπω, τρώω, πίνω, μένω, παίρνω, δίνω, έχω, κάνω, ακούω, αγοράζω</span>.</p>
+
+          <p><strong>Family B1 — stress on ending, "-άς" in 2nd person</strong><br>Example: <span class="rule-greek">αγαπάω</span> (I love). ah-gha-PAH-oh.</p>
+          <table>
+            <tr><th>Form</th><th>Meaning</th></tr>
+            <tr><td><span class="rule-greek">αγαπάω</span></td><td>I love</td></tr>
+            <tr><td><span class="rule-greek">αγαπάς</span></td><td>you love</td></tr>
+            <tr><td><span class="rule-greek">αγαπάει</span></td><td>he/she loves</td></tr>
+            <tr><td><span class="rule-greek">αγαπάμε</span></td><td>we love</td></tr>
+            <tr><td><span class="rule-greek">αγαπάτε</span></td><td>you all love</td></tr>
+            <tr><td><span class="rule-greek">αγαπάνε</span></td><td>they love</td></tr>
+          </table>
+          <p>Endings: <strong>-άω, -άς, -άει, -άμε, -άτε, -άνε</strong>. From your vocab: <span class="rule-greek">ξυπνάω, περπατάω, μιλάω, ρωτάω</span>.</p>
+
+          <p><strong>Family B2 — stress on ending, "-είς" in 2nd person</strong><br>Example: <span class="rule-greek">οδηγώ</span> (I drive). oh-thee-GHOH.</p>
+          <table>
+            <tr><th>Form</th><th>Meaning</th></tr>
+            <tr><td><span class="rule-greek">οδηγώ</span></td><td>I drive</td></tr>
+            <tr><td><span class="rule-greek">οδηγείς</span></td><td>you drive</td></tr>
+            <tr><td><span class="rule-greek">οδηγεί</span></td><td>he/she drives</td></tr>
+            <tr><td><span class="rule-greek">οδηγούμε</span></td><td>we drive</td></tr>
+            <tr><td><span class="rule-greek">οδηγείτε</span></td><td>you all drive</td></tr>
+            <tr><td><span class="rule-greek">οδηγούν</span></td><td>they drive</td></tr>
+          </table>
+          <p>Endings: <strong>-ώ, -είς, -εί, -ούμε, -είτε, -ούν</strong>. From your vocab: <span class="rule-greek">μπορώ, βοηθώ, ευχαριστώ, παρακαλώ</span>.</p>
+
+          <div class="found-callout"><strong>How to tell B1 from B2:</strong> You can't reliably tell from the 1st singular (both end in -ώ). You memorize the 2nd singular alongside the 1st. <span class="rule-greek">αγαπώ → αγαπάς</span> = B1. <span class="rule-greek">οδηγώ → οδηγείς</span> = B2.</div>
+
+          <p><strong>Family M — middle/passive, ends in -μαι</strong><br>Example: <span class="rule-greek">κοιμάμαι</span> (I sleep). Conjugates completely differently (Part 7 explains why):</p>
+          <table>
+            <tr><td><span class="rule-greek">κοιμάμαι</span></td><td>I sleep</td></tr>
+            <tr><td><span class="rule-greek">κοιμάσαι</span></td><td>you sleep</td></tr>
+            <tr><td><span class="rule-greek">κοιμάται</span></td><td>he/she sleeps</td></tr>
+            <tr><td><span class="rule-greek">κοιμόμαστε</span></td><td>we sleep</td></tr>
+            <tr><td><span class="rule-greek">κοιμάστε</span></td><td>you all sleep</td></tr>
+            <tr><td><span class="rule-greek">κοιμούνται</span></td><td>they sleep</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 5: Aspect — the Greek concept English doesn't have</button>
+        <div class="found-part-body" style="display:none;">
+          <p><strong>This is the single most important new concept.</strong> Aspect = the difference between ongoing/habitual action and a single completed event.</p>
+          <p>English has hints. Compare: "I <em>was reading</em> when she called" (ongoing) vs. "I <em>read</em> the book yesterday" (completed). "I eat fish" (habitual) vs. "I ate the fish" (one event).</p>
+          <p>English makes these distinctions partially. <strong>Greek bakes the distinction into the verb stem itself.</strong> Every action verb has TWO completely separate stems:</p>
+          <p><strong>Imperfective form</strong> — for ongoing, habitual, repeated, or in-progress action. Use when: action is happening now, happens regularly, or has no defined endpoint. This is the form you've been learning: <span class="rule-greek">γράφω</span>.</p>
+          <p><strong>Perfective form (aorist)</strong> — for a single completed event, viewed as a whole. Use when: one bounded action, future actions that happen once (with θα), past actions completed, after <span class="rule-greek">να</span>. Different stem of the same verb: <span class="rule-greek">γράψω</span>.</p>
+          <table>
+            <tr><th>Imperfective (process)</th><th>Perfective (event)</th><th>Meaning</th></tr>
+            <tr><td><span class="rule-greek">γράφω</span></td><td><span class="rule-greek">γράψω</span></td><td>I write / I'll write</td></tr>
+            <tr><td><span class="rule-greek">διαβάζω</span></td><td><span class="rule-greek">διαβάσω</span></td><td>I read / I'll read</td></tr>
+            <tr><td><span class="rule-greek">τρώω</span></td><td><span class="rule-greek">φάω</span></td><td>I eat / I'll eat</td></tr>
+            <tr><td><span class="rule-greek">πίνω</span></td><td><span class="rule-greek">πιω</span></td><td>I drink / I'll drink</td></tr>
+            <tr><td><span class="rule-greek">βλέπω</span></td><td><span class="rule-greek">δω</span></td><td>I see / I'll see</td></tr>
+            <tr><td><span class="rule-greek">παίρνω</span></td><td><span class="rule-greek">πάρω</span></td><td>I take / I'll take</td></tr>
+            <tr><td><span class="rule-greek">μαθαίνω</span></td><td><span class="rule-greek">μάθω</span></td><td>I learn / I'll learn</td></tr>
+            <tr><td><span class="rule-greek">λέω</span></td><td><span class="rule-greek">πω</span></td><td>I say / I'll say</td></tr>
+            <tr><td><span class="rule-greek">πάω</span></td><td><span class="rule-greek">πάω</span> (same)</td><td>I go / I'll go</td></tr>
+          </table>
+          <p>Stem changes are sometimes predictable (<span class="rule-greek">φ → ψ, ζ → σ</span>) and sometimes wildly irregular (<span class="rule-greek">τρώω → φάω</span>).</p>
+          <div class="found-callout"><strong>Critical:</strong> in isolation, <span class="rule-greek">γράψω</span> doesn't mean anything specific — it's a stem waiting for context. You almost never use a perfective form alone. You use it after <span class="rule-greek">θα</span> (will), <span class="rule-greek">να</span> (to/that), or with the past prefix <span class="rule-greek">ε-</span>.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 6: Tense — when the action happens</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Tense = when the action happened. Six tenses in Greek; here are the four essentials.</p>
+
+          <p><strong>Present tense</strong> — imperfective stem + basic endings.</p>
+          <ul>
+            <li><span class="rule-greek">γράφω</span> — I write / I'm writing</li>
+            <li><span class="rule-greek">τρώω</span> — I eat / I'm eating</li>
+            <li><span class="rule-greek">περπατάω</span> — I walk / I'm walking</li>
+          </ul>
+
+          <p><strong>Future continuous</strong> — <span class="rule-greek">θα</span> + imperfective stem. "I'll be doing it / I'll do it habitually."</p>
+          <ul>
+            <li><span class="rule-greek">θα γράφω</span> — I'll be writing (ongoing)</li>
+            <li><span class="rule-greek">θα τρώω</span> — I'll be eating (regularly)</li>
+          </ul>
+
+          <p><strong>Future simple</strong> — <span class="rule-greek">θα</span> + perfective (aorist) stem. "I'll do it once." <em>This is the everyday future.</em></p>
+          <ul>
+            <li><span class="rule-greek">θα γράψω</span> — I'll write (one time)</li>
+            <li><span class="rule-greek">θα φάω</span> — I'll eat (one specific meal)</li>
+            <li><span class="rule-greek">θα πάω</span> — I'll go (one trip)</li>
+          </ul>
+
+          <p><strong>Aorist past</strong> — <span class="rule-greek">ε-</span> prefix + aorist stem + past endings (-α, -ες, -ε, -αμε, -ατε, -αν).</p>
+          <p>Example with <span class="rule-greek">γράφω</span> → aorist stem <span class="rule-greek">γράψ-</span>:</p>
+          <ul>
+            <li><span class="rule-greek">έγραψα</span> (I wrote)</li>
+            <li><span class="rule-greek">έγραψες</span> (you wrote)</li>
+            <li><span class="rule-greek">έγραψε</span> (he/she wrote)</li>
+            <li><span class="rule-greek">γράψαμε</span> (we wrote) — ε- disappears, stress moves</li>
+            <li><span class="rule-greek">γράψατε</span> (you all wrote)</li>
+            <li><span class="rule-greek">έγραψαν</span> (they wrote)</li>
+          </ul>
+
+          <p><strong>Critical irregular aorists</strong> — drill these as fixed shapes:</p>
+          <ul>
+            <li><span class="rule-greek">πήγα</span> — I went</li>
+            <li><span class="rule-greek">είδα</span> — I saw</li>
+            <li><span class="rule-greek">έφαγα</span> — I ate</li>
+            <li><span class="rule-greek">ήπια</span> — I drank</li>
+            <li><span class="rule-greek">είπα</span> — I said</li>
+            <li><span class="rule-greek">πήρα</span> — I took</li>
+            <li><span class="rule-greek">έκανα</span> — I did/made</li>
+            <li><span class="rule-greek">ήμουν</span> — I was</li>
+            <li><span class="rule-greek">ήθελα</span> — I wanted</li>
+            <li><span class="rule-greek">βρήκα</span> — I found</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 7: Voice — active, middle, passive</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Voice = who is doing what to whom.</p>
+          <p><strong>Active voice</strong> — subject does the action to something else.<br>
+            <span class="rule-greek">γράφω ένα γράμμα</span> — I write a letter.<br>
+            95% of your verbs are active.</p>
+          <p><strong>Passive voice</strong> — subject receives the action.<br>
+            <span class="rule-greek">το γράμμα γράφεται</span> — the letter is being written.<br>
+            English uses "is being ___ed." Greek uses different endings (the <span class="rule-greek">-μαι</span> family).</p>
+          <p><strong>Middle voice</strong> — the action happens to/for the subject themselves. <em>This doesn't exist in English.</em><br>
+            <span class="rule-greek">κοιμάμαι</span> (I sleep) — sleeping happens to/within me.<br>
+            <span class="rule-greek">ντύνομαι</span> (I get dressed) — I dress myself.<br>
+            <span class="rule-greek">σκέφτομαι</span> (I think) — thinking happens inside me.</p>
+          <p>In Greek, the same <span class="rule-greek">-μαι</span> endings are used for both middle and passive. Context disambiguates.</p>
+          <div class="found-callout"><strong>Deponent verbs</strong> — look middle, mean active: <span class="rule-greek">εύχομαι</span> (I wish), <span class="rule-greek">έρχομαι</span> (I come), <span class="rule-greek">ασχολούμαι</span> (I'm occupied with). Memorize them with their <span class="rule-greek">-μαι</span> ending — don't try to derive them.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 8: Mood — the speaker's attitude</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Mood = the speaker's stance: stating a fact? Wishing? Commanding?</p>
+          <p><strong>Indicative mood</strong> — plain statements of fact. What you've been using. <span class="rule-greek">γράφω</span> (I write), <span class="rule-greek">πήγαμε</span> (we went), <span class="rule-greek">θα φάω</span> (I'll eat).</p>
+          <p><strong>Subjunctive mood</strong> — possibility, wish, purpose, "to ___." <em>The big new one.</em><br>
+            Greek lost its infinitive. The subjunctive replaces it. When English uses "to ___" or "that ___" or "should ___," Greek uses <span class="rule-greek">να</span> + a verb form.</p>
+          <ul>
+            <li><span class="rule-greek">θέλω να φάω</span> — I want to eat</li>
+            <li><span class="rule-greek">πρέπει να πάμε</span> — we must go</li>
+            <li><span class="rule-greek">μπορώ να βοηθήσω</span> — I can help</li>
+            <li><span class="rule-greek">θέλω να μάθω ελληνικά</span> — I want to learn Greek</li>
+            <li><span class="rule-greek">για να καταλάβω</span> — so that I understand</li>
+          </ul>
+          <div class="found-callout">You'll use this constantly. Every "I want to / need to / can / try to" in English maps to <span class="rule-greek">θέλω/πρέπει/μπορώ/προσπαθώ + να + verb</span>.</div>
+          <p>After <span class="rule-greek">να</span>, you use either imperfective or perfective depending on aspect:</p>
+          <ul>
+            <li><span class="rule-greek">θέλω να γράφω</span> (I want to be writing / write habitually) — imperfective</li>
+            <li><span class="rule-greek">θέλω να γράψω</span> (I want to write once, complete it) — perfective</li>
+          </ul>
+          <p><strong>Imperative mood</strong> — commands. See the dedicated ❗ Imperatives section.</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 9: The "to be" verb — είμαι</button>
+        <div class="found-part-body" style="display:none;">
+          <p><span class="rule-greek">είμαι</span> (I am) is the most-used verb in any language and it's irregular. Memorize the full conjugation now.</p>
+          <table>
+            <tr><th>Person</th><th>Form</th><th>Meaning</th></tr>
+            <tr><td>1st sing</td><td><span class="rule-greek">είμαι</span></td><td>I am</td></tr>
+            <tr><td>2nd sing</td><td><span class="rule-greek">είσαι</span></td><td>you are</td></tr>
+            <tr><td>3rd sing</td><td><span class="rule-greek">είναι</span></td><td>he/she/it is</td></tr>
+            <tr><td>1st plural</td><td><span class="rule-greek">είμαστε</span></td><td>we are</td></tr>
+            <tr><td>2nd plural</td><td><span class="rule-greek">είστε / είσαστε</span></td><td>you all / formal you</td></tr>
+            <tr><td>3rd plural</td><td><span class="rule-greek">είναι</span></td><td>they are (same as 3rd sing!)</td></tr>
+          </table>
+          <p><strong>Past tense</strong> ("was/were"):</p>
+          <ul>
+            <li><span class="rule-greek">ήμουν</span> (I was)</li>
+            <li><span class="rule-greek">ήσουν</span> (you were)</li>
+            <li><span class="rule-greek">ήταν</span> (he/she/it was)</li>
+            <li><span class="rule-greek">ήμασταν</span> (we were)</li>
+            <li><span class="rule-greek">ήσασταν</span> (you all were)</li>
+            <li><span class="rule-greek">ήταν</span> (they were — same as 3rd sing)</li>
+          </ul>
+          <div class="found-callout"><span class="rule-greek">είμαι</span> has <strong>no perfective form</strong> — "being" isn't a one-time event, it's always a state.</div>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>Part 10: How this all fits together</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Every Greek verb carries answers to five questions simultaneously:</p>
+          <ol>
+            <li><strong>Who?</strong> (person/number)</li>
+            <li><strong>When?</strong> (tense — present? future? past?)</li>
+            <li><strong>Process or event?</strong> (aspect — imperfective or perfective stem?)</li>
+            <li><strong>Who's acting on whom?</strong> (voice — active, middle, passive)</li>
+            <li><strong>Speaker's attitude?</strong> (mood — stating, wishing, commanding)</li>
+          </ol>
+          <p>Example: <span class="rule-greek">Θέλω να φάμε μαζί αύριο.</span> (I want us to eat together tomorrow.)</p>
+          <ul>
+            <li><span class="rule-greek">θέλω</span> — 1st sing present indicative active of θέλω</li>
+            <li><span class="rule-greek">να</span> — subjunctive marker</li>
+            <li><span class="rule-greek">φάμε</span> — 1st plural aorist subjunctive of τρώω</li>
+            <li><span class="rule-greek">μαζί</span> — together</li>
+            <li><span class="rule-greek">αύριο</span> — tomorrow</li>
+          </ul>
+          <p>Two verbs, both fully decoded once you know the system.</p>
+        </div>
+      </div>
+
+      <div class="found-part">
+        <button class="found-part-toggle" onclick="toggleFoundPart(this)"><span class="found-part-chev">▾</span>🎯 What to internalize first</button>
+        <div class="found-part-body" style="display:none;">
+          <p>Absolute minimum to drill before adding anything else:</p>
+          <ol>
+            <li><strong>The six person endings of Family A</strong> (-ω, -εις, -ει, -ουμε, -ετε, -ουν). Drill on five verbs until automatic.</li>
+            <li><strong>The full conjugation of είμαι</strong> present and past. Irregular and unavoidable.</li>
+            <li><strong>The aorist pairs.</strong> γράφω ↔ γράψω, τρώω ↔ φάω, πίνω ↔ πιω. Drill in both directions.</li>
+            <li><strong>The θα + aorist = future pattern.</strong> θα γράψω, θα φάω, θα πάω.</li>
+            <li><strong>The θέλω/μπορώ/πρέπει + να + aorist pattern.</strong> Unlocks every "I want to ___" sentence.</li>
+          </ol>
+          <p>Once these are automatic: add past tense (ε- prefix), imperatives, and the full middle voice. <strong>4-6 week roadmap at 20 minutes/day.</strong></p>
+          <p><a class="review-link" onclick="switchLang('grammar')" style="cursor:pointer;">→ Drill these in the 🧠 Grammar Drill tab</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────── NOUNS (placeholder for commit 2) ──────────── -->
+    <div id="foundations-nouns" class="foundations-section" style="display:none;">
+      <div class="found-intro">📦 Nouns section — content being written. Check back after the next deploy.</div>
+    </div>
+
+    <!-- ──────────── ADJECTIVES (placeholder) ──────────── -->
+    <div id="foundations-adj" class="foundations-section" style="display:none;">
+      <div class="found-intro">🎨 Adjectives section — content being written. Check back after the next deploy.</div>
+    </div>
+
+    <!-- ──────────── ADVERBS (placeholder) ──────────── -->
+    <div id="foundations-adv" class="foundations-section" style="display:none;">
+      <div class="found-intro">⚡ Adverbs section — content being written. Check back after the next deploy.</div>
+    </div>
+
+    <!-- ──────────── IMPERATIVES (placeholder) ──────────── -->
+    <div id="foundations-imp" class="foundations-section" style="display:none;">
+      <div class="found-intro">❗ Imperatives section — content being written. Check back after the next deploy.</div>
+    </div>
+  </div>
+</div>
+
 <!-- TRANSLATE PANEL -->
 <div class="lang-panel" id="panel-translate">
   <div class="container">
@@ -4743,11 +5139,30 @@
   }
 
   // ── TAB SWITCHING (override) ──
+  // ── Foundations tab ──
+  function setFoundationsSection(key, btn) {
+    document.querySelectorAll('.foundations-nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['verbs','nouns','adj','adv','imp'].forEach(k => {
+      const el = document.getElementById('foundations-' + k);
+      if (el) el.style.display = k === key ? '' : 'none';
+    });
+  }
+
+  function toggleFoundPart(btn) {
+    const part = btn.closest('.found-part');
+    const body = part.querySelector('.found-part-body');
+    const chev = part.querySelector('.found-part-chev');
+    const isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? '' : 'none';
+    if (chev) chev.classList.toggle('open', isHidden);
+  }
+
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, translate:8, notes:9, sessions:10, review:11};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, translate:9, notes:10, sessions:11, review:12};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
