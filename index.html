@@ -2644,6 +2644,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past Tense (Aorist)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα + verb)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
     </div>
 
@@ -2732,6 +2733,25 @@
       <div class="grammar-progress">
         <span id="qwords-progress">Question 1</span>
         <span class="grammar-score" id="qwords-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Future tense drill (θα + perfective form) -->
+    <div id="grammar-future" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="future-en">…</div>
+        <div class="grammar-prompt-greek" id="future-prompt">…</div>
+        <div class="grammar-options" id="future-options"></div>
+        <div class="grammar-feedback" id="future-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gFutureBack()">← Back</button>
+        <button class="grammar-btn" onclick="gFutureNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gFutureShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="future-progress">Question 1</span>
+        <span class="grammar-score" id="future-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -5909,6 +5929,23 @@
       </table>
       <strong>Critical irregulars:</strong> πάω → <span class="rule-greek">πήγα</span> · βλέπω → <span class="rule-greek">είδα</span> · τρώω → <span class="rule-greek">έφαγα</span> · πίνω → <span class="rule-greek">ήπια</span> · έχω → <span class="rule-greek">είχα</span> · είμαι → <span class="rule-greek">ήμουν</span> · λέω → <span class="rule-greek">είπα</span> · βρίσκω → <span class="rule-greek">βρήκα</span> · παίρνω → <span class="rule-greek">πήρα</span> · έρχομαι → <span class="rule-greek">ήρθα</span>.
     `,
+    future: `
+      <strong>Future = θα + verb. But the verb usually CHANGES form.</strong>
+      <table>
+        <tr><th>Present</th><th>Future (after θα)</th><th>Pattern</th></tr>
+        <tr><td><span class="rule-greek">βλέπω</span> (I see)</td><td><span class="rule-greek">θα δω</span></td><td>IRREGULAR — totally different stem</td></tr>
+        <tr><td><span class="rule-greek">τρώω</span> (I eat)</td><td><span class="rule-greek">θα φάω</span></td><td>IRREGULAR</td></tr>
+        <tr><td><span class="rule-greek">πίνω</span> (I drink)</td><td><span class="rule-greek">θα πιω</span></td><td>IRREGULAR</td></tr>
+        <tr><td><span class="rule-greek">λέω</span> (I say)</td><td><span class="rule-greek">θα πω</span></td><td>IRREGULAR</td></tr>
+        <tr><td><span class="rule-greek">πάω</span> (I go)</td><td><span class="rule-greek">θα πάω</span></td><td>Stays the SAME</td></tr>
+        <tr><td><span class="rule-greek">είμαι</span> (I am)</td><td><span class="rule-greek">θα είμαι</span></td><td>Stays the SAME</td></tr>
+        <tr><td><span class="rule-greek">γράφω</span> (I write)</td><td><span class="rule-greek">θα γράψω</span></td><td>-φω → -ψω</td></tr>
+        <tr><td><span class="rule-greek">διαβάζω</span> (I read)</td><td><span class="rule-greek">θα διαβάσω</span></td><td>-ζω → -σω</td></tr>
+        <tr><td><span class="rule-greek">μιλάω</span> (I speak)</td><td><span class="rule-greek">θα μιλήσω</span></td><td>-άω → -ήσω</td></tr>
+        <tr><td><span class="rule-greek">ταξιδεύω</span> (I travel)</td><td><span class="rule-greek">θα ταξιδέψω</span></td><td>-εύω → -έψω</td></tr>
+      </table>
+      <strong>Person endings stay the same</strong> as present: -ω / -εις / -ει / -ουμε / -ετε / -ουν.
+    `,
     qwords: `
       <strong>Six question words to memorize cold:</strong>
       <table>
@@ -5969,6 +6006,7 @@
     document.getElementById('grammar-neg').style.display = mode === 'neg' ? '' : 'none';
     document.getElementById('grammar-aorist').style.display = mode === 'aorist' ? '' : 'none';
     document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
+    document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
@@ -5981,12 +6019,13 @@
     if (mode === 'neg') initNegDrill();
     if (mode === 'aorist') initAoristDrill();
     if (mode === 'qwords') initQwordsDrill();
+    if (mode === 'future') initFutureDrill();
   }
 
   // Pick a random non-Random drill mode. Reuses setGrammarMode so all the
   // visibility + init wiring stays in one place.
   function setRandomGrammarMode() {
-    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords'];
+    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords', 'future'];
     const pick = modes[Math.floor(Math.random() * modes.length)];
     const btn = [...document.querySelectorAll('.grammar-mode-btn')]
       .find(b => {
@@ -6687,6 +6726,110 @@
     showQwordsCard();
   }
   function gQwordsShuffle() { initQwordsDrill(); }
+
+  // ── Future tense drill (θα + verb form transformation) ──
+  // Tests the present → perfective transformation. Distractors include the
+  // unchanged present, the past tense (wrong tense entirely), and similar-but-wrong
+  // verb futures (e.g. θα φάω when the answer is θα πάω).
+  const FUTURE_QUESTIONS = [
+    // Critical irregulars — form changes completely
+    { en: "I will see a movie. (present: βλέπω)",       prompt: 'Αύριο θα ___ μια ταινία.',     answer: 'δω',         options: ['δω','βλέπω','είδα','φάω'],          hint: '⚡ βλέπω → θα δω. IRREGULAR. The future form is just δω (one syllable). βλέπω = present; είδα = past.' },
+    { en: "I will eat Greek food. (present: τρώω)",      prompt: 'Αύριο θα ___ ελληνικό φαγητό.', answer: 'φάω',        options: ['φάω','τρώω','έφαγα','πιω'],         hint: '⚡ τρώω → θα φάω. IRREGULAR. έφαγα is past tense; τρώω is present.' },
+    { en: "I will drink coffee. (present: πίνω)",        prompt: 'Σε λίγο θα ___ καφέ.',         answer: 'πιω',        options: ['πιω','πίνω','ήπια','φάω'],          hint: '⚡ πίνω → θα πιω. IRREGULAR. πίνω = habitual present; πιω = one-time perfective.' },
+    { en: "I will tell you. (present: λέω)",             prompt: 'Θα σου ___ μετά.',             answer: 'πω',         options: ['πω','λέω','είπα','δω'],             hint: '⚡ λέω → θα πω. IRREGULAR. The shortest future stem in Greek.' },
+    { en: "I will find it. (present: βρίσκω)",           prompt: 'Θα το ___ μόνος μου.',         answer: 'βρω',        options: ['βρω','βρίσκω','βρήκα','δω'],        hint: '⚡ βρίσκω → θα βρω. IRREGULAR. βρήκα = past; βρίσκω = present.' },
+    { en: "I will take a taxi. (present: παίρνω)",       prompt: 'Θα ___ ταξί.',                 answer: 'πάρω',       options: ['πάρω','παίρνω','πήρα','φάω'],       hint: '⚡ παίρνω → θα πάρω. IRREGULAR. Common: θα πάρω ταξί / θα πάρω τηλέφωνο.' },
+    { en: "I will come at 8. (present: έρχομαι)",        prompt: 'Θα ___ στις οκτώ.',            answer: 'έρθω',       options: ['έρθω','έρχομαι','ήρθα','πάω'],      hint: '⚡ έρχομαι → θα έρθω. IRREGULAR. Note: είρθω is the more formal form; έρθω is everyday.' },
+
+    // Irregulars that STAY the same — common trap
+    { en: "I will go to Greece. (present: πάω)",         prompt: 'Τον Ιούλιο θα ___ στην Ελλάδα.', answer: 'πάω',      options: ['πάω','πάμε','πήγα','δω'],           hint: '⚡ πάω → θα πάω. IRREGULAR but STAYS THE SAME. Both present and future use πάω.' },
+    { en: "I will be there at 8. (present: είμαι)",      prompt: 'Θα ___ εκεί στις οκτώ.',       answer: 'είμαι',      options: ['είμαι','είσαι','είναι','έχω'],      hint: '⚡ είμαι → θα είμαι. IRREGULAR but STAYS THE SAME. Future of "to be" is just θα + present form.' },
+    { en: "I will have a long day. (present: έχω)",      prompt: 'Αύριο θα ___ μια μεγάλη μέρα.', answer: 'έχω',        options: ['έχω','έχεις','είχα','έχουμε'],      hint: 'έχω → θα έχω. Stays the SAME. (Past είχα is different — that\'s the trap.)' },
+
+    // Regular Type A — predictable stem changes
+    { en: "I will write a letter. (present: γράφω)",     prompt: 'Σήμερα θα ___ ένα γράμμα.',    answer: 'γράψω',      options: ['γράψω','γράφω','έγραψα','πάω'],     hint: '✅ γράφω → θα γράψω. Pattern: -φω → -ψω.' },
+    { en: "I will read the book. (present: διαβάζω)",    prompt: 'Απόψε θα ___ το βιβλίο.',      answer: 'διαβάσω',    options: ['διαβάσω','διαβάζω','διάβασα','γράψω'], hint: '✅ διαβάζω → θα διαβάσω. Pattern: -ζω → -σω.' },
+    { en: "I will buy bread. (present: αγοράζω)",        prompt: 'Αύριο θα ___ ψωμί.',           answer: 'αγοράσω',    options: ['αγοράσω','αγοράζω','αγόρασα','πάρω'], hint: '✅ αγοράζω → θα αγοράσω. Pattern: -ζω → -σω.' },
+    { en: "I will travel to Greece. (present: ταξιδεύω)", prompt: 'Τον Ιούλιο θα ___ στην Ελλάδα.', answer: 'ταξιδέψω', options: ['ταξιδέψω','ταξιδεύω','ταξίδεψα','πάω'], hint: '✅ ταξιδεύω → θα ταξιδέψω. Pattern: -εύω → -έψω.' },
+    { en: "I will work tomorrow. (present: δουλεύω)",    prompt: 'Αύριο θα ___ πολύ.',           answer: 'δουλέψω',    options: ['δουλέψω','δουλεύω','δούλεψα','έχω'], hint: '✅ δουλεύω → θα δουλέψω. Same -εύω → -έψω pattern.' },
+
+    // Type B (-άω contract verbs)
+    { en: "I will wake up early. (present: ξυπνάω)",     prompt: 'Αύριο θα ___ νωρίς.',          answer: 'ξυπνήσω',    options: ['ξυπνήσω','ξυπνάω','ξύπνησα','κοιμηθώ'], hint: '✅ ξυπνάω → θα ξυπνήσω. Pattern: -άω → -ήσω.' },
+    { en: "I will speak with Niko. (present: μιλάω)",    prompt: 'Σήμερα θα ___ με τον Νίκο.',   answer: 'μιλήσω',     options: ['μιλήσω','μιλάω','μίλησα','πω'],     hint: '✅ μιλάω → θα μιλήσω. Same -άω → -ήσω.' },
+    { en: "I will ask the waiter. (present: ρωτάω)",     prompt: 'Θα ___ τον σερβιτόρο.',        answer: 'ρωτήσω',     options: ['ρωτήσω','ρωτάω','ρώτησα','πω'],     hint: '✅ ρωτάω → θα ρωτήσω.' },
+    { en: "I will walk there. (present: περπατάω)",      prompt: 'Θα ___ εκεί.',                 answer: 'περπατήσω',  options: ['περπατήσω','περπατάω','περπάτησα','πάω'], hint: '✅ περπατάω → θα περπατήσω.' },
+
+    // Plural / different persons — tests the person ending too
+    { en: "We will eat together. (we eat = τρώμε)",      prompt: 'Απόψε θα ___ μαζί.',           answer: 'φάμε',       options: ['φάμε','τρώμε','φάγαμε','πάμε'],     hint: 'τρώμε → θα φάμε. IRREGULAR + plural. -ω → -ω, -ουμε → -ουμε / -άμε. Person ending stays.' },
+    { en: "We will go to Athens. (we go = πάμε)",        prompt: 'Αύριο θα ___ στην Αθήνα.',     answer: 'πάμε',       options: ['πάμε','πάω','πήγαμε','φάμε'],       hint: 'πάμε → θα πάμε. Stays same in plural too.' },
+    { en: "You will see the museum. (you see = βλέπεις)", prompt: 'Θα ___ το μουσείο.',          answer: 'δεις',       options: ['δεις','βλέπεις','είδες','δω'],      hint: 'βλέπω → δω, person endings stay: 2nd-sing = δεις (not δω).' },
+    { en: "She will drink wine. (she drinks = πίνει)",   prompt: 'Απόψε θα ___ κρασί.',          answer: 'πιει',       options: ['πιει','πίνει','ήπιε','φάει'],       hint: 'πίνω → πιω, 3rd-sing = πιει. Endings: πιω/πιεις/πιει/πιούμε/πιείτε/πιουν.' },
+    { en: "They will say yes. (they say = λένε)",        prompt: 'Θα ___ ναι.',                  answer: 'πουν',       options: ['πουν','λένε','είπαν','δουν'],       hint: 'λέω → πω, 3rd-plur = πουν. λένε is present; είπαν is past.' },
+  ];
+
+  let gFutureDeck = [], gFutureIndex = 0, gFutureCorrect = 0, gFutureTotal = 0, gFutureAnswered = false;
+
+  function initFutureDrill() {
+    gFutureDeck = [...FUTURE_QUESTIONS].sort(() => Math.random() - 0.5);
+    gFutureIndex = 0;
+    gFutureCorrect = 0;
+    gFutureTotal = 0;
+    gFutureAnswered = false;
+    showFutureCard();
+  }
+
+  function showFutureCard() {
+    const q = gFutureDeck[gFutureIndex];
+    if (!q) return;
+    document.getElementById('future-en').textContent = q.en;
+    document.getElementById('future-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('future-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('future-options');
+    optsHost.innerHTML = '';
+    [...q.options].sort(() => Math.random() - 0.5).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gFutureAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('future-progress').textContent = `Question ${gFutureIndex + 1} of ${gFutureDeck.length}`;
+    document.getElementById('future-score').textContent = `Score: ${gFutureCorrect}/${gFutureTotal}`;
+    gFutureAnswered = false;
+  }
+
+  function gFutureAnswer(picked, btnEl, q) {
+    if (gFutureAnswered) return;
+    gFutureAnswered = true;
+    gFutureTotal++;
+    if (picked === q.answer) gFutureCorrect++;
+    else recordMistake({
+      drill_type: 'verbs', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'future', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#future-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('future-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('future-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('future-score').textContent = `Score: ${gFutureCorrect}/${gFutureTotal}`;
+  }
+
+  function gFutureNext() {
+    gFutureIndex = (gFutureIndex + 1) % gFutureDeck.length;
+    showFutureCard();
+  }
+  function gFutureBack() {
+    gFutureIndex = (gFutureIndex - 1 + gFutureDeck.length) % gFutureDeck.length;
+    showFutureCard();
+  }
+  function gFutureShuffle() { initFutureDrill(); }
 
   // Prepositions drill — Greek prepositions are mostly simple words but they
   // collocate in non-obvious ways. Drill presents a sentence with a blank, English
