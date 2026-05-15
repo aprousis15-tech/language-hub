@@ -3059,6 +3059,7 @@
       <button class="practice-mode-btn" onclick="setPracticeMode('type',this)">✍️ English → Greek (type)</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('flash',this)">🃏 Flashcard</button>
       <button class="practice-mode-btn" onclick="setPracticeMode('speed',this)">⚡ Speed Recall</button>
+      <button class="practice-mode-btn" onclick="setPracticeMode('multi',this)">🎯 Multi-Choice</button>
     </div>
 
     <!-- Listening drill -->
@@ -3212,6 +3213,29 @@
       <div class="practice-progress">
         <span id="type-progress">Question 1</span>
         <span class="practice-score" id="type-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Multi-Choice — Duolingo-style translation drill with hit/miss tracking -->
+    <div id="practice-multi" style="display:none;">
+      <div class="pflash-direction">
+        <button class="pflash-dir-btn active" id="multi-dir-gr2en" onclick="setMultiDir('gr2en',this)">Greek → English</button>
+        <button class="pflash-dir-btn" id="multi-dir-en2gr" onclick="setMultiDir('en2gr',this)">English → Greek</button>
+      </div>
+      <div class="practice-card">
+        <div class="practice-prompt-en" id="multi-prompt">…</div>
+        <div class="multi-prompt-hint" id="multi-prompt-pos">&nbsp;</div>
+        <div class="practice-options" id="multi-options"></div>
+        <div class="practice-feedback" id="multi-feedback"></div>
+      </div>
+      <div class="practice-controls">
+        <button class="practice-btn practice-btn-secondary" onclick="gMultiBack()">← Back</button>
+        <button class="practice-btn" onclick="gMultiNext()">Next →</button>
+        <button class="practice-btn practice-btn-secondary" onclick="gMultiShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="practice-progress">
+        <span id="multi-progress">Question 1</span>
+        <span class="practice-score" id="multi-score">Hits: 0 · Misses: 0</span>
       </div>
     </div>
 
@@ -9110,6 +9134,7 @@
     document.getElementById('practice-flash').style.display = mode === 'flash' ? '' : 'none';
     document.getElementById('practice-lesson').style.display = isLesson ? '' : 'none';
     document.getElementById('practice-speed').style.display = mode === 'speed' ? '' : 'none';
+    document.getElementById('practice-multi').style.display = mode === 'multi' ? '' : 'none';
     // Stop any running lesson when leaving the lesson tab
     if (!isLesson && gLessonState && gLessonState.playing) lessonStop();
     // Stop any in-flight speed session when leaving
@@ -9118,6 +9143,7 @@
     if (mode === 'type') initTypeDrill();
     if (mode === 'flash') initFlashDrill();
     if (mode === 'speed') initSpeedDrill();
+    if (mode === 'multi') initMultiDrill();
     if (isLesson) {
       const desiredDir = mode === 'lesson-gr' ? 'gr2en' : 'en2gr';
       if (gLessonState && gLessonState.playing && gLessonState.settings.direction !== desiredDir) {
@@ -9626,6 +9652,121 @@
     // Brief pause before next card so the user can register the rating
     setTimeout(() => speedShowCard(), 250);
   }
+
+  // ── 🎯 Multi-Choice mode (Duolingo-style) ──
+  // Shows prompt in source language + 4 options (correct + 3 same-POS distractors).
+  // Hit/miss tracked per vocab_id via the existing mistakes table — wrong answers
+  // automatically flow into 🎯 My Mistakes and the Review tab.
+  let gMultiDeck = [], gMultiIndex = 0, gMultiHits = 0, gMultiMisses = 0;
+  let gMultiAnswered = false;
+  let gMultiDir = 'gr2en';
+
+  function setMultiDir(dir, btn) {
+    document.querySelectorAll('#practice-multi .pflash-dir-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    gMultiDir = dir;
+    initMultiDrill();
+  }
+
+  function initMultiDrill() {
+    if (!gPracticeVocab || gPracticeVocab.length === 0) {
+      ensurePracticeVocab().then(() => initMultiDrill());
+      return;
+    }
+    // Filter to entries that work well in multi-choice (need both word + translation;
+    // skip extremely long entries which make distractors visually awkward)
+    gMultiDeck = shuffled(
+      getFilteredPracticeVocab().filter(v =>
+        v.word && v.translation && v.word.length <= 40 && v.translation.length <= 50
+      )
+    );
+    gMultiIndex = 0;
+    gMultiHits = 0;
+    gMultiMisses = 0;
+    gMultiAnswered = false;
+    showMultiCard();
+  }
+
+  function showMultiCard() {
+    const v = gMultiDeck[gMultiIndex];
+    if (!v) {
+      document.getElementById('multi-prompt').textContent = 'No cards match this filter.';
+      document.getElementById('multi-options').innerHTML = '';
+      return;
+    }
+    // Pick prompt side based on direction
+    const promptText = gMultiDir === 'gr2en' ? v.word : v.translation;
+    const correctText = gMultiDir === 'gr2en' ? v.translation : v.word;
+    document.getElementById('multi-prompt').textContent = promptText;
+    document.getElementById('multi-prompt-pos').textContent = v.part_of_speech || ' ';
+    const fb = document.getElementById('multi-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    // Build distractor pool — prefer same POS, fall back to anything else
+    const pool = gPracticeVocab.filter(x =>
+      x !== v && x.word && x.translation &&
+      (gMultiDir === 'gr2en' ? x.translation !== v.translation : x.word !== v.word)
+    );
+    const samePOS = v.part_of_speech ? pool.filter(x => x.part_of_speech === v.part_of_speech) : [];
+    const distractorPool = samePOS.length >= 3 ? samePOS : pool;
+    const distractors = shuffled(distractorPool).slice(0, 3).map(x => gMultiDir === 'gr2en' ? x.translation : x.word);
+    const options = shuffled([correctText, ...distractors]);
+    const optsHost = document.getElementById('multi-options');
+    optsHost.innerHTML = '';
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'practice-option';
+      b.textContent = opt;
+      b.onclick = () => gMultiAnswer(opt, b, v, correctText);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('multi-progress').textContent = `Question ${gMultiIndex + 1} of ${gMultiDeck.length}`;
+    document.getElementById('multi-score').textContent = `Hits: ${gMultiHits} · Misses: ${gMultiMisses}`;
+    gMultiAnswered = false;
+  }
+
+  function gMultiAnswer(picked, btnEl, v, correctText) {
+    if (gMultiAnswered) return;
+    gMultiAnswered = true;
+    const isCorrect = picked === correctText;
+    if (isCorrect) gMultiHits++;
+    else {
+      gMultiMisses++;
+      if (v.id) {
+        recordMistake({
+          drill_type: 'flash',
+          prompt: gMultiDir === 'gr2en' ? v.word : v.translation,
+          correct: correctText,
+          picked: picked,
+          vocab_id: v.id,
+          metadata: { source: 'multi-choice', direction: gMultiDir, topic: v.topic, part_of_speech: v.part_of_speech }
+        });
+      }
+    }
+    document.querySelectorAll('#multi-options .practice-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === correctText) b.classList.add('correct');
+      else if (b === btnEl && !isCorrect) b.classList.add('wrong');
+    });
+    const fb = document.getElementById('multi-feedback');
+    if (isCorrect) {
+      fb.textContent = v.intuition ? '✓ Correct! ' + v.intuition : '✓ Correct!';
+    } else {
+      fb.textContent = `✗ Correct answer: ${correctText}` + (v.intuition ? ' — ' + v.intuition : '');
+    }
+    fb.classList.add('show');
+    document.getElementById('multi-score').textContent = `Hits: ${gMultiHits} · Misses: ${gMultiMisses}`;
+  }
+
+  function gMultiNext() {
+    gMultiIndex = (gMultiIndex + 1) % gMultiDeck.length;
+    showMultiCard();
+  }
+  function gMultiBack() {
+    gMultiIndex = (gMultiIndex - 1 + gMultiDeck.length) % gMultiDeck.length;
+    showMultiCard();
+  }
+  function gMultiShuffle() { initMultiDrill(); }
   // Greek ↔ English flip card with self-rated difficulty. "Hard" cards re-enter
   // the deck a few positions ahead (in-session only — no DB writes).
   let gFlashDeck = [], gFlashIndex = 0, gFlashFlipped = false, gFlashDir = 'gr2en', gFlashReviewed = 0;
