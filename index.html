@@ -1215,6 +1215,101 @@
   .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
+  .lang-tab.active-verbdrill { color: #1565c0; border-bottom-color: #1565c0; background: white; font-weight: 700; }
+
+  /* Verb Drill tab */
+  .vd-header { text-align: center; margin: 8px 0 22px; }
+  .vd-header h2 { color: #1565c0; margin: 0 0 6px; }
+  .vd-header p { color: #4a6f8a; font-size: 0.92rem; margin: 0; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .vd-direction {
+    display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .vd-dir-btn {
+    padding: 7px 18px; border-radius: 99px; border: 1px solid #bbdefb;
+    background: white; color: #1565c0; font-size: 0.85rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 600;
+  }
+  .vd-dir-btn:hover { background: #e3f2fd; }
+  .vd-dir-btn.active { background: #1565c0; color: white; border-color: #1565c0; }
+  .vd-stats {
+    text-align: center; font-size: 0.85rem; color: #4a6f8a;
+    margin-bottom: 18px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+  }
+  .vd-stats strong { color: #0d47a1; }
+  .vd-card {
+    max-width: 480px; margin: 0 auto; background: white;
+    border-radius: 14px; padding: 28px 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border: 1px solid #e1ecf4; text-align: center;
+  }
+  .vd-prompt-word {
+    font-family: 'Playfair Display', serif; font-size: 2.4rem;
+    color: #00695c; font-weight: 600; line-height: 1.2; min-height: 50px;
+  }
+  .vd-prompt-en {
+    font-size: 1rem; color: #5a6f6c; font-style: italic;
+    margin: 6px 0 16px; min-height: 22px;
+  }
+  .vd-input {
+    width: 100%; max-width: 360px; padding: 12px 16px; font-size: 1.15rem;
+    font-family: 'Georgia', serif; border: 2px solid #bbdefb; border-radius: 8px;
+    text-align: center; box-sizing: border-box;
+    color: #00695c;
+  }
+  .vd-input:focus { outline: none; border-color: #1565c0; }
+  .vd-input.correct { border-color: #2e7d32; background: #e8f5e9; }
+  .vd-input.wrong { border-color: #c62828; background: #ffebee; }
+  .vd-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+  .vd-submit-btn, .vd-hint-btn {
+    padding: 9px 18px; border-radius: 99px; border: 1px solid #1565c0;
+    background: #1565c0; color: white; font-size: 0.88rem; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700;
+  }
+  .vd-submit-btn:hover { background: #0d47a1; }
+  .vd-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .vd-hint-btn { background: white; color: #1565c0; }
+  .vd-hint-btn:hover { background: #e3f2fd; }
+  .vd-hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .vd-hint-body {
+    margin-top: 14px; background: #fff8e1; border-left: 4px solid #f9a825;
+    border-radius: 8px; padding: 10px 14px; color: #5d4a14; font-size: 0.92rem;
+    text-align: left;
+  }
+  .vd-feedback {
+    margin-top: 14px; padding: 12px 16px; border-radius: 8px;
+    font-size: 0.95rem; line-height: 1.5;
+  }
+  .vd-feedback.correct {
+    background: #e8f5e9; color: #1b5e20; border-left: 4px solid #2e7d32;
+  }
+  .vd-feedback.wrong {
+    background: #ffebee; color: #b71c1c; border-left: 4px solid #c62828;
+  }
+  .vd-feedback .vd-correct-answer {
+    font-family: 'Georgia', serif; font-size: 1.2rem; color: #00695c; font-weight: 600;
+  }
+  .vd-rating {
+    display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
+  }
+  .vd-rate-btn {
+    padding: 10px 18px; border-radius: 99px; border: 1px solid;
+    background: white; cursor: pointer; font-family: 'Lato', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+  }
+  .vd-rate-hard { border-color: #ef6c00; color: #bf360c; }
+  .vd-rate-hard:hover { background: #fff3e0; }
+  .vd-rate-good { border-color: #2e7d32; color: #1b5e20; }
+  .vd-rate-good:hover { background: #e8f5e9; }
+  .vd-rate-easy { border-color: #1565c0; color: #0d47a1; }
+  .vd-rate-easy:hover { background: #e3f2fd; }
+  .vd-empty {
+    max-width: 480px; margin: 0 auto; text-align: center;
+    padding: 40px 24px; color: #4a6f8a; font-size: 0.95rem;
+  }
+  .vd-empty strong { color: #1565c0; }
+  @media (max-width: 540px) {
+    .vd-prompt-word { font-size: 2rem; }
+    .vd-card { padding: 22px 16px; }
+  }
 
   /* Foundations tab */
   .foundations-header { text-align: center; margin: 8px 0 22px; }
@@ -1847,6 +1942,7 @@
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
+  <button class="lang-tab" onclick="switchLang('verbdrill')">📚 Verb Drill</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -5144,6 +5240,49 @@
   </div>
 </div>
 
+<!-- VERB DRILL PANEL — SRS-backed present↔aorist drill, queries Supabase live -->
+<div class="lang-panel" id="panel-verbdrill">
+  <div class="container">
+    <div class="vd-header">
+      <h2>📚 Verb Drill</h2>
+      <p>Type the answer. Real SRS scheduling — easy verbs float away, hard ones come back. Queries Supabase live; only shows verbs with a verified aorist form.</p>
+    </div>
+
+    <div class="vd-direction">
+      <button class="vd-dir-btn active" id="vd-dir-p2a" onclick="setVerbDrillDirection('p2a',this)">Present → Aorist</button>
+      <button class="vd-dir-btn" id="vd-dir-a2p" onclick="setVerbDrillDirection('a2p',this)">Aorist → Present</button>
+    </div>
+
+    <div class="vd-stats">
+      <span><strong id="vd-due-count">…</strong> due now</span>
+      <span><strong id="vd-session-count">0</strong> reviewed this session</span>
+    </div>
+
+    <div id="vd-card-wrap">
+      <div class="vd-card" id="vd-card">
+        <div class="vd-prompt-word" id="vd-prompt-word">Loading…</div>
+        <div class="vd-prompt-en" id="vd-prompt-en">&nbsp;</div>
+        <input type="text" class="vd-input" id="vd-input"
+               placeholder="Type the aorist…"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               lang="el"
+               onkeydown="onVerbDrillKey(event)">
+        <div class="vd-actions">
+          <button class="vd-submit-btn" id="vd-submit" onclick="submitVerbDrillAnswer()">Check ✓</button>
+          <button class="vd-hint-btn" id="vd-hint-btn" onclick="showVerbDrillHint()">💡 Hint</button>
+        </div>
+        <div class="vd-hint-body" id="vd-hint-body" style="display:none;"></div>
+        <div class="vd-feedback" id="vd-feedback" style="display:none;"></div>
+        <div class="vd-rating" id="vd-rating" style="display:none;"></div>
+      </div>
+
+      <div class="vd-empty" id="vd-empty" style="display:none;">
+        <p><strong>✓ Caught up.</strong> No verbs due right now. Come back later — your reviews will surface again according to the SRS schedule.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TRANSLATE PANEL -->
 <div class="lang-panel" id="panel-translate">
   <div class="container">
@@ -5707,9 +5846,9 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-verbdrill','active-translate','active-notes','active-sessions','active-review'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, translate:9, notes:10, sessions:11, review:12};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, verbdrill:9, translate:10, notes:11, sessions:12, review:13};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -5721,6 +5860,7 @@
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
     if (lang === 'review') renderReviewPanel();
+    if (lang === 'verbdrill') initVerbDrill();
   }
 
   // ── DAD PRACTICE ──
@@ -10943,6 +11083,233 @@
     }
     const dueAt = new Date(Date.now() + newInterval * 86400000).toISOString();
     return { srs_reps: newReps, srs_interval_days: newInterval, srs_ease: newEase, srs_due_at: dueAt };
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // VERB DRILL — SRS-backed present↔aorist drill, queries Supabase live
+  // Per spec: only shows verbs with non-NULL aorist column.
+  // Reuses existing smTwoNext SRS algorithm. Does NOT touch other tabs.
+  // ──────────────────────────────────────────────────────────────
+
+  let gVerbDrillState = null;
+
+  // Wait for the supabase-ready event (already dispatched by the module
+  // initializer at the bottom of the page). 5-second timeout fallback.
+  function ensureSupabaseReady() {
+    return new Promise((resolve) => {
+      if (window._supabaseReady && window._supabase) return resolve(true);
+      const onReady = () => resolve(true);
+      document.addEventListener('supabase-ready', onReady, { once: true });
+      setTimeout(() => {
+        document.removeEventListener('supabase-ready', onReady);
+        resolve(!!window._supabase);
+      }, 5000);
+    });
+  }
+
+  // Normalize Greek input for comparison: trim, lowercase, NFD-strip combining
+  // diacritics (so user input of γραψω or γράψω both compare equal), and
+  // normalize final-σ/medial-ς to the same form (so σ and ς collapse).
+  function normalizeGreek(s) {
+    if (!s) return '';
+    return String(s)
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/ς/g, 'σ');
+  }
+
+  async function initVerbDrill() {
+    if (!gVerbDrillState) {
+      gVerbDrillState = {
+        currentCard: null,
+        direction: 'p2a',           // 'p2a' (present→aorist) or 'a2p' (aorist→present)
+        dueCount: 0,
+        sessionReviewed: 0,
+        isAnswered: false,
+        lastResult: null,
+        hintShown: false
+      };
+    }
+    const ready = await ensureSupabaseReady();
+    if (!ready) {
+      document.getElementById('vd-prompt-word').textContent = 'Database not connected.';
+      document.getElementById('vd-prompt-en').textContent = 'Refresh the page and try again.';
+      return;
+    }
+    await loadNextVerbDrillCard();
+  }
+
+  async function loadNextVerbDrillCard() {
+    if (!window._supabase) return;
+    // Query: next due verb with non-NULL aorist (engineering rule: NULL filter mandatory)
+    let nextCard = null;
+    let dueCount = 0;
+    try {
+      const nowIso = new Date().toISOString();
+      const [cardsRes, countRes] = await Promise.all([
+        window._supabase
+          .from('vocab')
+          .select('id, word, translation, aorist, intuition, srs_due_at, srs_interval_days, srs_ease, srs_reps')
+          .eq('lang', 'greek')
+          .eq('part_of_speech', 'verb')
+          .not('aorist', 'is', null)
+          .lte('srs_due_at', nowIso)
+          .order('srs_due_at', { ascending: true })
+          .limit(1),
+        window._supabase
+          .from('vocab')
+          .select('id', { count: 'exact', head: true })
+          .eq('lang', 'greek')
+          .eq('part_of_speech', 'verb')
+          .not('aorist', 'is', null)
+          .lte('srs_due_at', nowIso)
+      ]);
+      if (cardsRes.data && cardsRes.data.length > 0) nextCard = cardsRes.data[0];
+      dueCount = countRes.count || 0;
+    } catch (e) {
+      console.warn('VerbDrill: Supabase query failed', e);
+    }
+    gVerbDrillState.currentCard = nextCard;
+    gVerbDrillState.dueCount = dueCount;
+    gVerbDrillState.isAnswered = false;
+    gVerbDrillState.hintShown = false;
+    gVerbDrillState.lastResult = null;
+    showVerbDrillCard();
+  }
+
+  function showVerbDrillCard() {
+    const s = gVerbDrillState;
+    document.getElementById('vd-due-count').textContent = s.dueCount;
+    document.getElementById('vd-session-count').textContent = s.sessionReviewed;
+
+    if (!s.currentCard) {
+      document.getElementById('vd-card').style.display = 'none';
+      document.getElementById('vd-empty').style.display = '';
+      return;
+    }
+    document.getElementById('vd-card').style.display = '';
+    document.getElementById('vd-empty').style.display = 'none';
+
+    const card = s.currentCard;
+    const isP2A = s.direction === 'p2a';
+    const promptWord = isP2A ? card.word : card.aorist;
+    const placeholder = isP2A ? 'Type the aorist…' : 'Type the present…';
+    document.getElementById('vd-prompt-word').textContent = promptWord;
+    document.getElementById('vd-prompt-en').textContent = card.translation || ' ';
+    const input = document.getElementById('vd-input');
+    input.value = '';
+    input.placeholder = placeholder;
+    input.className = 'vd-input';
+    input.disabled = false;
+    document.getElementById('vd-submit').disabled = false;
+    document.getElementById('vd-hint-btn').disabled = false;
+    document.getElementById('vd-hint-btn').textContent = '💡 Hint';
+    document.getElementById('vd-hint-body').style.display = 'none';
+    document.getElementById('vd-hint-body').textContent = '';
+    document.getElementById('vd-feedback').style.display = 'none';
+    document.getElementById('vd-feedback').textContent = '';
+    document.getElementById('vd-rating').style.display = 'none';
+    document.getElementById('vd-rating').innerHTML = '';
+    // Focus input for fast keyboard flow (no autofocus on mobile to avoid scroll jumps)
+    if (window.matchMedia && !window.matchMedia('(max-width: 540px)').matches) {
+      setTimeout(() => input.focus(), 50);
+    }
+  }
+
+  function setVerbDrillDirection(dir, btn) {
+    document.querySelectorAll('.vd-dir-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    gVerbDrillState.direction = dir;
+    // Re-render the current card with the new prompt side. Don't re-fetch.
+    showVerbDrillCard();
+  }
+
+  function onVerbDrillKey(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (gVerbDrillState.isAnswered) {
+        // After answering, Enter advances if a rating button is visible
+        const firstRate = document.querySelector('#vd-rating .vd-rate-btn');
+        if (firstRate) firstRate.click();
+      } else {
+        submitVerbDrillAnswer();
+      }
+    }
+  }
+
+  function showVerbDrillHint() {
+    const card = gVerbDrillState.currentCard;
+    if (!card || !card.intuition) {
+      document.getElementById('vd-hint-body').textContent = 'No hint stored for this verb.';
+      document.getElementById('vd-hint-body').style.display = '';
+      document.getElementById('vd-hint-btn').disabled = true;
+      gVerbDrillState.hintShown = true;
+      return;
+    }
+    document.getElementById('vd-hint-body').textContent = card.intuition;
+    document.getElementById('vd-hint-body').style.display = '';
+    document.getElementById('vd-hint-btn').disabled = true;
+    document.getElementById('vd-hint-btn').textContent = '💡 Hint shown';
+    gVerbDrillState.hintShown = true;
+  }
+
+  function submitVerbDrillAnswer() {
+    const s = gVerbDrillState;
+    if (!s || !s.currentCard || s.isAnswered) return;
+    const card = s.currentCard;
+    const isP2A = s.direction === 'p2a';
+    const expected = isP2A ? card.aorist : card.word;
+    const userInput = document.getElementById('vd-input').value;
+    const isCorrect = normalizeGreek(userInput) === normalizeGreek(expected);
+
+    s.isAnswered = true;
+    s.lastResult = { correct: isCorrect, expected, picked: userInput };
+
+    const input = document.getElementById('vd-input');
+    input.classList.add(isCorrect ? 'correct' : 'wrong');
+    input.disabled = true;
+    document.getElementById('vd-submit').disabled = true;
+
+    const fb = document.getElementById('vd-feedback');
+    if (isCorrect) {
+      fb.className = 'vd-feedback correct';
+      fb.innerHTML = '✓ Correct! &nbsp;<span class="vd-correct-answer">' + escapeHtml(expected) + '</span>';
+    } else {
+      fb.className = 'vd-feedback wrong';
+      fb.innerHTML = '✗ Correct answer: <span class="vd-correct-answer">' + escapeHtml(expected) + '</span>';
+    }
+    fb.style.display = '';
+
+    // Render rating buttons. If incorrect, show just "Got it" (treats as hard).
+    // If correct, show full Hard/Good/Easy choice.
+    const rating = document.getElementById('vd-rating');
+    if (isCorrect) {
+      rating.innerHTML =
+        '<button class="vd-rate-btn vd-rate-hard" onclick="rateVerbDrillCard(\'hard\')">😕 Hard</button>' +
+        '<button class="vd-rate-btn vd-rate-good" onclick="rateVerbDrillCard(\'good\')">👍 Good</button>' +
+        '<button class="vd-rate-btn vd-rate-easy" onclick="rateVerbDrillCard(\'easy\')">✨ Easy</button>';
+    } else {
+      rating.innerHTML = '<button class="vd-rate-btn vd-rate-hard" onclick="rateVerbDrillCard(\'hard\')">👌 Got it — next</button>';
+    }
+    rating.style.display = '';
+  }
+
+  // Tiny HTML-escape since the prompt is user/DB-controlled Greek.
+  // Greek text has no chars that need escaping for HTML except <, >, &.
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  async function rateVerbDrillCard(rating) {
+    const s = gVerbDrillState;
+    if (!s || !s.currentCard) return;
+    const card = s.currentCard;
+    // Reuse the existing SM-2 algorithm — DO NOT reinvent it (engineering rule #10).
+    await updateSrsState(card, rating);
+    s.sessionReviewed++;
+    await loadNextVerbDrillCard();
   }
 
   async function updateSrsState(card, rating) {
