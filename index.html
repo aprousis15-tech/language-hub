@@ -1216,6 +1216,34 @@
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
   .lang-tab.active-verbdrill { color: #1565c0; border-bottom-color: #1565c0; background: white; font-weight: 700; }
+  .lang-tab.active-noundrill { color: #6a4c41; border-bottom-color: #6a4c41; background: white; font-weight: 700; }
+  .lang-tab.active-adjdrill { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
+  .lang-tab.active-impdrill { color: #e65100; border-bottom-color: #e65100; background: white; font-weight: 700; }
+  /* Shared SRS-drill styling (uses same vd-* classes by reference, but per-tab accent colors via the .srs-tinted wrapper) */
+  .srs-tinted.srs-noun .vd-header h2 { color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-prompt-word { color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-dir-btn { border-color: #d7ccc8; color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-dir-btn.active { background: #6a4c41; border-color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-input { border-color: #d7ccc8; color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-input:focus { border-color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-submit-btn { background: #6a4c41; border-color: #6a4c41; }
+  .srs-tinted.srs-noun .vd-hint-btn { color: #6a4c41; border-color: #6a4c41; }
+  .srs-tinted.srs-adj .vd-header h2 { color: #ad1457; }
+  .srs-tinted.srs-adj .vd-prompt-word { color: #ad1457; }
+  .srs-tinted.srs-adj .vd-dir-btn { border-color: #f8bbd0; color: #ad1457; }
+  .srs-tinted.srs-adj .vd-dir-btn.active { background: #ad1457; border-color: #ad1457; }
+  .srs-tinted.srs-adj .vd-input { border-color: #f8bbd0; color: #ad1457; }
+  .srs-tinted.srs-adj .vd-input:focus { border-color: #ad1457; }
+  .srs-tinted.srs-adj .vd-submit-btn { background: #ad1457; border-color: #ad1457; }
+  .srs-tinted.srs-adj .vd-hint-btn { color: #ad1457; border-color: #ad1457; }
+  .srs-tinted.srs-imp .vd-header h2 { color: #e65100; }
+  .srs-tinted.srs-imp .vd-prompt-word { color: #e65100; }
+  .srs-tinted.srs-imp .vd-dir-btn { border-color: #ffcc80; color: #e65100; }
+  .srs-tinted.srs-imp .vd-dir-btn.active { background: #e65100; border-color: #e65100; }
+  .srs-tinted.srs-imp .vd-input { border-color: #ffcc80; color: #e65100; }
+  .srs-tinted.srs-imp .vd-input:focus { border-color: #e65100; }
+  .srs-tinted.srs-imp .vd-submit-btn { background: #e65100; border-color: #e65100; }
+  .srs-tinted.srs-imp .vd-hint-btn { color: #e65100; border-color: #e65100; }
 
   /* Verb Drill tab */
   .vd-header { text-align: center; margin: 8px 0 22px; }
@@ -1943,6 +1971,9 @@
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
   <button class="lang-tab" onclick="switchLang('verbdrill')">📚 Verb Drill</button>
+  <button class="lang-tab" onclick="switchLang('noundrill')">📦 Noun Drill</button>
+  <button class="lang-tab" onclick="switchLang('adjdrill')">🎨 Adj Drill</button>
+  <button class="lang-tab" onclick="switchLang('impdrill')">❗ Imp Drill</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -5283,6 +5314,111 @@
   </div>
 </div>
 
+<!-- NOUN DRILL — singular ↔ plural, generic SRS engine -->
+<div class="lang-panel srs-tinted srs-noun" id="panel-noundrill">
+  <div class="container">
+    <div class="vd-header">
+      <h2>📦 Noun Drill</h2>
+      <p>Type the plural form. Singular → plural is the default. Direction toggle inverts the prompt.</p>
+    </div>
+    <div class="vd-direction" id="noundrill-directions"></div>
+    <div class="vd-stats">
+      <span><strong id="noundrill-due-count">…</strong> due now</span>
+      <span><strong id="noundrill-session-count">0</strong> reviewed this session</span>
+    </div>
+    <div id="noundrill-card-wrap">
+      <div class="vd-card" id="noundrill-card">
+        <div class="vd-prompt-word" id="noundrill-prompt-word">Loading…</div>
+        <div class="vd-prompt-en" id="noundrill-prompt-en">&nbsp;</div>
+        <input type="text" class="vd-input" id="noundrill-input"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               lang="el"
+               onkeydown="onSrsDrillKey(event,'noundrill')">
+        <div class="vd-actions">
+          <button class="vd-submit-btn" id="noundrill-submit" onclick="submitSrsDrillAnswer('noundrill')">Check ✓</button>
+          <button class="vd-hint-btn" id="noundrill-hint-btn" onclick="showSrsDrillHint('noundrill')">💡 Hint</button>
+        </div>
+        <div class="vd-hint-body" id="noundrill-hint-body" style="display:none;"></div>
+        <div class="vd-feedback" id="noundrill-feedback" style="display:none;"></div>
+        <div class="vd-rating" id="noundrill-rating" style="display:none;"></div>
+      </div>
+      <div class="vd-empty" id="noundrill-empty" style="display:none;">
+        <p><strong>✓ Caught up.</strong> No nouns due. Come back later — your reviews will resurface per the SRS schedule.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADJECTIVE DRILL — masc ↔ fem ↔ neut forms -->
+<div class="lang-panel srs-tinted srs-adj" id="panel-adjdrill">
+  <div class="container">
+    <div class="vd-header">
+      <h2>🎨 Adjective Drill</h2>
+      <p>Type the matching gender form. Drill all three triples: masc / fem / neut. Direction toggle picks which transformation.</p>
+    </div>
+    <div class="vd-direction" id="adjdrill-directions"></div>
+    <div class="vd-stats">
+      <span><strong id="adjdrill-due-count">…</strong> due now</span>
+      <span><strong id="adjdrill-session-count">0</strong> reviewed this session</span>
+    </div>
+    <div id="adjdrill-card-wrap">
+      <div class="vd-card" id="adjdrill-card">
+        <div class="vd-prompt-word" id="adjdrill-prompt-word">Loading…</div>
+        <div class="vd-prompt-en" id="adjdrill-prompt-en">&nbsp;</div>
+        <input type="text" class="vd-input" id="adjdrill-input"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               lang="el"
+               onkeydown="onSrsDrillKey(event,'adjdrill')">
+        <div class="vd-actions">
+          <button class="vd-submit-btn" id="adjdrill-submit" onclick="submitSrsDrillAnswer('adjdrill')">Check ✓</button>
+          <button class="vd-hint-btn" id="adjdrill-hint-btn" onclick="showSrsDrillHint('adjdrill')">💡 Hint</button>
+        </div>
+        <div class="vd-hint-body" id="adjdrill-hint-body" style="display:none;"></div>
+        <div class="vd-feedback" id="adjdrill-feedback" style="display:none;"></div>
+        <div class="vd-rating" id="adjdrill-rating" style="display:none;"></div>
+      </div>
+      <div class="vd-empty" id="adjdrill-empty" style="display:none;">
+        <p><strong>✓ Caught up.</strong> No adjectives due. Come back later.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPERATIVE DRILL — verb → imperative form -->
+<div class="lang-panel srs-tinted srs-imp" id="panel-impdrill">
+  <div class="container">
+    <div class="vd-header">
+      <h2>❗ Imperative Drill</h2>
+      <p>Type the imperative form. Verb → command. Singular (informal) and plural (formal) directions.</p>
+    </div>
+    <div class="vd-direction" id="impdrill-directions"></div>
+    <div class="vd-stats">
+      <span><strong id="impdrill-due-count">…</strong> due now</span>
+      <span><strong id="impdrill-session-count">0</strong> reviewed this session</span>
+    </div>
+    <div id="impdrill-card-wrap">
+      <div class="vd-card" id="impdrill-card">
+        <div class="vd-prompt-word" id="impdrill-prompt-word">Loading…</div>
+        <div class="vd-prompt-en" id="impdrill-prompt-en">&nbsp;</div>
+        <input type="text" class="vd-input" id="impdrill-input"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               lang="el"
+               onkeydown="onSrsDrillKey(event,'impdrill')">
+        <div class="vd-actions">
+          <button class="vd-submit-btn" id="impdrill-submit" onclick="submitSrsDrillAnswer('impdrill')">Check ✓</button>
+          <button class="vd-hint-btn" id="impdrill-hint-btn" onclick="showSrsDrillHint('impdrill')">💡 Hint</button>
+        </div>
+        <div class="vd-hint-body" id="impdrill-hint-body" style="display:none;"></div>
+        <div class="vd-feedback" id="impdrill-feedback" style="display:none;"></div>
+        <div class="vd-rating" id="impdrill-rating" style="display:none;"></div>
+      </div>
+      <div class="vd-empty" id="impdrill-empty" style="display:none;">
+        <p><strong>✓ Caught up.</strong> No imperatives due. Come back later.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TRANSLATE PANEL -->
 <div class="lang-panel" id="panel-translate">
   <div class="container">
@@ -5846,9 +5982,9 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-verbdrill','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-verbdrill','active-noundrill','active-adjdrill','active-impdrill','active-translate','active-notes','active-sessions','active-review'));
     document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, verbdrill:9, translate:10, notes:11, sessions:12, review:13};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, verbdrill:9, noundrill:10, adjdrill:11, impdrill:12, translate:13, notes:14, sessions:15, review:16};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -5861,6 +5997,9 @@
     if (lang === 'sessions') renderSessions();
     if (lang === 'review') renderReviewPanel();
     if (lang === 'verbdrill') initVerbDrill();
+    if (lang === 'noundrill') initSrsDrill('noundrill');
+    if (lang === 'adjdrill') initSrsDrill('adjdrill');
+    if (lang === 'impdrill') initSrsDrill('impdrill');
   }
 
   // ── DAD PRACTICE ──
@@ -11310,6 +11449,247 @@
     await updateSrsState(card, rating);
     s.sessionReviewed++;
     await loadNextVerbDrillCard();
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // GENERIC SRS DRILL ENGINE — used by Noun / Adjective / Imperative drills
+  // (Verb Drill keeps its own bespoke functions since it shipped first per spec.)
+  // Configs describe: part_of_speech filter, allowed direction toggles, and
+  // (column → English-label) for the prompt-side display.
+  // ──────────────────────────────────────────────────────────────
+  const SRS_DRILL_CONFIGS = {
+    noundrill: {
+      partOfSpeech: 'noun',
+      // Filter: a row qualifies if plural is non-null. (Other columns can also
+      // be drilled in the future by adding direction modes.)
+      qualifierCol: 'plural',
+      directions: [
+        { key: 's2p', label: 'Singular → Plural', promptCol: 'word', answerCol: 'plural', placeholder: 'Type the plural…' },
+        { key: 'p2s', label: 'Plural → Singular', promptCol: 'plural', answerCol: 'word', placeholder: 'Type the singular…' }
+      ]
+    },
+    adjdrill: {
+      partOfSpeech: 'adj',
+      qualifierCol: 'feminine_form',  // also requires neuter_form (checked in query)
+      directions: [
+        { key: 'm2f', label: 'Masc → Fem', promptCol: 'word', answerCol: 'feminine_form', placeholder: 'Type the feminine form…' },
+        { key: 'm2n', label: 'Masc → Neut', promptCol: 'word', answerCol: 'neuter_form', placeholder: 'Type the neuter form…' },
+        { key: 'f2m', label: 'Fem → Masc', promptCol: 'feminine_form', answerCol: 'word', placeholder: 'Type the masculine form…' },
+        { key: 'n2m', label: 'Neut → Masc', promptCol: 'neuter_form', answerCol: 'word', placeholder: 'Type the masculine form…' }
+      ]
+    },
+    impdrill: {
+      partOfSpeech: 'verb',
+      qualifierCol: 'imperative_sg',  // also has imperative_pl
+      directions: [
+        { key: 'v2sg', label: 'Verb → Singular (informal)', promptCol: 'word', answerCol: 'imperative_sg', placeholder: 'Type the singular imperative…' },
+        { key: 'v2pl', label: 'Verb → Plural (formal)', promptCol: 'word', answerCol: 'imperative_pl', placeholder: 'Type the plural imperative…' }
+      ]
+    }
+  };
+  const SRS_DRILL_STATES = {}; // keyed by tabKey
+
+  async function initSrsDrill(tabKey) {
+    const cfg = SRS_DRILL_CONFIGS[tabKey];
+    if (!cfg) return;
+    if (!SRS_DRILL_STATES[tabKey]) {
+      SRS_DRILL_STATES[tabKey] = {
+        currentCard: null,
+        directionIdx: 0,
+        dueCount: 0,
+        sessionReviewed: 0,
+        isAnswered: false,
+        lastResult: null
+      };
+      // Build direction buttons once
+      const host = document.getElementById(tabKey + '-directions');
+      host.innerHTML = cfg.directions.map((d, i) =>
+        `<button class="vd-dir-btn${i === 0 ? ' active' : ''}" id="${tabKey}-dir-${d.key}" onclick="setSrsDrillDirection('${tabKey}',${i},this)">${d.label}</button>`
+      ).join('');
+    }
+    const ready = await ensureSupabaseReady();
+    if (!ready) {
+      document.getElementById(tabKey + '-prompt-word').textContent = 'Database not connected.';
+      return;
+    }
+    await loadNextSrsDrillCard(tabKey);
+  }
+
+  async function loadNextSrsDrillCard(tabKey) {
+    if (!window._supabase) return;
+    const cfg = SRS_DRILL_CONFIGS[tabKey];
+    const s = SRS_DRILL_STATES[tabKey];
+    const nowIso = new Date().toISOString();
+
+    // Build dynamic select with the columns we need for ANY direction in this drill
+    const dirCols = new Set(['id','word','translation','intuition','srs_due_at','srs_interval_days','srs_ease','srs_reps']);
+    cfg.directions.forEach(d => { dirCols.add(d.promptCol); dirCols.add(d.answerCol); });
+    const selectCols = [...dirCols].join(',');
+
+    let nextCard = null;
+    let dueCount = 0;
+    try {
+      let cardsQuery = window._supabase
+        .from('vocab')
+        .select(selectCols)
+        .eq('lang', 'greek')
+        .eq('part_of_speech', cfg.partOfSpeech)
+        .not(cfg.qualifierCol, 'is', null)
+        .lte('srs_due_at', nowIso);
+      // Adjective drill needs both feminine_form AND neuter_form non-null
+      if (tabKey === 'adjdrill') cardsQuery = cardsQuery.not('neuter_form', 'is', null);
+      // Imperative drill — also require imperative_pl
+      if (tabKey === 'impdrill') cardsQuery = cardsQuery.not('imperative_pl', 'is', null);
+      cardsQuery = cardsQuery.order('srs_due_at', { ascending: true }).limit(1);
+
+      let countQuery = window._supabase
+        .from('vocab')
+        .select('id', { count: 'exact', head: true })
+        .eq('lang', 'greek')
+        .eq('part_of_speech', cfg.partOfSpeech)
+        .not(cfg.qualifierCol, 'is', null)
+        .lte('srs_due_at', nowIso);
+      if (tabKey === 'adjdrill') countQuery = countQuery.not('neuter_form', 'is', null);
+      if (tabKey === 'impdrill') countQuery = countQuery.not('imperative_pl', 'is', null);
+
+      const [cardsRes, countRes] = await Promise.all([cardsQuery, countQuery]);
+      if (cardsRes.data && cardsRes.data.length > 0) nextCard = cardsRes.data[0];
+      dueCount = countRes.count || 0;
+    } catch (e) {
+      console.warn('SrsDrill[' + tabKey + ']: Supabase query failed', e);
+    }
+    s.currentCard = nextCard;
+    s.dueCount = dueCount;
+    s.isAnswered = false;
+    s.lastResult = null;
+    showSrsDrillCard(tabKey);
+  }
+
+  function showSrsDrillCard(tabKey) {
+    const cfg = SRS_DRILL_CONFIGS[tabKey];
+    const s = SRS_DRILL_STATES[tabKey];
+    document.getElementById(tabKey + '-due-count').textContent = s.dueCount;
+    document.getElementById(tabKey + '-session-count').textContent = s.sessionReviewed;
+
+    if (!s.currentCard) {
+      document.getElementById(tabKey + '-card').style.display = 'none';
+      document.getElementById(tabKey + '-empty').style.display = '';
+      return;
+    }
+    document.getElementById(tabKey + '-card').style.display = '';
+    document.getElementById(tabKey + '-empty').style.display = 'none';
+
+    const card = s.currentCard;
+    const dir = cfg.directions[s.directionIdx];
+    const promptWord = card[dir.promptCol];
+    if (!promptWord) {
+      // The currently-active direction has no value for this card; advance.
+      // (e.g. user toggled to Plural→Singular but the card's plural is still null somehow.)
+      document.getElementById(tabKey + '-prompt-word').textContent = '(skipping — card incomplete for this direction)';
+      return;
+    }
+    document.getElementById(tabKey + '-prompt-word').textContent = promptWord;
+    document.getElementById(tabKey + '-prompt-en').textContent = card.translation || ' ';
+    const input = document.getElementById(tabKey + '-input');
+    input.value = '';
+    input.placeholder = dir.placeholder;
+    input.className = 'vd-input';
+    input.disabled = false;
+    document.getElementById(tabKey + '-submit').disabled = false;
+    document.getElementById(tabKey + '-hint-btn').disabled = false;
+    document.getElementById(tabKey + '-hint-btn').textContent = '💡 Hint';
+    document.getElementById(tabKey + '-hint-body').style.display = 'none';
+    document.getElementById(tabKey + '-hint-body').textContent = '';
+    document.getElementById(tabKey + '-feedback').style.display = 'none';
+    document.getElementById(tabKey + '-feedback').textContent = '';
+    document.getElementById(tabKey + '-rating').style.display = 'none';
+    document.getElementById(tabKey + '-rating').innerHTML = '';
+    if (window.matchMedia && !window.matchMedia('(max-width: 540px)').matches) {
+      setTimeout(() => input.focus(), 50);
+    }
+  }
+
+  function setSrsDrillDirection(tabKey, idx, btn) {
+    document.querySelectorAll('#' + tabKey + '-directions .vd-dir-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    SRS_DRILL_STATES[tabKey].directionIdx = idx;
+    SRS_DRILL_STATES[tabKey].isAnswered = false;
+    showSrsDrillCard(tabKey);
+  }
+
+  function onSrsDrillKey(e, tabKey) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (SRS_DRILL_STATES[tabKey] && SRS_DRILL_STATES[tabKey].isAnswered) {
+        const firstRate = document.querySelector('#' + tabKey + '-rating .vd-rate-btn');
+        if (firstRate) firstRate.click();
+      } else {
+        submitSrsDrillAnswer(tabKey);
+      }
+    }
+  }
+
+  function showSrsDrillHint(tabKey) {
+    const s = SRS_DRILL_STATES[tabKey];
+    const body = document.getElementById(tabKey + '-hint-body');
+    const btn = document.getElementById(tabKey + '-hint-btn');
+    if (!s.currentCard || !s.currentCard.intuition) {
+      body.textContent = 'No hint stored for this entry.';
+      body.style.display = '';
+      btn.disabled = true;
+      return;
+    }
+    body.textContent = s.currentCard.intuition;
+    body.style.display = '';
+    btn.disabled = true;
+    btn.textContent = '💡 Hint shown';
+  }
+
+  function submitSrsDrillAnswer(tabKey) {
+    const cfg = SRS_DRILL_CONFIGS[tabKey];
+    const s = SRS_DRILL_STATES[tabKey];
+    if (!s || !s.currentCard || s.isAnswered) return;
+    const dir = cfg.directions[s.directionIdx];
+    const expected = s.currentCard[dir.answerCol];
+    const userInput = document.getElementById(tabKey + '-input').value;
+    const isCorrect = normalizeGreek(userInput) === normalizeGreek(expected);
+
+    s.isAnswered = true;
+    s.lastResult = { correct: isCorrect, expected, picked: userInput };
+
+    const input = document.getElementById(tabKey + '-input');
+    input.classList.add(isCorrect ? 'correct' : 'wrong');
+    input.disabled = true;
+    document.getElementById(tabKey + '-submit').disabled = true;
+
+    const fb = document.getElementById(tabKey + '-feedback');
+    if (isCorrect) {
+      fb.className = 'vd-feedback correct';
+      fb.innerHTML = '✓ Correct! &nbsp;<span class="vd-correct-answer">' + escapeHtml(expected) + '</span>';
+    } else {
+      fb.className = 'vd-feedback wrong';
+      fb.innerHTML = '✗ Correct answer: <span class="vd-correct-answer">' + escapeHtml(expected) + '</span>';
+    }
+    fb.style.display = '';
+
+    const rating = document.getElementById(tabKey + '-rating');
+    if (isCorrect) {
+      rating.innerHTML =
+        '<button class="vd-rate-btn vd-rate-hard" onclick="rateSrsDrillCard(\'' + tabKey + '\',\'hard\')">😕 Hard</button>' +
+        '<button class="vd-rate-btn vd-rate-good" onclick="rateSrsDrillCard(\'' + tabKey + '\',\'good\')">👍 Good</button>' +
+        '<button class="vd-rate-btn vd-rate-easy" onclick="rateSrsDrillCard(\'' + tabKey + '\',\'easy\')">✨ Easy</button>';
+    } else {
+      rating.innerHTML = '<button class="vd-rate-btn vd-rate-hard" onclick="rateSrsDrillCard(\'' + tabKey + '\',\'hard\')">👌 Got it — next</button>';
+    }
+    rating.style.display = '';
+  }
+
+  async function rateSrsDrillCard(tabKey, rating) {
+    const s = SRS_DRILL_STATES[tabKey];
+    if (!s || !s.currentCard) return;
+    await updateSrsState(s.currentCard, rating);
+    s.sessionReviewed++;
+    await loadNextSrsDrillCard(tabKey);
   }
 
   async function updateSrsState(card, rating) {
