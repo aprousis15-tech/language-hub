@@ -1781,6 +1781,12 @@
   }
   .grammar-mode-btn.grammar-mode-random:hover { background: #ffcc80; }
   .grammar-mode-btn.grammar-mode-random.active { background: #ef6c00; color: white; border-color: #bf360c; }
+  .grammar-mode-group-label {
+    width: 100%; text-align: center; font-size: 0.72rem; color: #4527a0;
+    font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    margin: 10px 0 -2px; opacity: 0.75;
+  }
+  .grammar-mode-group-label:first-child { margin-top: 0; }
 
   /* Drill rule disclosure (Rules ↔ Grammar Drill link) */
   .drill-rule-disclosure {
@@ -2877,20 +2883,33 @@
     </div>
 
     <div class="grammar-mode-bar">
-      <button class="grammar-mode-btn active" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
+      <div class="grammar-mode-group-label">▸ 🔥 Verbs</div>
+      <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past (Aorist)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past Tense (Aorist)</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
-      <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα + verb)</button>
+      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('verbs')" title="Pick a random verb drill">🎲 Random verb</button>
+
+      <div class="grammar-mode-group-label">▸ 📦 Nouns</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
+      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('nouns')" title="Pick a random noun drill">🎲 Random noun</button>
+
+      <div class="grammar-mode-group-label">▸ 🎨 Adjectives</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
+      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('adj')" title="Pick a random adjective drill">🎲 Random adjective</button>
+
+      <div class="grammar-mode-group-label">▸ ⚡ Adverbs</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('time',this)">⏰ Time Expressions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('days',this)">📅 Days of Week</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('qstart',this)">🙋 Question Starters</button>
-      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random grammar drill">🎲 Random</button>
+      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('adv')" title="Pick a random adverb drill">🎲 Random adverb</button>
+
+      <div class="grammar-mode-group-label">▸ All</div>
+      <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random drill from any category">🎲 Random (all)</button>
     </div>
 
     <!-- Rules disclosure — auto-updates to the rule for the current drill. -->
@@ -2906,7 +2925,7 @@
     </div>
 
     <!-- Articles drill -->
-    <div id="grammar-articles">
+    <div id="grammar-articles" style="display:none;">
       <div class="grammar-card">
         <div class="grammar-prompt-greek" id="art-prompt">…</div>
         <div class="grammar-prompt-en" id="art-en">…</div>
@@ -3058,7 +3077,7 @@
     </div>
 
     <!-- Type A verbs drill -->
-    <div id="grammar-typea" style="display:none;">
+    <div id="grammar-typea">
       <div class="grammar-card">
         <div class="grammar-prompt-greek" id="typea-prompt">…</div>
         <div class="grammar-prompt-en" id="typea-en">…</div>
@@ -5990,7 +6009,7 @@
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
-    if (lang === 'grammar') { initArticlesDrill(); updateDrillRuleDisclosure('articles'); }
+    if (lang === 'grammar') { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
@@ -7503,11 +7522,21 @@
     if (mode === 'qstart') initQstartDrill();
   }
 
-  // Pick a random non-Random drill mode. Reuses setGrammarMode so all the
-  // visibility + init wiring stays in one place.
-  function setRandomGrammarMode() {
-    const modes = ['articles', 'verbs', 'preps', 'adj', 'gtap', 'typea', 'time', 'neg', 'aorist', 'qwords', 'future', 'days', 'qstart'];
-    const pick = modes[Math.floor(Math.random() * modes.length)];
+  // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
+  const GRAMMAR_MODE_GROUPS = {
+    verbs: ['typea','verbs','aorist','future','neg'],
+    nouns: ['articles','gtap','preps'],
+    adj:   ['adj'],
+    adv:   ['time','days','qwords','qstart'],
+  };
+
+  // Pick a random drill mode. With no argument: across all categories.
+  // With a category key ('verbs'|'nouns'|'adj'|'adv'): within that group.
+  function setRandomGrammarMode(group) {
+    const pool = group ? (GRAMMAR_MODE_GROUPS[group] || []) :
+      Object.values(GRAMMAR_MODE_GROUPS).flat();
+    if (!pool.length) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
     const btn = [...document.querySelectorAll('.grammar-mode-btn')]
       .find(b => {
         const m = (b.getAttribute('onclick') || '').match(/setGrammarMode\('([^']+)'/);
