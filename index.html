@@ -2883,6 +2883,7 @@
       <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('vgroup',this)">🗂️ Verb Group Classifier</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past (Aorist)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
@@ -3019,6 +3020,25 @@
       <div class="grammar-progress">
         <span id="future-progress">Question 1</span>
         <span class="grammar-score" id="future-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Verb Group Classifier — show present verb, pick the group, learn the perfective -->
+    <div id="grammar-vgroup" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="vgroup-en">…</div>
+        <div class="grammar-prompt-greek" id="vgroup-prompt">…</div>
+        <div class="grammar-options" id="vgroup-options"></div>
+        <div class="grammar-feedback" id="vgroup-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gVgroupBack()">← Back</button>
+        <button class="grammar-btn" onclick="gVgroupNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gVgroupShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="vgroup-progress">Question 1</span>
+        <span class="grammar-score" id="vgroup-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -3387,6 +3407,7 @@
       <button class="practice-topic-chip" onclick="setPracticeTopic('timetriage',this)">🕐 Time triage</button>
 
       <div class="practice-topic-group-label">▸ Grammar Focus</div>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('irregulars',this)">🔥 Top Irregulars (13)</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('aorist',this)">⏪ Past Tense</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('future',this)">⏩ Future θα</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('qwords',this)">❓ Question Words</button>
@@ -3762,6 +3783,40 @@
           <span class="rule-greek">Αυτό το βιβλίο είναι καλό</span> — <span class="rule-en">This book is good.</span><br>
           <span class="rule-greek">Εκείνο το βιβλίο, όχι αυτό</span> — <span class="rule-en">That book, not this one.</span><br>
           <div class="rule-callout">In casual spoken Greek, <span class="rule-greek">αυτός</span> covers both. Reach for <span class="rule-greek">εκείνος</span> only when you're explicitly contrasting near vs. far.</div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">🎭 Aspect-trigger cheat sheet — which form to pick</div>
+        <div class="rule-card-body">
+          Greek splits past, future, and subjunctive by aspect. Lock the trigger words and the choice is automatic.
+          <table class="rule-table">
+            <tr><th>Trigger</th><th>Aspect</th><th>Example</th></tr>
+            <tr><td><span class="rule-greek">πάντα · συνήθως · κάθε · τώρα</span></td><td>Imperfective</td><td><span class="rule-greek">Πάντα <strong>μιλάω</strong> ελληνικά</span></td></tr>
+            <tr><td><span class="rule-greek">αύριο · απόψε · σε λίγο</span> (with θα)</td><td>Perfective</td><td><span class="rule-greek">Αύριο θα <strong>μιλήσω</strong></span></td></tr>
+            <tr><td><span class="rule-greek">όταν · αν · πριν</span> (future event)</td><td>Perfective</td><td><span class="rule-greek">Όταν <strong>τελειώσω</strong>, θα φύγω</span></td></tr>
+            <tr><td><span class="rule-greek">να</span> + θέλω / μπορώ / πρέπει (one-time act)</td><td>Perfective</td><td><span class="rule-greek">Θέλω να <strong>μάθω</strong> αυτή τη λέξη</span></td></tr>
+            <tr><td><span class="rule-greek">να</span> + θέλω / μπορώ (habitual / ongoing)</td><td>Imperfective</td><td><span class="rule-greek">Μου αρέσει να <strong>διαβάζω</strong></span></td></tr>
+          </table>
+          <div class="rule-callout"><strong>The reflex:</strong> spot the trigger word first, then choose the aspect. If you can't find a trigger, the question is which mental picture you want — repeated/ongoing (imperfective) or single event (perfective).</div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">🔄 Perfective stem-change patterns</div>
+        <div class="rule-card-body">
+          Most regular verbs follow one of these letter swaps when forming the perfective. Once you know the ending of the present, the perfective is predictable.
+          <table class="rule-table">
+            <tr><th>Present ends in</th><th>Perfective</th><th>Examples</th></tr>
+            <tr><td>vowel + <span class="rule-greek">-ω</span> · <span class="rule-greek">-ζω</span></td><td><span class="rule-greek">-σω</span></td><td><span class="rule-greek">αγοράζω → αγοράσω · διαβάζω → διαβάσω · ακούω → ακούσω</span></td></tr>
+            <tr><td><span class="rule-greek">-πω · -βω · -φω · -ευω · -αυω · -πτω</span></td><td><span class="rule-greek">-ψω</span></td><td><span class="rule-greek">γράφω → γράψω · δουλεύω → δουλέψω · ταξιδεύω → ταξιδέψω</span></td></tr>
+            <tr><td><span class="rule-greek">-κω · -γω · -χω</span></td><td><span class="rule-greek">-ξω</span></td><td><span class="rule-greek">τρέχω → τρέξω · ανοίγω → ανοίξω · προσέχω → προσέξω</span></td></tr>
+            <tr><td><span class="rule-greek">-χνω</span> (drops the ν)</td><td><span class="rule-greek">-ξω</span></td><td><span class="rule-greek">φτιάχνω → φτιάξω · ψάχνω → ψάξω</span></td></tr>
+            <tr><td><span class="rule-greek">-τω · -δω · -θω · -νω</span></td><td><span class="rule-greek">-σω</span></td><td><span class="rule-greek">καθαρίζω → καθαρίσω · χάνω → χάσω · πιστεύω → πιστέψω</span></td></tr>
+            <tr><td>B-class <span class="rule-greek">-άω / -ώ</span></td><td><span class="rule-greek">-ήσω</span></td><td><span class="rule-greek">μιλάω → μιλήσω · ξυπνάω → ξυπνήσω · περπατάω → περπατήσω</span></td></tr>
+          </table>
+          <div class="rule-callout"><strong>Trap to lock in:</strong> <span class="rule-greek">φτιάχνω → φτιάξω</span> (not <span class="rule-greek">φτιαχσω</span>). The χν combination collapses to ξ — there's no σ in there.</div>
+          <div class="rule-callout"><strong>The other trap:</strong> irregular dual-stem verbs (<span class="rule-greek">βλέπω/δω, λέω/πω, βρίσκω/βρω, βάζω/βάλω, παίρνω/πάρω, δίνω/δώσω, μαθαίνω/μάθω, τρώω/φάω, πίνω/πιω, φεύγω/φύγω, βγαίνω/βγω, έρχομαι/έρθω, πάω/πάω</span>) don't follow these rules. <strong>Memorize as fixed chunks</strong> — see the table in Foundations → Verbs → Part 6.</div>
         </div>
       </div>
     </div>
@@ -4456,9 +4511,9 @@
 
     <!-- ─── PERSISTENT LEAKS + LOCKED PATTERNS (May 14 takeaways) ─── -->
     <div class="rules-section">
-      <div class="rules-section-title">🎯 Drill Priorities (May 14 takeaways)</div>
+      <div class="rules-section-title">🎯 Drill Priorities (May 18 takeaways)</div>
       <p style="color:#4a6360; font-size:0.92rem; margin: -4px 0 14px;">
-        From analyzing the 20-sentence corpus across multiple rounds. Use this to spend your daily drill time on what's actually leaking, not what's already locked.
+        From analyzing the 4-task exercise corpus (~25/42 grammar correct). Use this to spend your daily drill time on what's actually leaking, not what's already locked.
       </p>
 
       <div class="rule-card">
@@ -4466,15 +4521,19 @@
         <div class="rule-card-body">
           <table class="rule-table">
             <tr><th>Leak</th><th>Severity</th></tr>
-            <tr><td>Missing δεν before κανείς / τίποτα / ποτέ</td><td><span class="rule-severity critical">🔴 top</span></td></tr>
-            <tr><td>Month names unrecognizable (esp. Ιούλιος)</td><td><span class="rule-severity critical">🔴 top</span></td></tr>
-            <tr><td>Masculine accusative drop (πατέρας → πατέρα)</td><td><span class="rule-severity high">🟠</span></td></tr>
-            <tr><td>TE rule regression (στη(ν) overuse on days/months)</td><td><span class="rule-severity high">🟠</span></td></tr>
-            <tr><td>Double consonants in verbs (θέλλει)</td><td><span class="rule-severity marker">🟡</span></td></tr>
-            <tr><td>πριν vs προτού</td><td><span class="rule-severity marker">🟡</span></td></tr>
+            <tr><td><strong>Person mismatch</strong> — defaulting to 1st/3rd singular when subject demands 2nd plural (Εσείς → -ετε), 3rd plural (τα παιδιά → -ουν), etc.</td><td><span class="rule-severity critical">🔴 top</span></td></tr>
+            <tr><td><strong>Irregular dual-stem verbs</strong> — applying -ησω/-ψω rules to verbs that have totally different stems (φεύγω → φύγ-, not φευγσ-; βάζω → βαλ-; βρίσκω → βρ-)</td><td><span class="rule-severity critical">🔴 top</span></td></tr>
+            <tr><td>Aspect after time adverbs (πάντα → imperfective vs αύριο+θα → perfective)</td><td><span class="rule-severity high">🟠</span></td></tr>
+            <tr><td>χν → ξ collapse (φτιάχνω → φτιάξω, NOT φτιαχσω)</td><td><span class="rule-severity high">🟠</span></td></tr>
+            <tr><td>Missing δεν before κανείς / τίποτα / ποτέ</td><td><span class="rule-severity high">🟠</span></td></tr>
+            <tr><td>Masculine accusative drop (πατέρας → πατέρα)</td><td><span class="rule-severity marker">🟡</span></td></tr>
+            <tr><td>TE rule regression (στη(ν) overuse on days/months)</td><td><span class="rule-severity marker">🟡</span></td></tr>
           </table>
           <div class="rule-callout">
-            <strong>Tonight's session:</strong> <a class="review-link" onclick="switchLang('practice')" style="cursor:pointer;">go to the 🚫 δεν reflex and 🗓️ Months chips in Practice</a> and run 5 minutes each.
+            <strong>The metacognitive fix for person mismatch:</strong> before conjugating, name the subject's person/number out loud. "Εσείς is 2nd plural → -ετε." That single discipline step eliminates ~6 errors per session.
+          </div>
+          <div class="rule-callout">
+            <strong>Tonight's session:</strong> <a class="review-link" onclick="openGrammarMode('verbdrill')" style="cursor:pointer;">📚 Verb Pairs (SRS) for irregular dual-stem verbs</a> · <a class="review-link" onclick="openGrammarMode('aspect')" style="cursor:pointer;">🎭 Aspect drill</a> · <a class="review-link" onclick="openGrammarMode('vgroup')" style="cursor:pointer;">🗂️ Verb Group Classifier</a>.
           </div>
         </div>
       </div>
@@ -4826,6 +4885,7 @@
             <tr><td>to learn</td><td><span class="rule-greek">να μάθω</span></td><td><span class="rule-greek">μαθαίνω</span></td><td><span class="rule-greek">έμαθα</span></td><td><span class="rule-greek">μάθαινα</span></td></tr>
             <tr><td>to leave</td><td><span class="rule-greek">να φύγω</span></td><td><span class="rule-greek">φεύγω</span></td><td><span class="rule-greek">έφυγα</span></td><td><span class="rule-greek">έφευγα</span></td></tr>
             <tr><td>to go out</td><td><span class="rule-greek">να βγω</span></td><td><span class="rule-greek">βγαίνω</span></td><td><span class="rule-greek">βγήκα</span></td><td><span class="rule-greek">έβγαινα</span></td></tr>
+            <tr><td>to put / wear</td><td><span class="rule-greek">να βάλω</span></td><td><span class="rule-greek">βάζω</span></td><td><span class="rule-greek">έβαλα</span></td><td><span class="rule-greek">έβαζα</span></td></tr>
           </table>
           <div class="found-callout"><strong>Drill move:</strong> say all four forms in sequence for each verb — <em>να δω · βλέπω · είδα · έβλεπα</em>. That cadence is what locks them in. The aorist is the irregular one to memorize first; the imperfect is mostly predictable (ε- + present stem with shift).</div>
         </div>
@@ -7582,6 +7642,7 @@
     document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
+    document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
     document.getElementById('grammar-noundrill').style.display = mode === 'noundrill' ? '' : 'none';
     document.getElementById('grammar-adjdrill').style.display = mode === 'adjdrill' ? '' : 'none';
@@ -7602,6 +7663,7 @@
     if (mode === 'qwords') initQwordsDrill();
     if (mode === 'future') initFutureDrill();
     if (mode === 'aspect') initAspectDrill();
+    if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'verbdrill') initVerbDrill();
     if (mode === 'noundrill') initSrsDrill('noundrill');
     if (mode === 'adjdrill') initSrsDrill('adjdrill');
@@ -7612,7 +7674,7 @@
 
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
-    verbs: ['typea','verbs','aspect','aorist','future','neg'],
+    verbs: ['typea','verbs','aspect','vgroup','aorist','future','neg'],
     nouns: ['articles','gtap','preps'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
@@ -8521,6 +8583,113 @@
   }
   function gAspectShuffle() { initAspectDrill(); }
 
+  // ── Verb Group Classifier ──
+  // Show a present-tense verb. User picks the group; feedback reveals the
+  // perfective stem. Trains the "diagnose-before-conjugate" reflex that
+  // prevents φευγσουν / βασω class errors.
+  const VGROUP_OPTIONS = ['Α (letter swap)', 'Β (-άω/-ώ → -ήσω)', '-εύω / -ώνω', 'Irregular dual-stem'];
+  const VGROUP_QUESTIONS = [
+    // A — letter swap
+    { en: 'to write',          word: 'γράφω',     answer: 'Α (letter swap)',          perfective: 'γράψω',     hint: 'A: -φω → -ψω. Same family as -βω/-πω/-πτω.' },
+    { en: 'to read',           word: 'διαβάζω',   answer: 'Α (letter swap)',          perfective: 'διαβάσω',   hint: 'A: -ζω → -σω.' },
+    { en: 'to buy',            word: 'αγοράζω',   answer: 'Α (letter swap)',          perfective: 'αγοράσω',   hint: 'A: -ζω → -σω.' },
+    { en: 'to clean',          word: 'καθαρίζω',  answer: 'Α (letter swap)',          perfective: 'καθαρίσω',  hint: 'A: -ζω → -σω.' },
+    { en: 'to run',            word: 'τρέχω',     answer: 'Α (letter swap)',          perfective: 'τρέξω',     hint: 'A: -χω → -ξω.' },
+    { en: 'to open',           word: 'ανοίγω',    answer: 'Α (letter swap)',          perfective: 'ανοίξω',    hint: 'A: -γω → -ξω.' },
+    { en: 'to make / fix',     word: 'φτιάχνω',   answer: 'Α (letter swap)',          perfective: 'φτιάξω',    hint: '⚠️ Trap. -χνω → -ξω (the ν drops). NOT φτιαχσω.' },
+    { en: 'to look for',       word: 'ψάχνω',     answer: 'Α (letter swap)',          perfective: 'ψάξω',      hint: '-χνω → -ξω (the ν drops).' },
+    { en: 'to lose',           word: 'χάνω',      answer: 'Α (letter swap)',          perfective: 'χάσω',      hint: 'A: -νω → -σω.' },
+    { en: 'to close',          word: 'κλείνω',    answer: 'Α (letter swap)',          perfective: 'κλείσω',    hint: 'A: -νω → -σω.' },
+    // B — -άω/-ώ → -ήσω
+    { en: 'to speak',          word: 'μιλάω',     answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'μιλήσω',    hint: 'B: -άω → -ήσω.' },
+    { en: 'to wake up',        word: 'ξυπνάω',    answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'ξυπνήσω',   hint: 'B: -άω → -ήσω.' },
+    { en: 'to ask',            word: 'ρωτάω',     answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'ρωτήσω',    hint: 'B: -άω → -ήσω.' },
+    { en: 'to walk',           word: 'περπατάω',  answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'περπατήσω', hint: 'B: -άω → -ήσω.' },
+    { en: 'to drive',          word: 'οδηγώ',     answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'οδηγήσω',   hint: 'B (stress-on-ending): -ώ → -ήσω.' },
+    { en: 'to try',            word: 'προσπαθώ',  answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'προσπαθήσω',hint: 'B: -ώ → -ήσω.' },
+    // -εύω / -ώνω group
+    { en: 'to travel',         word: 'ταξιδεύω',  answer: '-εύω / -ώνω',              perfective: 'ταξιδέψω',  hint: '-εύω → -ψω. The ευ collapses, σ disappears.' },
+    { en: 'to work',           word: 'δουλεύω',   answer: '-εύω / -ώνω',              perfective: 'δουλέψω',   hint: '-εύω → -ψω.' },
+    { en: 'to cook',           word: 'μαγειρεύω', answer: '-εύω / -ώνω',              perfective: 'μαγειρέψω', hint: '-εύω → -ψω.' },
+    { en: 'to finish',         word: 'τελειώνω',  answer: '-εύω / -ώνω',              perfective: 'τελειώσω',  hint: '-ώνω → -ώσω.' },
+    // Irregular dual-stem
+    { en: 'to see',            word: 'βλέπω',     answer: 'Irregular dual-stem',      perfective: 'δω',        hint: '🔥 Irregular. Perfective stem δ-. NO predictable pattern — memorize as a chunk.' },
+    { en: 'to say',            word: 'λέω',       answer: 'Irregular dual-stem',      perfective: 'πω',        hint: '🔥 Irregular. Perfective stem π-. Memorize.' },
+    { en: 'to find',           word: 'βρίσκω',    answer: 'Irregular dual-stem',      perfective: 'βρω',       hint: '🔥 Irregular. Perfective stem βρ-. Looks like -σκω regular but isn\'t.' },
+    { en: 'to put / wear',     word: 'βάζω',      answer: 'Irregular dual-stem',      perfective: 'βάλω',      hint: '🔥 Irregular. Looks like a regular -ζω verb (would give βάσω) but the stem is βαλ-. Common trap.' },
+    { en: 'to take / get',     word: 'παίρνω',    answer: 'Irregular dual-stem',      perfective: 'πάρω',      hint: '🔥 Irregular. Looks like a regular -νω verb but the stem is πάρ-.' },
+    { en: 'to give',           word: 'δίνω',      answer: 'Irregular dual-stem',      perfective: 'δώσω',      hint: '🔥 Irregular. Stem δώσ- (vowel changes too).' },
+    { en: 'to learn',          word: 'μαθαίνω',   answer: 'Irregular dual-stem',      perfective: 'μάθω',      hint: '🔥 Irregular. Stem μαθ- (the αιν drops).' },
+    { en: 'to leave',          word: 'φεύγω',     answer: 'Irregular dual-stem',      perfective: 'φύγω',      hint: '🔥 Irregular. Stem φύγ-. The ευ → υ shift is the trap.' },
+    { en: 'to eat',            word: 'τρώω',      answer: 'Irregular dual-stem',      perfective: 'φάω',       hint: '🔥 Irregular. Completely different word for the perfective: φα-.' },
+    { en: 'to drink',          word: 'πίνω',      answer: 'Irregular dual-stem',      perfective: 'πιω',       hint: '🔥 Irregular. Perfective stem πι- (no -σω).' },
+  ];
+
+  let gVgroupDeck = [], gVgroupIndex = 0, gVgroupCorrect = 0, gVgroupTotal = 0, gVgroupAnswered = false;
+
+  function initVgroupDrill() {
+    gVgroupDeck = shuffled(VGROUP_QUESTIONS);
+    gVgroupIndex = 0;
+    gVgroupCorrect = 0;
+    gVgroupTotal = 0;
+    gVgroupAnswered = false;
+    showVgroupCard();
+  }
+
+  function showVgroupCard() {
+    const q = gVgroupDeck[gVgroupIndex];
+    if (!q) return;
+    document.getElementById('vgroup-en').textContent = q.en;
+    document.getElementById('vgroup-prompt').innerHTML = `<span class="grammar-prompt-blank">${q.word}</span>`;
+    const fb = document.getElementById('vgroup-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('vgroup-options');
+    optsHost.innerHTML = '';
+    VGROUP_OPTIONS.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.style.fontSize = '0.95rem'; // four longer labels need smaller text
+      b.style.padding = '10px 14px';
+      b.onclick = () => gVgroupAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('vgroup-progress').textContent = `Question ${gVgroupIndex + 1} of ${gVgroupDeck.length}`;
+    document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
+    gVgroupAnswered = false;
+  }
+
+  function gVgroupAnswer(picked, btnEl, q) {
+    if (gVgroupAnswered) return;
+    gVgroupAnswered = true;
+    gVgroupTotal++;
+    if (picked === q.answer) gVgroupCorrect++;
+    else recordMistake({
+      drill_type: 'verbs', prompt: `${q.en} (${q.word}) — group?`, correct: q.answer, picked: picked,
+      metadata: { source: 'vgroup', verb: q.word, perfective: q.perfective, hint: q.hint }
+    });
+    document.querySelectorAll('#vgroup-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    const fb = document.getElementById('vgroup-feedback');
+    fb.innerHTML = `${q.hint} <div style="margin-top:6px;"><strong>Perfective:</strong> <span class="rule-greek">${q.perfective}</span> (e.g. <em>θα ${q.perfective}</em>, <em>να ${q.perfective}</em>)</div>`;
+    fb.classList.add('show');
+    document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
+  }
+
+  function gVgroupNext() {
+    gVgroupIndex = (gVgroupIndex + 1) % gVgroupDeck.length;
+    showVgroupCard();
+  }
+  function gVgroupBack() {
+    gVgroupIndex = (gVgroupIndex - 1 + gVgroupDeck.length) % gVgroupDeck.length;
+    showVgroupCard();
+  }
+  function gVgroupShuffle() { initVgroupDrill(); }
+
   // ── Days of Week drill ──
   // Tests three things: which day matches the English, the article (most fem,
   // Σάββατο neuter), and the "no preposition" rule (την Δευτέρα, NOT στη Δευτέρα).
@@ -9203,6 +9372,7 @@
       case 'tutorqa':    return v => v.topic === 'Tutor Q&A';
       case 'easyout':    return v => v.topic === 'Easy Outs';
       case 'modifiers':  return v => v.topic === 'Modifiers';
+      case 'irregulars': return v => v.topic === 'Top Irregulars';
       case 'myweek':     return v => v.topic === 'My Week';
       case 'family':     return v => v.topic === 'Family';
       case 'workchip':   return v => v.topic === 'Work';
@@ -10153,6 +10323,40 @@
   ];
   const SURVIVAL_ENTRIES = makeSyntheticEntries(SURVIVAL_VOCAB, 'Survival', 'survival');
 
+  // ── 🔥 Top 13 Irregular Verbs — the dual-stem chunks ──
+  // These don't follow the regular -ησω / -ψω / -ξω / -σω patterns; the
+  // perfective stem is a different word. Memorize as 4-form bundles, not
+  // as patterns to derive. (See Foundations → Verbs → Part 6 for the table.)
+  const IRREGULARS_VOCAB = [
+    { word: 'βλέπω · να δω · είδα · έβλεπα', translation: 'to see', phonetic: 'VLEH-po · na tho · EE-tha · EH-vleh-pa', part_of_speech: 'verb',
+      intuition: '👁️ Irregular dual-stem. Present βλέπω, perfective stem δ- → να δω / θα δω. Aorist είδα. Imperfect έβλεπα.' },
+    { word: 'λέω · να πω · είπα · έλεγα', translation: 'to say', phonetic: 'LEH-o · na po · EE-pa · EH-leh-gha', part_of_speech: 'verb',
+      intuition: '🗣️ Irregular. Perfective stem π- → να πω / θα πω. Aorist είπα. Imperfect έλεγα.' },
+    { word: 'τρώω · να φάω · έφαγα · έτρωγα', translation: 'to eat', phonetic: 'TRO-o · na FA-o · EH-fa-gha · EH-tro-gha', part_of_speech: 'verb',
+      intuition: '🍽️ Irregular. Perfective stem φα- → να φάω / θα φάω. Aorist έφαγα. Imperfect έτρωγα.' },
+    { word: 'πηγαίνω · να πάω · πήγα · πήγαινα', translation: 'to go', phonetic: 'pee-GHE-no · na PA-o · PEE-gha · PEE-ghe-na', part_of_speech: 'verb',
+      intuition: '🚶 Irregular. πάω = perfective AND colloquial present. Aorist πήγα. Imperfect πήγαινα.' },
+    { word: 'πίνω · να πιω · ήπια · έπινα', translation: 'to drink', phonetic: 'PEE-no · na pyo · EE-pya · EH-pee-na', part_of_speech: 'verb',
+      intuition: '🥤 Irregular. Perfective stem πι- → να πιω. Aorist ήπια (η- augment, not ε-). Imperfect έπινα.' },
+    { word: 'βρίσκω · να βρω · βρήκα · έβρισκα', translation: 'to find', phonetic: 'VREES-ko · na vro · VREE-ka · EH-vree-ska', part_of_speech: 'verb',
+      intuition: '🔎 Irregular. Perfective stem βρ- → να βρω. Aorist βρήκα. Imperfect έβρισκα. Common mistake: writing βρω as a standalone — needs να/θα.' },
+    { word: 'έρχομαι · να έρθω · ήρθα · ερχόμουν', translation: 'to come', phonetic: 'EHR-ho-me · na EHR-tho · EER-tha · ehr-HO-moon', part_of_speech: 'verb',
+      intuition: '🚪 Irregular middle-voice. Present έρχομαι, perfective stem έρθ- → να έρθω. Aorist ήρθα. Imperfect ερχόμουν.' },
+    { word: 'παίρνω · να πάρω · πήρα · έπαιρνα', translation: 'to take / get', phonetic: 'PEHR-no · na PA-ro · PEE-ra · EH-pehr-na', part_of_speech: 'verb',
+      intuition: '🎫 Irregular. Perfective stem πάρ- → να πάρω. Aorist πήρα. Imperfect έπαιρνα. "πήραμε" (we got) is the form to memorize.' },
+    { word: 'δίνω · να δώσω · έδωσα · έδινα', translation: 'to give', phonetic: 'THEE-no · na THO-so · EH-tho-sa · EH-thee-na', part_of_speech: 'verb',
+      intuition: '🎁 Irregular. Perfective stem δώσ- → να δώσω. Aorist έδωσα. Imperfect έδινα. δίνω εξετάσεις = take exams (Greek: GIVE exams).' },
+    { word: 'μαθαίνω · να μάθω · έμαθα · μάθαινα', translation: 'to learn', phonetic: 'ma-THE-no · na MA-tho · EH-ma-tha · MA-the-na', part_of_speech: 'verb',
+      intuition: '📚 Irregular. Stem μαθ- → να μάθω. Aorist έμαθα. Imperfect μάθαινα.' },
+    { word: 'φεύγω · να φύγω · έφυγα · έφευγα', translation: 'to leave', phonetic: 'FEV-gho · na FEE-gho · EH-fee-gha · EH-fev-gha', part_of_speech: 'verb',
+      intuition: '🚪 Irregular dual-stem. Present φεύγω, perfective stem φύγ- → να φύγω. Aorist έφυγα. The ευ → υ shift is the trap.' },
+    { word: 'βγαίνω · να βγω · βγήκα · έβγαινα', translation: 'to go out / exit', phonetic: 'VYEH-no · na vgho · VYEE-ka · EH-vyeh-na', part_of_speech: 'verb',
+      intuition: '🚶‍♂️ Irregular. Perfective stem βγ- → να βγω. Aorist βγήκα. Imperfect έβγαινα.' },
+    { word: 'βάζω · να βάλω · έβαλα · έβαζα', translation: 'to put / wear', phonetic: 'VA-zo · na VA-lo · EH-va-la · EH-va-za', part_of_speech: 'verb',
+      intuition: '👕 Irregular. Present βάζω (-ζ-), perfective stem βαλ- → να βάλω. NOT να βασω. Aorist έβαλα. Common trap.' },
+  ];
+  const IRREGULARS_ENTRIES = makeSyntheticEntries(IRREGULARS_VOCAB, 'Top Irregulars', 'irreg');
+
   // ── 🗓️ My Week — verbs of routine + time markers ──
   const MY_WEEK_VOCAB = [
     { word: 'κάθε μέρα', translation: 'every day', phonetic: 'KA-the ME-ra', intuition: 'Habitual frequency. κάθε + day.' },
@@ -10612,6 +10816,7 @@
       .concat(EASY_OUTS_ENTRIES)
       .concat(MODIFIERS_ENTRIES)
       .concat(SURVIVAL_ENTRIES)
+      .concat(IRREGULARS_ENTRIES)
       .concat(MY_WEEK_ENTRIES)
       .concat(FAMILY_ENTRIES)
       .concat(WORK_ENTRIES)
