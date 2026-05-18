@@ -1976,10 +1976,6 @@
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
-  <button class="lang-tab" onclick="switchLang('verbdrill')">📚 Verb Drill</button>
-  <button class="lang-tab" onclick="switchLang('noundrill')">📦 Noun Drill</button>
-  <button class="lang-tab" onclick="switchLang('adjdrill')">🎨 Adj Drill</button>
-  <button class="lang-tab" onclick="switchLang('impdrill')">❗ Imp Drill</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
@@ -2890,16 +2886,19 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past (Aorist)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('verbdrill',this)">📚 Verb Pairs (SRS)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('verbs')" title="Pick a random verb drill">🎲 Random verb</button>
 
       <div class="grammar-mode-group-label">▸ 📦 Nouns</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('noundrill',this)">📦 Noun Pairs (SRS)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('nouns')" title="Pick a random noun drill">🎲 Random noun</button>
 
       <div class="grammar-mode-group-label">▸ 🎨 Adjectives</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('adjdrill',this)">🎨 Adj Forms (SRS)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('adj')" title="Pick a random adjective drill">🎲 Random adjective</button>
 
       <div class="grammar-mode-group-label">▸ ⚡ Adverbs</div>
@@ -2908,6 +2907,9 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('qwords',this)">❓ Question Words</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('qstart',this)">🙋 Question Starters</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('adv')" title="Pick a random adverb drill">🎲 Random adverb</button>
+
+      <div class="grammar-mode-group-label">▸ ❗ Imperatives</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('impdrill',this)">❗ Imperative Drill (SRS)</button>
 
       <div class="grammar-mode-group-label">▸ All</div>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random drill from any category">🎲 Random (all)</button>
@@ -3205,6 +3207,144 @@
       <div class="grammar-progress">
         <span id="adj-progress">Question 1</span>
         <span class="grammar-score" id="adj-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- ── SRS pair drills — lifted from the former standalone tabs ── -->
+
+    <!-- Verb Drill — present ↔ aorist, SRS-backed -->
+    <div id="grammar-verbdrill" style="display:none;">
+      <div class="vd-header">
+        <h2>📚 Verb Drill</h2>
+        <p>Type the answer. Real SRS scheduling — easy verbs float away, hard ones come back. Queries Supabase live; only shows verbs with a verified aorist form.</p>
+      </div>
+      <div class="vd-direction">
+        <button class="vd-dir-btn active" id="vd-dir-p2a" onclick="setVerbDrillDirection('p2a',this)">Present → Aorist</button>
+        <button class="vd-dir-btn" id="vd-dir-a2p" onclick="setVerbDrillDirection('a2p',this)">Aorist → Present</button>
+      </div>
+      <div class="vd-stats">
+        <span><strong id="vd-due-count">…</strong> due now</span>
+        <span><strong id="vd-session-count">0</strong> reviewed this session</span>
+      </div>
+      <div id="vd-card-wrap">
+        <div class="vd-card" id="vd-card">
+          <div class="vd-prompt-word" id="vd-prompt-word">Loading…</div>
+          <div class="vd-prompt-en" id="vd-prompt-en">&nbsp;</div>
+          <input type="text" class="vd-input" id="vd-input"
+                 placeholder="Type the aorist…"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 lang="el"
+                 onkeydown="onVerbDrillKey(event)">
+          <div class="vd-actions">
+            <button class="vd-submit-btn" id="vd-submit" onclick="submitVerbDrillAnswer()">Check ✓</button>
+            <button class="vd-hint-btn" id="vd-hint-btn" onclick="showVerbDrillHint()">💡 Hint</button>
+          </div>
+          <div class="vd-hint-body" id="vd-hint-body" style="display:none;"></div>
+          <div class="vd-feedback" id="vd-feedback" style="display:none;"></div>
+          <div class="vd-rating" id="vd-rating" style="display:none;"></div>
+        </div>
+        <div class="vd-empty" id="vd-empty" style="display:none;">
+          <p><strong>✓ Caught up.</strong> No verbs due right now. Come back later — your reviews will surface again according to the SRS schedule.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Noun Drill — singular ↔ plural, SRS-backed -->
+    <div id="grammar-noundrill" class="srs-tinted srs-noun" style="display:none;">
+      <div class="vd-header">
+        <h2>📦 Noun Drill</h2>
+        <p>Type the plural form. Singular → plural is the default. Direction toggle inverts the prompt.</p>
+      </div>
+      <div class="vd-direction" id="noundrill-directions"></div>
+      <div class="vd-stats">
+        <span><strong id="noundrill-due-count">…</strong> due now</span>
+        <span><strong id="noundrill-session-count">0</strong> reviewed this session</span>
+      </div>
+      <div id="noundrill-card-wrap">
+        <div class="vd-card" id="noundrill-card">
+          <div class="vd-prompt-word" id="noundrill-prompt-word">Loading…</div>
+          <div class="vd-prompt-en" id="noundrill-prompt-en">&nbsp;</div>
+          <input type="text" class="vd-input" id="noundrill-input"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 lang="el"
+                 onkeydown="onSrsDrillKey(event,'noundrill')">
+          <div class="vd-actions">
+            <button class="vd-submit-btn" id="noundrill-submit" onclick="submitSrsDrillAnswer('noundrill')">Check ✓</button>
+            <button class="vd-hint-btn" id="noundrill-hint-btn" onclick="showSrsDrillHint('noundrill')">💡 Hint</button>
+          </div>
+          <div class="vd-hint-body" id="noundrill-hint-body" style="display:none;"></div>
+          <div class="vd-feedback" id="noundrill-feedback" style="display:none;"></div>
+          <div class="vd-rating" id="noundrill-rating" style="display:none;"></div>
+        </div>
+        <div class="vd-empty" id="noundrill-empty" style="display:none;">
+          <p><strong>✓ Caught up.</strong> No nouns due. Come back later — your reviews will resurface per the SRS schedule.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Adjective Drill — gender forms, SRS-backed -->
+    <div id="grammar-adjdrill" class="srs-tinted srs-adj" style="display:none;">
+      <div class="vd-header">
+        <h2>🎨 Adjective Drill</h2>
+        <p>Type the matching gender form. Drill all three triples: masc / fem / neut. Direction toggle picks which transformation.</p>
+      </div>
+      <div class="vd-direction" id="adjdrill-directions"></div>
+      <div class="vd-stats">
+        <span><strong id="adjdrill-due-count">…</strong> due now</span>
+        <span><strong id="adjdrill-session-count">0</strong> reviewed this session</span>
+      </div>
+      <div id="adjdrill-card-wrap">
+        <div class="vd-card" id="adjdrill-card">
+          <div class="vd-prompt-word" id="adjdrill-prompt-word">Loading…</div>
+          <div class="vd-prompt-en" id="adjdrill-prompt-en">&nbsp;</div>
+          <input type="text" class="vd-input" id="adjdrill-input"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 lang="el"
+                 onkeydown="onSrsDrillKey(event,'adjdrill')">
+          <div class="vd-actions">
+            <button class="vd-submit-btn" id="adjdrill-submit" onclick="submitSrsDrillAnswer('adjdrill')">Check ✓</button>
+            <button class="vd-hint-btn" id="adjdrill-hint-btn" onclick="showSrsDrillHint('adjdrill')">💡 Hint</button>
+          </div>
+          <div class="vd-hint-body" id="adjdrill-hint-body" style="display:none;"></div>
+          <div class="vd-feedback" id="adjdrill-feedback" style="display:none;"></div>
+          <div class="vd-rating" id="adjdrill-rating" style="display:none;"></div>
+        </div>
+        <div class="vd-empty" id="adjdrill-empty" style="display:none;">
+          <p><strong>✓ Caught up.</strong> No adjectives due. Come back later.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Imperative Drill — verb → imperative form, SRS-backed -->
+    <div id="grammar-impdrill" class="srs-tinted srs-imp" style="display:none;">
+      <div class="vd-header">
+        <h2>❗ Imperative Drill</h2>
+        <p>Type the imperative form. Verb → command. Singular (informal) and plural (formal) directions.</p>
+      </div>
+      <div class="vd-direction" id="impdrill-directions"></div>
+      <div class="vd-stats">
+        <span><strong id="impdrill-due-count">…</strong> due now</span>
+        <span><strong id="impdrill-session-count">0</strong> reviewed this session</span>
+      </div>
+      <div id="impdrill-card-wrap">
+        <div class="vd-card" id="impdrill-card">
+          <div class="vd-prompt-word" id="impdrill-prompt-word">Loading…</div>
+          <div class="vd-prompt-en" id="impdrill-prompt-en">&nbsp;</div>
+          <input type="text" class="vd-input" id="impdrill-input"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 lang="el"
+                 onkeydown="onSrsDrillKey(event,'impdrill')">
+          <div class="vd-actions">
+            <button class="vd-submit-btn" id="impdrill-submit" onclick="submitSrsDrillAnswer('impdrill')">Check ✓</button>
+            <button class="vd-hint-btn" id="impdrill-hint-btn" onclick="showSrsDrillHint('impdrill')">💡 Hint</button>
+          </div>
+          <div class="vd-hint-body" id="impdrill-hint-body" style="display:none;"></div>
+          <div class="vd-feedback" id="impdrill-feedback" style="display:none;"></div>
+          <div class="vd-rating" id="impdrill-rating" style="display:none;"></div>
+        </div>
+        <div class="vd-empty" id="impdrill-empty" style="display:none;">
+          <p><strong>✓ Caught up.</strong> No imperatives due. Come back later.</p>
+        </div>
       </div>
     </div>
 
@@ -4795,7 +4935,7 @@
             <li><strong>The θέλω/μπορώ/πρέπει + να + aorist pattern.</strong> Unlocks every "I want to ___" sentence.</li>
           </ol>
           <p>Once these are automatic: add past tense (ε- prefix), imperatives, and the full middle voice. <strong>4-6 week roadmap at 20 minutes/day.</strong></p>
-          <p><a class="review-link" onclick="switchLang('verbdrill')" style="cursor:pointer;">→ Drill in the 📚 Verb Drill tab</a></p>
+          <p><a class="review-link" onclick="openGrammarMode('verbdrill')" style="cursor:pointer;">→ Drill in the 📚 Verb Pairs (SRS) mode of Grammar Drill</a></p>
         </div>
       </div>
     </div>
@@ -4963,7 +5103,7 @@
             <li><strong>σε + article contractions.</strong> Never write σε + article uncontracted: στο / στη(ν) / στον / στους / στις / στα.</li>
             <li><strong>Possessive pronoun comes AFTER the noun.</strong> Same word doubles as indirect object BEFORE a verb. Position = meaning.</li>
           </ol>
-          <p><a class="review-link" onclick="switchLang('noundrill')" style="cursor:pointer;">→ Drill in the 📦 Noun Drill tab</a></p>
+          <p><a class="review-link" onclick="openGrammarMode('noundrill')" style="cursor:pointer;">→ Drill in the 📦 Noun Pairs (SRS) mode of Grammar Drill</a></p>
         </div>
       </div>
     </div>
@@ -5106,7 +5246,7 @@
             <li><strong>πολύ as universal intensifier.</strong> Don't worry about agreement when using it adverbially.</li>
             <li><strong>Comparative = πιο + adjective.</strong> Single rule unlocks all comparisons.</li>
           </ol>
-          <p><a class="review-link" onclick="switchLang('adjdrill')" style="cursor:pointer;">→ Drill in the 🎨 Adj Drill tab</a></p>
+          <p><a class="review-link" onclick="openGrammarMode('adjdrill')" style="cursor:pointer;">→ Drill in the 🎨 Adj Forms (SRS) mode of Grammar Drill</a></p>
         </div>
       </div>
     </div>
@@ -5362,156 +5502,8 @@
             <li><strong>Polite version: μπορείς/μπορείτε να + verb.</strong> Universal request softener. Use it freely.</li>
             <li><strong>παρακαλώ added to ANY command.</strong> Even a curt <span class="rule-greek">Πες μου</span> becomes polite with <span class="rule-greek">, παρακαλώ</span> tagged on.</li>
           </ol>
-          <p><a class="review-link" onclick="switchLang('impdrill')" style="cursor:pointer;">→ Drill in the ❗ Imp Drill tab</a></p>
+          <p><a class="review-link" onclick="openGrammarMode('impdrill')" style="cursor:pointer;">→ Drill in the ❗ Imperative Drill (SRS) mode of Grammar Drill</a></p>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- VERB DRILL PANEL — SRS-backed present↔aorist drill, queries Supabase live -->
-<div class="lang-panel" id="panel-verbdrill">
-  <div class="container">
-    <div class="vd-header">
-      <h2>📚 Verb Drill</h2>
-      <p>Type the answer. Real SRS scheduling — easy verbs float away, hard ones come back. Queries Supabase live; only shows verbs with a verified aorist form.</p>
-    </div>
-
-    <div class="vd-direction">
-      <button class="vd-dir-btn active" id="vd-dir-p2a" onclick="setVerbDrillDirection('p2a',this)">Present → Aorist</button>
-      <button class="vd-dir-btn" id="vd-dir-a2p" onclick="setVerbDrillDirection('a2p',this)">Aorist → Present</button>
-    </div>
-
-    <div class="vd-stats">
-      <span><strong id="vd-due-count">…</strong> due now</span>
-      <span><strong id="vd-session-count">0</strong> reviewed this session</span>
-    </div>
-
-    <div id="vd-card-wrap">
-      <div class="vd-card" id="vd-card">
-        <div class="vd-prompt-word" id="vd-prompt-word">Loading…</div>
-        <div class="vd-prompt-en" id="vd-prompt-en">&nbsp;</div>
-        <input type="text" class="vd-input" id="vd-input"
-               placeholder="Type the aorist…"
-               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-               lang="el"
-               onkeydown="onVerbDrillKey(event)">
-        <div class="vd-actions">
-          <button class="vd-submit-btn" id="vd-submit" onclick="submitVerbDrillAnswer()">Check ✓</button>
-          <button class="vd-hint-btn" id="vd-hint-btn" onclick="showVerbDrillHint()">💡 Hint</button>
-        </div>
-        <div class="vd-hint-body" id="vd-hint-body" style="display:none;"></div>
-        <div class="vd-feedback" id="vd-feedback" style="display:none;"></div>
-        <div class="vd-rating" id="vd-rating" style="display:none;"></div>
-      </div>
-
-      <div class="vd-empty" id="vd-empty" style="display:none;">
-        <p><strong>✓ Caught up.</strong> No verbs due right now. Come back later — your reviews will surface again according to the SRS schedule.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- NOUN DRILL — singular ↔ plural, generic SRS engine -->
-<div class="lang-panel srs-tinted srs-noun" id="panel-noundrill">
-  <div class="container">
-    <div class="vd-header">
-      <h2>📦 Noun Drill</h2>
-      <p>Type the plural form. Singular → plural is the default. Direction toggle inverts the prompt.</p>
-    </div>
-    <div class="vd-direction" id="noundrill-directions"></div>
-    <div class="vd-stats">
-      <span><strong id="noundrill-due-count">…</strong> due now</span>
-      <span><strong id="noundrill-session-count">0</strong> reviewed this session</span>
-    </div>
-    <div id="noundrill-card-wrap">
-      <div class="vd-card" id="noundrill-card">
-        <div class="vd-prompt-word" id="noundrill-prompt-word">Loading…</div>
-        <div class="vd-prompt-en" id="noundrill-prompt-en">&nbsp;</div>
-        <input type="text" class="vd-input" id="noundrill-input"
-               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-               lang="el"
-               onkeydown="onSrsDrillKey(event,'noundrill')">
-        <div class="vd-actions">
-          <button class="vd-submit-btn" id="noundrill-submit" onclick="submitSrsDrillAnswer('noundrill')">Check ✓</button>
-          <button class="vd-hint-btn" id="noundrill-hint-btn" onclick="showSrsDrillHint('noundrill')">💡 Hint</button>
-        </div>
-        <div class="vd-hint-body" id="noundrill-hint-body" style="display:none;"></div>
-        <div class="vd-feedback" id="noundrill-feedback" style="display:none;"></div>
-        <div class="vd-rating" id="noundrill-rating" style="display:none;"></div>
-      </div>
-      <div class="vd-empty" id="noundrill-empty" style="display:none;">
-        <p><strong>✓ Caught up.</strong> No nouns due. Come back later — your reviews will resurface per the SRS schedule.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ADJECTIVE DRILL — masc ↔ fem ↔ neut forms -->
-<div class="lang-panel srs-tinted srs-adj" id="panel-adjdrill">
-  <div class="container">
-    <div class="vd-header">
-      <h2>🎨 Adjective Drill</h2>
-      <p>Type the matching gender form. Drill all three triples: masc / fem / neut. Direction toggle picks which transformation.</p>
-    </div>
-    <div class="vd-direction" id="adjdrill-directions"></div>
-    <div class="vd-stats">
-      <span><strong id="adjdrill-due-count">…</strong> due now</span>
-      <span><strong id="adjdrill-session-count">0</strong> reviewed this session</span>
-    </div>
-    <div id="adjdrill-card-wrap">
-      <div class="vd-card" id="adjdrill-card">
-        <div class="vd-prompt-word" id="adjdrill-prompt-word">Loading…</div>
-        <div class="vd-prompt-en" id="adjdrill-prompt-en">&nbsp;</div>
-        <input type="text" class="vd-input" id="adjdrill-input"
-               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-               lang="el"
-               onkeydown="onSrsDrillKey(event,'adjdrill')">
-        <div class="vd-actions">
-          <button class="vd-submit-btn" id="adjdrill-submit" onclick="submitSrsDrillAnswer('adjdrill')">Check ✓</button>
-          <button class="vd-hint-btn" id="adjdrill-hint-btn" onclick="showSrsDrillHint('adjdrill')">💡 Hint</button>
-        </div>
-        <div class="vd-hint-body" id="adjdrill-hint-body" style="display:none;"></div>
-        <div class="vd-feedback" id="adjdrill-feedback" style="display:none;"></div>
-        <div class="vd-rating" id="adjdrill-rating" style="display:none;"></div>
-      </div>
-      <div class="vd-empty" id="adjdrill-empty" style="display:none;">
-        <p><strong>✓ Caught up.</strong> No adjectives due. Come back later.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- IMPERATIVE DRILL — verb → imperative form -->
-<div class="lang-panel srs-tinted srs-imp" id="panel-impdrill">
-  <div class="container">
-    <div class="vd-header">
-      <h2>❗ Imperative Drill</h2>
-      <p>Type the imperative form. Verb → command. Singular (informal) and plural (formal) directions.</p>
-    </div>
-    <div class="vd-direction" id="impdrill-directions"></div>
-    <div class="vd-stats">
-      <span><strong id="impdrill-due-count">…</strong> due now</span>
-      <span><strong id="impdrill-session-count">0</strong> reviewed this session</span>
-    </div>
-    <div id="impdrill-card-wrap">
-      <div class="vd-card" id="impdrill-card">
-        <div class="vd-prompt-word" id="impdrill-prompt-word">Loading…</div>
-        <div class="vd-prompt-en" id="impdrill-prompt-en">&nbsp;</div>
-        <input type="text" class="vd-input" id="impdrill-input"
-               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-               lang="el"
-               onkeydown="onSrsDrillKey(event,'impdrill')">
-        <div class="vd-actions">
-          <button class="vd-submit-btn" id="impdrill-submit" onclick="submitSrsDrillAnswer('impdrill')">Check ✓</button>
-          <button class="vd-hint-btn" id="impdrill-hint-btn" onclick="showSrsDrillHint('impdrill')">💡 Hint</button>
-        </div>
-        <div class="vd-hint-body" id="impdrill-hint-body" style="display:none;"></div>
-        <div class="vd-feedback" id="impdrill-feedback" style="display:none;"></div>
-        <div class="vd-rating" id="impdrill-rating" style="display:none;"></div>
-      </div>
-      <div class="vd-empty" id="impdrill-empty" style="display:none;">
-        <p><strong>✓ Caught up.</strong> No imperatives due. Come back later.</p>
       </div>
     </div>
   </div>
@@ -6081,9 +6073,10 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-verbdrill','active-noundrill','active-adjdrill','active-impdrill','active-translate','active-notes','active-sessions','active-review'));
-    document.getElementById('panel-' + lang).classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, verbdrill:9, noundrill:10, adjdrill:11, impdrill:12, translate:13, notes:14, sessions:15, review:16};
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    const panelEl = document.getElementById('panel-' + lang);
+    if (panelEl) panelEl.classList.add('active');
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, translate:9, notes:10, sessions:11, review:12};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -6095,10 +6088,15 @@
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
     if (lang === 'review') renderReviewPanel();
-    if (lang === 'verbdrill') initVerbDrill();
-    if (lang === 'noundrill') initSrsDrill('noundrill');
-    if (lang === 'adjdrill') initSrsDrill('adjdrill');
-    if (lang === 'impdrill') initSrsDrill('impdrill');
+  }
+
+  // Open Grammar Drill and immediately activate a specific mode (used by
+  // Foundations "drill" links that used to navigate to the standalone SRS tabs).
+  function openGrammarMode(mode) {
+    switchLang('grammar');
+    const btn = [...document.querySelectorAll('.grammar-mode-btn')]
+      .find(b => (b.getAttribute('onclick') || '').includes(`setGrammarMode('${mode}'`));
+    if (btn) setGrammarMode(mode, btn);
   }
 
   // ── DAD PRACTICE ──
@@ -7584,6 +7582,10 @@
     document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
+    document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
+    document.getElementById('grammar-noundrill').style.display = mode === 'noundrill' ? '' : 'none';
+    document.getElementById('grammar-adjdrill').style.display = mode === 'adjdrill' ? '' : 'none';
+    document.getElementById('grammar-impdrill').style.display = mode === 'impdrill' ? '' : 'none';
     document.getElementById('grammar-days').style.display = mode === 'days' ? '' : 'none';
     document.getElementById('grammar-qstart').style.display = mode === 'qstart' ? '' : 'none';
     // Stop any running gender tap when leaving
@@ -7600,6 +7602,10 @@
     if (mode === 'qwords') initQwordsDrill();
     if (mode === 'future') initFutureDrill();
     if (mode === 'aspect') initAspectDrill();
+    if (mode === 'verbdrill') initVerbDrill();
+    if (mode === 'noundrill') initSrsDrill('noundrill');
+    if (mode === 'adjdrill') initSrsDrill('adjdrill');
+    if (mode === 'impdrill') initSrsDrill('impdrill');
     if (mode === 'days') initDaysDrill();
     if (mode === 'qstart') initQstartDrill();
   }
