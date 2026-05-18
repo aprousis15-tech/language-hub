@@ -2886,6 +2886,7 @@
       <div class="grammar-mode-group-label">▸ 🔥 Verbs</div>
       <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past (Aorist)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
@@ -3016,6 +3017,25 @@
       <div class="grammar-progress">
         <span id="future-progress">Question 1</span>
         <span class="grammar-score" id="future-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Aspect drill — imperfective vs perfective from context cue -->
+    <div id="grammar-aspect" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="aspect-en">…</div>
+        <div class="grammar-prompt-greek" id="aspect-prompt">…</div>
+        <div class="grammar-options" id="aspect-options"></div>
+        <div class="grammar-feedback" id="aspect-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gAspectBack()">← Back</button>
+        <button class="grammar-btn" onclick="gAspectNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gAspectShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="aspect-progress">Question 1</span>
+        <span class="grammar-score" id="aspect-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -7503,6 +7523,7 @@
     document.getElementById('grammar-aorist').style.display = mode === 'aorist' ? '' : 'none';
     document.getElementById('grammar-qwords').style.display = mode === 'qwords' ? '' : 'none';
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
+    document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
     document.getElementById('grammar-days').style.display = mode === 'days' ? '' : 'none';
     document.getElementById('grammar-qstart').style.display = mode === 'qstart' ? '' : 'none';
     // Stop any running gender tap when leaving
@@ -7518,13 +7539,14 @@
     if (mode === 'aorist') initAoristDrill();
     if (mode === 'qwords') initQwordsDrill();
     if (mode === 'future') initFutureDrill();
+    if (mode === 'aspect') initAspectDrill();
     if (mode === 'days') initDaysDrill();
     if (mode === 'qstart') initQstartDrill();
   }
 
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
-    verbs: ['typea','verbs','aorist','future','neg'],
+    verbs: ['typea','verbs','aspect','aorist','future','neg'],
     nouns: ['articles','gtap','preps'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
@@ -8340,6 +8362,98 @@
     showFutureCard();
   }
   function gFutureShuffle() { initFutureDrill(); }
+
+  // ── Aspect drill — imperfective vs perfective ──
+  // The single biggest grammar concept for English speakers. Greek splits past
+  // and future tenses by aspect. Imperfective = ongoing/habitual; perfective =
+  // one-time/completed. Drill picks between the two forms of the same verb
+  // based on a context cue word (πάντα, αύριο, όταν, κάθε, etc.).
+  const ASPECT_QUESTIONS = [
+    { en: 'I always try to speak Greek.',           prompt: 'Πάντα προσπαθώ να ___ ελληνικά.',     answer: 'μιλάω',       options: ['μιλάω','μιλήσω'],         hint: '🔁 πάντα (always) = habitual → imperfective (μιλάω). μιλήσω would mean one specific act of speaking.' },
+    { en: "I'd like to drink a coffee.",            prompt: 'Θα ήθελα να ___ έναν καφέ.',          answer: 'πιω',         options: ['πίνω','πιω'],             hint: '🎯 One specific coffee, single event → perfective (πιω). πίνω = ongoing/habitual drinking.' },
+    { en: "I'll finish the book tomorrow.",         prompt: 'Αύριο θα ___ το βιβλίο.',             answer: 'τελειώσω',    options: ['τελειώνω','τελειώσω'],    hint: '🎯 αύριο + θα + single completed event → perfective (τελειώσω). τελειώνω would be ongoing/habitual.' },
+    { en: 'I want to buy a new car.',               prompt: 'Θέλω να ___ καινούριο αυτοκίνητο.',   answer: 'αγοράσω',     options: ['αγοράζω','αγοράσω'],      hint: '🎯 Specific one-time purchase → perfective (αγοράσω). αγοράζω would mean "to be shopping/buying" repeatedly.' },
+    { en: 'When I finish work, I will leave.',      prompt: 'Όταν ___ τη δουλειά, θα φύγω.',       answer: 'τελειώσω',    options: ['τελειώνω','τελειώσω'],    hint: '🎯 όταν + future single event → perfective (τελειώσω). Future όταν almost always takes perfective.' },
+    { en: 'Every Saturday I see my friends.',       prompt: 'Κάθε Σάββατο πάω να ___ τους φίλους μου.', answer: 'βλέπω',  options: ['βλέπω','δω'],             hint: '🔁 κάθε = habitual → imperfective (βλέπω). The action repeats every week.' },
+    { en: 'I want to see this movie tonight.',      prompt: 'Θέλω να ___ αυτή την ταινία απόψε.',  answer: 'δω',          options: ['βλέπω','δω'],             hint: '🎯 One specific movie, single event → perfective (δω). βλέπω/βλέπω = irregular dual-stem: βλέπω ↔ δω.' },
+    { en: 'I always try to wake up early.',         prompt: 'Πάντα προσπαθώ να ___ νωρίς.',        answer: 'ξυπνάω',      options: ['ξυπνάω','ξυπνήσω'],       hint: '🔁 πάντα = habitual → imperfective (ξυπνάω).' },
+    { en: 'Tomorrow I need to wake up at 6.',       prompt: 'Αύριο πρέπει να ___ στις 6.',         answer: 'ξυπνήσω',     options: ['ξυπνάω','ξυπνήσω'],       hint: '🎯 αύριο + single event → perfective (ξυπνήσω).' },
+    { en: 'I will eat Greek food tonight.',         prompt: 'Απόψε θα ___ ελληνικό φαγητό.',       answer: 'φάω',         options: ['τρώω','φάω'],             hint: '🎯 απόψε + θα + one event → perfective (φάω). τρώω/φάω = irregular dual-stem.' },
+    { en: 'I love eating Greek food.',              prompt: 'Μου αρέσει να ___ ελληνικό φαγητό.',  answer: 'τρώω',        options: ['τρώω','φάω'],             hint: '🔁 General preference / habit → imperfective (τρώω). No single event in sight.' },
+    { en: "I'll be cooking all evening.",           prompt: 'Όλο το βράδυ θα ___.',                answer: 'μαγειρεύω',   options: ['μαγειρεύω','μαγειρέψω'],  hint: '🔁 όλο το βράδυ = duration / ongoing → imperfective (μαγειρεύω). Compare θα μαγειρέψω = single completed dish.' },
+    { en: 'I want to cook dinner tonight.',         prompt: 'Θέλω να ___ βραδινό απόψε.',          answer: 'μαγειρέψω',   options: ['μαγειρεύω','μαγειρέψω'],  hint: '🎯 One specific dinner → perfective (μαγειρέψω).' },
+    { en: 'I want to read this book.',              prompt: 'Θέλω να ___ αυτό το βιβλίο.',         answer: 'διαβάσω',     options: ['διαβάζω','διαβάσω'],      hint: '🎯 Specific single book → perfective (διαβάσω).' },
+    { en: 'I always read before bed.',              prompt: 'Πάντα μου αρέσει να ___ πριν τον ύπνο.', answer: 'διαβάζω',  options: ['διαβάζω','διαβάσω'],      hint: '🔁 πάντα = habit → imperfective (διαβάζω).' },
+    { en: "Before I leave, I'll call you.",         prompt: 'Πριν ___, θα σε πάρω τηλέφωνο.',      answer: 'φύγω',        options: ['φεύγω','φύγω'],           hint: '🎯 πριν + single event → perfective (φύγω). φεύγω/φύγω = irregular dual-stem.' },
+    { en: 'Tomorrow I will write a letter.',        prompt: 'Αύριο θα ___ ένα γράμμα.',            answer: 'γράψω',       options: ['γράφω','γράψω'],          hint: '🎯 αύριο + single event → perfective (γράψω). -φω → -ψω.' },
+    { en: 'I want to learn this word.',             prompt: 'Θέλω να ___ αυτή τη λέξη.',           answer: 'μάθω',        options: ['μαθαίνω','μάθω'],         hint: '🎯 One specific word → perfective (μάθω). μαθαίνω/μάθω = stem change.' },
+    { en: 'I always try to learn something new.',   prompt: 'Πάντα προσπαθώ να ___ κάτι νέο.',      answer: 'μαθαίνω',     options: ['μαθαίνω','μάθω'],         hint: '🔁 πάντα = habit → imperfective (μαθαίνω).' },
+    { en: 'I usually drink coffee in the morning.', prompt: 'Μου αρέσει να ___ καφέ το πρωί.',     answer: 'πίνω',        options: ['πίνω','πιω'],             hint: '🔁 General preference / habit → imperfective (πίνω).' },
+  ];
+
+  let gAspectDeck = [], gAspectIndex = 0, gAspectCorrect = 0, gAspectTotal = 0, gAspectAnswered = false;
+
+  function initAspectDrill() {
+    gAspectDeck = shuffled(ASPECT_QUESTIONS);
+    gAspectIndex = 0;
+    gAspectCorrect = 0;
+    gAspectTotal = 0;
+    gAspectAnswered = false;
+    showAspectCard();
+  }
+
+  function showAspectCard() {
+    const q = gAspectDeck[gAspectIndex];
+    if (!q) return;
+    document.getElementById('aspect-en').textContent = q.en;
+    document.getElementById('aspect-prompt').innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    const fb = document.getElementById('aspect-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('aspect-options');
+    optsHost.innerHTML = '';
+    shuffled(q.options).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gAspectAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('aspect-progress').textContent = `Question ${gAspectIndex + 1} of ${gAspectDeck.length}`;
+    document.getElementById('aspect-score').textContent = `Score: ${gAspectCorrect}/${gAspectTotal}`;
+    gAspectAnswered = false;
+  }
+
+  function gAspectAnswer(picked, btnEl, q) {
+    if (gAspectAnswered) return;
+    gAspectAnswered = true;
+    gAspectTotal++;
+    if (picked === q.answer) gAspectCorrect++;
+    else recordMistake({
+      drill_type: 'verbs', prompt: `${q.en} → ${q.prompt}`, correct: q.answer, picked: picked,
+      metadata: { source: 'aspect', en: q.en, hint: q.hint }
+    });
+    document.querySelectorAll('#aspect-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('aspect-prompt').innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('aspect-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('aspect-score').textContent = `Score: ${gAspectCorrect}/${gAspectTotal}`;
+  }
+
+  function gAspectNext() {
+    gAspectIndex = (gAspectIndex + 1) % gAspectDeck.length;
+    showAspectCard();
+  }
+  function gAspectBack() {
+    gAspectIndex = (gAspectIndex - 1 + gAspectDeck.length) % gAspectDeck.length;
+    showAspectCard();
+  }
+  function gAspectShuffle() { initAspectDrill(); }
 
   // ── Days of Week drill ──
   // Tests three things: which day matches the English, the article (most fem,
