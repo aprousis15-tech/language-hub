@@ -3590,6 +3590,40 @@
           <span class="rule-greek">ποτέ</span> (accent on the last syllable) = <span class="rule-en">never</span>
         </div>
       </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">Demonstratives need the article in between</div>
+        <div class="rule-card-body">
+          In Greek, "this/that + noun" is <em>this + the + noun</em>. The article sits between the demonstrative and the noun, and both agree with the noun's gender, number, and case.<br>
+          ✅ <span class="rule-greek">αυτό <strong>το</strong> βιβλίο</span> — <span class="rule-en">this book</span> &nbsp;·&nbsp; ❌ <span class="rule-greek">αυτό βιβλίο</span><br>
+          ✅ <span class="rule-greek">αυτή <strong>την</strong> εβδομάδα</span> — <span class="rule-en">this week</span> &nbsp;·&nbsp; ❌ <span class="rule-greek">αυτή εβδομάδα</span><br>
+          ✅ <span class="rule-greek">αυτός <strong>ο</strong> άντρας</span> — <span class="rule-en">this man</span> &nbsp;·&nbsp; ❌ <span class="rule-greek">αυτός άντρας</span>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">πολύ vs. πολλή/πολύς — adverb or adjective?</div>
+        <div class="rule-card-body">
+          <strong>πολύ</strong> (invariable adverb) modifies <em>verbs and adjectives</em> — it never changes form.<br>
+          <strong>πολύς / πολλή / πολύ / πολλοί / πολλές / πολλά</strong> (adjective) modifies <em>nouns</em> — agrees with gender and number.<br>
+          <span class="rule-greek">Είμαι <strong>πολύ</strong> κουρασμένος</span> — adverb modifying adjective<br>
+          <span class="rule-greek">Δουλεύω <strong>πολύ</strong></span> — adverb modifying verb<br>
+          <span class="rule-greek"><strong>Πολλή</strong> δουλειά</span> — adjective modifying fem. noun<br>
+          <span class="rule-greek"><strong>Πολλά</strong> παιδιά</span> — adjective modifying neut. plural noun<br>
+          <div class="rule-callout"><strong>Test:</strong> what does it modify? Verb or adjective → <span class="rule-greek">πολύ</span>. Noun → adjective form that agrees.</div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-card-title">αυτός vs. εκείνος — near vs. far</div>
+        <div class="rule-card-body">
+          <strong>αυτός / αυτή / αυτό</strong> = this (near, or default when distance doesn't matter).<br>
+          <strong>εκείνος / εκείνη / εκείνο</strong> = that (far, or contrasting "<em>that one</em> over there, not this one").<br>
+          <span class="rule-greek">Αυτό το βιβλίο είναι καλό</span> — <span class="rule-en">This book is good.</span><br>
+          <span class="rule-greek">Εκείνο το βιβλίο, όχι αυτό</span> — <span class="rule-en">That book, not this one.</span><br>
+          <div class="rule-callout">In casual spoken Greek, <span class="rule-greek">αυτός</span> covers both. Reach for <span class="rule-greek">εκείνος</span> only when you're explicitly contrasting near vs. far.</div>
+        </div>
+      </div>
     </div>
 
     <!-- ─── CASES ─── -->
@@ -10067,6 +10101,26 @@
   ];
   const MODIFIERS_ENTRIES = makeSyntheticEntries(MODIFIERS_VOCAB, 'Modifiers', 'mod');
 
+  // ── 🆘 Greece Survival — high-leverage chunks to memorize whole ──
+  // These are the phrases that unlock everything else: the ones to say when
+  // a native flips to English, when you don't catch what was said, or when
+  // you need a word/price/direction. Drill as fixed shapes, not constructed.
+  const SURVIVAL_VOCAB = [
+    { word: 'Προσπαθώ να μιλάω ελληνικά.', translation: "I'm trying to speak Greek.", phonetic: 'pros-pa-THO na mi-LA-o e-li-ni-KA', intuition: '🛡️ The "switch back to Greek" reflex. Say this when a native flips to English — usually they\'ll switch back. Imperfective μιλάω (ongoing effort), not μιλήσω.' },
+    { word: 'Πιο αργά, σε παρακαλώ.', translation: 'Slower, please.', phonetic: 'pyo ar-GHA se pa-ra-ka-LO', intuition: '🐢 Universal pace request. πιο = more (comparative). Always paired with σε παρακαλώ (informal) or σας παρακαλώ (formal).' },
+    { word: 'Δεν καταλαβαίνω.', translation: "I don't understand.", phonetic: 'then ka-ta-la-VE-no', intuition: '🚧 First-line response when lost. The verb is καταλαβαίνω (open form, ongoing state).' },
+    { word: 'Μπορείτε να επαναλάβετε;', translation: 'Can you repeat?', phonetic: 'bo-REE-te na e-pa-na-LA-ve-te', intuition: '🔁 Formal/polite request. Use μπορείτε (formal) not μπορείς. επαναλάβετε is closed/perfective — one specific act of repeating.' },
+    { word: 'Τι είναι αυτό;', translation: 'What is this?', phonetic: 'tee EE-ne af-TO', intuition: '👉 Point + ask. Unlimited vocab unlock — every answer becomes a new word.' },
+    { word: 'Πώς λέγεται αυτό;', translation: 'What is this called?', phonetic: 'pos LE-ye-te af-TO', intuition: '🔤 Asks for the NAME of the thing. λέγεται = "is called" (mediopassive). Use when you want the noun specifically.' },
+    { word: 'Τι σημαίνει αυτό;', translation: 'What does this mean?', phonetic: 'tee see-ME-ni af-TO', intuition: '💭 For unfamiliar words you heard or read. σημαίνει = "means".' },
+    { word: 'Πόσο κάνει;', translation: 'How much does it cost?', phonetic: 'PO-so KA-ni', intuition: '💶 Universal price question. Subject (αυτό / το πράγμα) is dropped — assumed from context. For plural items: Πόσο κάνουν;' },
+    { word: 'Θα ήθελα...', translation: "I'd like...", phonetic: 'tha EE-the-la', intuition: '🎁 The polite-ask shape. More refined than θέλω. Conditional of θέλω. Pair with να + verb or with a noun: Θα ήθελα έναν καφέ.' },
+    { word: 'Συγγνώμη.', translation: 'Sorry / excuse me.', phonetic: 'see-GHNO-mee', intuition: '🙏 Apology AND attention-getter. Universal "excuse me" in shops/streets. Drop in front of any question to a stranger.' },
+    { word: 'Ευχαριστώ πολύ.', translation: 'Thank you very much.', phonetic: 'ef-ha-ris-TO po-LEE', intuition: '✨ Default thanks chunk. Just ευχαριστώ alone is fine, but +πολύ is the warm version.' },
+    { word: 'Τέλεια!', translation: 'Perfect! / Great!', phonetic: 'TE-li-a', intuition: '👌 Universal positive reaction. Replaces "OK", "great", "got it". Sounds native immediately.' },
+  ];
+  const SURVIVAL_ENTRIES = makeSyntheticEntries(SURVIVAL_VOCAB, 'Survival', 'survival');
+
   // ── 🗓️ My Week — verbs of routine + time markers ──
   const MY_WEEK_VOCAB = [
     { word: 'κάθε μέρα', translation: 'every day', phonetic: 'KA-the ME-ra', intuition: 'Habitual frequency. κάθε + day.' },
@@ -10525,6 +10579,7 @@
       .concat(TUTOR_QA_ENTRIES)
       .concat(EASY_OUTS_ENTRIES)
       .concat(MODIFIERS_ENTRIES)
+      .concat(SURVIVAL_ENTRIES)
       .concat(MY_WEEK_ENTRIES)
       .concat(FAMILY_ENTRIES)
       .concat(WORK_ENTRIES)
