@@ -4663,6 +4663,31 @@
             <li><span class="rule-greek">ήθελα</span> — I wanted</li>
             <li><span class="rule-greek">βρήκα</span> — I found</li>
           </ul>
+
+          <p><strong>The 12 high-frequency irregular verbs — all four forms</strong></p>
+          <p>Each verb has four essential forms. Memorize as a chunk per verb. The "<em>to V</em>" column is the bare perfective stem you put after <span class="rule-greek">θα</span>, <span class="rule-greek">να</span>, or <span class="rule-greek">αν</span>; it's also the form you use to talk about a single completed event.</p>
+          <table>
+            <tr>
+              <th>Verb</th>
+              <th><em>to V</em><br><span style="font-size:0.78em; color:#7a6a55; font-weight:400;">να + perfective</span></th>
+              <th>Present<br><span style="font-size:0.78em; color:#7a6a55; font-weight:400;">imperfective</span></th>
+              <th>Past<br><span style="font-size:0.78em; color:#7a6a55; font-weight:400;">aorist</span></th>
+              <th>Past continuous<br><span style="font-size:0.78em; color:#7a6a55; font-weight:400;">imperfect</span></th>
+            </tr>
+            <tr><td>to see</td><td><span class="rule-greek">να δω</span></td><td><span class="rule-greek">βλέπω</span></td><td><span class="rule-greek">είδα</span></td><td><span class="rule-greek">έβλεπα</span></td></tr>
+            <tr><td>to say</td><td><span class="rule-greek">να πω</span></td><td><span class="rule-greek">λέω</span></td><td><span class="rule-greek">είπα</span></td><td><span class="rule-greek">έλεγα</span></td></tr>
+            <tr><td>to eat</td><td><span class="rule-greek">να φάω</span></td><td><span class="rule-greek">τρώω</span></td><td><span class="rule-greek">έφαγα</span></td><td><span class="rule-greek">έτρωγα</span></td></tr>
+            <tr><td>to go</td><td><span class="rule-greek">να πάω</span></td><td><span class="rule-greek">πηγαίνω</span></td><td><span class="rule-greek">πήγα</span></td><td><span class="rule-greek">πήγαινα</span></td></tr>
+            <tr><td>to drink</td><td><span class="rule-greek">να πιω</span></td><td><span class="rule-greek">πίνω</span></td><td><span class="rule-greek">ήπια</span></td><td><span class="rule-greek">έπινα</span></td></tr>
+            <tr><td>to find</td><td><span class="rule-greek">να βρω</span></td><td><span class="rule-greek">βρίσκω</span></td><td><span class="rule-greek">βρήκα</span></td><td><span class="rule-greek">έβρισκα</span></td></tr>
+            <tr><td>to come</td><td><span class="rule-greek">να έρθω</span></td><td><span class="rule-greek">έρχομαι</span></td><td><span class="rule-greek">ήρθα</span></td><td><span class="rule-greek">ερχόμουν</span></td></tr>
+            <tr><td>to take</td><td><span class="rule-greek">να πάρω</span></td><td><span class="rule-greek">παίρνω</span></td><td><span class="rule-greek">πήρα</span></td><td><span class="rule-greek">έπαιρνα</span></td></tr>
+            <tr><td>to give</td><td><span class="rule-greek">να δώσω</span></td><td><span class="rule-greek">δίνω</span></td><td><span class="rule-greek">έδωσα</span></td><td><span class="rule-greek">έδινα</span></td></tr>
+            <tr><td>to learn</td><td><span class="rule-greek">να μάθω</span></td><td><span class="rule-greek">μαθαίνω</span></td><td><span class="rule-greek">έμαθα</span></td><td><span class="rule-greek">μάθαινα</span></td></tr>
+            <tr><td>to leave</td><td><span class="rule-greek">να φύγω</span></td><td><span class="rule-greek">φεύγω</span></td><td><span class="rule-greek">έφυγα</span></td><td><span class="rule-greek">έφευγα</span></td></tr>
+            <tr><td>to go out</td><td><span class="rule-greek">να βγω</span></td><td><span class="rule-greek">βγαίνω</span></td><td><span class="rule-greek">βγήκα</span></td><td><span class="rule-greek">έβγαινα</span></td></tr>
+          </table>
+          <div class="found-callout"><strong>Drill move:</strong> say all four forms in sequence for each verb — <em>να δω · βλέπω · είδα · έβλεπα</em>. That cadence is what locks them in. The aorist is the irregular one to memorize first; the imperfect is mostly predictable (ε- + present stem with shift).</div>
         </div>
       </div>
 
@@ -5679,6 +5704,7 @@
       <button class="review-toolbtn" data-filter="listen" onclick="setReviewFilter('listen',this)">🔊 Listen</button>
       <button class="review-toolbtn" data-filter="type" onclick="setReviewFilter('type',this)">✍️ Type</button>
       <button class="review-toolbtn" data-filter="flash" onclick="setReviewFilter('flash',this)">🃏 Flash</button>
+      <button class="review-toolbtn" data-filter="antipattern" onclick="setReviewFilter('antipattern',this)">⚠️ Anti-patterns</button>
       <button class="review-toolbtn" onclick="renderReviewPanel()">🔄 Refresh</button>
     </div>
 
@@ -10901,6 +10927,154 @@
     gTypeAnswered = false;
   }
 
+  // ── Anti-pattern detector (slice F) ──
+  // Runs heuristic checks on user-typed Greek. Returns warnings even when the
+  // answer is otherwise marked correct — anti-patterns can fire on
+  // technically-acceptable input. Each warning: { pattern, message, snippet }.
+  //
+  // Patterns covered (high-confidence subset; can be extended later):
+  //   1. Bare perfective stem without θα / να / αν / όταν / πριν / μη(ν)
+  //   4. Demonstrative (αυτό/αυτή/αυτός…) without article between it and noun
+  //   6. Subject pronoun + matching verb ending (εγώ/εσύ redundancy)
+  //   7. πολλή/πολλοί/πολλές + verb (should be πολύ adverb)
+  //   8. αλλά directly after a transitive verb (likely meant άλλο)
+  //   9. Day of week without article (την Δευτέρα, not Δευτέρα)
+  // Skipped: noun-article gender match (needs vocab DB), αύριο+imperfective
+  // (too noisy), proper-name article (needs name list).
+  const AP_MARKERS = new Set(['θα','να','αν','όταν','πριν','μη','μην','αφού','που','όπου','όποτε']);
+  const AP_OBJECT_PRONOUNS = new Set(['με','σε','τον','την','το','μας','σας','τους','τις','τα','μου','σου','του','της']);
+  const AP_PERFECTIVE_BARE = new Set([
+    // From the 12-irregular table
+    'δω','πω','φάω','πιω','βρω','έρθω','πάρω','δώσω','μάθω','φύγω','βγω',
+    // Common regular perfective 1st-singulars
+    'γράψω','διαβάσω','αγοράσω','μιλήσω','ξυπνήσω','τελειώσω','μαγειρέψω','δουλέψω','ταξιδέψω',
+    'ρωτήσω','περπατήσω','νομίσω','γεμίσω','προσπαθήσω','δείξω','πιάσω','αφήσω','κλείσω','ανοίξω','στείλω'
+    // Deliberately NOT included: πάω, κάνω (also valid as plain present indicative).
+  ]);
+  const AP_DAYS = ['Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο','Κυριακή'];
+  const AP_DEMONSTRATIVES = new Set(['αυτός','αυτή','αυτό','αυτοί','αυτές','αυτά','αυτόν','αυτήν','αυτούς','αυτές']);
+  const AP_ARTICLES = new Set(['ο','η','το','τον','την','του','της','οι','τα','τους','τις']);
+  const AP_DAY_ARTICLES = new Set(['την','τη','το','στις','στη','στην','στον','στο']);
+  const AP_TRANSITIVE_VERBS = new Set([
+    'θέλω','θέλεις','θέλει','θέλουμε','θέλετε','θέλουν',
+    'έχω','έχεις','έχει','έχουμε','έχετε','έχουν',
+    'πάρω','πάρε','πήρα','δώσω','δώσε','δίνω','βρω','βρήκα','δω','είδα','κάνω','έκανα'
+  ]);
+
+  function detectAntiPatterns(text) {
+    if (!text || typeof text !== 'string') return [];
+    const cleaned = text.replace(/[.,;!?·]/g, ' ');
+    const words = cleaned.split(/\s+/).filter(Boolean);
+    const lc = words.map(w => w.toLowerCase());
+    const warnings = [];
+
+    // 1. Bare perfective stem without θα/να/αν/...
+    for (let i = 0; i < lc.length; i++) {
+      const w = lc[i];
+      if (!AP_PERFECTIVE_BARE.has(w)) continue;
+      // Look back up to 2 words, skipping object pronouns (να σου πω, θα τον δω)
+      let hasMarker = false;
+      for (let k = 1; k <= 2 && i - k >= 0; k++) {
+        const prev = lc[i - k];
+        if (AP_MARKERS.has(prev)) { hasMarker = true; break; }
+        if (!AP_OBJECT_PRONOUNS.has(prev)) break; // not a clitic chain, stop
+      }
+      if (!hasMarker) {
+        warnings.push({
+          pattern: 'perf_needs_marker',
+          message: `"${words[i]}" is a perfective stem — it needs θα / να / αν / όταν / πριν before it (you almost never use a bare perfective).`,
+          snippet: words[i],
+        });
+      }
+    }
+
+    // 4. Demonstrative + noun without article between
+    for (let i = 0; i < lc.length - 1; i++) {
+      if (!AP_DEMONSTRATIVES.has(lc[i])) continue;
+      const next = lc[i + 1];
+      if (!AP_ARTICLES.has(next)) {
+        // Exclude predicate use: "αυτό είναι ..." — followed by είναι is fine.
+        if (next === 'είναι' || next === 'ήταν') continue;
+        warnings.push({
+          pattern: 'demo_no_article',
+          message: `"${words[i]}" needs an article between it and the noun (αυτό **το** βιβλίο, not αυτό βιβλίο).`,
+          snippet: words[i] + ' ' + words[i + 1],
+        });
+      }
+    }
+
+    // 6. εγώ / εσύ redundancy with matching verb ending
+    for (let i = 0; i < lc.length - 1; i++) {
+      const w = lc[i], next = lc[i + 1];
+      if (w === 'εγώ' && /ω$/.test(next)) {
+        warnings.push({
+          pattern: 'pronoun_redundant',
+          message: `"εγώ" is rarely needed — the verb ending -ω already says "I". Drop εγώ unless you're emphasizing.`,
+          snippet: words[i] + ' ' + words[i + 1],
+        });
+      } else if (w === 'εσύ' && /(εις|άς|είς|άει|ας)$/.test(next)) {
+        warnings.push({
+          pattern: 'pronoun_redundant',
+          message: `"εσύ" is rarely needed — the verb ending already says "you". Drop εσύ unless you're emphasizing.`,
+          snippet: words[i] + ' ' + words[i + 1],
+        });
+      }
+    }
+
+    // 7. πολλή/πολλοί/πολλές + verb-like word (should be πολύ adverb)
+    for (let i = 0; i < lc.length - 1; i++) {
+      if (!['πολλή','πολλές','πολλοί','πολύς'].includes(lc[i])) continue;
+      const next = lc[i + 1];
+      // Heuristic: word ending matches a verb suffix and isn't a known noun-ish form
+      if (/(ω|εις|ει|ουμε|ετε|ουν|άει|αμε|ατε|αν|ηκα|ηκες|ηκε|ομαι|εσαι|εται)$/.test(next)) {
+        warnings.push({
+          pattern: 'polli_with_verb',
+          message: `"${words[i]}" is an adjective form — to modify a verb, use πολύ (invariable adverb).`,
+          snippet: words[i] + ' ' + words[i + 1],
+        });
+      }
+    }
+
+    // 8. αλλά after a transitive verb (likely meant άλλο)
+    for (let i = 1; i < lc.length; i++) {
+      if (lc[i] !== 'αλλά') continue;
+      const prev = lc[i - 1];
+      if (AP_TRANSITIVE_VERBS.has(prev)) {
+        warnings.push({
+          pattern: 'alla_allo_confusion',
+          message: `"αλλά" means "but" (contrast). After a verb like "${words[i - 1]}", you probably meant "άλλο" ("other / another").`,
+          snippet: words[i - 1] + ' ' + words[i],
+        });
+      }
+    }
+
+    // 9. Day of week without article (skip sentence-initial + predicate uses)
+    AP_DAYS.forEach(day => {
+      const lcDay = day.toLowerCase();
+      for (let i = 0; i < lc.length; i++) {
+        if (lc[i] !== lcDay) continue;
+        if (i === 0) continue; // sentence-start day is usually fine
+        const prev = lc[i - 1];
+        if (AP_DAY_ARTICLES.has(prev)) continue;
+        if (prev === 'είναι' || prev === 'ήταν') continue; // "σήμερα είναι Δευτέρα"
+        warnings.push({
+          pattern: 'day_no_article',
+          message: `"${day}" usually needs την / τη / το before it: "την ${day}" = "on ${day}".`,
+          snippet: day,
+        });
+      }
+    });
+
+    // Dedupe by pattern+snippet
+    const seen = new Set();
+    return warnings.filter(w => {
+      const k = w.pattern + '|' + w.snippet;
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+
   function gTypeSubmit() {
     if (gTypeAnswered) { gTypeNext(); return; }
     const v = gTypeDeck[gTypeIndex];
@@ -10944,6 +11118,22 @@
     }
     if (v.intuition) {
       fb.innerHTML += `<div style="margin-top:8px;font-size:0.85rem;">💡 ${v.intuition}</div>`;
+    }
+    // Anti-pattern check on the user's input — flags suspect structures even if
+    // the answer is technically correct. See detectAntiPatterns for coverage.
+    const apWarnings = detectAntiPatterns(userRaw);
+    if (apWarnings.length > 0) {
+      fb.innerHTML += `<div style="margin-top:10px;padding:10px 12px;background:#fff8e1;border-left:3px solid #f9a825;border-radius:4px;">` +
+        `<div style="font-size:0.78rem;font-weight:700;color:#b76e00;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">⚠️ Pattern check</div>` +
+        apWarnings.map(w => `<div style="font-size:0.85rem;line-height:1.45;margin-bottom:4px;">• ${w.message}</div>`).join('') +
+        `</div>`;
+      // Log each warning into the mistakes table so the heatmap (G) can surface them.
+      apWarnings.forEach(w => {
+        recordMistake({
+          drill_type: 'antipattern', prompt: userRaw, correct: '(see message)', picked: w.snippet, vocab_id: v.id,
+          metadata: { pattern: w.pattern, message: w.message, source: 'antipattern' }
+        });
+      });
     }
     fb.classList.add('show');
     document.getElementById('type-score').textContent = `Score: ${gTypeCorrect}/${gTypeTotal}`;
@@ -12334,7 +12524,8 @@
     adj: { label: 'Adjective', tag: 'review-tag-adj' },
     listen: { label: 'Listen', tag: 'review-tag-listen' },
     type: { label: 'Type', tag: 'review-tag-type' },
-    flash: { label: 'Flashcard', tag: 'review-tag-flash' }
+    flash: { label: 'Flashcard', tag: 'review-tag-flash' },
+    antipattern: { label: 'Anti-pattern', tag: 'review-tag-antipattern' }
   };
 
   const VERB_PERSON_LABELS_REVIEW = {
@@ -12378,6 +12569,68 @@
   function analyzePatterns(mistakes) {
     const patterns = [];
     const minThreshold = 5;
+
+    // 0. Top error categories — always shows once you have any mistakes.
+    // Counts by drill_type so you see at a glance where your time is leaking.
+    if (mistakes.length >= 3) {
+      const drillCounts = {};
+      mistakes.forEach(m => {
+        const dt = m.drill_type || 'other';
+        drillCounts[dt] = (drillCounts[dt] || 0) + 1;
+      });
+      const sorted = Object.entries(drillCounts).sort((a, b) => b[1] - a[1]);
+      if (sorted.length > 0) {
+        const [topDrill, topCount] = sorted[0];
+        const topLabel = (REVIEW_DRILL_LABELS[topDrill] || {}).label || topDrill;
+        const breakdown = sorted.slice(0, 5).map(([d, c]) => {
+          const l = (REVIEW_DRILL_LABELS[d] || {}).label || d;
+          return `${l}: ${c}`;
+        }).join(' · ');
+        patterns.push({
+          title: '🔥 Top error categories',
+          top: topLabel,
+          detail: breakdown,
+          ratio: topCount / mistakes.length,
+        });
+      }
+    }
+
+    // 0b. Aspect drill mistakes (imperfective vs perfective) — separately tracked
+    // via metadata.source === 'aspect'. The highest-leverage Greek concept; surfaces
+    // even at a low threshold (3) so it doesn't get buried.
+    const aspectMistakes = mistakes.filter(m => m.metadata && m.metadata.source === 'aspect');
+    if (aspectMistakes.length >= 3) {
+      patterns.push({
+        title: 'Aspect (imperf ↔ perf)',
+        top: `${aspectMistakes.length} miss${aspectMistakes.length === 1 ? '' : 'es'}`,
+        detail: `Imperfective vs perfective is the single biggest Greek grammar concept for English speakers. Drill the 🎭 Aspect mode in Grammar Drill.`,
+        ratio: aspectMistakes.length / Math.max(mistakes.length, 1),
+      });
+    }
+
+    // 0c. Anti-pattern flags from the type drill — group by pattern id and
+    // surface the most common structural issue.
+    const apMistakes = mistakes.filter(m => m.drill_type === 'antipattern' && m.metadata && m.metadata.pattern);
+    if (apMistakes.length >= 3) {
+      const patCounts = {};
+      apMistakes.forEach(m => { patCounts[m.metadata.pattern] = (patCounts[m.metadata.pattern] || 0) + 1; });
+      const sorted = Object.entries(patCounts).sort((a, b) => b[1] - a[1]);
+      const AP_LABELS = {
+        perf_needs_marker: 'Bare perfective (needs θα/να)',
+        demo_no_article: 'Demo. without article',
+        pronoun_redundant: 'Redundant εγώ/εσύ',
+        polli_with_verb: 'πολλή/πολλοί + verb (use πολύ)',
+        alla_allo_confusion: 'αλλά vs άλλο',
+        day_no_article: 'Day of week without article',
+      };
+      const [topPat, topCount] = sorted[0];
+      patterns.push({
+        title: '⚠️ Anti-pattern flags',
+        top: AP_LABELS[topPat] || topPat,
+        detail: `${topCount} hit${topCount === 1 ? '' : 's'} on this pattern. Total flags: ${apMistakes.length}. These come from the Type drill's pattern check.`,
+        ratio: topCount / apMistakes.length,
+      });
+    }
 
     // 1. Most-missed gender (from adjectives drill, where target_gender is explicit)
     const adjMistakes = mistakes.filter(m => m.drill_type === 'adj');
