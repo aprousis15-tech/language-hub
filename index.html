@@ -2883,6 +2883,7 @@
       <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('pres2aor',this)">🔄 Present → Aorist</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('vgroup',this)">🗂️ Verb Group Classifier</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('subjfirst',this)">🧭 Subject-First Conjugation</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past (Aorist)</button>
@@ -3021,6 +3022,25 @@
       <div class="grammar-progress">
         <span id="future-progress">Question 1</span>
         <span class="grammar-score" id="future-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Present → Aorist transformation — heavy on irregulars -->
+    <div id="grammar-pres2aor" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="pres2aor-en">…</div>
+        <div class="grammar-prompt-greek" id="pres2aor-prompt">…</div>
+        <div class="grammar-options" id="pres2aor-options"></div>
+        <div class="grammar-feedback" id="pres2aor-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gPres2AorBack()">← Back</button>
+        <button class="grammar-btn" onclick="gPres2AorNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gPres2AorShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="pres2aor-progress">Question 1</span>
+        <span class="grammar-score" id="pres2aor-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -7686,6 +7706,7 @@
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
+    document.getElementById('grammar-pres2aor').style.display = mode === 'pres2aor' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
     document.getElementById('grammar-noundrill').style.display = mode === 'noundrill' ? '' : 'none';
     document.getElementById('grammar-adjdrill').style.display = mode === 'adjdrill' ? '' : 'none';
@@ -7708,6 +7729,7 @@
     if (mode === 'aspect') initAspectDrill();
     if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'subjfirst') initSubjFirstDrill();
+    if (mode === 'pres2aor') initPres2AorDrill();
     if (mode === 'verbdrill') initVerbDrill();
     if (mode === 'noundrill') initSrsDrill('noundrill');
     if (mode === 'adjdrill') initSrsDrill('adjdrill');
@@ -7718,7 +7740,7 @@
 
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
-    verbs: ['typea','verbs','aspect','vgroup','subjfirst','aorist','future','neg'],
+    verbs: ['typea','verbs','aspect','pres2aor','vgroup','subjfirst','aorist','future','neg'],
     nouns: ['articles','gtap','preps'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
@@ -8733,6 +8755,114 @@
     showVgroupCard();
   }
   function gVgroupShuffle() { initVgroupDrill(); }
+
+  // ── Present → Aorist transformation ──
+  // Show the present (dictionary) form; user picks the aorist (1st-singular
+  // perfective past). Heavy on irregular dual-stem verbs since those are the
+  // top-leak class. Distractors are designed to mirror the actual mistakes
+  // from exercise feedback — e.g. for βάζω the wrong "regularized" έβασα
+  // appears alongside the correct έβαλα.
+  const PRES2AOR_QUESTIONS = [
+    // ── Irregular dual-stem (the priority class) ──
+    { en: 'to see',        pres: 'βλέπω',    answer: 'είδα',     options: ['είδα','βλέπω','έβλεπα','έβλεψα'],          hint: '🔥 Irregular. Aorist είδα (stem δ-). Distractors: βλέπω = present; έβλεπα = imperfect; έβλεψα = if you regularized -ψω wrongly.' },
+    { en: 'to say',        pres: 'λέω',      answer: 'είπα',     options: ['είπα','λέω','έλεγα','έλεξα'],              hint: '🔥 Irregular. Aorist είπα (stem π-). έλεγα is the imperfect; έλεξα doesn\'t exist.' },
+    { en: 'to eat',        pres: 'τρώω',     answer: 'έφαγα',    options: ['έφαγα','τρώω','έτρωγα','έτρωσα'],           hint: '🔥 Irregular. Aorist έφαγα (stem φα-). έτρωγα is the imperfect; έτρωσα is the "regularized" wrong guess.' },
+    { en: 'to drink',      pres: 'πίνω',     answer: 'ήπια',     options: ['ήπια','πίνω','έπινα','έπιωσα'],             hint: '🔥 Irregular. Aorist ήπια (η- augment, stem πι-). NOT έπιωσα. έπινα is the imperfect.' },
+    { en: 'to find',       pres: 'βρίσκω',   answer: 'βρήκα',    options: ['βρήκα','βρίσκω','έβρισκα','βρω'],            hint: '🔥 Irregular. Aorist βρήκα (stem βρ-). βρω is the bare perfective stem (needs να/θα); έβρισκα is the imperfect.' },
+    { en: 'to put / wear', pres: 'βάζω',     answer: 'έβαλα',    options: ['έβαλα','έβασα','έβαζα','βάζω'],             hint: '🔥 Trap. βάζω LOOKS like a regular -ζω verb (would give έβασα — WRONG). Stem is βαλ-, aorist έβαλα. έβαζα is the imperfect.' },
+    { en: 'to take / get', pres: 'παίρνω',   answer: 'πήρα',     options: ['πήρα','παίρνω','έπαιρνα','πήρες'],          hint: '🔥 Irregular. Aorist πήρα (stem πάρ-). πήρες = 2nd sing "you took".' },
+    { en: 'to give',       pres: 'δίνω',     answer: 'έδωσα',    options: ['έδωσα','δίνω','έδινα','δώσω'],              hint: '🔥 Irregular. Aorist έδωσα (stem δώσ-). έδινα is the imperfect; δώσω is bare perfective.' },
+    { en: 'to learn',      pres: 'μαθαίνω',  answer: 'έμαθα',    options: ['έμαθα','μαθαίνω','μάθαινα','έμαθαινα'],     hint: '🔥 Irregular. Aorist έμαθα (the αιν drops). μάθαινα is the imperfect.' },
+    { en: 'to leave',      pres: 'φεύγω',    answer: 'έφυγα',    options: ['έφυγα','φεύγω','έφευγα','έφευξα'],          hint: '🔥 Irregular. Aorist έφυγα (stem φύγ-, ευ → υ). έφευξα doesn\'t exist.' },
+    { en: 'to go out',     pres: 'βγαίνω',   answer: 'βγήκα',    options: ['βγήκα','βγαίνω','έβγαινα','βγω'],           hint: '🔥 Irregular. Aorist βγήκα (no ε- augment — already starts with β-γ-). έβγαινα is the imperfect.' },
+    { en: 'to come',       pres: 'έρχομαι',  answer: 'ήρθα',     options: ['ήρθα','έρχομαι','ερχόμουν','ήρθες'],         hint: '🔥 Irregular middle-voice. Aorist ήρθα (η- augment). ερχόμουν is the imperfect.' },
+    { en: 'to go',         pres: 'πηγαίνω',  answer: 'πήγα',     options: ['πήγα','πηγαίνω','πήγαινα','έπηγα'],          hint: '🔥 Irregular. Aorist πήγα. (Same aorist for both πάω and πηγαίνω.) πήγαινα is the imperfect.' },
+    { en: 'to want',       pres: 'θέλω',     answer: 'ήθελα',    options: ['ήθελα','θέλω','θέλησα','έθελα'],            hint: '🔥 Irregular. Aorist ήθελα (η- augment, NO ε-). θέλησα is rare/literary; έθελα is wrong.' },
+    { en: 'to know',       pres: 'ξέρω',     answer: 'ήξερα',    options: ['ήξερα','ξέρω','ξέραω','έξερα'],             hint: '🔥 Defective verb — no true perfective. Aorist form ήξερα is used (η- augment).' },
+
+    // ── Regular A: -ζω → -σω, -φω → -ψω, -χω → -ξω ──
+    { en: 'to write',      pres: 'γράφω',    answer: 'έγραψα',   options: ['έγραψα','γράφω','έγραφα','έγραψες'],        hint: '✅ Regular: -φω → -ψα with ε- augment. έγραφα is the imperfect.' },
+    { en: 'to read',       pres: 'διαβάζω',  answer: 'διάβασα',  options: ['διάβασα','διαβάζω','διάβαζα','διάβαψα'],    hint: '✅ Regular: -ζω → -σα. Stress shifts to αι. διάβαζα is the imperfect.' },
+    { en: 'to buy',        pres: 'αγοράζω',  answer: 'αγόρασα',  options: ['αγόρασα','αγοράζω','αγόραζα','αγόραψα'],    hint: '✅ Regular: -ζω → -σα. Stress shifts onto αγό-.' },
+    { en: 'to clean',      pres: 'καθαρίζω', answer: 'καθάρισα', options: ['καθάρισα','καθαρίζω','καθάριζα','καθαρίψα'], hint: '✅ Regular: -ζω → -σα.' },
+    { en: 'to run',        pres: 'τρέχω',    answer: 'έτρεξα',   options: ['έτρεξα','τρέχω','έτρεχα','έτρεσα'],          hint: '✅ Regular: -χω → -ξα. NOT έτρεσα (that would need -σω).' },
+    { en: 'to make / fix', pres: 'φτιάχνω',  answer: 'έφτιαξα',  options: ['έφτιαξα','φτιάχνω','έφτιαξες','έφτιαχνα'],   hint: '⚠️ Trap. -χνω → -ξα (the ν drops). NOT έφτιασα. Common spelling mistake: φτιαχσα.' },
+    { en: 'to open',       pres: 'ανοίγω',   answer: 'άνοιξα',   options: ['άνοιξα','ανοίγω','άνοιγα','άνοιψα'],         hint: '✅ Regular: -γω → -ξα. Stress shifts to α-.' },
+
+    // ── Type B: -άω/-ώ → -ησα ──
+    { en: 'to speak',      pres: 'μιλάω',    answer: 'μίλησα',   options: ['μίλησα','μιλάω','μιλούσα','μιλήσω'],        hint: '✅ Type B: -άω → -ησα. μιλήσω is bare perfective (needs να/θα). μιλούσα is the imperfect.' },
+    { en: 'to wake up',    pres: 'ξυπνάω',   answer: 'ξύπνησα',  options: ['ξύπνησα','ξυπνάω','ξυπνούσα','ξυπνήσω'],    hint: '✅ Type B: -άω → -ησα.' },
+    { en: 'to ask',        pres: 'ρωτάω',    answer: 'ρώτησα',   options: ['ρώτησα','ρωτάω','ρωτούσα','ρώτησες'],       hint: '✅ Type B: -άω → -ησα. ρώτησες = 2nd sing.' },
+
+    // ── -εύω / -ώνω ──
+    { en: 'to travel',     pres: 'ταξιδεύω', answer: 'ταξίδεψα', options: ['ταξίδεψα','ταξιδεύω','ταξίδευα','ταξιδέψω'], hint: '✅ -εύω → -εψα. Drop the υ, add ψ.' },
+    { en: 'to work',       pres: 'δουλεύω',  answer: 'δούλεψα',  options: ['δούλεψα','δουλεύω','δούλευα','δουλέψω'],    hint: '✅ -εύω → -εψα.' },
+    { en: 'to finish',     pres: 'τελειώνω', answer: 'τελείωσα', options: ['τελείωσα','τελειώνω','τελείωνα','τελειώσω'], hint: '✅ -ώνω → -ωσα.' },
+  ];
+
+  let gPres2AorDeck = [], gPres2AorIndex = 0, gPres2AorCorrect = 0, gPres2AorTotal = 0, gPres2AorAnswered = false;
+
+  function initPres2AorDrill() {
+    gPres2AorDeck = shuffled(PRES2AOR_QUESTIONS);
+    gPres2AorIndex = 0;
+    gPres2AorCorrect = 0;
+    gPres2AorTotal = 0;
+    gPres2AorAnswered = false;
+    showPres2AorCard();
+  }
+
+  function showPres2AorCard() {
+    const q = gPres2AorDeck[gPres2AorIndex];
+    if (!q) return;
+    document.getElementById('pres2aor-en').textContent = `${q.en} — give the aorist of:`;
+    document.getElementById('pres2aor-prompt').innerHTML = `<span class="grammar-prompt-blank">${q.pres}</span> → <span style="color:#999;">?</span>`;
+    const fb = document.getElementById('pres2aor-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('pres2aor-options');
+    optsHost.innerHTML = '';
+    shuffled(q.options).forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gPres2AorAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('pres2aor-progress').textContent = `Question ${gPres2AorIndex + 1} of ${gPres2AorDeck.length}`;
+    document.getElementById('pres2aor-score').textContent = `Score: ${gPres2AorCorrect}/${gPres2AorTotal}`;
+    gPres2AorAnswered = false;
+  }
+
+  function gPres2AorAnswer(picked, btnEl, q) {
+    if (gPres2AorAnswered) return;
+    gPres2AorAnswered = true;
+    gPres2AorTotal++;
+    if (picked === q.answer) gPres2AorCorrect++;
+    else recordMistake({
+      drill_type: 'verbs', prompt: `${q.en}: ${q.pres} → aorist?`, correct: q.answer, picked: picked,
+      metadata: { source: 'pres2aor', en: q.en, present: q.pres, hint: q.hint }
+    });
+    document.querySelectorAll('#pres2aor-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    document.getElementById('pres2aor-prompt').innerHTML = `<span class="grammar-prompt-blank">${q.pres}</span> → <span class="grammar-prompt-blank">${q.answer}</span>`;
+    const fb = document.getElementById('pres2aor-feedback');
+    fb.textContent = q.hint;
+    fb.classList.add('show');
+    document.getElementById('pres2aor-score').textContent = `Score: ${gPres2AorCorrect}/${gPres2AorTotal}`;
+  }
+
+  function gPres2AorNext() {
+    gPres2AorIndex = (gPres2AorIndex + 1) % gPres2AorDeck.length;
+    showPres2AorCard();
+  }
+  function gPres2AorBack() {
+    gPres2AorIndex = (gPres2AorIndex - 1 + gPres2AorDeck.length) % gPres2AorDeck.length;
+    showPres2AorCard();
+  }
+  function gPres2AorShuffle() { initPres2AorDrill(); }
 
   // ── Subject-First Conjugation drill ──
   // Trains the metacognitive step that prevents person-mismatch errors:
