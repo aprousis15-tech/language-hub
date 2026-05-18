@@ -2884,6 +2884,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('vgroup',this)">🗂️ Verb Group Classifier</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('subjfirst',this)">🧭 Subject-First Conjugation</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aorist',this)">⏪ Past (Aorist)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
@@ -3021,6 +3022,40 @@
         <span id="future-progress">Question 1</span>
         <span class="grammar-score" id="future-score">Score: 0/0</span>
       </div>
+    </div>
+
+    <!-- Subject-First Conjugation — forces "identify subject person, THEN type form" -->
+    <div id="grammar-subjfirst" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-en" id="subjfirst-en">…</div>
+        <div class="grammar-prompt-greek" id="subjfirst-verb-display">…</div>
+        <div class="subjfirst-step1" id="subjfirst-step1">
+          <div style="font-size:0.78rem;color:#7a4060;text-transform:uppercase;letter-spacing:0.06em;margin:8px 0 6px;text-align:center;font-weight:700;">Step 1 · Identify the subject's person + number</div>
+          <div class="grammar-options" id="subjfirst-person-options"></div>
+        </div>
+        <div class="subjfirst-step2" id="subjfirst-step2" style="display:none;">
+          <div style="font-size:0.78rem;color:#7a4060;text-transform:uppercase;letter-spacing:0.06em;margin:10px 0 6px;text-align:center;font-weight:700;">Step 2 · Type the conjugated form</div>
+          <input type="text" id="subjfirst-input" class="practice-input" lang="el"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 placeholder="Type the Greek verb form…"
+                 style="max-width:340px;margin:0 auto;display:block;"
+                 onkeydown="if(event.key==='Enter'){event.preventDefault();gSubjFirstSubmit();}">
+          <div style="text-align:center;margin-top:10px;">
+            <button class="grammar-btn" onclick="gSubjFirstSubmit()">Check ✓</button>
+          </div>
+        </div>
+        <div class="grammar-feedback" id="subjfirst-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gSubjFirstBack()">← Back</button>
+        <button class="grammar-btn" onclick="gSubjFirstNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gSubjFirstShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="subjfirst-progress">Question 1</span>
+        <span class="grammar-score" id="subjfirst-score">Score: 0/0</span>
+      </div>
+      <div id="subjfirst-trainer-state" style="text-align:center;font-size:0.8rem;color:#7a6a55;margin-top:8px;"></div>
     </div>
 
     <!-- Verb Group Classifier — show present verb, pick the group, learn the perfective -->
@@ -3388,6 +3423,13 @@
       <button class="practice-topic-chip active" onclick="setPracticeTopic('all',this)">🌐 All</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('mistakes',this)">🎯 My Mistakes</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('due',this)">📅 Due Today</button>
+
+      <div class="practice-topic-group-label">▸ By Part of Speech</div>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pos_verb',this)">🔥 Verbs</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pos_noun',this)">📦 Nouns</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pos_adj',this)">🎨 Adjectives</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pos_adv',this)">⚡ Adverbs</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pos_imp',this)">❗ Imperatives</button>
 
       <div class="practice-topic-group-label">▸ Phone & Apps</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('iphone',this)">📱 iPhone</button>
@@ -7643,6 +7685,7 @@
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
+    document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
     document.getElementById('grammar-noundrill').style.display = mode === 'noundrill' ? '' : 'none';
     document.getElementById('grammar-adjdrill').style.display = mode === 'adjdrill' ? '' : 'none';
@@ -7664,6 +7707,7 @@
     if (mode === 'future') initFutureDrill();
     if (mode === 'aspect') initAspectDrill();
     if (mode === 'vgroup') initVgroupDrill();
+    if (mode === 'subjfirst') initSubjFirstDrill();
     if (mode === 'verbdrill') initVerbDrill();
     if (mode === 'noundrill') initSrsDrill('noundrill');
     if (mode === 'adjdrill') initSrsDrill('adjdrill');
@@ -7674,7 +7718,7 @@
 
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
-    verbs: ['typea','verbs','aspect','vgroup','aorist','future','neg'],
+    verbs: ['typea','verbs','aspect','vgroup','subjfirst','aorist','future','neg'],
     nouns: ['articles','gtap','preps'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
@@ -8690,6 +8734,194 @@
   }
   function gVgroupShuffle() { initVgroupDrill(); }
 
+  // ── Subject-First Conjugation drill ──
+  // Trains the metacognitive step that prevents person-mismatch errors:
+  // pick the subject's person+number FIRST, then type the conjugated form.
+  // Once the user has 30 successful conjugations under their belt, the
+  // step-1 picker auto-hides (training wheels off). State persists in
+  // localStorage so progress survives page reloads.
+  const SUBJFIRST_PERSONS = ['1s','2s','3s','1p','2p','3p'];
+  const SUBJFIRST_PERSON_LABELS = {
+    '1s': 'I (1st sing)', '2s': 'you (2nd sing)', '3s': 'he / she / it (3rd sing)',
+    '1p': 'we (1st pl)',  '2p': 'you all (2nd pl)',  '3p': 'they (3rd pl)'
+  };
+  const SUBJFIRST_QUESTIONS = [
+    { en: 'I want to learn Greek.',                  verb: 'θέλω',         person: '1s', answer: 'θέλω',           hint: 'εγώ → 1st sing → -ω (Type A).' },
+    { en: 'Maria and Eleni speak Greek.',            verb: 'μιλάω',        person: '3p', answer: 'μιλάνε',          hint: 'αυτές (3rd pl) → -νε for -άω verbs. Also accepted: μιλούν.' },
+    { en: 'Do you (formal) have water?',             verb: 'έχω',          person: '2p', answer: 'έχετε',           hint: 'Εσείς (formal "you") → 2nd pl → -ετε.' },
+    { en: 'We are watching a movie.',                verb: 'βλέπω',        person: '1p', answer: 'βλέπουμε',        hint: 'εμείς (1st pl) → -ουμε.' },
+    { en: 'The kids are running outside.',           verb: 'τρέχω',        person: '3p', answer: 'τρέχουν',         hint: 'τα παιδιά → 3rd pl → -ουν.' },
+    { en: 'He drinks coffee every morning.',         verb: 'πίνω',         person: '3s', answer: 'πίνει',           hint: 'αυτός → 3rd sing → -ει.' },
+    { en: 'You (informal) understand Greek.',        verb: 'καταλαβαίνω',  person: '2s', answer: 'καταλαβαίνεις',   hint: 'εσύ → 2nd sing → -εις.' },
+    { en: 'I write every day.',                      verb: 'γράφω',        person: '1s', answer: 'γράφω',           hint: 'εγώ → 1st sing → -ω.' },
+    { en: 'She speaks three languages.',             verb: 'μιλάω',        person: '3s', answer: 'μιλάει',          hint: 'αυτή → 3rd sing → -άει (Type B).' },
+    { en: 'Maria is reading a book.',                verb: 'διαβάζω',      person: '3s', answer: 'διαβάζει',        hint: 'αυτή → 3rd sing → -ει.' },
+    { en: 'We live in Athens.',                      verb: 'μένω',         person: '1p', answer: 'μένουμε',         hint: 'εμείς → 1st pl → -ουμε.' },
+    { en: 'Yannis works late.',                      verb: 'δουλεύω',      person: '3s', answer: 'δουλεύει',        hint: 'αυτός → 3rd sing → -ει.' },
+    { en: 'You all are leaving early.',              verb: 'φεύγω',        person: '2p', answer: 'φεύγετε',         hint: 'εσείς → 2nd pl → -ετε.' },
+    { en: 'They want to come too.',                  verb: 'θέλω',         person: '3p', answer: 'θέλουν',          hint: 'αυτοί → 3rd pl → -ουν.' },
+    { en: 'Do you (informal) know Greek?',           verb: 'ξέρω',         person: '2s', answer: 'ξέρεις',          hint: 'εσύ → 2nd sing → -εις.' },
+    { en: "We're going to the market.",              verb: 'πάω',          person: '1p', answer: 'πάμε',            hint: 'πάω is irregular: εμείς → πάμε (not πάουμε).' },
+    { en: 'She is cooking dinner.',                  verb: 'μαγειρεύω',    person: '3s', answer: 'μαγειρεύει',      hint: 'αυτή → 3rd sing → -ει.' },
+    { en: 'I learn something new every day.',        verb: 'μαθαίνω',      person: '1s', answer: 'μαθαίνω',         hint: 'εγώ → 1st sing → -ω.' },
+    { en: 'The children are eating now.',            verb: 'τρώω',         person: '3p', answer: 'τρώνε',           hint: 'τρώω is irregular: 3rd pl → τρώνε.' },
+    { en: 'You (formal) speak Greek very well.',     verb: 'μιλάω',        person: '2p', answer: 'μιλάτε',          hint: 'Εσείς (formal) → 2nd pl → -άτε for -άω verbs.' },
+  ];
+
+  const SUBJFIRST_SUCCESS_KEY = 'langHub_subjFirstSuccesses_v1';
+  const SUBJFIRST_TRAINER_THRESHOLD = 30;
+  function getSubjFirstSuccessCount() {
+    try { return parseInt(localStorage.getItem(SUBJFIRST_SUCCESS_KEY) || '0', 10) || 0; } catch { return 0; }
+  }
+  function bumpSubjFirstSuccess() {
+    try { localStorage.setItem(SUBJFIRST_SUCCESS_KEY, String(getSubjFirstSuccessCount() + 1)); } catch {}
+  }
+
+  let gSubjFirstDeck = [], gSubjFirstIndex = 0, gSubjFirstCorrect = 0, gSubjFirstTotal = 0;
+  let gSubjFirstAnswered = false, gSubjFirstPickedPerson = null, gSubjFirstTrainerOn = true;
+
+  function initSubjFirstDrill() {
+    gSubjFirstDeck = shuffled(SUBJFIRST_QUESTIONS);
+    gSubjFirstIndex = 0;
+    gSubjFirstCorrect = 0;
+    gSubjFirstTotal = 0;
+    gSubjFirstTrainerOn = getSubjFirstSuccessCount() < SUBJFIRST_TRAINER_THRESHOLD;
+    showSubjFirstCard();
+  }
+
+  function showSubjFirstCard() {
+    const q = gSubjFirstDeck[gSubjFirstIndex];
+    if (!q) return;
+    gSubjFirstAnswered = false;
+    gSubjFirstPickedPerson = null;
+    document.getElementById('subjfirst-en').textContent = q.en;
+    document.getElementById('subjfirst-verb-display').innerHTML =
+      `Conjugate: <span class="grammar-prompt-blank" style="display:inline-block;margin-left:8px;">${q.verb}</span>`;
+    // Step 1 — only show if trainer mode is on
+    const step1 = document.getElementById('subjfirst-step1');
+    const step2 = document.getElementById('subjfirst-step2');
+    if (gSubjFirstTrainerOn) {
+      step1.style.display = '';
+      step2.style.display = 'none';
+      const host = document.getElementById('subjfirst-person-options');
+      host.innerHTML = '';
+      SUBJFIRST_PERSONS.forEach(p => {
+        const b = document.createElement('button');
+        b.className = 'grammar-option';
+        b.textContent = SUBJFIRST_PERSON_LABELS[p];
+        b.style.fontSize = '0.85rem';
+        b.style.padding = '8px 14px';
+        b.dataset.person = p;
+        b.onclick = () => gSubjFirstPickPerson(p, b);
+        host.appendChild(b);
+      });
+    } else {
+      step1.style.display = 'none';
+      step2.style.display = '';
+    }
+    const input = document.getElementById('subjfirst-input');
+    input.value = '';
+    input.disabled = false;
+    input.classList.remove('correct','wrong');
+    const fb = document.getElementById('subjfirst-feedback');
+    fb.innerHTML = '';
+    fb.classList.remove('show');
+    document.getElementById('subjfirst-progress').textContent = `Question ${gSubjFirstIndex + 1} of ${gSubjFirstDeck.length}`;
+    document.getElementById('subjfirst-score').textContent = `Score: ${gSubjFirstCorrect}/${gSubjFirstTotal}`;
+    const successes = getSubjFirstSuccessCount();
+    document.getElementById('subjfirst-trainer-state').textContent = gSubjFirstTrainerOn
+      ? `🦺 Training wheels on — ${successes}/${SUBJFIRST_TRAINER_THRESHOLD} successful conjugations. Subject picker drops once you cross ${SUBJFIRST_TRAINER_THRESHOLD}.`
+      : `✅ Training wheels off — you've crossed ${SUBJFIRST_TRAINER_THRESHOLD} successful conjugations (${successes} total). Subject picker hidden.`;
+    if (!gSubjFirstTrainerOn) input.focus();
+  }
+
+  function gSubjFirstPickPerson(person, btn) {
+    if (gSubjFirstPickedPerson || gSubjFirstAnswered) return;
+    gSubjFirstPickedPerson = person;
+    document.querySelectorAll('#subjfirst-person-options .grammar-option').forEach(b => {
+      b.classList.add('disabled');
+      if (b === btn) {
+        b.style.background = '#4527a0';
+        b.style.color = 'white';
+        b.style.borderColor = '#4527a0';
+      }
+    });
+    document.getElementById('subjfirst-step2').style.display = '';
+    setTimeout(() => document.getElementById('subjfirst-input').focus(), 30);
+  }
+
+  function gSubjFirstSubmit() {
+    if (gSubjFirstAnswered) { gSubjFirstNext(); return; }
+    const q = gSubjFirstDeck[gSubjFirstIndex];
+    const input = document.getElementById('subjfirst-input');
+    const userRaw = input.value.trim();
+    if (!userRaw) { input.focus(); return; }
+    if (gSubjFirstTrainerOn && !gSubjFirstPickedPerson) {
+      // Force step 1 first
+      const fb = document.getElementById('subjfirst-feedback');
+      fb.innerHTML = `<div style="color:#b76e00;">⚠️ Pick the subject's person/number first (Step 1).</div>`;
+      fb.classList.add('show');
+      return;
+    }
+    gSubjFirstAnswered = true;
+    gSubjFirstTotal++;
+    input.disabled = true;
+    const userNorm = normalizePractice(userRaw);
+    const answerNorm = normalizePractice(q.answer);
+    const dist = levenshtein(userNorm, answerNorm);
+    const isCorrect = userNorm === answerNorm || dist <= 1;
+    const personRight = !gSubjFirstTrainerOn || gSubjFirstPickedPerson === q.person;
+    const fb = document.getElementById('subjfirst-feedback');
+    if (isCorrect) {
+      gSubjFirstCorrect++;
+      bumpSubjFirstSuccess();
+      input.classList.add('correct');
+      let html = `<strong>✓ Correct!</strong> <span class="rule-greek">${q.answer}</span>`;
+      if (gSubjFirstTrainerOn && !personRight) {
+        html += `<div style="margin-top:6px;color:#b76e00;">⚠️ But you picked <strong>${SUBJFIRST_PERSON_LABELS[gSubjFirstPickedPerson]}</strong> for the subject — it was actually <strong>${SUBJFIRST_PERSON_LABELS[q.person]}</strong>. You got the form right anyway, but the diagnosis step is what eliminates this error class.</div>`;
+      }
+      html += `<div style="margin-top:6px;font-size:0.85rem;">💡 ${q.hint}</div>`;
+      fb.innerHTML = html;
+    } else {
+      input.classList.add('wrong');
+      let html = `<strong>✗ Not quite.</strong> Answer: <span class="rule-greek">${q.answer}</span>`;
+      html += `<div style="margin-top:6px;font-size:0.85rem;">💡 ${q.hint}</div>`;
+      if (gSubjFirstTrainerOn && !personRight) {
+        html += `<div style="margin-top:6px;color:#b76e00;">⚠️ Person mismatch: you picked <strong>${SUBJFIRST_PERSON_LABELS[gSubjFirstPickedPerson]}</strong>, subject is <strong>${SUBJFIRST_PERSON_LABELS[q.person]}</strong>. That's exactly why the ending didn't fit.</div>`;
+      }
+      fb.innerHTML = html;
+      recordMistake({
+        drill_type: 'verbs',
+        prompt: `${q.en} → conjugate "${q.verb}" for ${SUBJFIRST_PERSON_LABELS[q.person]}`,
+        correct: q.answer,
+        picked: userRaw,
+        metadata: {
+          source: 'subjfirst', en: q.en, verb: q.verb, target_person: q.person,
+          picked_person: gSubjFirstPickedPerson || null, hint: q.hint,
+          person_mismatch: gSubjFirstTrainerOn && !personRight
+        }
+      });
+    }
+    fb.classList.add('show');
+    document.getElementById('subjfirst-score').textContent = `Score: ${gSubjFirstCorrect}/${gSubjFirstTotal}`;
+    // Update trainer-state line in case we just crossed the threshold
+    const successes = getSubjFirstSuccessCount();
+    document.getElementById('subjfirst-trainer-state').textContent = gSubjFirstTrainerOn
+      ? `🦺 Training wheels on — ${successes}/${SUBJFIRST_TRAINER_THRESHOLD} successful conjugations. Subject picker drops once you cross ${SUBJFIRST_TRAINER_THRESHOLD}.`
+      : `✅ Training wheels off — ${successes} successful conjugations.`;
+  }
+
+  function gSubjFirstNext() {
+    gSubjFirstIndex = (gSubjFirstIndex + 1) % gSubjFirstDeck.length;
+    gSubjFirstTrainerOn = getSubjFirstSuccessCount() < SUBJFIRST_TRAINER_THRESHOLD;
+    showSubjFirstCard();
+  }
+  function gSubjFirstBack() {
+    gSubjFirstIndex = (gSubjFirstIndex - 1 + gSubjFirstDeck.length) % gSubjFirstDeck.length;
+    showSubjFirstCard();
+  }
+  function gSubjFirstShuffle() { initSubjFirstDrill(); }
+
   // ── Days of Week drill ──
   // Tests three things: which day matches the English, the article (most fem,
   // Σάββατο neuter), and the "no preposition" rule (την Δευτέρα, NOT στη Δευτέρα).
@@ -9373,6 +9605,11 @@
       case 'easyout':    return v => v.topic === 'Easy Outs';
       case 'modifiers':  return v => v.topic === 'Modifiers';
       case 'irregulars': return v => v.topic === 'Top Irregulars';
+      case 'pos_verb':   return v => /^verb/i.test(v.part_of_speech || '');
+      case 'pos_noun':   return v => /^noun/i.test(v.part_of_speech || '');
+      case 'pos_adj':    return v => /^adj/i.test(v.part_of_speech || '');
+      case 'pos_adv':    return v => /^adv/i.test(v.part_of_speech || '');
+      case 'pos_imp':    return v => v.topic === 'Imperatives' || /^imper/i.test(v.part_of_speech || '');
       case 'myweek':     return v => v.topic === 'My Week';
       case 'family':     return v => v.topic === 'Family';
       case 'workchip':   return v => v.topic === 'Work';
