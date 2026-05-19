@@ -121,9 +121,14 @@
   }
   .feedback.ok { background: #e8f5e9; color: #1b5e20; border-left: 4px solid #2e7d32; }
   .feedback.no { background: #ffebee; color: #b71c1c; border-left: 4px solid #c62828; }
-  .feedback .answer-line { font-family: 'Georgia', serif; font-size: 1.15rem; margin-top: 4px; }
+  .feedback .answer-line { font-family: 'Georgia', serif; font-size: 1.2rem; margin-top: 4px; }
+  .feedback .note-line {
+    margin-top: 10px; padding-top: 8px; border-top: 1px dashed currentColor;
+    font-size: 0.92rem; opacity: 0.9; font-style: italic;
+  }
+  .feedback .note-line strong { font-style: normal; }
   .table-wrap {
-    margin-top: 28px; max-width: 520px; margin-left: auto; margin-right: auto;
+    margin-top: 28px; max-width: 620px; margin-left: auto; margin-right: auto;
   }
   .table-toggle {
     display: block; width: 100%; padding: 10px;
@@ -133,18 +138,35 @@
   }
   .table-body { display: none; margin-top: 12px; }
   .table-body.open { display: block; }
+  .group-block { margin-bottom: 22px; }
+  .group-block h3 {
+    font-family: 'Playfair Display', serif;
+    color: #b76e00; margin-bottom: 6px;
+    font-size: 1.1rem;
+  }
+  .group-block .group-rule {
+    font-size: 0.85rem; color: #6a4f1a;
+    background: #fff8e1; padding: 8px 12px; border-radius: 6px;
+    border-left: 3px solid #ffb300;
+    margin-bottom: 10px;
+  }
   .conj-table {
     width: 100%; border-collapse: collapse;
     background: #fffdf4; border: 1px solid #ffe082; border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
   .conj-table caption {
     background: #fff3c4; color: #b76e00; font-weight: 700;
-    padding: 8px; text-align: left;
+    padding: 8px 10px; text-align: left;
+  }
+  .conj-table caption .meaning { font-weight: 400; opacity: 0.9; }
+  .conj-table caption .verb-note {
+    display: block; font-size: 0.78rem; font-weight: 400;
+    color: #8c5a0a; margin-top: 3px; font-style: italic;
   }
   .conj-table th, .conj-table td {
-    padding: 6px 12px; text-align: left; font-size: 0.95rem;
+    padding: 5px 12px; text-align: left; font-size: 0.92rem;
     border-bottom: 1px solid #fff3c4;
   }
   .conj-table th { color: #b76e00; font-weight: 700; width: 38%; }
@@ -153,7 +175,7 @@
     text-align: center; padding: 28px; color: #4a6f8a;
   }
   .rule-box {
-    margin: 0 auto 18px; max-width: 520px;
+    margin: 0 auto 18px; max-width: 620px;
     background: #f3e5f5; border-left: 4px solid #8e24aa;
     border-radius: 6px; padding: 12px 16px; font-size: 0.9rem;
     color: #4a148c;
@@ -179,7 +201,7 @@
   <div class="group-filter" id="group-filter">
     <button class="group-btn active" data-group="all">All groups</button>
     <button class="group-btn" data-group="-αω">-αω (μιλάω)</button>
-    <button class="group-btn" data-group="-εω">-εω (λέω)</button>
+    <button class="group-btn" data-group="-εω">-εω (λέω family)</button>
     <button class="group-btn" data-group="-ω">-ω (αγοράζω)</button>
     <button class="group-btn" data-group="-ώ">-ώ (μπορώ)</button>
   </div>
@@ -190,7 +212,7 @@
   </div>
 
   <div class="stats">
-    <span><strong id="stat-pos">1</strong> / <strong id="stat-total">24</strong></span>
+    <span><strong id="stat-pos">1</strong> / <strong id="stat-total">0</strong></span>
     <span class="correct-stat">✓ <strong id="stat-correct">0</strong></span>
     <span class="wrong-stat">✗ <strong id="stat-wrong">0</strong></span>
     <span>streak <strong id="stat-streak">0</strong></span>
@@ -201,10 +223,10 @@
       <span class="group-pill" id="meta-group">-αω</span>
       <span id="meta-label">verb</span>
     </div>
-    <div class="infinitive" id="infinitive">μιλάω</div>
-    <div class="infinitive-en" id="infinitive-en">to speak / to talk</div>
-    <div class="prompt-pron" id="prompt-pron">εγώ</div>
-    <div class="prompt-en" id="prompt-en">I</div>
+    <div class="infinitive" id="infinitive">…</div>
+    <div class="infinitive-en" id="infinitive-en">…</div>
+    <div class="prompt-pron" id="prompt-pron">…</div>
+    <div class="prompt-en" id="prompt-en">…</div>
     <input type="text" class="input" id="input"
            lang="el" autocomplete="off" autocorrect="off"
            autocapitalize="off" spellcheck="false"
@@ -227,52 +249,7 @@
 
   <div class="table-wrap">
     <button class="table-toggle" id="table-toggle">Show full conjugation tables ▾</button>
-    <div class="table-body" id="table-body">
-      <table class="conj-table">
-        <caption>-αω group: μιλάω (to speak)</caption>
-        <tbody>
-          <tr><th>εγώ</th><td>μιλάω</td></tr>
-          <tr><th>εσύ</th><td>μιλάς</td></tr>
-          <tr><th>αυτός / αυτή</th><td>μιλάει</td></tr>
-          <tr><th>εμείς</th><td>μιλάμε</td></tr>
-          <tr><th>εσείς</th><td>μιλάτε</td></tr>
-          <tr><th>αυτοί / αυτές</th><td>μιλάνε</td></tr>
-        </tbody>
-      </table>
-      <table class="conj-table">
-        <caption>-εω group: λέω (to say, tell, call)</caption>
-        <tbody>
-          <tr><th>εγώ</th><td>λέω</td></tr>
-          <tr><th>εσύ</th><td>λες</td></tr>
-          <tr><th>αυτός / αυτή</th><td>λέει</td></tr>
-          <tr><th>εμείς</th><td>λέμε</td></tr>
-          <tr><th>εσείς</th><td>λέτε</td></tr>
-          <tr><th>αυτοί / αυτές</th><td>λένε</td></tr>
-        </tbody>
-      </table>
-      <table class="conj-table">
-        <caption>-ω group: αγοράζω (to buy) — perfective: να αγοράσω</caption>
-        <tbody>
-          <tr><th>εγώ</th><td>αγοράζω</td></tr>
-          <tr><th>εσύ</th><td>αγοράζεις</td></tr>
-          <tr><th>αυτός / αυτή</th><td>αγοράζει</td></tr>
-          <tr><th>εμείς</th><td>αγοράζουμε</td></tr>
-          <tr><th>εσείς</th><td>αγοράζετε</td></tr>
-          <tr><th>αυτοί / αυτές</th><td>αγοράζουν</td></tr>
-        </tbody>
-      </table>
-      <table class="conj-table">
-        <caption>-ώ group: μπορώ (to be able / can)</caption>
-        <tbody>
-          <tr><th>εγώ</th><td>μπορώ</td></tr>
-          <tr><th>εσύ</th><td>μπορείς</td></tr>
-          <tr><th>αυτός / αυτή</th><td>μπορεί</td></tr>
-          <tr><th>εμείς</th><td>μπορούμε</td></tr>
-          <tr><th>εσείς</th><td>μπορείτε</td></tr>
-          <tr><th>αυτοί / αυτές</th><td>μπορούν</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="table-body" id="table-body"></div>
   </div>
 
   <div class="footer-back">
@@ -281,72 +258,185 @@
 </div>
 
 <script>
-  const VERBS = [
+  // The 6 pronoun prompts, in canonical order.
+  const PRONOUNS = [
+    { pron: 'εγώ',           en: 'I' },
+    { pron: 'εσύ',           en: 'you (sing.)' },
+    { pron: 'αυτός / αυτή',  en: 'he / she' },
+    { pron: 'εμείς',         en: 'we' },
+    { pron: 'εσείς',         en: 'you (pl./formal)' },
+    { pron: 'αυτοί / αυτές', en: 'they' },
+  ];
+
+  // GROUPS holds one entry per conjugation pattern; each verb's `forms` array
+  // is parallel to PRONOUNS (index 0 = εγώ, etc.).
+  const GROUPS = [
     {
-      group: '-αω', infinitive: 'μιλάω', en: 'to speak / to talk',
-      rule: '-αω: drop the -άω → endings -άω, -άς, -άει, -άμε, -άτε, -άνε. Stress on the α.',
-      forms: [
-        { pron: 'εγώ',           pron_en: 'I',                 answer: 'μιλάω' },
-        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'μιλάς' },
-        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'μιλάει' },
-        { pron: 'εμείς',         pron_en: 'we',                answer: 'μιλάμε' },
-        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'μιλάτε' },
-        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'μιλάνε' },
+      group: '-αω',
+      rule: '-αω group: endings -άω, -άς, -άει, -άμε, -άτε, -άνε · stress on the α throughout.',
+      verbs: [
+        { inf: 'μιλάω', en: 'to speak / to talk',
+          note: "Gives English 'homily' (a sermon) via ὁμιλέω. Noun: η ομιλία (speech).",
+          forms: ['μιλάω','μιλάς','μιλάει','μιλάμε','μιλάτε','μιλάνε'] },
+        { inf: 'αγαπάω', en: 'to love',
+          note: "Source of English 'agape' (selfless love). Noun: η αγάπη.",
+          forms: ['αγαπάω','αγαπάς','αγαπάει','αγαπάμε','αγαπάτε','αγαπάνε'] },
+        { inf: 'ρωτάω', en: 'to ask',
+          note: "Noun: η ερώτηση (question). Mnemonic: 'ro-TA-o' — every ASK has an A.",
+          forms: ['ρωτάω','ρωτάς','ρωτάει','ρωτάμε','ρωτάτε','ρωτάνε'] },
+        { inf: 'περπατάω', en: 'to walk',
+          note: "Gives English 'peripatetic' (Aristotle's walking philosophers).",
+          forms: ['περπατάω','περπατάς','περπατάει','περπατάμε','περπατάτε','περπατάνε'] },
+        { inf: 'πεινάω', en: 'to be hungry',
+          note: "Noun: η πείνα (hunger). Mnemonic: 'I'm PINE-aw for food.'",
+          forms: ['πεινάω','πεινάς','πεινάει','πεινάμε','πεινάτε','πεινάνε'] },
+        { inf: 'διψάω', en: 'to be thirsty',
+          note: "Noun: η δίψα (thirst). Paired opposite of πεινάω.",
+          forms: ['διψάω','διψάς','διψάει','διψάμε','διψάτε','διψάνε'] },
+        { inf: 'γελάω', en: 'to laugh',
+          note: "Gives medical English 'gelastic' (relating to laughter). Noun: το γέλιο.",
+          forms: ['γελάω','γελάς','γελάει','γελάμε','γελάτε','γελάνε'] },
+        { inf: 'ξυπνάω', en: 'to wake up',
+          note: "ξ- (out of) + ύπνος (sleep) = 'out of sleep'. Noun: ο ύπνος.",
+          forms: ['ξυπνάω','ξυπνάς','ξυπνάει','ξυπνάμε','ξυπνάτε','ξυπνάνε'] },
+        { inf: 'σταματάω', en: 'to stop',
+          note: "Same root as 'stamp' (foot down = stop). 'Σταμάτα!' = 'Stop!'",
+          forms: ['σταματάω','σταματάς','σταματάει','σταματάμε','σταματάτε','σταματάνε'] },
+        { inf: 'βοηθάω', en: 'to help',
+          note: "Noun: η βοήθεια (help / Boithia). 'Βοήθεια!' = 'Help!'",
+          forms: ['βοηθάω','βοηθάς','βοηθάει','βοηθάμε','βοηθάτε','βοηθάνε'] },
       ]
     },
     {
-      group: '-εω', infinitive: 'λέω', en: 'to say / to tell / to call',
-      rule: '-εω: λέω, λες, λέει, λέμε, λέτε, λένε. εσύ form drops the vowel: just "λες".',
-      forms: [
-        { pron: 'εγώ',           pron_en: 'I',                 answer: 'λέω' },
-        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'λες' },
-        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'λέει' },
-        { pron: 'εμείς',         pron_en: 'we',                answer: 'λέμε' },
-        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'λέτε' },
-        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'λένε' },
+      group: '-εω',
+      rule: "λέω-family (vowel + ω): -ω, -ς, -ει, -με, -τε, -νε · εσύ drops the stem vowel (λες, πας, ακούς). Note: ακούω 3pl is ακούν (no -ε).",
+      verbs: [
+        { inf: 'λέω', en: 'to say / to tell / to call',
+          note: "Source of 'lexicon', 'lexical' via λέξις (word). 3pl: λένε.",
+          forms: ['λέω','λες','λέει','λέμε','λέτε','λένε'] },
+        { inf: 'τρώω', en: 'to eat',
+          note: "Stress on the ώ. Imperative: φάε (eat!) — irregular imperative.",
+          forms: ['τρώω','τρως','τρώει','τρώμε','τρώτε','τρώνε'] },
+        { inf: 'ακούω', en: 'to hear / to listen',
+          note: "Source of 'acoustic', 'acoustics'. 3pl: ακούν (no final -ε).",
+          forms: ['ακούω','ακούς','ακούει','ακούμε','ακούτε','ακούν'] },
+        { inf: 'πάω', en: 'to go',
+          note: "Irregular but follows the λέω skeleton. 'Πάμε!' = 'Let's go!'",
+          forms: ['πάω','πας','πάει','πάμε','πάτε','πάνε'] },
+        { inf: 'κλαίω', en: 'to cry',
+          note: "Stress on the αί diphthong. εσύ form drops the vowel: κλαις.",
+          forms: ['κλαίω','κλαις','κλαίει','κλαίμε','κλαίτε','κλαίνε'] },
+        { inf: 'φταίω', en: "to be at fault / to be to blame",
+          note: "'Εγώ φταίω' = 'It's my fault.' Same skeleton as κλαίω.",
+          forms: ['φταίω','φταις','φταίει','φταίμε','φταίτε','φταίνε'] },
       ]
     },
     {
-      group: '-ω', infinitive: 'αγοράζω', en: 'to buy  (perfective: να αγοράσω)',
-      rule: '-ω (unstressed): -ω, -εις, -ει, -ουμε, -ετε, -ουν. Stress stays on the stem.',
-      forms: [
-        { pron: 'εγώ',           pron_en: 'I',                 answer: 'αγοράζω' },
-        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'αγοράζεις' },
-        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'αγοράζει' },
-        { pron: 'εμείς',         pron_en: 'we',                answer: 'αγοράζουμε' },
-        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'αγοράζετε' },
-        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'αγοράζουν' },
-      ]
+      group: '-ω',
+      rule: '-ω group (unstressed): -ω, -εις, -ει, -ουμε, -ετε, -ουν · stress stays on the stem.',
+      verbs: [
+        { inf: 'αγοράζω', en: 'to buy',
+          note: "From η αγορά (marketplace). Perfective: να αγοράσω.",
+          forms: ['αγοράζω','αγοράζεις','αγοράζει','αγοράζουμε','αγοράζετε','αγοράζουν'] },
+        { inf: 'γράφω', en: 'to write',
+          note: "Source of 'graph', 'graphic', 'paragraph', 'autograph'.",
+          forms: ['γράφω','γράφεις','γράφει','γράφουμε','γράφετε','γράφουν'] },
+        { inf: 'διαβάζω', en: 'to read / to study',
+          note: "διά (through) + βάζω (put). 'Put it through' — read/study.",
+          forms: ['διαβάζω','διαβάζεις','διαβάζει','διαβάζουμε','διαβάζετε','διαβάζουν'] },
+        { inf: 'θέλω', en: 'to want',
+          note: "One of the 13 high-frequency irregulars. Aorist: θέλησα.",
+          forms: ['θέλω','θέλεις','θέλει','θέλουμε','θέλετε','θέλουν'] },
+        { inf: 'ξέρω', en: 'to know',
+          note: "Mnemonic: 'X-ray vision = I see, I know'. No real aorist — use ήξερα.",
+          forms: ['ξέρω','ξέρεις','ξέρει','ξέρουμε','ξέρετε','ξέρουν'] },
+        { inf: 'πίνω', en: 'to drink',
+          note: "Cognate with Latin 'potare' → English 'potion', 'potable'.",
+          forms: ['πίνω','πίνεις','πίνει','πίνουμε','πίνετε','πίνουν'] },
+        { inf: 'βλέπω', en: 'to see / to look',
+          note: "Gives medical 'blepharitis' (eyelid inflammation).",
+          forms: ['βλέπω','βλέπεις','βλέπει','βλέπουμε','βλέπετε','βλέπουν'] },
+        { inf: 'κάνω', en: 'to do / to make',
+          note: "After είμαι/έχω, the most-used verb in Greek. 'Τι κάνεις;' = 'How are you?'",
+          forms: ['κάνω','κάνεις','κάνει','κάνουμε','κάνετε','κάνουν'] },
+        { inf: 'παίρνω', en: 'to take / to get',
+          note: "Mnemonic: 'I take a PEAR-no'. Aorist: πήρα (irregular).",
+          forms: ['παίρνω','παίρνεις','παίρνει','παίρνουμε','παίρνετε','παίρνουν'] },
+        { inf: 'δίνω', en: 'to give',
+          note: "PIE root *deh₃- → also Latin 'do, donare' → English 'donate'.",
+          forms: ['δίνω','δίνεις','δίνει','δίνουμε','δίνετε','δίνουν'] },
+        { inf: 'γράφω', en: 'to write (dup placeholder)',
+          note: '',
+          forms: [] }, // sentinel — removed below
+        { inf: 'έχω', en: 'to have',
+          note: "Source of English 'epoch' (ἐπέχω, 'to hold'). The auxiliary verb in Greek.",
+          forms: ['έχω','έχεις','έχει','έχουμε','έχετε','έχουν'] },
+        { inf: 'ανοίγω', en: 'to open',
+          note: "Mnemonic: 'a-NEE-go and the door opens'. Imperative: άνοιξε.",
+          forms: ['ανοίγω','ανοίγεις','ανοίγει','ανοίγουμε','ανοίγετε','ανοίγουν'] },
+        { inf: 'κλείνω', en: 'to close / to shut',
+          note: "Imperative: κλείσε. Opposite of ανοίγω.",
+          forms: ['κλείνω','κλείνεις','κλείνει','κλείνουμε','κλείνετε','κλείνουν'] },
+        { inf: 'μένω', en: 'to stay / to live (somewhere)',
+          note: "Cognate of Latin 'manere' → English 'remain', 'permanent'.",
+          forms: ['μένω','μένεις','μένει','μένουμε','μένετε','μένουν'] },
+      ].filter(v => v.forms && v.forms.length === 6)
     },
     {
-      group: '-ώ', infinitive: 'μπορώ', en: 'to be able / can',
-      rule: '-ώ (stressed): -ώ, -είς, -εί, -ούμε, -είτε, -ούν. Stress on the ending throughout.',
-      forms: [
-        { pron: 'εγώ',           pron_en: 'I',                 answer: 'μπορώ' },
-        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'μπορείς' },
-        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'μπορεί' },
-        { pron: 'εμείς',         pron_en: 'we',                answer: 'μπορούμε' },
-        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'μπορείτε' },
-        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'μπορούν' },
+      group: '-ώ',
+      rule: '-ώ group (stressed): -ώ, -είς, -εί, -ούμε, -είτε, -ούν · stress on the ending throughout.',
+      verbs: [
+        { inf: 'μπορώ', en: 'can / to be able',
+          note: "Stress lives on the ending. 'Μπορείς;' = 'Can you?' Aorist: μπόρεσα.",
+          forms: ['μπορώ','μπορείς','μπορεί','μπορούμε','μπορείτε','μπορούν'] },
+        { inf: 'οδηγώ', en: 'to drive',
+          note: "From η οδός (road) — same root as 'odyssey'. 'Road-do' = drive.",
+          forms: ['οδηγώ','οδηγείς','οδηγεί','οδηγούμε','οδηγείτε','οδηγούν'] },
+        { inf: 'τηλεφωνώ', en: 'to telephone / to call',
+          note: "Direct cognate: tele- (far) + phone (voice). Easy win.",
+          forms: ['τηλεφωνώ','τηλεφωνείς','τηλεφωνεί','τηλεφωνούμε','τηλεφωνείτε','τηλεφωνούν'] },
+        { inf: 'ευχαριστώ', en: 'to thank',
+          note: "Source of 'Eucharist' (Christian thanksgiving). Lit: 'good favor'.",
+          forms: ['ευχαριστώ','ευχαριστείς','ευχαριστεί','ευχαριστούμε','ευχαριστείτε','ευχαριστούν'] },
+        { inf: 'χρησιμοποιώ', en: 'to use',
+          note: "χρήσιμο (useful) + ποιώ (make) → 'make useful' = use.",
+          forms: ['χρησιμοποιώ','χρησιμοποιείς','χρησιμοποιεί','χρησιμοποιούμε','χρησιμοποιείτε','χρησιμοποιούν'] },
+        { inf: 'ακολουθώ', en: 'to follow',
+          note: "Source of English 'acolyte' (one who follows / assists).",
+          forms: ['ακολουθώ','ακολουθείς','ακολουθεί','ακολουθούμε','ακολουθείτε','ακολουθούν'] },
+        { inf: 'ζω', en: 'to live',
+          note: "Source of 'zoology', 'zodiac'. Short stem ζ-, standard -ώ endings.",
+          forms: ['ζω','ζεις','ζει','ζούμε','ζείτε','ζουν'] },
+        { inf: 'αργώ', en: 'to be late / to be slow',
+          note: "From αργός (slow, lazy). Gives 'argon' (the slow, inert gas).",
+          forms: ['αργώ','αργείς','αργεί','αργούμε','αργείτε','αργούν'] },
+        { inf: 'τραγουδώ', en: 'to sing',
+          note: "Noun: το τραγούδι (song). 'Tra-goo-DO' has a song in it.",
+          forms: ['τραγουδώ','τραγουδείς','τραγουδεί','τραγουδούμε','τραγουδείτε','τραγουδούν'] },
+        { inf: 'προσπαθώ', en: 'to try / to attempt',
+          note: "προς + πάθος (toward + passion) — 'push toward'. Aorist: προσπάθησα.",
+          forms: ['προσπαθώ','προσπαθείς','προσπαθεί','προσπαθούμε','προσπαθείτε','προσπαθούν'] },
       ]
     },
   ];
 
-  // Build flat card list from verbs.
+  // ---- Build the flat card deck for drilling ----
   function buildDeck(groupFilter) {
     const cards = [];
-    for (const v of VERBS) {
-      if (groupFilter !== 'all' && v.group !== groupFilter) continue;
-      for (const f of v.forms) {
-        cards.push({
-          group: v.group,
-          infinitive: v.infinitive,
-          infinitive_en: v.en,
-          rule: v.rule,
-          pron: f.pron,
-          pron_en: f.pron_en,
-          answer: f.answer,
-        });
+    for (const g of GROUPS) {
+      if (groupFilter !== 'all' && g.group !== groupFilter) continue;
+      for (const v of g.verbs) {
+        for (let i = 0; i < PRONOUNS.length; i++) {
+          cards.push({
+            group: g.group,
+            infinitive: v.inf,
+            infinitive_en: v.en,
+            note: v.note,
+            pron: PRONOUNS[i].pron,
+            pron_en: PRONOUNS[i].en,
+            answer: v.forms[i],
+          });
+        }
       }
     }
     return shuffle(cards);
@@ -361,7 +451,7 @@
     return a;
   }
 
-  // Normalize Greek text for forgiving comparison: lowercase, strip accents.
+  // Normalize Greek for forgiving comparison: lowercase, strip diacritics, final-ς == σ.
   function norm(s) {
     return s
       .toLowerCase()
@@ -372,6 +462,13 @@
       .trim();
   }
 
+  // Escape HTML to keep notes safe when injected into feedback.
+  function esc(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
   // ---- State ----
   let deck = [];
   let pos = 0;
@@ -379,8 +476,7 @@
   let wrong = 0;
   let streak = 0;
   let currentGroup = 'all';
-  let answered = false;   // whether current card has been graded
-  let revealed = false;
+  let answered = false;
 
   // ---- DOM ----
   const el = (id) => document.getElementById(id);
@@ -398,6 +494,7 @@
     if (pos >= deck.length) {
       cardEl.style.display = 'none';
       emptyEl.style.display = '';
+      renderStats();
       return;
     }
     cardEl.style.display = '';
@@ -413,12 +510,11 @@
     inputEl.classList.remove('correct', 'wrong');
     inputEl.disabled = false;
     feedbackEl.style.display = 'none';
-    feedbackEl.textContent = '';
+    feedbackEl.innerHTML = '';
     submitBtn.textContent = 'Check ✓';
     submitBtn.disabled = false;
     revealBtn.disabled = false;
     answered = false;
-    revealed = false;
     inputEl.focus();
     renderStats();
   }
@@ -436,18 +532,52 @@
     if (currentGroup === 'all') {
       ruleEl.textContent = 'All four groups mixed. Click a group above to focus on one pattern.';
     } else {
-      const v = VERBS.find(v => v.group === currentGroup);
-      ruleEl.textContent = v ? v.rule : '';
+      const g = GROUPS.find(g => g.group === currentGroup);
+      ruleEl.textContent = g ? g.rule : '';
+    }
+  }
+
+  // Build the reference tables block from GROUPS, so adding verbs only requires
+  // editing the data array above.
+  function renderTables() {
+    const host = el('table-body');
+    host.innerHTML = '';
+    for (const g of GROUPS) {
+      const block = document.createElement('div');
+      block.className = 'group-block';
+      block.innerHTML = `
+        <h3>${esc(g.group)} group</h3>
+        <div class="group-rule">${esc(g.rule)}</div>
+      `;
+      for (const v of g.verbs) {
+        const rows = PRONOUNS.map((p, i) =>
+          `<tr><th>${esc(p.pron)}</th><td>${esc(v.forms[i])}</td></tr>`
+        ).join('');
+        const tbl = document.createElement('table');
+        tbl.className = 'conj-table';
+        tbl.innerHTML = `
+          <caption>
+            ${esc(v.inf)} <span class="meaning">— ${esc(v.en)}</span>
+            ${v.note ? `<span class="verb-note">${esc(v.note)}</span>` : ''}
+          </caption>
+          <tbody>${rows}</tbody>
+        `;
+        block.appendChild(tbl);
+      }
+      host.appendChild(block);
     }
   }
 
   // ---- Actions ----
+  function buildFeedback(label, klass, answer, note) {
+    const noteBlock = note
+      ? `<div class="note-line"><strong>💡 Memory hook:</strong> ${esc(note)}</div>`
+      : '';
+    return `<div>${label}</div><div class="answer-line">${esc(answer)}</div>${noteBlock}`;
+  }
+
   function grade() {
-    if (answered) {
-      // already graded → advance
-      next();
-      return;
-    }
+    if (answered) { next(); return; }
     const c = deck[pos];
     const guess = inputEl.value.trim();
     if (!guess) return;
@@ -458,31 +588,23 @@
       streak++;
       inputEl.classList.add('correct');
       feedbackEl.className = 'feedback ok';
-      feedbackEl.innerHTML = '✓ Correct!' +
-        (norm(guess) !== guess.toLowerCase().replace(/\s+/g,'').trim() ? '' : '') +
-        ` <div class="answer-line">${c.answer}</div>`;
+      feedbackEl.innerHTML = buildFeedback('✓ Correct!', 'ok', c.answer, c.note);
     } else {
       wrong++;
       streak = 0;
       inputEl.classList.add('wrong');
       feedbackEl.className = 'feedback no';
-      feedbackEl.innerHTML = `✗ Answer: <div class="answer-line">${c.answer}</div>`;
+      feedbackEl.innerHTML = buildFeedback('✗ Answer:', 'no', c.answer, c.note);
     }
     feedbackEl.style.display = '';
     submitBtn.textContent = 'Next →';
     renderStats();
   }
 
-  function next() {
-    pos++;
-    renderCard();
-  }
+  function next() { pos++; renderCard(); }
 
   function skip() {
-    if (!answered) {
-      wrong++;
-      streak = 0;
-    }
+    if (!answered) { wrong++; streak = 0; }
     pos++;
     renderCard();
   }
@@ -493,10 +615,9 @@
     inputEl.value = c.answer;
     inputEl.classList.add('wrong');
     feedbackEl.className = 'feedback no';
-    feedbackEl.innerHTML = `Answer: <div class="answer-line">${c.answer}</div>`;
+    feedbackEl.innerHTML = buildFeedback('Answer:', 'no', c.answer, c.note);
     feedbackEl.style.display = '';
     answered = true;
-    revealed = true;
     wrong++;
     streak = 0;
     submitBtn.textContent = 'Next →';
@@ -527,10 +648,7 @@
   revealBtn.addEventListener('click', reveal);
   restartBtn.addEventListener('click', restart);
   inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      grade();
-    }
+    if (e.key === 'Enter') { e.preventDefault(); grade(); }
   });
   document.querySelectorAll('.group-btn').forEach(b => {
     b.addEventListener('click', () => setGroup(b.dataset.group));
@@ -543,6 +661,7 @@
 
   // ---- Init ----
   renderRule();
+  renderTables();
   restart();
 </script>
 </body>
