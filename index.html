@@ -7583,14 +7583,28 @@
   // above the active drill. Click "See full Rules tab →" to jump to the full version.
   const DRILL_RULES = {
     articles: `
-      <strong>Articles change by case (subject vs. object vs. "of"):</strong>
+      <strong>Articles change by case AND number.</strong> Six cells per gender — three cases × singular/plural.
       <table>
         <tr><th>Case</th><th>Masc.</th><th>Fem.</th><th>Neut.</th></tr>
-        <tr><td>Nom. (subject)</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">το</span></td></tr>
-        <tr><td>Acc. (object, after preps)</td><td><span class="rule-greek">τον</span></td><td><span class="rule-greek">την</span></td><td><span class="rule-greek">το</span></td></tr>
-        <tr><td>Gen. ("of the")</td><td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td></tr>
+        <tr><td><strong>Nom. sing.</strong> (subject)</td><td><span class="rule-greek">ο</span></td><td><span class="rule-greek">η</span></td><td><span class="rule-greek">το</span></td></tr>
+        <tr><td><strong>Nom. plural</strong></td><td><span class="rule-greek">οι</span></td><td><span class="rule-greek">οι</span></td><td><span class="rule-greek">τα</span></td></tr>
+        <tr><td><strong>Acc. sing.</strong> (object, after preps)</td><td><span class="rule-greek">τον</span></td><td><span class="rule-greek">την</span></td><td><span class="rule-greek">το</span></td></tr>
+        <tr><td><strong>Acc. plural</strong></td><td><span class="rule-greek">τους</span></td><td><span class="rule-greek">τις</span></td><td><span class="rule-greek">τα</span></td></tr>
+        <tr><td><strong>Gen. sing.</strong> ("of the")</td><td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td></tr>
+        <tr><td><strong>Gen. plural</strong> ("of the")</td><td><span class="rule-greek">των</span></td><td><span class="rule-greek">των</span></td><td><span class="rule-greek">των</span></td></tr>
       </table>
-      <strong>σε + article contracts:</strong> σε + το → <span class="rule-greek">στο</span>, σε + τη → <span class="rule-greek">στη(ν)</span>, σε + τον → <span class="rule-greek">στον</span>. Never write σε + article uncontracted.
+      <strong>Memory hooks:</strong>
+      <ul style="margin: 6px 0 8px 18px;">
+        <li>Masc + fem <strong>share the plural nominative</strong> (<span class="rule-greek">οι</span>) — only neut differs (<span class="rule-greek">τα</span>).</li>
+        <li>Neuter is <strong>identical in nominative and accusative</strong>, both singular (<span class="rule-greek">το / το</span>) and plural (<span class="rule-greek">τα / τα</span>). No work to do for neuter subject vs. object.</li>
+        <li><strong>Genitive plural is the same for all three genders</strong>: <span class="rule-greek">των</span>. Easiest cell to learn.</li>
+      </ul>
+      <strong>σε + article contracts</strong> (never write σε + article uncontracted):
+      <table>
+        <tr><th>Number</th><th>Masc.</th><th>Fem.</th><th>Neut.</th></tr>
+        <tr><td>Singular</td><td><span class="rule-greek">στον</span></td><td><span class="rule-greek">στη(ν)</span></td><td><span class="rule-greek">στο</span></td></tr>
+        <tr><td>Plural</td><td><span class="rule-greek">στους</span></td><td><span class="rule-greek">στις</span></td><td><span class="rule-greek">στα</span></td></tr>
+      </table>
     `,
     verbs: `
       <strong>Type B verbs (-άω / -ώ endings):</strong> the present-tense person endings are <em>different</em> from Type A.
@@ -7901,10 +7915,23 @@
     { prompt: 'Τρώμε ___ εστιατόριο.', en: 'We are eating at the restaurant.', answer: 'στο', options: ['στον','στην','στο'], hint: 'εστιατόριο is neut → στο' },
     { prompt: 'Πάω ___ δουλειά.', en: "I'm going to work.", answer: 'στη', options: ['στο','στη','στον'], hint: 'δουλειά is fem; before consonant στην often drops the ν → στη δουλειά' },
 
+    // Plural nominative (subject position) — οι / οι / τα
+    { prompt: '___ φίλοι μου είναι εδώ.', en: 'My friends are here.', answer: 'Οι', options: ['Οι','Τα','Τους'], hint: 'φίλοι is masc plur subject → οι. (Masc + fem share οι in plural nominative — only neut differs.)' },
+    { prompt: '___ γυναίκες δουλεύουν πολύ.', en: 'The women work a lot.', answer: 'Οι', options: ['Οι','Τα','Τις'], hint: 'γυναίκες is fem plur subject → οι. Same article as masc plural in the nominative.' },
+    { prompt: '___ παιδιά παίζουν στον κήπο.', en: 'The children are playing in the garden.', answer: 'Τα', options: ['Οι','Τα','Τους'], hint: 'παιδιά is neut plur → τα. (Neut plural nom = neut plural acc — both τα.)' },
+    { prompt: '___ άντρες είναι έξω.', en: 'The men are outside.', answer: 'Οι', options: ['Οι','Τα','Τους'], hint: 'άντρες is masc plur → οι.' },
+    { prompt: '___ βιβλία είναι στο τραπέζι.', en: 'The books are on the table.', answer: 'Τα', options: ['Οι','Τα','Τους'], hint: 'βιβλία is neut plur → τα.' },
+
     // Plural accusative
     { prompt: 'Βλέπω ___ φίλους μου.', en: 'I see my friends.', answer: 'τους', options: ['τους','τις','τα'], hint: 'masc plur accusative = τους' },
     { prompt: 'Αγαπάω ___ αδελφές μου.', en: 'I love my sisters.', answer: 'τις', options: ['τους','τις','τα'], hint: 'fem plur accusative = τις' },
     { prompt: 'Διαβάζω ___ βιβλία.', en: 'I am reading the books.', answer: 'τα', options: ['τους','τις','τα'], hint: 'neut plur accusative = τα (same as nominative for neuter plural)' },
+
+    // Plural genitive — των for ALL THREE genders (easiest cell)
+    { prompt: 'Το σπίτι ___ φίλων μου είναι μεγάλο.', en: "My friends' house is big.", answer: 'των', options: ['των','τους','τις'], hint: '"of my friends" → masc plur genitive = των. The plural genitive is των for ALL genders.' },
+    { prompt: 'Τα ονόματα ___ παιδιών είναι ωραία.', en: "The children's names are nice.", answer: 'των', options: ['των','τα','τους'], hint: '"of the children" → neut plur genitive = των. (Plural genitive is των regardless of gender.)' },
+    { prompt: 'Η γνώμη ___ γυναικών μετράει.', en: "The women's opinion matters.", answer: 'των', options: ['των','τις','τους'], hint: '"of the women" → fem plur genitive = των. Same as masc and neut in the plural.' },
+    { prompt: 'Τα βιβλία ___ μαθητών είναι εδώ.', en: "The students' books are here.", answer: 'των', options: ['των','τους','τις'], hint: '"of the students" → των. Memorize: plural genitive = των for every gender.' },
 
     // σε + plural accusative → στους/στις/στα fusion
     { prompt: 'Πάω ___ φίλους μου.', en: "I'm going to my friends'.", answer: 'στους', options: ['στους','στις','στα'], hint: 'masc plur → σε + τους = στους' },
