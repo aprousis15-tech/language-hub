@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Verb Conjugation Drill — -αω, -εω, -ω, -ώ</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #1a5f7a;
+    --sky: #2e86ab;
+    --sand: #f4e9d8;
+    --white: #fdfaf6;
+    --dark: #1e2a35;
+    --tile: #e8dcc8;
+    --greek-blue: #0d4f8b;
+    --teal: #00695c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--white);
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header.top {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  header.top h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--greek-blue);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin-bottom: 6px;
+  }
+  header.top p {
+    color: #4a6f8a;
+    font-size: 0.95rem;
+  }
+  .group-filter {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .group-btn {
+    padding: 7px 16px; border-radius: 99px; border: 1.5px solid #bbdefb;
+    background: white; color: var(--greek-blue); font-size: 0.85rem;
+    cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 600;
+  }
+  .group-btn:hover { background: #e3f2fd; }
+  .group-btn.active { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
+  .stats {
+    text-align: center; font-size: 0.88rem; color: #4a6f8a;
+    margin-bottom: 18px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+  }
+  .stats strong { color: #0d47a1; font-size: 1.05rem; }
+  .stats .correct-stat strong { color: #2e7d32; }
+  .stats .wrong-stat strong { color: #c62828; }
+  .card {
+    max-width: 520px; margin: 0 auto; background: white;
+    border-radius: 14px; padding: 28px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border: 1px solid #e1ecf4; text-align: center;
+  }
+  .verb-meta {
+    font-size: 0.78rem; color: #888; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .verb-meta .group-pill {
+    display: inline-block; background: #e3f2fd; color: var(--greek-blue);
+    padding: 2px 10px; border-radius: 99px; font-weight: 700;
+    margin-right: 6px;
+  }
+  .infinitive {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; color: #555; margin-bottom: 4px;
+  }
+  .infinitive-en {
+    font-size: 0.92rem; color: #888; font-style: italic;
+    margin-bottom: 18px;
+  }
+  .prompt-pron {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; color: var(--teal); font-weight: 600;
+    line-height: 1.2; min-height: 44px;
+  }
+  .prompt-en {
+    font-size: 0.95rem; color: #5a6f6c; font-style: italic;
+    margin: 4px 0 18px;
+  }
+  .input {
+    width: 100%; max-width: 360px; padding: 12px 16px;
+    font-size: 1.4rem;
+    font-family: 'Georgia', serif;
+    border: 2px solid #bbdefb; border-radius: 8px;
+    text-align: center; box-sizing: border-box;
+    color: var(--teal);
+  }
+  .input:focus { outline: none; border-color: var(--greek-blue); }
+  .input.correct { border-color: #2e7d32; background: #e8f5e9; }
+  .input.wrong { border-color: #c62828; background: #ffebee; }
+  .actions {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 9px 20px; border-radius: 99px;
+    font-family: 'Lato', sans-serif; font-weight: 700;
+    font-size: 0.88rem; cursor: pointer;
+    border: 1.5px solid var(--greek-blue);
+  }
+  .btn-primary { background: var(--greek-blue); color: white; }
+  .btn-primary:hover { background: #0a3d6e; }
+  .btn-secondary { background: white; color: var(--greek-blue); }
+  .btn-secondary:hover { background: #e3f2fd; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .feedback {
+    margin-top: 16px; padding: 12px 14px; border-radius: 8px;
+    font-size: 0.95rem; text-align: left;
+  }
+  .feedback.ok { background: #e8f5e9; color: #1b5e20; border-left: 4px solid #2e7d32; }
+  .feedback.no { background: #ffebee; color: #b71c1c; border-left: 4px solid #c62828; }
+  .feedback .answer-line { font-family: 'Georgia', serif; font-size: 1.15rem; margin-top: 4px; }
+  .table-wrap {
+    margin-top: 28px; max-width: 520px; margin-left: auto; margin-right: auto;
+  }
+  .table-toggle {
+    display: block; width: 100%; padding: 10px;
+    background: #fffbeb; border: 1.5px solid #ffe082; border-radius: 8px;
+    color: #b76e00; font-weight: 700; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-size: 0.9rem;
+  }
+  .table-body { display: none; margin-top: 12px; }
+  .table-body.open { display: block; }
+  .conj-table {
+    width: 100%; border-collapse: collapse;
+    background: #fffdf4; border: 1px solid #ffe082; border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .conj-table caption {
+    background: #fff3c4; color: #b76e00; font-weight: 700;
+    padding: 8px; text-align: left;
+  }
+  .conj-table th, .conj-table td {
+    padding: 6px 12px; text-align: left; font-size: 0.95rem;
+    border-bottom: 1px solid #fff3c4;
+  }
+  .conj-table th { color: #b76e00; font-weight: 700; width: 38%; }
+  .conj-table td { font-family: 'Georgia', serif; color: var(--teal); }
+  .empty-state {
+    text-align: center; padding: 28px; color: #4a6f8a;
+  }
+  .rule-box {
+    margin: 0 auto 18px; max-width: 520px;
+    background: #f3e5f5; border-left: 4px solid #8e24aa;
+    border-radius: 6px; padding: 12px 16px; font-size: 0.9rem;
+    color: #4a148c;
+  }
+  .rule-box strong { color: #6a1b9a; }
+  .footer-back {
+    text-align: center; margin-top: 32px;
+  }
+  .footer-back a {
+    color: var(--greek-blue); text-decoration: none;
+    font-size: 0.9rem; font-weight: 600;
+  }
+  .footer-back a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Greek Verb Conjugation Drill</h1>
+    <p>-αω · -εω · -ω · -ώ — type the form for each pronoun.</p>
+  </header>
+
+  <div class="group-filter" id="group-filter">
+    <button class="group-btn active" data-group="all">All groups</button>
+    <button class="group-btn" data-group="-αω">-αω (μιλάω)</button>
+    <button class="group-btn" data-group="-εω">-εω (λέω)</button>
+    <button class="group-btn" data-group="-ω">-ω (αγοράζω)</button>
+    <button class="group-btn" data-group="-ώ">-ώ (μπορώ)</button>
+  </div>
+
+  <div class="rule-box" id="rule-box">
+    <strong>Endings cheat:</strong>
+    <span id="rule-text">All four groups together. Pick a single group above to focus.</span>
+  </div>
+
+  <div class="stats">
+    <span><strong id="stat-pos">1</strong> / <strong id="stat-total">24</strong></span>
+    <span class="correct-stat">✓ <strong id="stat-correct">0</strong></span>
+    <span class="wrong-stat">✗ <strong id="stat-wrong">0</strong></span>
+    <span>streak <strong id="stat-streak">0</strong></span>
+  </div>
+
+  <div class="card" id="card">
+    <div class="verb-meta">
+      <span class="group-pill" id="meta-group">-αω</span>
+      <span id="meta-label">verb</span>
+    </div>
+    <div class="infinitive" id="infinitive">μιλάω</div>
+    <div class="infinitive-en" id="infinitive-en">to speak / to talk</div>
+    <div class="prompt-pron" id="prompt-pron">εγώ</div>
+    <div class="prompt-en" id="prompt-en">I</div>
+    <input type="text" class="input" id="input"
+           lang="el" autocomplete="off" autocorrect="off"
+           autocapitalize="off" spellcheck="false"
+           placeholder="type the form…">
+    <div class="actions">
+      <button class="btn btn-primary" id="submit-btn">Check ✓</button>
+      <button class="btn btn-secondary" id="skip-btn">Skip →</button>
+      <button class="btn btn-secondary" id="reveal-btn">Reveal</button>
+    </div>
+    <div class="feedback" id="feedback" style="display:none;"></div>
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <h2>✓ Round complete</h2>
+    <p>Click Restart to shuffle and go again.</p>
+    <div style="margin-top: 16px;">
+      <button class="btn btn-primary" id="restart-btn">Restart round</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <button class="table-toggle" id="table-toggle">Show full conjugation tables ▾</button>
+    <div class="table-body" id="table-body">
+      <table class="conj-table">
+        <caption>-αω group: μιλάω (to speak)</caption>
+        <tbody>
+          <tr><th>εγώ</th><td>μιλάω</td></tr>
+          <tr><th>εσύ</th><td>μιλάς</td></tr>
+          <tr><th>αυτός / αυτή</th><td>μιλάει</td></tr>
+          <tr><th>εμείς</th><td>μιλάμε</td></tr>
+          <tr><th>εσείς</th><td>μιλάτε</td></tr>
+          <tr><th>αυτοί / αυτές</th><td>μιλάνε</td></tr>
+        </tbody>
+      </table>
+      <table class="conj-table">
+        <caption>-εω group: λέω (to say, tell, call)</caption>
+        <tbody>
+          <tr><th>εγώ</th><td>λέω</td></tr>
+          <tr><th>εσύ</th><td>λες</td></tr>
+          <tr><th>αυτός / αυτή</th><td>λέει</td></tr>
+          <tr><th>εμείς</th><td>λέμε</td></tr>
+          <tr><th>εσείς</th><td>λέτε</td></tr>
+          <tr><th>αυτοί / αυτές</th><td>λένε</td></tr>
+        </tbody>
+      </table>
+      <table class="conj-table">
+        <caption>-ω group: αγοράζω (to buy) — perfective: να αγοράσω</caption>
+        <tbody>
+          <tr><th>εγώ</th><td>αγοράζω</td></tr>
+          <tr><th>εσύ</th><td>αγοράζεις</td></tr>
+          <tr><th>αυτός / αυτή</th><td>αγοράζει</td></tr>
+          <tr><th>εμείς</th><td>αγοράζουμε</td></tr>
+          <tr><th>εσείς</th><td>αγοράζετε</td></tr>
+          <tr><th>αυτοί / αυτές</th><td>αγοράζουν</td></tr>
+        </tbody>
+      </table>
+      <table class="conj-table">
+        <caption>-ώ group: μπορώ (to be able / can)</caption>
+        <tbody>
+          <tr><th>εγώ</th><td>μπορώ</td></tr>
+          <tr><th>εσύ</th><td>μπορείς</td></tr>
+          <tr><th>αυτός / αυτή</th><td>μπορεί</td></tr>
+          <tr><th>εμείς</th><td>μπορούμε</td></tr>
+          <tr><th>εσείς</th><td>μπορείτε</td></tr>
+          <tr><th>αυτοί / αυτές</th><td>μπορούν</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-back">
+    <a href="./index.html">← Back to Language Hub</a>
+  </div>
+</div>
+
+<script>
+  const VERBS = [
+    {
+      group: '-αω', infinitive: 'μιλάω', en: 'to speak / to talk',
+      rule: '-αω: drop the -άω → endings -άω, -άς, -άει, -άμε, -άτε, -άνε. Stress on the α.',
+      forms: [
+        { pron: 'εγώ',           pron_en: 'I',                 answer: 'μιλάω' },
+        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'μιλάς' },
+        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'μιλάει' },
+        { pron: 'εμείς',         pron_en: 'we',                answer: 'μιλάμε' },
+        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'μιλάτε' },
+        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'μιλάνε' },
+      ]
+    },
+    {
+      group: '-εω', infinitive: 'λέω', en: 'to say / to tell / to call',
+      rule: '-εω: λέω, λες, λέει, λέμε, λέτε, λένε. εσύ form drops the vowel: just "λες".',
+      forms: [
+        { pron: 'εγώ',           pron_en: 'I',                 answer: 'λέω' },
+        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'λες' },
+        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'λέει' },
+        { pron: 'εμείς',         pron_en: 'we',                answer: 'λέμε' },
+        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'λέτε' },
+        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'λένε' },
+      ]
+    },
+    {
+      group: '-ω', infinitive: 'αγοράζω', en: 'to buy  (perfective: να αγοράσω)',
+      rule: '-ω (unstressed): -ω, -εις, -ει, -ουμε, -ετε, -ουν. Stress stays on the stem.',
+      forms: [
+        { pron: 'εγώ',           pron_en: 'I',                 answer: 'αγοράζω' },
+        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'αγοράζεις' },
+        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'αγοράζει' },
+        { pron: 'εμείς',         pron_en: 'we',                answer: 'αγοράζουμε' },
+        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'αγοράζετε' },
+        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'αγοράζουν' },
+      ]
+    },
+    {
+      group: '-ώ', infinitive: 'μπορώ', en: 'to be able / can',
+      rule: '-ώ (stressed): -ώ, -είς, -εί, -ούμε, -είτε, -ούν. Stress on the ending throughout.',
+      forms: [
+        { pron: 'εγώ',           pron_en: 'I',                 answer: 'μπορώ' },
+        { pron: 'εσύ',           pron_en: 'you (sing.)',       answer: 'μπορείς' },
+        { pron: 'αυτός / αυτή',  pron_en: 'he / she',          answer: 'μπορεί' },
+        { pron: 'εμείς',         pron_en: 'we',                answer: 'μπορούμε' },
+        { pron: 'εσείς',         pron_en: 'you (pl./formal)',  answer: 'μπορείτε' },
+        { pron: 'αυτοί / αυτές', pron_en: 'they',              answer: 'μπορούν' },
+      ]
+    },
+  ];
+
+  // Build flat card list from verbs.
+  function buildDeck(groupFilter) {
+    const cards = [];
+    for (const v of VERBS) {
+      if (groupFilter !== 'all' && v.group !== groupFilter) continue;
+      for (const f of v.forms) {
+        cards.push({
+          group: v.group,
+          infinitive: v.infinitive,
+          infinitive_en: v.en,
+          rule: v.rule,
+          pron: f.pron,
+          pron_en: f.pron_en,
+          answer: f.answer,
+        });
+      }
+    }
+    return shuffle(cards);
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Normalize Greek text for forgiving comparison: lowercase, strip accents.
+  function norm(s) {
+    return s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[ςσ]/g, 'σ')
+      .replace(/\s+/g, '')
+      .trim();
+  }
+
+  // ---- State ----
+  let deck = [];
+  let pos = 0;
+  let correct = 0;
+  let wrong = 0;
+  let streak = 0;
+  let currentGroup = 'all';
+  let answered = false;   // whether current card has been graded
+  let revealed = false;
+
+  // ---- DOM ----
+  const el = (id) => document.getElementById(id);
+  const inputEl = el('input');
+  const submitBtn = el('submit-btn');
+  const skipBtn = el('skip-btn');
+  const revealBtn = el('reveal-btn');
+  const restartBtn = el('restart-btn');
+  const feedbackEl = el('feedback');
+  const cardEl = el('card');
+  const emptyEl = el('empty-state');
+
+  // ---- Render ----
+  function renderCard() {
+    if (pos >= deck.length) {
+      cardEl.style.display = 'none';
+      emptyEl.style.display = '';
+      return;
+    }
+    cardEl.style.display = '';
+    emptyEl.style.display = 'none';
+    const c = deck[pos];
+    el('meta-group').textContent = c.group;
+    el('meta-label').textContent = 'verb';
+    el('infinitive').textContent = c.infinitive;
+    el('infinitive-en').textContent = c.infinitive_en;
+    el('prompt-pron').textContent = c.pron;
+    el('prompt-en').textContent = c.pron_en;
+    inputEl.value = '';
+    inputEl.classList.remove('correct', 'wrong');
+    inputEl.disabled = false;
+    feedbackEl.style.display = 'none';
+    feedbackEl.textContent = '';
+    submitBtn.textContent = 'Check ✓';
+    submitBtn.disabled = false;
+    revealBtn.disabled = false;
+    answered = false;
+    revealed = false;
+    inputEl.focus();
+    renderStats();
+  }
+
+  function renderStats() {
+    el('stat-pos').textContent = Math.min(pos + 1, deck.length);
+    el('stat-total').textContent = deck.length;
+    el('stat-correct').textContent = correct;
+    el('stat-wrong').textContent = wrong;
+    el('stat-streak').textContent = streak;
+  }
+
+  function renderRule() {
+    const ruleEl = el('rule-text');
+    if (currentGroup === 'all') {
+      ruleEl.textContent = 'All four groups mixed. Click a group above to focus on one pattern.';
+    } else {
+      const v = VERBS.find(v => v.group === currentGroup);
+      ruleEl.textContent = v ? v.rule : '';
+    }
+  }
+
+  // ---- Actions ----
+  function grade() {
+    if (answered) {
+      // already graded → advance
+      next();
+      return;
+    }
+    const c = deck[pos];
+    const guess = inputEl.value.trim();
+    if (!guess) return;
+    const isCorrect = norm(guess) === norm(c.answer);
+    answered = true;
+    if (isCorrect) {
+      correct++;
+      streak++;
+      inputEl.classList.add('correct');
+      feedbackEl.className = 'feedback ok';
+      feedbackEl.innerHTML = '✓ Correct!' +
+        (norm(guess) !== guess.toLowerCase().replace(/\s+/g,'').trim() ? '' : '') +
+        ` <div class="answer-line">${c.answer}</div>`;
+    } else {
+      wrong++;
+      streak = 0;
+      inputEl.classList.add('wrong');
+      feedbackEl.className = 'feedback no';
+      feedbackEl.innerHTML = `✗ Answer: <div class="answer-line">${c.answer}</div>`;
+    }
+    feedbackEl.style.display = '';
+    submitBtn.textContent = 'Next →';
+    renderStats();
+  }
+
+  function next() {
+    pos++;
+    renderCard();
+  }
+
+  function skip() {
+    if (!answered) {
+      wrong++;
+      streak = 0;
+    }
+    pos++;
+    renderCard();
+  }
+
+  function reveal() {
+    if (answered) return;
+    const c = deck[pos];
+    inputEl.value = c.answer;
+    inputEl.classList.add('wrong');
+    feedbackEl.className = 'feedback no';
+    feedbackEl.innerHTML = `Answer: <div class="answer-line">${c.answer}</div>`;
+    feedbackEl.style.display = '';
+    answered = true;
+    revealed = true;
+    wrong++;
+    streak = 0;
+    submitBtn.textContent = 'Next →';
+    renderStats();
+  }
+
+  function restart() {
+    deck = buildDeck(currentGroup);
+    pos = 0;
+    correct = 0;
+    wrong = 0;
+    streak = 0;
+    renderCard();
+  }
+
+  function setGroup(g) {
+    currentGroup = g;
+    document.querySelectorAll('.group-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.group === g);
+    });
+    renderRule();
+    restart();
+  }
+
+  // ---- Events ----
+  submitBtn.addEventListener('click', grade);
+  skipBtn.addEventListener('click', skip);
+  revealBtn.addEventListener('click', reveal);
+  restartBtn.addEventListener('click', restart);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      grade();
+    }
+  });
+  document.querySelectorAll('.group-btn').forEach(b => {
+    b.addEventListener('click', () => setGroup(b.dataset.group));
+  });
+  el('table-toggle').addEventListener('click', () => {
+    const body = el('table-body');
+    const open = body.classList.toggle('open');
+    el('table-toggle').textContent = open ? 'Hide full conjugation tables ▴' : 'Show full conjugation tables ▾';
+  });
+
+  // ---- Init ----
+  renderRule();
+  restart();
+</script>
+</body>
+</html>
