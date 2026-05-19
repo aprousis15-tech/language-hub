@@ -1882,6 +1882,44 @@
     padding: 10px 14px; border-radius: 0 8px 8px 0;
     text-align: left; margin: 14px auto 4px;
   }
+  /* Verb-group classifier: always-visible "Three Questions" anchor card.
+     Sits above the question card to remind the user of the SLT algorithm
+     on every question. Collapsible — defaults to open. */
+  .vgroup-anchor {
+    max-width: 600px; margin: 0 auto 16px;
+    background: #fffde7; border: 1.5px solid #ffd54f; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(249,168,37,0.08);
+  }
+  .vgroup-anchor-toggle {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; padding: 10px 16px;
+    background: transparent; border: 0; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.95rem;
+    color: #b76e00; text-align: left;
+  }
+  .vgroup-anchor-toggle:hover { background: rgba(249,168,37,0.08); }
+  .vgroup-anchor-chev { font-size: 0.85rem; transition: transform 0.2s; }
+  .vgroup-anchor-chev.closed { transform: rotate(-90deg); }
+  .vgroup-anchor-body { padding: 0 18px 14px; }
+  .vgroup-anchor-body.closed { display: none; }
+  .vgroup-anchor-steps {
+    margin: 0 0 8px 22px; padding: 0;
+    color: #5a4317; font-size: 0.92rem; line-height: 1.55;
+  }
+  .vgroup-anchor-steps li { margin-bottom: 6px; }
+  .vgroup-anchor-steps strong { color: #b76e00; }
+  .vgroup-anchor-list {
+    display: inline-block; margin-top: 2px;
+    font-family: 'Georgia', serif; color: #4527a0;
+    background: #ede7f6; padding: 2px 8px; border-radius: 6px;
+    font-size: 0.88rem;
+  }
+  .vgroup-anchor-tail { color: #5a4317; font-size: 0.88rem; }
+  .vgroup-anchor-mnemonic {
+    font-size: 0.82rem; color: #8c5a0a; font-style: italic;
+    border-top: 1px dashed #ffd54f; padding-top: 8px; margin-top: 4px;
+  }
+  .vgroup-anchor-mnemonic strong { color: #b76e00; font-style: normal; }
   /* Verb-group classifier: pre-answer clue button + body. Used by vgroup mode. */
   .vgroup-clue-btn {
     background: #fff3c4; color: #b76e00; border: 1px solid #ffd54f;
@@ -3122,6 +3160,27 @@
 
     <!-- Verb Group Classifier — show present verb, pick the group, learn the perfective -->
     <div id="grammar-vgroup" style="display:none;">
+      <!-- Always-visible "three questions" reminder. The decision algorithm
+           the rest of the drill assumes you're using. Collapsible so power users
+           can hide it once internalized. -->
+      <div class="vgroup-anchor" id="vgroup-anchor">
+        <button class="vgroup-anchor-toggle" id="vgroup-anchor-toggle" onclick="toggleVgroupAnchor()">
+          <span>🧭 The Three Questions — ask in this order</span>
+          <span class="vgroup-anchor-chev" id="vgroup-anchor-chev">▾</span>
+        </button>
+        <div class="vgroup-anchor-body" id="vgroup-anchor-body">
+          <ol class="vgroup-anchor-steps">
+            <li><strong>STRESS</strong> — final syllable loud? (μι-<strong>ΛΑ</strong>-ω, ο-δη-<strong>ΓΩ</strong>) → <strong>Group B</strong> (-ήσω). Stop.</li>
+            <li><strong>LIST</strong> — on the Top-10? → <strong>Irregular</strong>.<br>
+              <span class="vgroup-anchor-list">βλέπω · λέω · τρώω · πίνω · βρίσκω · βάζω · παίρνω · δίνω · φεύγω · μαθαίνω</span>
+            </li>
+            <li><strong>TAIL</strong> — read the ending:<br>
+              <span class="vgroup-anchor-tail">-εύω → -εύω group · -ώνω → -ώνω group · other consonant+ω → <strong>Group A</strong> (letter swap)</span>
+            </li>
+          </ol>
+          <div class="vgroup-anchor-mnemonic">Order matters. <strong>S → L → T.</strong> Each step rules out a class.</div>
+        </div>
+      </div>
       <div class="grammar-card">
         <div class="grammar-prompt-en" id="vgroup-en">…</div>
         <div class="grammar-prompt-greek" id="vgroup-prompt">…</div>
@@ -8939,6 +8998,15 @@
     document.getElementById('vgroup-progress').textContent = `Question ${gVgroupIndex + 1} of ${gVgroupDeck.length}`;
     document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
     gVgroupAnswered = false;
+  }
+
+  // Toggle the "Three Questions" anchor card visibility. Defaults to open so
+  // the algorithm is in the user's face on every question until internalized.
+  function toggleVgroupAnchor() {
+    const body = document.getElementById('vgroup-anchor-body');
+    const chev = document.getElementById('vgroup-anchor-chev');
+    const closed = body.classList.toggle('closed');
+    chev.classList.toggle('closed', closed);
   }
 
   // Reveal the per-question clue. Disables the button so it can't be re-clicked,
