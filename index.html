@@ -12094,6 +12094,13 @@
     }
     fb.classList.add('show');
     document.getElementById('multi-score').textContent = `Hits: ${gMultiHits} · Misses: ${gMultiMisses}`;
+    // Auto-advance on correct so flow stays fast. Wrong answers wait — the user needs
+    // time to read the correct answer + intuition before moving on.
+    if (isCorrect) {
+      setTimeout(() => {
+        if (gMultiAnswered) gMultiNext();
+      }, 700);
+    }
   }
 
   function gMultiNext() {
