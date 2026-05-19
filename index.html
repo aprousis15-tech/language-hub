@@ -6461,6 +6461,7 @@
   let gSpeakIndex = 0;
   let gSpeakHits = 0;
   let gSpeakMisses = 0;
+  let gSpeakResults = [];       // per-prompt result: { graded, passed, miscaught } — drives pip colors
   let gSpeakRecognition = null; // SpeechRecognition instance
   let gSpeakRecording = false;
   let gSpeakTranscript = '';    // final transcript so far
@@ -6486,6 +6487,7 @@
     gSpeakIndex = 0;
     gSpeakHits = 0;
     gSpeakMisses = 0;
+    gSpeakResults = gSpeakDeck.map(() => ({ graded: false, passed: false, miscaught: false }));
     renderSpeakCard();
   }
 
@@ -6531,21 +6533,26 @@
     renderSpeakPips();
   }
 
+  // Pip colors are driven by gSpeakResults so a graded prompt keeps its
+  // pass/fail color after the user advances to the next one. 'current' is the
+  // active prompt; 'done' (gray) is past prompts that errored or were
+  // miscaught; 'done ok'/'done no' is graded pass/fail.
   function renderSpeakPips() {
     const host = document.getElementById('speak-pips');
     host.innerHTML = '';
     for (let i = 0; i < gSpeakDeck.length; i++) {
       const p = document.createElement('span');
       p.className = 'pip';
-      if (i < gSpeakIndex) p.classList.add('done');
+      const result = gSpeakResults[i];
+      if (result && result.graded) {
+        p.classList.add('done');
+        if (!result.miscaught) p.classList.add(result.passed ? 'ok' : 'no');
+      } else if (i < gSpeakIndex) {
+        p.classList.add('done'); // advanced past without grading (error path)
+      }
       if (i === gSpeakIndex && gSpeakIndex < gSpeakDeck.length) p.classList.add('current');
       host.appendChild(p);
     }
-  }
-
-  function getSpeechRecognition() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    return SR ? new SR() : null;
   }
 
   function toggleSpeakRecord() {
@@ -6681,6 +6688,9 @@
     gSpeakLastGrading = grading;
     const passed = grading.score === 'pass';
     if (passed) gSpeakHits++; else gSpeakMisses++;
+    if (gSpeakResults[gSpeakIndex]) {
+      gSpeakResults[gSpeakIndex] = { graded: true, passed, miscaught: false };
+    }
     if (!passed) {
       await recordMistake({
         drill_type: 'speak',
@@ -6692,6 +6702,11 @@
       gSpeakLogged = true;
     }
     document.getElementById('speak-score').textContent = `Score: ${gSpeakHits}/${gSpeakHits + gSpeakMisses}`;
+    // Lock the record button after grading so a second submission can't
+    // double-count. User advances via Next or undoes via Mic miscaught.
+    const recBtnLock = document.getElementById('speak-record-btn');
+    recBtnLock.disabled = true;
+    recBtnLock.textContent = '🎤 Recorded';
 
     const correctionLine = grading.correction
       ? `<div class="speak-fb-line"><strong>Correction:</strong> ${escHtml(grading.correction)}</div>`
@@ -6711,12 +6726,6 @@
     const miscaughtBtn = document.getElementById('speak-miscaught-btn');
     miscaughtBtn.style.display = passed ? 'none' : '';
     renderSpeakPips();
-    // Mark pip retroactively to show pass/fail color
-    const pips = document.querySelectorAll('#speak-pips .pip');
-    if (pips[gSpeakIndex]) {
-      pips[gSpeakIndex].classList.add('done', passed ? 'ok' : 'no');
-      pips[gSpeakIndex].classList.remove('current');
-    }
   }
 
   // Escape hatch: the user said it right but SpeechRecognition heard wrong.
@@ -6738,16 +6747,15 @@
         metadata: { source: 'daily-five', target: q.target, reason: 'user-flagged transcription miscaught' }
       });
     }
+    if (gSpeakResults[gSpeakIndex]) {
+      gSpeakResults[gSpeakIndex].miscaught = true;
+    }
     const fb = document.getElementById('speak-feedback');
     fb.className = 'speak-feedback';
     fb.innerHTML = '<div class="speak-fb-head">🎤 Noted — not counted as a grammar miss.</div><div class="speak-fb-line">Moving on. Try the next prompt.</div>';
     fb.style.display = '';
     document.getElementById('speak-score').textContent = `Score: ${gSpeakHits}/${gSpeakHits + gSpeakMisses}`;
-    // Reset the pip color for this prompt to neutral done
-    const pips = document.querySelectorAll('#speak-pips .pip');
-    if (pips[gSpeakIndex]) {
-      pips[gSpeakIndex].classList.remove('ok','no');
-    }
+    renderSpeakPips();
     document.getElementById('speak-miscaught-btn').style.display = 'none';
   }
 
@@ -7039,6 +7047,9 @@
     if (lang === 'grammar') { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'speak') { initSpeakDrill(); }
+    // If leaving Speak while recording, stop the mic so it doesn't keep
+    // capturing in the background after the tab is hidden.
+    if (lang !== 'speak' && typeof stopSpeakRecord === 'function') stopSpeakRecord();
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
