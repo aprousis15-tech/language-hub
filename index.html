@@ -1215,11 +1215,7 @@
   .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
-  .lang-tab.active-verbdrill { color: #1565c0; border-bottom-color: #1565c0; background: white; font-weight: 700; }
-  .lang-tab.active-noundrill { color: #6a4c41; border-bottom-color: #6a4c41; background: white; font-weight: 700; }
-  .lang-tab.active-adjdrill { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
-  .lang-tab.active-impdrill { color: #e65100; border-bottom-color: #e65100; background: white; font-weight: 700; }
-  /* Shared SRS-drill styling (uses same vd-* classes by reference, but per-tab accent colors via the .srs-tinted wrapper) */
+  /* Shared SRS-drill styling (used by grammar-verbdrill/noundrill/adjdrill/impdrill subpanels, with per-mode accent colors via the .srs-tinted wrapper) */
   .srs-tinted.srs-noun .vd-header h2 { color: #6a4c41; }
   .srs-tinted.srs-noun .vd-prompt-word { color: #6a4c41; }
   .srs-tinted.srs-noun .vd-dir-btn { border-color: #d7ccc8; color: #6a4c41; }
@@ -6226,8 +6222,11 @@
   const NOTES_KEY = 'langHub_notes_v1';
   function loadDadState() { try { return JSON.parse(localStorage.getItem(DAD_KEY)) || {}; } catch { return {}; } }
   function saveDadState(s) { try { localStorage.setItem(DAD_KEY, JSON.stringify(s)); } catch {} }
-  function loadNotes() { try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || []; } catch { return []; } }
-  function saveNotes(n) { try { localStorage.setItem(NOTES_KEY, JSON.stringify(n)); } catch {} }
+  // Session-notes (Practice w/ Dad) — localStorage. Kept distinct from the
+  // Supabase-backed Notes tab (loadNotes/deleteNote async at ~L6806+); the old
+  // shared names collided and broke renderSessionNotes (notes.map was a Promise).
+  function loadSessionNotes() { try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || []; } catch { return []; } }
+  function saveSessionNotes(n) { try { localStorage.setItem(NOTES_KEY, JSON.stringify(n)); } catch {} }
 
   function toggleDadTopic(el, key) {
     const s = loadDadState();
@@ -6256,9 +6255,9 @@
     const date = document.getElementById('note-date').value;
     const text = document.getElementById('note-text').value.trim();
     if (!text) return;
-    const notes = loadNotes();
+    const notes = loadSessionNotes();
     notes.unshift({ id: Date.now(), date: date || new Date().toISOString().slice(0,10), text });
-    saveNotes(notes);
+    saveSessionNotes(notes);
     document.getElementById('note-text').value = '';
     const msg = document.getElementById('note-msg');
     msg.style.display = 'block';
@@ -6266,13 +6265,13 @@
     renderSessionNotes();
   }
 
-  function deleteNote(id) {
-    saveNotes(loadNotes().filter(n => n.id !== id));
+  function deleteSessionNote(id) {
+    saveSessionNotes(loadSessionNotes().filter(n => n.id !== id));
     renderSessionNotes();
   }
 
   function renderSessionNotes() {
-    const notes = loadNotes();
+    const notes = loadSessionNotes();
     const el = document.getElementById('session-notes-list');
     if (!el) return;
     if (notes.length === 0) {
@@ -6283,7 +6282,7 @@
       <div class="session-entry">
         <div class="session-date">${escHtml(n.date)}</div>
         <div class="session-note-text">${escHtml(n.text)}</div>
-        <button class="btn-delete" onclick="deleteNote(${n.id})" title="Delete">✕</button>
+        <button class="btn-delete" onclick="deleteSessionNote(${n.id})" title="Delete">✕</button>
       </div>`).join('');
   }
 
@@ -9807,43 +9806,43 @@
     // Core session vocabulary
     { word: 'η διαφορά', translation: 'the difference', phonetic: 'i thiafora', part_of_speech: 'noun', intuition: 'Feminine — ends in η, takes η article.' },
     { word: 'ταξιδεύω', translation: "I'm traveling / I travel", phonetic: 'taksithevo', part_of_speech: 'verb', intuition: 'Open form (type B verb). Closed form after να/θα: να ταξιδέψω.' },
-    { word: 'σήμερα', translation: 'today', phonetic: 'simera', part_of_speech: 'adverb' },
+    { word: 'σήμερα', translation: 'today', phonetic: 'simera', part_of_speech: 'adverb', intuition: 'Time adverb — never takes an article. ✗ η σήμερα · ✓ σήμερα.' },
     { word: 'το κάμπινγκ', translation: 'camping', phonetic: 'to kambing', part_of_speech: 'noun', intuition: 'Loanword, neuter (το).' },
-    { word: 'στα βόρεια', translation: 'in the north', phonetic: 'sta voria', part_of_speech: 'phrase' },
+    { word: 'στα βόρεια', translation: 'in the north', phonetic: 'sta voria', part_of_speech: 'phrase', intuition: 'σε + τα + βόρεια = στα βόρεια. Same pattern for the other compass points: στα νότια / στα ανατολικά / στα δυτικά.' },
     { word: 'κοντά στο δάσος', translation: 'near the woods', phonetic: 'konda sto thasos', part_of_speech: 'phrase', intuition: 'κοντά σε + acc. → κοντά στο/στη/στον.' },
     { word: 'πόσες μέρες', translation: 'how many days', phonetic: 'poses meres', part_of_speech: 'phrase', intuition: 'πόσες agrees with feminine plural μέρες.' },
-    { word: 'μία μέρα', translation: 'one day / a day', phonetic: 'mia mera', part_of_speech: 'phrase' },
+    { word: 'μία μέρα', translation: 'one day / a day', phonetic: 'mia mera', part_of_speech: 'phrase', intuition: 'μία (fem. of ένας) + μέρα (fem.) — agreement chain. Less formal: μια μέρα (no accent).' },
     { word: 'η μέρα', translation: 'the day', phonetic: 'i mera', part_of_speech: 'noun', intuition: 'Feminine — η.' },
-    { word: 'με ποιον', translation: 'with whom', phonetic: 'me pion', part_of_speech: 'phrase' },
+    { word: 'με ποιον', translation: 'with whom', phonetic: 'me pion', part_of_speech: 'phrase', intuition: 'με takes accusative → ποιον (masc. acc.). Feminine version: με ποια. The preposition forces the case.' },
     { word: 'μόνος μου', translation: 'on my own (m)', phonetic: 'monos mou', part_of_speech: 'phrase', intuition: 'Feminine form: μόνη μου.' },
-    { word: 'μακριά', translation: 'far', phonetic: 'makria', part_of_speech: 'adverb' },
-    { word: 'μιάμιση ώρα', translation: 'an hour and a half', phonetic: 'miamisi ora', part_of_speech: 'phrase' },
+    { word: 'μακριά', translation: 'far', phonetic: 'makria', part_of_speech: 'adverb', intuition: 'Distance adverb. Pair with από: μακριά από εδώ = far from here. Opposite: κοντά (near).' },
+    { word: 'μιάμιση ώρα', translation: 'an hour and a half', phonetic: 'miamisi ora', part_of_speech: 'phrase', intuition: 'μιάμιση = "one and a half" agreeing with feminine ώρα. Masc/neut: ενάμιση (e.g. ενάμιση χρόνο = a year and a half).' },
     { word: 'η ελευθερία', translation: 'freedom', phonetic: 'i eleftheria', part_of_speech: 'noun', intuition: 'Feminine — η.' },
-    { word: 'γιατί όχι', translation: 'why not', phonetic: 'yiati ohi', part_of_speech: 'phrase' },
+    { word: 'γιατί όχι', translation: 'why not', phonetic: 'yiati ohi', part_of_speech: 'phrase', intuition: 'Drop-in agreement filler. όχι (not δεν) because there\'s no verb to negate.' },
     { word: 'θέλω να δω', translation: 'I want to see', phonetic: 'thelo na tho', part_of_speech: 'phrase', intuition: 'να + closed form (δω, not βλέπω).' },
     { word: 'η φωτογραφία', translation: 'photo', phonetic: 'i fotografia', part_of_speech: 'noun', intuition: 'Feminine — η.' },
     { word: 'θα σου δείξω', translation: "I'll show you", phonetic: 'tha sou theekso', part_of_speech: 'phrase', intuition: 'θα + closed form (δείξω, not δείχνω).' },
     { word: 'κουρασμένη', translation: 'tired (fem)', phonetic: 'kourasmeni', part_of_speech: 'adjective', intuition: 'Masc: κουρασμένος. Adjective endings agree with the noun.' },
     { word: 'το μάθημα', translation: 'the lesson', phonetic: 'to mathima', part_of_speech: 'noun', intuition: 'Neuter — το.' },
-    { word: 'αργότερα', translation: 'later', phonetic: 'argotera', part_of_speech: 'adverb' },
-    { word: 'καλύτερα', translation: 'better', phonetic: 'kalitera', part_of_speech: 'adverb' },
+    { word: 'αργότερα', translation: 'later', phonetic: 'argotera', part_of_speech: 'adverb', intuition: 'Comparative of αργά (slowly/late). Sequencing word: Θα το κάνω αργότερα = I\'ll do it later.' },
+    { word: 'καλύτερα', translation: 'better', phonetic: 'kalitera', part_of_speech: 'adverb', intuition: 'Adverb form of "better" (modifies verbs/states). Adjective form: καλύτερος/η/ο (agrees with noun).' },
     { word: 'ποτέ', translation: 'never', phonetic: 'pote', part_of_speech: 'adverb', intuition: 'Accent on the last syllable. πότε (accent on first) = "when".' },
     { word: 'πότε', translation: 'when', phonetic: 'pote', part_of_speech: 'adverb', intuition: 'Accent on first syllable. ποτέ (accent last) = "never".' },
-    { word: 'το τσάι', translation: 'tea', phonetic: 'to tsai', part_of_speech: 'noun' },
-    { word: 'το πρωί', translation: 'the morning', phonetic: 'to proi', part_of_speech: 'noun' },
+    { word: 'το τσάι', translation: 'tea', phonetic: 'to tsai', part_of_speech: 'noun', intuition: 'Neuter — το (-ι ending = neuter rule of thumb).' },
+    { word: 'το πρωί', translation: 'the morning', phonetic: 'to proi', part_of_speech: 'noun', intuition: 'Neuter — το (-ί ending = neuter). Time-when: το πρωί = "in the morning" (no preposition).' },
     { word: 'κανένας', translation: 'no one / nobody', phonetic: 'kanenas', part_of_speech: 'pronoun', intuition: 'Pairs with δεν: Κανένας δεν είναι εδώ.' },
     { word: 'τίποτα', translation: 'nothing / anything', phonetic: 'tipota', part_of_speech: 'pronoun', intuition: 'Pairs with δεν: Δεν θέλω τίποτα.' },
     { word: 'ξυπνάω', translation: 'I wake up', phonetic: 'ksipnao', part_of_speech: 'verb', intuition: 'Open form. Closed (after να/θα): ξυπνήσω.' },
     { word: 'να ξυπνήσω', translation: 'to wake up (closed)', phonetic: 'na ksipniso', part_of_speech: 'verb', intuition: 'Closed form — used after να, θα, αν.' },
     { word: 'περπατάω', translation: 'I walk', phonetic: 'perpatao', part_of_speech: 'verb', intuition: 'Open form. Closed: περπατήσω.' },
-    { word: 'να περπατήσω', translation: 'to walk (closed)', phonetic: 'na perpatiso', part_of_speech: 'verb' },
-    { word: 'εύχομαι', translation: 'I wish', phonetic: 'efhome', part_of_speech: 'verb' },
+    { word: 'να περπατήσω', translation: 'to walk (closed)', phonetic: 'na perpatiso', part_of_speech: 'verb', intuition: 'περπατάω → περπατήσω (Type B: -άω → -ήσω). Use after θέλω/μπορώ/πρέπει/θα for one-time walks.' },
+    { word: 'εύχομαι', translation: 'I wish', phonetic: 'efhome', part_of_speech: 'verb', intuition: 'Middle-voice verb (-μαι ending). Polite well-wishes: Σου εύχομαι ευτυχία = I wish you happiness.' },
     { word: 'η εργασία', translation: 'the homework / task', phonetic: 'i ergasia', part_of_speech: 'noun', intuition: 'Feminine — η.' },
     { word: 'ο καιρός', translation: 'the weather', phonetic: 'o keros', part_of_speech: 'noun', intuition: 'Masculine — ο. (Also means "time".)' },
     { word: 'το γραφείο', translation: 'the office', phonetic: 'to grafio', part_of_speech: 'noun', intuition: 'Neuter — το.' },
-    { word: 'σύντομα', translation: 'soon', phonetic: 'sindoma', part_of_speech: 'adverb' },
-    { word: 'νωρίς', translation: 'early', phonetic: 'noris', part_of_speech: 'adverb' },
-    { word: 'αύριο', translation: 'tomorrow', phonetic: 'avrio', part_of_speech: 'adverb' },
+    { word: 'σύντομα', translation: 'soon', phonetic: 'sindoma', part_of_speech: 'adverb', intuition: 'Forward-looking. Pair with future: Θα έρθω σύντομα = I\'ll come soon.' },
+    { word: 'νωρίς', translation: 'early', phonetic: 'noris', part_of_speech: 'adverb', intuition: 'Time-adverb. Opposite of αργά (late). Common: Ξυπνάω νωρίς = I wake up early.' },
+    { word: 'αύριο', translation: 'tomorrow', phonetic: 'avrio', part_of_speech: 'adverb', intuition: 'Future-trigger adverb — pair with θα + perfective: Αύριο θα φύγω = Tomorrow I\'ll leave.' },
 
     // Rule-illustrating sentences (so the rules surface inside the same drills)
     // Double-negative rule
@@ -10369,29 +10368,29 @@
     { word: 'επτά / εφτά', translation: 'seven', phonetic: 'ep-TA / ef-TA', intuition: 'Both spellings used. εφτά more colloquial.' },
     { word: 'οκτώ / οχτώ', translation: 'eight', phonetic: 'ok-TOH / oh-TOH', intuition: 'Note ω. Both spellings used.' },
     { word: 'εννέα / εννιά', translation: 'nine', phonetic: 'e-NE-a / e-NYA', intuition: 'Double ν (rare exception). εννιά more colloquial.' },
-    { word: 'δέκα', translation: 'ten', phonetic: 'THE-ka', intuition: '' },
+    { word: 'δέκα', translation: 'ten', phonetic: 'THE-ka', intuition: 'Invariable. Base for the teens (δεκατρία, δεκαπέντε…).' },
     { word: 'έντεκα', translation: 'eleven', phonetic: 'EN-de-ka', intuition: 'Stress on first syllable.' },
     { word: 'δώδεκα', translation: 'twelve', phonetic: 'THO-the-ka', intuition: 'Note δ-δ pattern.' },
     { word: 'δεκατρία', translation: 'thirteen', phonetic: 'the-ka-TREE-a', intuition: 'δέκα + τρία fused. Pattern continues for 14-19.' },
     { word: 'δεκαπέντε', translation: 'fifteen', phonetic: 'the-ka-PEN-de', intuition: 'Useful: half-hour expressions ("at 8:15" = στις οκτώ και δεκαπέντε).' },
     { word: 'είκοσι', translation: 'twenty', phonetic: 'EE-ko-see', intuition: 'Tens start here. είκοσι + number for 21-29: είκοσι πέντε = 25.' },
-    { word: 'τριάντα', translation: 'thirty', phonetic: 'tree-AN-da', intuition: '' },
-    { word: 'σαράντα', translation: 'forty', phonetic: 'sa-RAN-da', intuition: '' },
-    { word: 'πενήντα', translation: 'fifty', phonetic: 'pe-NEEN-da', intuition: '' },
-    { word: 'εξήντα', translation: 'sixty', phonetic: 'ek-SEEN-da', intuition: '' },
+    { word: 'τριάντα', translation: 'thirty', phonetic: 'tree-AN-da', intuition: 'Pattern: tens use -άντα suffix (τριάντα, σαράντα). Add ones for 31-39: τριάντα δύο = 32.' },
+    { word: 'σαράντα', translation: 'forty', phonetic: 'sa-RAN-da', intuition: '-άντα tens. Add ones for 41-49.' },
+    { word: 'πενήντα', translation: 'fifty', phonetic: 'pe-NEEN-da', intuition: 'Switches to -ήντα suffix (50, 60, 70, 80, 90). Add ones for 51-59.' },
+    { word: 'εξήντα', translation: 'sixty', phonetic: 'ek-SEEN-da', intuition: '-ήντα tens (60-90 all share this suffix).' },
     { word: 'εβδομήντα', translation: 'seventy', phonetic: 'ev-tho-MEEN-da', intuition: 'ευ before voiced θ → "ev."' },
-    { word: 'ογδόντα', translation: 'eighty', phonetic: 'og-THON-da', intuition: '' },
-    { word: 'ενενήντα', translation: 'ninety', phonetic: 'e-ne-NEEN-da', intuition: '' },
+    { word: 'ογδόντα', translation: 'eighty', phonetic: 'og-THON-da', intuition: 'Irregular — short -οντα suffix instead of -ήντα. Common slip: writing οκτώντα (wrong).' },
+    { word: 'ενενήντα', translation: 'ninety', phonetic: 'e-ne-NEEN-da', intuition: 'Back to -ήντα. Tip: double εν at the start (εν-εν-ήντα), not just one.' },
     { word: 'εκατό', translation: 'one hundred', phonetic: 'e-ka-TO', intuition: 'For 101+: εκατόν + number.' },
     { word: 'χίλια', translation: 'one thousand', phonetic: 'HEE-lya', intuition: 'Neuter plural form. Counting form.' },
     // Common price expressions
     { word: 'πέντε ευρώ', translation: '5 euros', phonetic: 'PEN-de ev-RO', intuition: 'ευρώ is invariable.' },
-    { word: 'δέκα ευρώ', translation: '10 euros', phonetic: 'THE-ka ev-RO', intuition: '' },
+    { word: 'δέκα ευρώ', translation: '10 euros', phonetic: 'THE-ka ev-RO', intuition: 'ευρώ never declines — same form for 1, 5, 10, 100 euros.' },
     { word: 'είκοσι πέντε ευρώ', translation: '25 euros', phonetic: 'EE-ko-see PEN-de ev-RO', intuition: 'Pattern: tens + ones + ευρώ.' },
-    { word: 'πενήντα ευρώ', translation: '50 euros', phonetic: 'pe-NEEN-da ev-RO', intuition: '' },
-    { word: 'εκατό ευρώ', translation: '100 euros', phonetic: 'e-ka-TO ev-RO', intuition: '' },
+    { word: 'πενήντα ευρώ', translation: '50 euros', phonetic: 'pe-NEEN-da ev-RO', intuition: 'Common shopping price-point. ευρώ invariable.' },
+    { word: 'εκατό ευρώ', translation: '100 euros', phonetic: 'e-ka-TO ev-RO', intuition: 'For 101-199 use εκατόν (n added): εκατόν είκοσι = 120.' },
     { word: 'οκτώ και πενήντα', translation: '8.50 (price)', phonetic: 'ok-TOH ke pe-NEEN-da', intuition: 'For decimal prices: integer + και + cents. "8 and 50" = 8.50.' },
-    { word: 'χίλια ευρώ', translation: '1000 euros', phonetic: 'HEE-lya ev-RO', intuition: '' },
+    { word: 'χίλια ευρώ', translation: '1000 euros', phonetic: 'HEE-lya ev-RO', intuition: 'χίλια agrees with neut. pl. ευρώ. For "two thousand": δύο χιλιάδες (different word).' },
   ];
 
   // T1.7 — Imperatives (comprehension first)
@@ -10767,11 +10766,11 @@
     { word: 'ο γιος', translation: 'son', phonetic: 'o yios', intuition: 'Masc. Acc: τον γιο.' },
     { word: 'η κόρη', translation: 'daughter', phonetic: 'ee KO-ree', intuition: 'Feminine.' },
     { word: 'ο παππούς', translation: 'grandfather', phonetic: 'o pa-POOS', intuition: 'Note double π.' },
-    { word: 'η γιαγιά', translation: 'grandmother', phonetic: 'ee ya-YA', intuition: '' },
+    { word: 'η γιαγιά', translation: 'grandmother', phonetic: 'ee ya-YA', intuition: 'Feminine — η. Final-syllable stress. Masc pair: ο παππούς.' },
     { word: 'ο θείος', translation: 'uncle', phonetic: 'o THEE-os', intuition: 'Masc -ος.' },
-    { word: 'η θεία', translation: 'aunt', phonetic: 'ee THEE-a', intuition: '' },
+    { word: 'η θεία', translation: 'aunt', phonetic: 'ee THEE-a', intuition: 'Feminine — η. Masc pair: ο θείος (uncle).' },
     { word: 'ο ξάδερφος', translation: 'cousin (m)', phonetic: 'o KSA-ther-fos', intuition: 'Variant: ξαδέρφι (neuter, both genders).' },
-    { word: 'η ξαδέρφη', translation: 'cousin (f)', phonetic: 'ee ksa-THER-fee', intuition: '' },
+    { word: 'η ξαδέρφη', translation: 'cousin (f)', phonetic: 'ee ksa-THER-fee', intuition: 'Feminine — η. Masc pair: ο ξάδερφος. Spelling also ξαδέλφη/ξάδελφος.' },
     { word: 'ο σύζυγος', translation: 'husband', phonetic: 'o SEE-zee-ghos', intuition: 'Formal. Also άντρας informal.' },
     { word: 'η σύζυγος', translation: 'wife', phonetic: 'ee SEE-zee-ghos', intuition: 'Formal. Also γυναίκα informal (lit. "woman").' },
     // Phrases
