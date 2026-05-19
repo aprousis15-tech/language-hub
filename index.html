@@ -1920,6 +1920,78 @@
     border-top: 1px dashed #ffd54f; padding-top: 8px; margin-top: 4px;
   }
   .vgroup-anchor-mnemonic strong { color: #b76e00; font-style: normal; }
+  /* Verb-group classifier: step-by-step walkthrough (STRESS → LIST → TAIL).
+     Each step is a concrete diagnostic question with concrete options. The
+     user works through the SLT algorithm explicitly; the group label is
+     revealed at the end as a derived result. */
+  .vgroup-walkthrough { margin: 6px auto 0; max-width: 540px; text-align: left; }
+  .vgroup-step {
+    background: white; border: 1.5px solid #e1d8f0; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .vgroup-step.done { background: #faf7ff; border-color: #d4caee; }
+  .vgroup-step.active {
+    border-color: #4527a0; box-shadow: 0 2px 10px rgba(69,39,160,0.10);
+  }
+  .vgroup-step-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  }
+  .vgroup-step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; border-radius: 99px;
+    background: #ede7f6; color: #4527a0; font-weight: 700; font-size: 0.78rem;
+    padding: 0 8px;
+  }
+  .vgroup-step.done .vgroup-step-num.ok { background: #c8e6c9; color: #1b5e20; }
+  .vgroup-step.done .vgroup-step-num.no { background: #ffcdd2; color: #b71c1c; }
+  .vgroup-step-title {
+    font-weight: 700; color: #4527a0; font-size: 0.92rem;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .vgroup-step-q {
+    color: #2c1f4a; font-size: 0.98rem; margin-bottom: 10px; line-height: 1.4;
+  }
+  .vgroup-step-list {
+    background: #fff8e1; border-left: 3px solid #f9a825;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    font-family: 'Georgia', serif; color: #4527a0;
+    font-size: 0.88rem; margin-bottom: 10px;
+  }
+  .vgroup-step-list strong { color: #b76e00; font-family: 'Lato', sans-serif; }
+  .vgroup-step-options {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .vgroup-step-btn {
+    background: white; border: 1.5px solid #c5b9e8; color: #2c1f4a;
+    padding: 10px 14px; border-radius: 8px; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-size: 0.94rem; text-align: left;
+    transition: all 0.15s;
+  }
+  .vgroup-step-btn:hover { background: #ede7f6; border-color: #4527a0; }
+  .vgroup-step-result {
+    font-size: 0.88rem; color: #4a3f63; line-height: 1.45;
+  }
+  .vgroup-step-result .picked { font-weight: 700; }
+  .vgroup-step-result.ok .picked { color: #1b5e20; }
+  .vgroup-step-result.no .picked { color: #b71c1c; text-decoration: line-through; opacity: 0.7; }
+  .vgroup-step-result .correct-line {
+    margin-top: 4px; color: #1b5e20; font-weight: 600;
+  }
+  .vgroup-step-result .why {
+    margin-top: 4px; font-style: italic; color: #6a5a80;
+  }
+  .vgroup-final {
+    max-width: 540px; margin: 8px auto 0; padding: 14px 16px;
+    background: linear-gradient(180deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 2px solid #2e7d32; border-radius: 10px;
+    text-align: left;
+  }
+  .vgroup-final-head {
+    font-family: 'Playfair Display', serif; font-size: 1.2rem;
+    color: #1b5e20; margin-bottom: 6px;
+  }
+  .vgroup-final-body { color: #2c4a2c; font-size: 0.94rem; line-height: 1.55; }
+  .vgroup-final-body strong { color: #1b5e20; }
   /* Verb-group classifier: pre-answer clue button + body. Used by vgroup mode. */
   .vgroup-clue-btn {
     background: #fff3c4; color: #b76e00; border: 1px solid #ffd54f;
@@ -3186,7 +3258,12 @@
         <div class="grammar-prompt-greek" id="vgroup-prompt">…</div>
         <button class="vgroup-clue-btn" id="vgroup-clue-btn" onclick="showVgroupClue()">💡 Show clue</button>
         <div class="vgroup-clue" id="vgroup-clue" style="display:none;"></div>
-        <div class="grammar-options" id="vgroup-options"></div>
+        <!-- Walkthrough: replaces single-button-pick with the SLT algorithm.
+             Each question walks the user through Stress → List → Tail.
+             Completed steps stay visible above with feedback; current step
+             is interactive. -->
+        <div class="vgroup-walkthrough" id="vgroup-walkthrough"></div>
+        <div class="vgroup-final" id="vgroup-final" style="display:none;"></div>
         <div class="grammar-feedback" id="vgroup-feedback"></div>
       </div>
       <div class="grammar-controls">
@@ -8854,7 +8931,6 @@
   // Show a present-tense verb. User picks the group; feedback reveals the
   // perfective stem. Trains the "diagnose-before-conjugate" reflex that
   // prevents φευγσουν / βασω class errors.
-  const VGROUP_OPTIONS = ['Α (letter swap)', 'Β (-άω/-ώ → -ήσω)', '-εύω / -ώνω', 'Irregular dual-stem'];
   // Each question carries:
   //   clue → pre-answer pedagogical nudge (shown via 💡 Show clue button). Asks
   //          a leading question or flags a trap without giving the answer.
@@ -8957,14 +9033,83 @@
       hint: '<strong>🔥 Trap</strong>. Stem <span class="rule-greek">πι-</span> (no σ at all): <span class="rule-greek">να πιω</span>, <span class="rule-greek">θα πιω</span>. Past: <span class="rule-greek">ήπια</span>.' },
   ];
 
-  let gVgroupDeck = [], gVgroupIndex = 0, gVgroupCorrect = 0, gVgroupTotal = 0, gVgroupAnswered = false;
+  // ── Walkthrough drill: STRESS → LIST → TAIL ──
+  // Three guided steps per question. Each step asks a concrete diagnostic
+  // (where's the stress, is it on the list, what's the ending) so the user
+  // learns the algorithm by performing it, instead of guessing a label.
+  const VGROUP_STEPS = [
+    { id: 'stress', title: '① STRESS',
+      q: "Say the verb out loud. Where's the stress?",
+      options: [
+        { key: 'final',     label: 'On the LAST syllable (e.g. μι-ΛΑ-ω, ο-δη-ΓΩ)',
+          terminal: 'B',
+          whyOK: 'Stress on the ending = oxytone. That alone tells you it\'s Group B.',
+          whyNO: 'Not this one — say it again. The loud syllable isn\'t the final one.' },
+        { key: 'not-final', label: 'Earlier in the word (not on the final -ω)',
+          terminal: null,
+          whyOK: 'Right — stress isn\'t final, so we keep going to step 2.',
+          whyNO: 'Not this one — listen again. The final -ω/-άω is the loudest.' },
+      ]
+    },
+    { id: 'list', title: '② LIST',
+      q: 'Is the verb one of the Top-10 traps?',
+      options: [
+        { key: 'on-list',     label: 'YES — it\'s on the list',
+          terminal: 'IRR',
+          whyOK: 'On the list = irregular. Don\'t try to apply a rule.',
+          whyNO: 'Not on the list — this verb is regular.' },
+        { key: 'not-on-list', label: 'NO — not on the list',
+          terminal: null,
+          whyOK: 'Right — regular verb. Now look at its ending in step 3.',
+          whyNO: 'Actually it IS on the list. These 10 are the worst traps because they look regular.' },
+      ]
+    },
+    { id: 'tail', title: '③ TAIL',
+      q: 'Look at the ending of the verb. What is it?',
+      options: [
+        { key: '-εύω',  label: 'Ends in -εύω',
+          terminal: 'EUO',
+          whyOK: '-εύω family. Perfective drops to -ψω (ταξιδεύω → ταξιδέψω).',
+          whyNO: 'Look at the last 3 letters again.' },
+        { key: '-ώνω',  label: 'Ends in -ώνω',
+          terminal: 'ONO',
+          whyOK: '-ώνω family (sibling of -εύω). Perfective: -ώσω (τελειώνω → τελειώσω).',
+          whyNO: 'Look at the last 3 letters again.' },
+        { key: 'other', label: 'Other consonant + ω (e.g. -ζω, -φω, -χω, -νω…)',
+          terminal: 'A',
+          whyOK: 'Default case = Group A (letter swap). The consonant before -ω determines the swap.',
+          whyNO: 'The ending is actually -εύω or -ώνω, look again.' },
+      ]
+    }
+  ];
+
+  // For a given question, return the correct option key at each step (or null
+  // if a step is skipped because an earlier step terminated the path).
+  function vgroupCorrectPath(q) {
+    const isStressed = q.answer === 'Β (-άω/-ώ → -ήσω)';
+    const isIrregular = q.answer === 'Irregular dual-stem';
+    const tail =
+      q.word.endsWith('εύω') ? '-εύω' :
+      q.word.endsWith('ώνω') ? '-ώνω' :
+      'other';
+    return {
+      stress: isStressed ? 'final' : 'not-final',
+      list:   isStressed ? null : (isIrregular ? 'on-list' : 'not-on-list'),
+      tail:   (isStressed || isIrregular) ? null : tail
+    };
+  }
+
+  let gVgroupDeck = [], gVgroupIndex = 0, gVgroupCorrect = 0, gVgroupTotal = 0;
+  let gVgroupStep = 0;          // index into VGROUP_STEPS (0..2)
+  let gVgroupHistory = [];      // [{ stepId, stepTitle, picked, pickedLabel, correct, correctLabel, isCorrect, whyOK, whyNO }]
+  let gVgroupComplete = false;  // walkthrough finished for current card
+  let gVgroupQuestionWrong = false; // any sub-step missed → whole question counted wrong
 
   function initVgroupDrill() {
     gVgroupDeck = shuffled(VGROUP_QUESTIONS);
     gVgroupIndex = 0;
     gVgroupCorrect = 0;
     gVgroupTotal = 0;
-    gVgroupAnswered = false;
     showVgroupCard();
   }
 
@@ -8973,10 +9118,7 @@
     if (!q) return;
     document.getElementById('vgroup-en').textContent = q.en;
     document.getElementById('vgroup-prompt').innerHTML = `<span class="grammar-prompt-blank">${q.word}</span>`;
-    const fb = document.getElementById('vgroup-feedback');
-    fb.textContent = '';
-    fb.classList.remove('show');
-    // Reset clue state: hide body, re-enable the button.
+    // Reset clue
     const clueBtn = document.getElementById('vgroup-clue-btn');
     const clueBody = document.getElementById('vgroup-clue');
     clueBody.style.display = 'none';
@@ -8984,20 +9126,142 @@
     clueBtn.disabled = false;
     clueBtn.style.display = q.clue ? '' : 'none';
     clueBtn.textContent = '💡 Show clue';
-    const optsHost = document.getElementById('vgroup-options');
-    optsHost.innerHTML = '';
-    VGROUP_OPTIONS.forEach(opt => {
-      const b = document.createElement('button');
-      b.className = 'grammar-option';
-      b.textContent = opt;
-      b.style.fontSize = '0.95rem'; // four longer labels need smaller text
-      b.style.padding = '10px 14px';
-      b.onclick = () => gVgroupAnswer(opt, b, q);
-      optsHost.appendChild(b);
-    });
+    // Reset walkthrough state for this card
+    gVgroupStep = 0;
+    gVgroupHistory = [];
+    gVgroupComplete = false;
+    gVgroupQuestionWrong = false;
+    document.getElementById('vgroup-final').style.display = 'none';
+    document.getElementById('vgroup-final').innerHTML = '';
+    const fb = document.getElementById('vgroup-feedback');
+    fb.textContent = ''; fb.classList.remove('show');
     document.getElementById('vgroup-progress').textContent = `Question ${gVgroupIndex + 1} of ${gVgroupDeck.length}`;
     document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
-    gVgroupAnswered = false;
+    renderVgroupStep();
+  }
+
+  function renderVgroupStep() {
+    const q = gVgroupDeck[gVgroupIndex];
+    const wt = document.getElementById('vgroup-walkthrough');
+    wt.innerHTML = '';
+
+    // Completed steps first (history)
+    for (const h of gVgroupHistory) {
+      const div = document.createElement('div');
+      div.className = 'vgroup-step done';
+      const resultCls = h.isCorrect ? 'ok' : 'no';
+      const numCls = h.isCorrect ? 'ok' : 'no';
+      const icon = h.isCorrect ? '✓' : '✗';
+      div.innerHTML = `
+        <div class="vgroup-step-head">
+          <span class="vgroup-step-num ${numCls}">${icon}</span>
+          <span class="vgroup-step-title">${h.stepTitle}</span>
+        </div>
+        <div class="vgroup-step-result ${resultCls}">
+          You picked: <span class="picked">${h.pickedLabel}</span>
+          ${h.isCorrect ? '' : `<div class="correct-line">→ Correct: ${h.correctLabel}</div>`}
+          <div class="why">${h.isCorrect ? h.whyOK : h.whyNO}</div>
+        </div>
+      `;
+      wt.appendChild(div);
+    }
+
+    // Current step (interactive) — only if not yet complete
+    if (!gVgroupComplete && gVgroupStep < VGROUP_STEPS.length) {
+      const step = VGROUP_STEPS[gVgroupStep];
+      const div = document.createElement('div');
+      div.className = 'vgroup-step active';
+      const stepNum = gVgroupStep + 1;
+      const head = document.createElement('div');
+      head.className = 'vgroup-step-head';
+      head.innerHTML = `
+        <span class="vgroup-step-num">${stepNum}</span>
+        <span class="vgroup-step-title">${step.title}</span>
+      `;
+      div.appendChild(head);
+      const qText = document.createElement('div');
+      qText.className = 'vgroup-step-q';
+      qText.textContent = step.q;
+      div.appendChild(qText);
+      if (step.id === 'list') {
+        const listEl = document.createElement('div');
+        listEl.className = 'vgroup-step-list';
+        listEl.innerHTML = '<strong>The Top-10 traps:</strong> βλέπω · λέω · τρώω · πίνω · βρίσκω · βάζω · παίρνω · δίνω · φεύγω · μαθαίνω';
+        div.appendChild(listEl);
+      }
+      const opts = document.createElement('div');
+      opts.className = 'vgroup-step-options';
+      for (const opt of step.options) {
+        const btn = document.createElement('button');
+        btn.className = 'vgroup-step-btn';
+        btn.textContent = opt.label;
+        btn.onclick = () => gVgroupStepAnswer(opt.key);
+        opts.appendChild(btn);
+      }
+      div.appendChild(opts);
+      wt.appendChild(div);
+    }
+
+    // Final reveal — once the walkthrough is done
+    const finalEl = document.getElementById('vgroup-final');
+    if (gVgroupComplete) {
+      finalEl.style.display = '';
+      finalEl.innerHTML = `
+        <div class="vgroup-final-head">→ ${esc(q.answer)} — perfective <span class="rule-greek">${esc(q.perfective)}</span></div>
+        <div class="vgroup-final-body">${q.hint}</div>
+      `;
+    } else {
+      finalEl.style.display = 'none';
+      finalEl.innerHTML = '';
+    }
+  }
+
+  function gVgroupStepAnswer(pickedKey) {
+    if (gVgroupComplete) return;
+    const q = gVgroupDeck[gVgroupIndex];
+    const path = vgroupCorrectPath(q);
+    const step = VGROUP_STEPS[gVgroupStep];
+    const correctKey = path[step.id];
+    const isCorrect = pickedKey === correctKey;
+    const pickedOpt = step.options.find(o => o.key === pickedKey);
+    const correctOpt = step.options.find(o => o.key === correctKey);
+
+    gVgroupHistory.push({
+      stepId: step.id,
+      stepTitle: step.title,
+      picked: pickedKey,
+      pickedLabel: pickedOpt.label,
+      correct: correctKey,
+      correctLabel: correctOpt.label,
+      isCorrect,
+      whyOK: pickedOpt.whyOK,
+      whyNO: pickedOpt.whyNO
+    });
+    if (!isCorrect) gVgroupQuestionWrong = true;
+
+    // The CORRECT answer at this step determines the path — even if user
+    // picked wrong, we follow the right path so the teaching is consistent.
+    if (correctOpt.terminal) {
+      gVgroupComplete = true;
+    } else {
+      gVgroupStep++;
+      if (gVgroupStep >= VGROUP_STEPS.length) gVgroupComplete = true;
+    }
+
+    if (gVgroupComplete) {
+      gVgroupTotal++;
+      if (!gVgroupQuestionWrong) gVgroupCorrect++;
+      else recordMistake({
+        drill_type: 'verbs',
+        prompt: `${q.en} (${q.word}) — classify`,
+        correct: q.answer,
+        picked: '(walkthrough miss)',
+        metadata: { source: 'vgroup-walkthrough', verb: q.word, perfective: q.perfective, history: gVgroupHistory.map(h => ({ step: h.stepId, picked: h.picked, correct: h.correct, isCorrect: h.isCorrect })) }
+      });
+      document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
+    }
+
+    renderVgroupStep();
   }
 
   // Toggle the "Three Questions" anchor card visibility. Defaults to open so
@@ -9010,7 +9274,7 @@
   }
 
   // Reveal the per-question clue. Disables the button so it can't be re-clicked,
-  // but doesn't end the question — the user still has to pick a group.
+  // but doesn't end the question — the user still has to walk the algorithm.
   function showVgroupClue() {
     const q = gVgroupDeck[gVgroupIndex];
     if (!q || !q.clue) return;
@@ -9022,25 +9286,8 @@
     btn.textContent = '💡 Clue shown';
   }
 
-  function gVgroupAnswer(picked, btnEl, q) {
-    if (gVgroupAnswered) return;
-    gVgroupAnswered = true;
-    gVgroupTotal++;
-    if (picked === q.answer) gVgroupCorrect++;
-    else recordMistake({
-      drill_type: 'verbs', prompt: `${q.en} (${q.word}) — group?`, correct: q.answer, picked: picked,
-      metadata: { source: 'vgroup', verb: q.word, perfective: q.perfective, hint: q.hint }
-    });
-    document.querySelectorAll('#vgroup-options .grammar-option').forEach(b => {
-      b.classList.add('disabled');
-      if (b.textContent === q.answer) b.classList.add('correct');
-      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
-    });
-    const fb = document.getElementById('vgroup-feedback');
-    fb.innerHTML = `${q.hint} <div style="margin-top:6px;"><strong>Perfective:</strong> <span class="rule-greek">${q.perfective}</span> (e.g. <em>θα ${q.perfective}</em>, <em>να ${q.perfective}</em>)</div>`;
-    fb.classList.add('show');
-    document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
-  }
+  // Small HTML escape — vgroup data goes through innerHTML.
+  function esc(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function gVgroupNext() {
     gVgroupIndex = (gVgroupIndex + 1) % gVgroupDeck.length;
