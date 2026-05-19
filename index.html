@@ -1232,6 +1232,139 @@
 
   /* ── PRACTICE (Listening + Production) ── */
   .lang-tab.active-practice { color: #ad1457; border-bottom-color: #ad1457; background: white; font-weight: 700; }
+  .lang-tab.active-speak { color: #d84315; border-bottom-color: #d84315; background: white; font-weight: 700; }
+  /* Speak panel — Daily Five sentence drill. Mic icon, prompt card, transcript box. */
+  .speak-header { text-align: center; padding: 24px 16px 8px; max-width: 720px; margin: 0 auto; }
+  .speak-header h2 { font-family: 'Playfair Display', serif; color: #d84315; font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 6px; }
+  .speak-header p { color: #5a3f30; font-size: 0.95rem; max-width: 580px; margin: 0 auto; }
+  .speak-progress {
+    max-width: 620px; margin: 18px auto 14px; display: flex; align-items: center;
+    gap: 14px; flex-wrap: wrap; justify-content: center;
+    font-size: 0.88rem; color: #5a3f30;
+  }
+  .speak-progress-text { font-weight: 700; color: #bf360c; }
+  .speak-pips { display: flex; gap: 5px; }
+  .speak-pips .pip {
+    width: 9px; height: 9px; border-radius: 99px;
+    background: #ffe0b2; border: 1.5px solid #ffb74d;
+  }
+  .speak-pips .pip.done.ok { background: #66bb6a; border-color: #2e7d32; }
+  .speak-pips .pip.done.no { background: #ef5350; border-color: #c62828; }
+  .speak-pips .pip.current { background: #ff9800; border-color: #e65100; box-shadow: 0 0 0 3px rgba(255,152,0,0.18); }
+  .speak-score { font-weight: 700; color: #bf360c; }
+  .speak-reset-btn {
+    background: white; border: 1.5px solid #ffb74d; color: #d84315;
+    padding: 5px 12px; border-radius: 99px; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.82rem;
+  }
+  .speak-reset-btn:hover { background: #fff3e0; }
+  .speak-card {
+    max-width: 620px; margin: 0 auto; background: white;
+    border-radius: 14px; padding: 28px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border: 1px solid #ffe0b2; text-align: center;
+  }
+  .speak-target-tag {
+    display: inline-block; background: #fff3e0; color: #bf360c;
+    padding: 4px 12px; border-radius: 99px; font-size: 0.74rem;
+    font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .speak-prompt-label {
+    font-size: 0.78rem; color: #8d6e63; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .speak-prompt-en {
+    font-family: 'Playfair Display', serif; font-size: 1.45rem;
+    color: #2c1f4a; line-height: 1.4; margin-bottom: 22px;
+  }
+  .speak-record-wrap { margin-bottom: 16px; }
+  .speak-record-btn {
+    background: linear-gradient(135deg, #d84315 0%, #bf360c 100%);
+    color: white; border: 0; padding: 14px 32px; border-radius: 99px;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 1rem;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(216,67,21,0.25);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .speak-record-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(216,67,21,0.32); }
+  .speak-record-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .speak-record-btn.recording {
+    background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+    animation: speakPulse 1.2s ease-in-out infinite;
+  }
+  @keyframes speakPulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(198,40,40,0.30); }
+    50%      { box-shadow: 0 4px 24px rgba(198,40,40,0.55); }
+  }
+  .speak-status {
+    margin-top: 8px; font-size: 0.82rem; color: #6d4c41; min-height: 18px;
+  }
+  .speak-status.error { color: #c62828; }
+  .speak-transcript-wrap { margin-bottom: 16px; }
+  .speak-transcript-label {
+    font-size: 0.74rem; color: #8d6e63; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .speak-transcript {
+    font-family: 'Georgia', serif; font-size: 1.2rem; color: #00695c;
+    padding: 10px 14px; background: #fafafa; border: 1px dashed #d0c4b8;
+    border-radius: 8px; min-height: 36px; line-height: 1.4;
+  }
+  .speak-transcript.interim { color: #8d6e63; font-style: italic; }
+  .speak-actions {
+    display: flex; gap: 8px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .btn-speak {
+    padding: 9px 20px; border-radius: 99px; font-family: 'Lato', sans-serif;
+    font-weight: 700; font-size: 0.88rem; cursor: pointer;
+    border: 1.5px solid #d84315; transition: all 0.15s;
+  }
+  .btn-speak.primary { background: #d84315; color: white; }
+  .btn-speak.primary:hover:not(:disabled) { background: #bf360c; }
+  .btn-speak.secondary { background: white; color: #d84315; }
+  .btn-speak.secondary:hover:not(:disabled) { background: #fff3e0; }
+  .btn-speak:disabled { opacity: 0.5; cursor: not-allowed; }
+  .speak-feedback {
+    margin: 14px auto 12px; max-width: 540px; padding: 14px 16px;
+    border-radius: 10px; text-align: left; font-size: 0.94rem;
+    line-height: 1.55;
+  }
+  .speak-feedback.pass {
+    background: linear-gradient(180deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 2px solid #2e7d32; color: #1b5e20;
+  }
+  .speak-feedback.fix {
+    background: linear-gradient(180deg, #ffebee 0%, #fce4ec 100%);
+    border: 2px solid #c62828; color: #4a2c2c;
+  }
+  .speak-feedback.error {
+    background: #fff8e1; border: 2px solid #f9a825; color: #6a4f1a;
+  }
+  .speak-feedback .speak-fb-head {
+    font-family: 'Playfair Display', serif; font-size: 1.15rem;
+    margin-bottom: 8px;
+  }
+  .speak-feedback.pass .speak-fb-head { color: #1b5e20; }
+  .speak-feedback.fix .speak-fb-head { color: #b71c1c; }
+  .speak-feedback .speak-fb-line { margin-top: 6px; }
+  .speak-feedback .speak-fb-line strong { color: inherit; }
+  .speak-feedback .speak-fb-model {
+    font-family: 'Georgia', serif; font-size: 1.1rem;
+    background: rgba(255,255,255,0.5); padding: 6px 10px;
+    border-radius: 6px; margin-top: 4px; display: inline-block;
+  }
+  .speak-next-wrap {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .speak-done {
+    max-width: 540px; margin: 20px auto; padding: 24px;
+    background: white; border: 2px solid #2e7d32; border-radius: 12px;
+    text-align: center;
+  }
+  .speak-done h3 { font-family: 'Playfair Display', serif; color: #1b5e20; margin-bottom: 8px; }
+  .speak-done p { color: #2c4a2c; margin-bottom: 14px; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
   /* Shared SRS-drill styling (used by grammar-verbdrill/noundrill/adjdrill/impdrill subpanels, with per-mode accent colors via the .srs-tinted wrapper) */
@@ -2202,6 +2335,7 @@
   <button class="lang-tab" onclick="switchLang('alphabet')">Αα Alphabet Drill</button>
   <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
+  <button class="lang-tab" onclick="switchLang('speak')">🎙️ Speak</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
@@ -4000,6 +4134,57 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- SPEAK PANEL — Daily Five sentence drill with browser mic + Claude grading -->
+<div class="lang-panel" id="panel-speak">
+  <div class="container">
+    <div class="speak-header">
+      <h2>🎙️ Daily Five — Speaking Drill</h2>
+      <p>Five English prompts. Read each one, speak the Greek out loud, and Claude grades against a model answer. One correction max, one model echo every time. Mic uses Greek recognition (Chrome/Edge).</p>
+    </div>
+
+    <div class="speak-progress" id="speak-progress-wrap">
+      <span class="speak-progress-text" id="speak-progress-text">Prompt 1 of 5</span>
+      <div class="speak-pips" id="speak-pips"></div>
+      <span class="speak-score" id="speak-score">Score: 0/0</span>
+      <button class="speak-reset-btn" onclick="resetSpeakSession()" title="Roll a fresh set of 5 prompts">↺ New 5</button>
+    </div>
+
+    <div class="speak-card" id="speak-card">
+      <div class="speak-target-tag" id="speak-target">target grammar</div>
+      <div class="speak-prompt-label">Say this in Greek:</div>
+      <div class="speak-prompt-en" id="speak-prompt-en">—</div>
+
+      <div class="speak-record-wrap">
+        <button class="speak-record-btn" id="speak-record-btn" onclick="toggleSpeakRecord()">🎤 Click to record</button>
+        <div class="speak-status" id="speak-status">Your browser needs Greek recognition (Chrome / Edge).</div>
+      </div>
+
+      <div class="speak-transcript-wrap">
+        <div class="speak-transcript-label">What we heard you say:</div>
+        <div class="speak-transcript" id="speak-transcript">—</div>
+      </div>
+
+      <div class="speak-actions">
+        <button class="btn-speak primary" id="speak-submit-btn" onclick="submitSpeakAnswer()" disabled>Grade my answer →</button>
+        <button class="btn-speak secondary" id="speak-redo-btn" onclick="redoSpeakRecord()" disabled>↺ Try again</button>
+      </div>
+
+      <div class="speak-feedback" id="speak-feedback" style="display:none;"></div>
+
+      <div class="speak-next-wrap" id="speak-next-wrap" style="display:none;">
+        <button class="btn-speak primary" onclick="nextSpeakPrompt()">Next prompt →</button>
+        <button class="btn-speak secondary" id="speak-miscaught-btn" onclick="markSpeakMiscaught()" title="Don't log this — transcription was wrong">🎤 Mic miscaught me</button>
+      </div>
+    </div>
+
+    <div class="speak-done" id="speak-done" style="display:none;">
+      <h3>✓ Daily Five complete</h3>
+      <p>Score: <strong id="speak-final-score">0/5</strong>. Run another set, or come back tomorrow.</p>
+      <button class="btn-speak primary" onclick="resetSpeakSession()">Practice another 5</button>
+    </div>
   </div>
 </div>
 
@@ -6197,6 +6382,381 @@
     } catch {}
   }
 
+  // ── DAILY FIVE SPEAKING DRILL ──
+  // English prompt → speak Greek → SpeechRecognition transcribes → Claude grades.
+  // Each prompt has a model answer + target grammar tag. Misses logged to
+  // mistakes table with drill_type='speak'. Transcription noise has an
+  // escape hatch so it doesn't pollute the grammar mistake log.
+  const SPEAK_PROMPTS = [
+    // Verbs — aorist (perfective past)
+    { en: "I bought bread yesterday.",                 model: "Αγόρασα ψωμί χθες.",                       target: "aorist of αγοράζω (1sg)" },
+    { en: "We bought books at the bookstore.",         model: "Αγοράσαμε βιβλία στο βιβλιοπωλείο.",         target: "aorist 1pl + neuter plural + στο" },
+    { en: "What did you eat yesterday?",               model: "Τι έφαγες χθες;",                            target: "aorist of τρώω (irregular: έφαγα) + question word" },
+    { en: "She gave me a gift.",                       model: "Μου έδωσε ένα δώρο.",                        target: "indirect-object pronoun + aorist of δίνω (έδωσε)" },
+    { en: "I forgot my wallet at home.",               model: "Ξέχασα το πορτοφόλι μου στο σπίτι.",          target: "aorist of ξεχνάω + possessive + στο" },
+    { en: "Where did you go yesterday?",               model: "Πού πήγες χθες;",                            target: "aorist of πάω (irregular: πήγα) + question" },
+    { en: "I told you yesterday.",                     model: "Σου είπα χθες.",                             target: "indirect pronoun + aorist of λέω (είπα)" },
+    { en: "Why are you late? (already arrived)",       model: "Γιατί άργησες;",                             target: "aorist of αργώ (-ώ verb)" },
+    { en: "I called you yesterday.",                   model: "Σου τηλεφώνησα χθες.",                       target: "indirect pronoun + aorist of τηλεφωνώ (-ώ → -ήσω)" },
+    { en: "Yesterday I was tired.",                    model: "Χθες ήμουν κουρασμένος.",                    target: "ήμουν (past of είμαι) + adjective agreement" },
+
+    // Future θα + perfective
+    { en: "I'm going to the bank tomorrow morning.",   model: "Θα πάω στην τράπεζα αύριο το πρωί.",        target: "future θα + στην + part-of-day" },
+    { en: "I'll see you on Saturday.",                 model: "Θα σε δω το Σάββατο.",                       target: "future + irregular perfective δω + day" },
+    { en: "I want to go to Greece next year.",         model: "Θέλω να πάω στην Ελλάδα του χρόνου.",        target: "να + perfective + στην + του χρόνου" },
+
+    // Modal να-chains
+    { en: "Can you help me?",                          model: "Μπορείς να με βοηθήσεις;",                   target: "modal να-chain + object pronoun + perfective of βοηθάω" },
+    { en: "I want to learn Greek.",                    model: "Θέλω να μάθω ελληνικά.",                     target: "να + irregular perfective μάθω" },
+    { en: "Could you speak more slowly?",              model: "Μπορείτε να μιλάτε πιο αργά;",               target: "formal plural + comparative πιο" },
+    { en: "Can I sit here?",                           model: "Μπορώ να καθίσω εδώ;",                       target: "modal να + perfective of κάθομαι (καθίσω)" },
+    { en: "I'd like to try the moussaka.",             model: "Θα ήθελα να δοκιμάσω το μουσακά.",           target: "polite Θα ήθελα να + masculine accusative" },
+
+    // Articles, cases, σε-fusion
+    { en: "I live in Athens.",                         model: "Μένω στην Αθήνα.",                           target: "σε + feminine accusative (στην)" },
+    { en: "I'm going to my friends' house.",           model: "Πάω στο σπίτι των φίλων μου.",               target: "στο + plural genitive των" },
+    { en: "We're going to the beach on Sunday.",       model: "Πάμε στην παραλία την Κυριακή.",             target: "στην + day accusative (την)" },
+    { en: "I work at a hospital.",                     model: "Δουλεύω σε ένα νοσοκομείο.",                 target: "σε + indefinite article + neuter" },
+    { en: "The children are playing outside.",         model: "Τα παιδιά παίζουν έξω.",                     target: "neuter plural subject (Τα)" },
+    { en: "Open the door, please.",                    model: "Άνοιξε την πόρτα, παρακαλώ.",                target: "imperative + feminine accusative (την)" },
+    { en: "I drink coffee every morning.",             model: "Πίνω καφέ κάθε πρωί.",                       target: "present habitual + κάθε + part-of-day" },
+
+    // Questions
+    { en: "What time does the restaurant open?",       model: "Τι ώρα ανοίγει το εστιατόριο;",              target: "Τι ώρα + 3sg present + neuter subject" },
+    { en: "Where is the toilet?",                      model: "Πού είναι η τουαλέτα;",                      target: "Πού + είναι + feminine nominative" },
+    { en: "How much does this cost?",                  model: "Πόσο κάνει αυτό;",                           target: "Πόσο κάνει + neuter demonstrative" },
+    { en: "Do you have any change?",                   model: "Έχεις ψιλά;",                                target: "Έχεις + neuter plural (informal request)" },
+    { en: "What's your name?",                         model: "Πώς σε λένε;",                               target: "Πώς σε λένε; idiom (lit. how do they call you)" },
+
+    // Negation
+    { en: "I don't want anything to drink.",           model: "Δεν θέλω τίποτα να πιω.",                    target: "double negation (δεν + τίποτα) + να + perfective πιω" },
+    { en: "I have never been to Crete.",               model: "Δεν έχω πάει ποτέ στην Κρήτη.",              target: "δεν + έχω + perfective + ποτέ + στην" },
+    { en: "She doesn't know the answer.",              model: "Δεν ξέρει την απάντηση.",                    target: "δεν + 3sg + feminine accusative" },
+    { en: "I haven't seen this movie.",                model: "Δεν έχω δει αυτή την ταινία.",               target: "perfect tense + demonstrative + feminine accusative" },
+    { en: "Don't speak so loud.",                      model: "Μη μιλάς τόσο δυνατά.",                      target: "μη + 2sg (imperfective imperative) + τόσο" },
+    { en: "Don't worry.",                              model: "Μην ανησυχείς.",                             target: "μην + 2sg present" },
+
+    // Pronouns + idioms
+    { en: "I love you.",                               model: "Σε αγαπάω.",                                 target: "object pronoun + -αω verb" },
+    { en: "She likes the cat.",                        model: "Της αρέσει η γάτα.",                         target: "Της αρέσει construction (subject inverted)" },
+    { en: "Tell him to come tomorrow.",                model: "Πες του να έρθει αύριο.",                    target: "irregular imperative πες + indirect pronoun + να + irregular έρθει" },
+    { en: "Bring me a glass of water, please.",        model: "Φέρε μου ένα ποτήρι νερό, παρακαλώ.",        target: "imperative + indirect pronoun + indefinite + neuter" },
+
+    // Verb groups
+    { en: "I'm hungry.",                               model: "Πεινάω.",                                    target: "stative -αω verb (πεινάω)" },
+    { en: "We walk to work every day.",                model: "Περπατάμε στη δουλειά κάθε μέρα.",            target: "-αω 1pl + στη(ν) + κάθε" },
+    { en: "I'm tired today.",                          model: "Είμαι κουρασμένος σήμερα.",                  target: "είμαι + masculine adjective agreement" },
+    { en: "They're sleeping now.",                     model: "Κοιμούνται τώρα.",                           target: "mediopassive 3pl (κοιμάμαι → κοιμούνται)" },
+    { en: "I need water.",                             model: "Χρειάζομαι νερό.",                           target: "mediopassive verb χρειάζομαι + neuter direct object" },
+    { en: "It's raining outside.",                     model: "Βρέχει έξω.",                                target: "impersonal verb βρέχει" },
+    { en: "I'm going home.",                           model: "Πάω σπίτι.",                                 target: "idiom: σπίτι without article (going home)" },
+
+    // Comparatives + extras
+    { en: "She is the most beautiful.",                model: "Είναι η πιο όμορφη.",                        target: "superlative with η πιο + feminine adjective" },
+    { en: "I bought two coffees.",                     model: "Αγόρασα δύο καφέδες.",                       target: "aorist + masculine plural accusative" },
+    { en: "I'm learning Greek for two months.",        model: "Μαθαίνω ελληνικά δύο μήνες.",                target: "Greek present for ongoing duration (no preposition)" },
+  ];
+
+  let gSpeakDeck = [];          // current 5 prompts
+  let gSpeakIndex = 0;
+  let gSpeakHits = 0;
+  let gSpeakMisses = 0;
+  let gSpeakRecognition = null; // SpeechRecognition instance
+  let gSpeakRecording = false;
+  let gSpeakTranscript = '';    // final transcript so far
+  let gSpeakLastGrading = null; // last Claude grading, for the "miscaught" escape hatch
+  let gSpeakLogged = false;     // whether the current card's miss is already logged
+
+  function shuffleSpeak(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function initSpeakDrill() {
+    if (gSpeakDeck.length === 0) startSpeakSession();
+    else renderSpeakCard();
+  }
+
+  function startSpeakSession() {
+    gSpeakDeck = shuffleSpeak(SPEAK_PROMPTS).slice(0, 5);
+    gSpeakIndex = 0;
+    gSpeakHits = 0;
+    gSpeakMisses = 0;
+    renderSpeakCard();
+  }
+
+  function resetSpeakSession() {
+    stopSpeakRecord();
+    document.getElementById('speak-done').style.display = 'none';
+    document.getElementById('speak-card').style.display = '';
+    startSpeakSession();
+  }
+
+  function renderSpeakCard() {
+    if (gSpeakIndex >= gSpeakDeck.length) {
+      // Session complete
+      document.getElementById('speak-card').style.display = 'none';
+      document.getElementById('speak-done').style.display = '';
+      document.getElementById('speak-final-score').textContent = `${gSpeakHits}/${gSpeakDeck.length}`;
+      renderSpeakPips();
+      return;
+    }
+    const q = gSpeakDeck[gSpeakIndex];
+    document.getElementById('speak-target').textContent = q.target;
+    document.getElementById('speak-prompt-en').textContent = q.en;
+    document.getElementById('speak-progress-text').textContent = `Prompt ${gSpeakIndex + 1} of ${gSpeakDeck.length}`;
+    document.getElementById('speak-score').textContent = `Score: ${gSpeakHits}/${gSpeakHits + gSpeakMisses}`;
+    // Reset transcript & feedback
+    gSpeakTranscript = '';
+    gSpeakLastGrading = null;
+    gSpeakLogged = false;
+    const tEl = document.getElementById('speak-transcript');
+    tEl.textContent = '—';
+    tEl.classList.remove('interim');
+    document.getElementById('speak-feedback').style.display = 'none';
+    document.getElementById('speak-feedback').innerHTML = '';
+    document.getElementById('speak-next-wrap').style.display = 'none';
+    document.getElementById('speak-submit-btn').disabled = true;
+    document.getElementById('speak-redo-btn').disabled = true;
+    const rec = document.getElementById('speak-record-btn');
+    rec.disabled = false;
+    rec.classList.remove('recording');
+    rec.textContent = '🎤 Click to record';
+    document.getElementById('speak-status').textContent = 'Click to start (Chrome / Edge with mic access).';
+    document.getElementById('speak-status').classList.remove('error');
+    renderSpeakPips();
+  }
+
+  function renderSpeakPips() {
+    const host = document.getElementById('speak-pips');
+    host.innerHTML = '';
+    for (let i = 0; i < gSpeakDeck.length; i++) {
+      const p = document.createElement('span');
+      p.className = 'pip';
+      if (i < gSpeakIndex) p.classList.add('done');
+      if (i === gSpeakIndex && gSpeakIndex < gSpeakDeck.length) p.classList.add('current');
+      host.appendChild(p);
+    }
+  }
+
+  function getSpeechRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    return SR ? new SR() : null;
+  }
+
+  function toggleSpeakRecord() {
+    if (gSpeakRecording) { stopSpeakRecord(); return; }
+    startSpeakRecord();
+  }
+
+  function startSpeakRecord() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      document.getElementById('speak-status').textContent = 'Your browser does not support speech recognition. Use Chrome or Edge.';
+      document.getElementById('speak-status').classList.add('error');
+      return;
+    }
+    const r = new SR();
+    r.lang = 'el-GR';
+    r.continuous = false;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    gSpeakRecognition = r;
+    gSpeakTranscript = '';
+
+    r.onstart = () => {
+      gSpeakRecording = true;
+      const btn = document.getElementById('speak-record-btn');
+      btn.classList.add('recording');
+      btn.textContent = '⏹ Stop';
+      document.getElementById('speak-status').textContent = 'Listening… speak now in Greek.';
+      document.getElementById('speak-status').classList.remove('error');
+    };
+    r.onresult = (event) => {
+      let interim = '', finalText = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const res = event.results[i];
+        if (res.isFinal) finalText += res[0].transcript;
+        else interim += res[0].transcript;
+      }
+      if (finalText) gSpeakTranscript += finalText;
+      const tEl = document.getElementById('speak-transcript');
+      const showText = (gSpeakTranscript + (interim ? ' ' + interim : '')).trim();
+      if (showText) {
+        tEl.textContent = showText;
+        tEl.classList.toggle('interim', !!interim && !gSpeakTranscript);
+      } else {
+        tEl.textContent = '…';
+      }
+    };
+    r.onerror = (event) => {
+      const status = document.getElementById('speak-status');
+      status.classList.add('error');
+      const msg = {
+        'no-speech': 'No speech detected. Try again — speak a bit louder.',
+        'audio-capture': 'No microphone found. Check device settings.',
+        'not-allowed': 'Mic permission denied. Allow microphone access for this site.',
+        'language-not-supported': 'Greek recognition not available in this browser. Try Chrome.',
+      }[event.error] || ('Recognition error: ' + event.error);
+      status.textContent = msg;
+    };
+    r.onend = () => {
+      gSpeakRecording = false;
+      const btn = document.getElementById('speak-record-btn');
+      btn.classList.remove('recording');
+      btn.textContent = '🎤 Record again';
+      const have = (gSpeakTranscript || '').trim().length > 0;
+      document.getElementById('speak-submit-btn').disabled = !have;
+      document.getElementById('speak-redo-btn').disabled = false;
+      const status = document.getElementById('speak-status');
+      if (have && !status.classList.contains('error')) {
+        status.textContent = 'Got it. Hit "Grade my answer" or "Try again" to redo.';
+      }
+    };
+
+    try { r.start(); }
+    catch (e) {
+      document.getElementById('speak-status').textContent = 'Could not start mic: ' + (e && e.message || e);
+      document.getElementById('speak-status').classList.add('error');
+    }
+  }
+
+  function stopSpeakRecord() {
+    if (gSpeakRecognition && gSpeakRecording) {
+      try { gSpeakRecognition.stop(); } catch {}
+    }
+  }
+
+  function redoSpeakRecord() {
+    stopSpeakRecord();
+    gSpeakTranscript = '';
+    document.getElementById('speak-transcript').textContent = '—';
+    document.getElementById('speak-submit-btn').disabled = true;
+    document.getElementById('speak-feedback').style.display = 'none';
+    document.getElementById('speak-next-wrap').style.display = 'none';
+    setTimeout(startSpeakRecord, 100);
+  }
+
+  async function submitSpeakAnswer() {
+    const transcript = (gSpeakTranscript || '').trim();
+    if (!transcript) return;
+    const q = gSpeakDeck[gSpeakIndex];
+    const fb = document.getElementById('speak-feedback');
+    fb.className = 'speak-feedback';
+    fb.style.display = '';
+    fb.innerHTML = '<div class="speak-fb-head">⏳ Grading…</div>';
+    document.getElementById('speak-submit-btn').disabled = true;
+    document.getElementById('speak-redo-btn').disabled = true;
+
+    let grading = null;
+    try {
+      const r = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'grade_speaking',
+          payload: {
+            english_prompt: q.en,
+            model_answer: q.model,
+            target_grammar: q.target,
+            transcript
+          }
+        })
+      });
+      const data = await r.json();
+      if (data && data.ok && data.data) grading = data.data;
+      else throw new Error(data && data.error ? data.error : 'Unknown grading error');
+    } catch (e) {
+      fb.className = 'speak-feedback error';
+      fb.innerHTML = `<div class="speak-fb-head">⚠️ Couldn't reach the grader</div><div class="speak-fb-line">${escHtml(String(e && e.message || e))}</div><div class="speak-fb-line"><strong>Model answer:</strong> <span class="speak-fb-model">${escHtml(q.model)}</span></div>`;
+      document.getElementById('speak-next-wrap').style.display = '';
+      document.getElementById('speak-redo-btn').disabled = false;
+      return;
+    }
+
+    gSpeakLastGrading = grading;
+    const passed = grading.score === 'pass';
+    if (passed) gSpeakHits++; else gSpeakMisses++;
+    if (!passed) {
+      await recordMistake({
+        drill_type: 'speak',
+        prompt: q.en,
+        correct: q.model,
+        picked: transcript,
+        metadata: { source: 'daily-five', target: q.target, headline: grading.headline, correction: grading.correction || null }
+      });
+      gSpeakLogged = true;
+    }
+    document.getElementById('speak-score').textContent = `Score: ${gSpeakHits}/${gSpeakHits + gSpeakMisses}`;
+
+    const correctionLine = grading.correction
+      ? `<div class="speak-fb-line"><strong>Correction:</strong> ${escHtml(grading.correction)}</div>`
+      : '';
+    const noteLine = grading.grammar_note
+      ? `<div class="speak-fb-line"><strong>Rule:</strong> ${escHtml(grading.grammar_note)}</div>`
+      : '';
+    fb.className = 'speak-feedback ' + (passed ? 'pass' : 'fix');
+    fb.innerHTML = `
+      <div class="speak-fb-head">${passed ? '✓' : '✗'} ${escHtml(grading.headline || '')}</div>
+      ${correctionLine}
+      <div class="speak-fb-line"><strong>Model:</strong> <span class="speak-fb-model">${escHtml(grading.model_echo || q.model)}</span></div>
+      ${noteLine}
+    `;
+    document.getElementById('speak-next-wrap').style.display = '';
+    // miscaught button only matters if the grade was a fail
+    const miscaughtBtn = document.getElementById('speak-miscaught-btn');
+    miscaughtBtn.style.display = passed ? 'none' : '';
+    renderSpeakPips();
+    // Mark pip retroactively to show pass/fail color
+    const pips = document.querySelectorAll('#speak-pips .pip');
+    if (pips[gSpeakIndex]) {
+      pips[gSpeakIndex].classList.add('done', passed ? 'ok' : 'no');
+      pips[gSpeakIndex].classList.remove('current');
+    }
+  }
+
+  // Escape hatch: the user said it right but SpeechRecognition heard wrong.
+  // Reverses the just-logged miss so transcription noise doesn't pollute the
+  // mistakes table. Only visible after a 'fix' grade.
+  async function markSpeakMiscaught() {
+    if (!gSpeakLastGrading || gSpeakLastGrading.score !== 'fix') return;
+    // Undo the score
+    if (gSpeakMisses > 0) gSpeakMisses--;
+    // We can't easily delete the mistake row without an id; instead, log a
+    // counter-note so the review tab can de-dup. Pragmatic for v1.
+    if (gSpeakLogged) {
+      const q = gSpeakDeck[gSpeakIndex];
+      await recordMistake({
+        drill_type: 'speak-miscaught',
+        prompt: q.en,
+        correct: q.model,
+        picked: (gSpeakTranscript || '').trim(),
+        metadata: { source: 'daily-five', target: q.target, reason: 'user-flagged transcription miscaught' }
+      });
+    }
+    const fb = document.getElementById('speak-feedback');
+    fb.className = 'speak-feedback';
+    fb.innerHTML = '<div class="speak-fb-head">🎤 Noted — not counted as a grammar miss.</div><div class="speak-fb-line">Moving on. Try the next prompt.</div>';
+    fb.style.display = '';
+    document.getElementById('speak-score').textContent = `Score: ${gSpeakHits}/${gSpeakHits + gSpeakMisses}`;
+    // Reset the pip color for this prompt to neutral done
+    const pips = document.querySelectorAll('#speak-pips .pip');
+    if (pips[gSpeakIndex]) {
+      pips[gSpeakIndex].classList.remove('ok','no');
+    }
+    document.getElementById('speak-miscaught-btn').style.display = 'none';
+  }
+
+  function nextSpeakPrompt() {
+    stopSpeakRecord();
+    gSpeakIndex++;
+    renderSpeakCard();
+  }
+
   async function loadMistakes(limit) {
     let supaRows = [];
     if (window._supabase) {
@@ -6467,10 +7027,10 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
     const panelEl = document.getElementById('panel-' + lang);
     if (panelEl) panelEl.classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, rules:7, foundations:8, translate:9, notes:10, sessions:11, review:12};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, rules:8, foundations:9, translate:10, notes:11, sessions:12, review:13};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -6478,6 +7038,7 @@
     if (lang === 'alphabet') { buildAlphaTable(); }
     if (lang === 'grammar') { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
     if (lang === 'practice') { initPracticeDrill(); }
+    if (lang === 'speak') { initSpeakDrill(); }
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();

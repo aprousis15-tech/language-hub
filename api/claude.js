@@ -34,6 +34,38 @@ Respond with VALID JSON ONLY. No markdown fences. No prose outside the JSON. The
 
 Constraints: exactly 10 vocab items, exactly 2 grammar points, exactly 6 roleplay exchanges. Use informal singular "you" unless the scenario is formal (doctor, hotel complaint). Prioritize vocab and patterns that address the user's recent weaknesses.`;
 
+// grade_speaking: grade ONE Greek sentence produced from an English prompt.
+// Input payload: { english_prompt, model_answer, target_grammar, transcript }
+// transcript is what the browser's SpeechRecognition heard.
+// Output: tight feedback — one correction max, echo the model so the learner
+// can compare. Keep the prose short; the drill is fast-pace.
+const GRADE_SPEAKING_SYSTEM_PROMPT = `You grade a single Greek sentence a learner spoke from an English prompt.
+
+You will receive a JSON payload:
+{
+  "english_prompt": "<the English sentence the learner saw>",
+  "model_answer":   "<the target Greek sentence>",
+  "target_grammar": "<the specific grammar move being tested, e.g. 'aorist of διαβάζω' or 'σε + accusative plural'>",
+  "transcript":     "<what the browser's SpeechRecognition transcribed of what the learner said>"
+}
+
+Constraints:
+- The transcript may contain transcription noise (homophones like που/πού, σε/σαι; missing accents; lowercase). Don't penalize accent loss or final-σ/-ς confusion — those are transcription artifacts.
+- Judge: did the learner actually produce the target grammar move correctly? Did the sentence convey the meaning?
+- Give ONE specific correction at most. Don't pile on stylistic nitpicks. If multiple things are wrong, pick the most pedagogically important one tied to target_grammar.
+- Echo the model_answer back so the learner sees the ideal form even when correct.
+- Score: "pass" if target grammar is hit AND meaning is conveyed; "fix" otherwise.
+
+Respond with VALID JSON ONLY. No markdown fences. No prose outside the JSON. Schema:
+
+{
+  "score": "pass" | "fix",
+  "headline": "<one short sentence — what they did right OR the single thing to fix>",
+  "correction": "<the specific correction if score=fix, otherwise null. Quote the wrong fragment and give the right one.>",
+  "model_echo": "<model_answer verbatim>",
+  "grammar_note": "<one-line reminder of the rule for target_grammar — always present, helps reinforce>"
+}`;
+
 const ANALYZE_SYSTEM_PROMPT = `You analyze Greek practice-session transcripts and extract structured feedback.
 
 Respond with VALID JSON ONLY. No markdown fences. No prose outside the JSON. The schema:
@@ -79,6 +111,14 @@ function validateAnalysis(obj) {
   return null;
 }
 
+function validateGrading(obj) {
+  if (!obj || typeof obj !== 'object') return 'not an object';
+  if (obj.score !== 'pass' && obj.score !== 'fix') return 'score must be "pass" or "fix"';
+  if (typeof obj.headline !== 'string') return 'headline missing';
+  if (typeof obj.model_echo !== 'string') return 'model_echo missing';
+  return null;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'method_not_allowed' });
@@ -92,7 +132,7 @@ module.exports = async function handler(req, res) {
     res.status(400).json({ error: 'missing_action_or_payload' });
     return;
   }
-  if (action !== 'generate_plan' && action !== 'analyze_session') {
+  if (action !== 'generate_plan' && action !== 'analyze_session' && action !== 'grade_speaking') {
     res.status(400).json({ error: 'unknown_action', action });
     return;
   }
@@ -103,7 +143,10 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const systemPrompt = action === 'generate_plan' ? PLAN_GEN_SYSTEM_PROMPT : ANALYZE_SYSTEM_PROMPT;
+  const systemPrompt =
+    action === 'generate_plan'   ? PLAN_GEN_SYSTEM_PROMPT :
+    action === 'grade_speaking'  ? GRADE_SPEAKING_SYSTEM_PROMPT :
+    ANALYZE_SYSTEM_PROMPT;
 
   let upstream;
   try {
@@ -145,7 +188,10 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const validator = action === 'generate_plan' ? validatePlan : validateAnalysis;
+  const validator =
+    action === 'generate_plan'   ? validatePlan :
+    action === 'grade_speaking'  ? validateGrading :
+    validateAnalysis;
   const schemaErr = validator(parsed);
   if (schemaErr) {
     res.status(200).json({ error: 'schema_mismatch', detail: schemaErr, data: parsed });
