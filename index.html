@@ -92,19 +92,30 @@
 
   .lang-tabs {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     background: var(--tile);
     border-bottom: 2px solid #d4c5b0;
     position: sticky;
     top: 0;
     z-index: 100;
+    /* Mobile: 13 tabs won't fit. Horizontal scroll within the bar so the
+       whole page doesn't scroll horizontally. iOS momentum + hidden scrollbar. */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
   }
+  .lang-tabs::-webkit-scrollbar { display: none; } /* Chrome / Safari */
+  /* On wider viewports we re-center the tabs; the scroll machinery just
+     stays inert because they all fit. */
+  @media (min-width: 1100px) { .lang-tabs { justify-content: center; } }
 
   .lang-tab {
     padding: 14px 40px;
     font-family: 'Playfair Display', serif;
     font-size: 1rem;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
     border: none;
     background: transparent;
     color: #7a6a55;
@@ -627,6 +638,14 @@
     .vocab-table-head, .vocab-entry { grid-template-columns: 1fr 1fr 40px 40px; }
     .vocab-table-head .col-lang, .vocab-table-head .col-topic,
     .vocab-entry .entry-lang, .vocab-entry .entry-topic { display: none; }
+  }
+  @media (max-width: 540px) {
+    /* Stack the vocab add-form to a single column on phones — at 2 columns,
+       the inputs' implicit min-width pushed the form ~50px wider than the
+       viewport on iPhone-class screens. */
+    .form-row { grid-template-columns: 1fr; }
+    .vocab-add-form { padding: 18px; }
+    .vocab-add-form input, .vocab-add-form select { min-width: 0; }
   }
 
   /* ── DAD PRACTICE ── */
@@ -1410,7 +1429,7 @@
     padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
   .rule-card-title { font-weight: 700; color: #004d40; margin-bottom: 6px; }
-  .rule-card-body { font-size: 0.92rem; color: #2c3e3a; line-height: 1.5; }
+  .rule-card-body { font-size: 0.92rem; color: #2c3e3a; line-height: 1.5; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .rule-greek { font-family: 'Georgia', serif; color: #00695c; font-weight: 600; }
   .rule-en { color: #5a6f6c; font-style: italic; }
   .rule-table {
@@ -1787,6 +1806,13 @@
   }
   .grammar-mode-group-label:hover { opacity: 1; }
   .grammar-mode-group-label:first-child { margin-top: 0; }
+  /* Mobile tap-target bump — 8px padding → ~35px buttons is below iOS 44pt
+     minimum. Add a few pixels back on small screens for thumb-friendliness. */
+  @media (max-width: 600px) {
+    .grammar-mode-btn { padding: 11px 18px; font-size: 0.84rem; }
+    .practice-topic-chip { padding: 10px 14px; font-size: 0.82rem; }
+    .foundations-nav-btn { padding: 10px 14px; font-size: 0.88rem; }
+  }
 
   /* Drill rule disclosure (Rules ↔ Grammar Drill link) */
   .drill-rule-disclosure {
