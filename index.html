@@ -2055,12 +2055,19 @@
     border: 2px solid #2e7d32; border-radius: 10px;
     text-align: left;
   }
+  .vgroup-final.wrong {
+    background: linear-gradient(180deg, #ffebee 0%, #fce4ec 100%);
+    border-color: #c62828;
+  }
   .vgroup-final-head {
     font-family: 'Playfair Display', serif; font-size: 1.2rem;
     color: #1b5e20; margin-bottom: 6px;
   }
+  .vgroup-final.wrong .vgroup-final-head { color: #b71c1c; }
   .vgroup-final-body { color: #2c4a2c; font-size: 0.94rem; line-height: 1.55; }
   .vgroup-final-body strong { color: #1b5e20; }
+  .vgroup-final.wrong .vgroup-final-body { color: #4a2c2c; }
+  .vgroup-final.wrong .vgroup-final-body strong { color: #b71c1c; }
   /* Verb-group classifier: pre-answer clue button + body. Used by vgroup mode. */
   .vgroup-clue-btn {
     background: #fff3c4; color: #b76e00; border: 1px solid #ffd54f;
@@ -9187,7 +9194,7 @@
   const VGROUP_DIRECT_OPTIONS = [
     { key: 'Α (letter swap)',     label: 'Group A — letter swap',     sub: '-ζω/-φω/-χω/-νω → -σω/-ψω/-ξω/-σω' },
     { key: 'Β (-άω/-ώ → -ήσω)',   label: 'Group B — stressed',        sub: 'final-stressed -άω / -ώ → -ήσω' },
-    { key: '-εύω / -ώνω',         label: '-εύω / -ώνω family',        sub: '-εύω → -ψω · -ώνω → -ώσω' },
+    { key: '-εύω / -ώνω',         label: '-εύω / -ώνω family',        sub: 'ONLY if last 3 letters = -εύω or -ώνω (the ω before νω matters)' },
     { key: 'Irregular dual-stem', label: 'Irregular (Top-10 trap)',   sub: 'on the list — memorize the stem' },
   ];
 
@@ -9234,8 +9241,10 @@
     gVgroupHistory = [];
     gVgroupComplete = false;
     gVgroupQuestionWrong = false;
-    document.getElementById('vgroup-final').style.display = 'none';
-    document.getElementById('vgroup-final').innerHTML = '';
+    const finalReset = document.getElementById('vgroup-final');
+    finalReset.style.display = 'none';
+    finalReset.innerHTML = '';
+    finalReset.classList.remove('wrong');
     const fb = document.getElementById('vgroup-feedback');
     fb.textContent = ''; fb.classList.remove('show');
     document.getElementById('vgroup-progress').textContent = `Question ${gVgroupIndex + 1} of ${gVgroupDeck.length}`;
@@ -9296,6 +9305,7 @@
     document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
     const finalEl = document.getElementById('vgroup-final');
     finalEl.style.display = '';
+    finalEl.classList.toggle('wrong', !isCorrect);
     finalEl.innerHTML = `
       <div class="vgroup-final-head">${isCorrect ? '✓' : '✗'} ${esc(q.answer)} — perfective <span class="rule-greek">${esc(q.perfective)}</span></div>
       <div class="vgroup-final-body">${q.hint}</div>
@@ -9368,12 +9378,14 @@
     const finalEl = document.getElementById('vgroup-final');
     if (gVgroupComplete) {
       finalEl.style.display = '';
+      finalEl.classList.toggle('wrong', gVgroupQuestionWrong);
       finalEl.innerHTML = `
-        <div class="vgroup-final-head">→ ${esc(q.answer)} — perfective <span class="rule-greek">${esc(q.perfective)}</span></div>
+        <div class="vgroup-final-head">${gVgroupQuestionWrong ? '✗' : '✓'} ${esc(q.answer)} — perfective <span class="rule-greek">${esc(q.perfective)}</span></div>
         <div class="vgroup-final-body">${q.hint}</div>
       `;
     } else {
       finalEl.style.display = 'none';
+      finalEl.classList.remove('wrong');
       finalEl.innerHTML = '';
     }
   }
