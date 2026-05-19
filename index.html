@@ -1457,7 +1457,9 @@
     width: 100%; text-align: center; font-size: 0.72rem; color: #7a4060;
     font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
     margin: 6px 0 -2px; opacity: 0.75;
+    cursor: pointer; user-select: none; transition: opacity 0.15s;
   }
+  .practice-topic-group-label:hover { opacity: 1; }
   .practice-topic-group-label:first-child { margin-top: 0; }
   .practice-topic-label {
     text-align: center; font-size: 0.75rem; color: #7a4060;
@@ -1781,7 +1783,9 @@
     width: 100%; text-align: center; font-size: 0.72rem; color: #4527a0;
     font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
     margin: 10px 0 -2px; opacity: 0.75;
+    cursor: pointer; user-select: none; transition: opacity 0.15s;
   }
+  .grammar-mode-group-label:hover { opacity: 1; }
   .grammar-mode-group-label:first-child { margin-top: 0; }
 
   /* Drill rule disclosure (Rules ↔ Grammar Drill link) */
@@ -3466,18 +3470,20 @@
 
       <div class="practice-topic-group-label">▸ Grammar Focus</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('irregulars',this)">🔥 Top Irregulars (13)</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('objpro',this)">🪢 Object Pronouns</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('aresei',this)">❤️ μου αρέσει</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('connectors',this)">🔀 Connectors</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('formal',this)">🎩 Formal vs Informal</button>
+      <button class="practice-topic-chip" onclick="setPracticeTopic('pino',this)">🥤 πίνω (drink)</button>
+
+      <div class="practice-topic-group-label">▸ Concept Decks (flashcards by grammar concept)</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('aorist',this)">⏪ Past Tense</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('future',this)">⏩ Future θα</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('qwords',this)">❓ Question Words</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('qstart',this)">🙋 Question Starters</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('objpro',this)">🪢 Object Pronouns</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('aresei',this)">❤️ μου αρέσει</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('imperative',this)">❗ Imperatives</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('subjna',this)">🔗 Subjunctive να</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('connectors',this)">🔀 Connectors</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('formal',this)">🎩 Formal vs Informal</button>
       <button class="practice-topic-chip" onclick="setPracticeTopic('denreflex',this)">🚫 Double Negation (δεν…)</button>
-      <button class="practice-topic-chip" onclick="setPracticeTopic('pino',this)">🥤 πίνω (drink)</button>
 
       <div class="practice-topic-group-label">▸ Conversations</div>
       <button class="practice-topic-chip" onclick="setPracticeTopic('smalltalk',this)">💬 Small Talk</button>
@@ -7062,6 +7068,38 @@
     highlightCurrentWeek(phase, sch);
   }
 
+  // ── Collapsible group-label helper ──
+  // Lets long topic / mode bars (Practice has 47+ chips, Grammar Drill has 26
+  // buttons) start mostly collapsed so the screen isn't a wall on first load.
+  // Click any group label to toggle its chips/buttons. Heavy-use groups stay
+  // open by default (Targets + By Part of Speech in Practice; 🔥 Verbs + All
+  // in Grammar Drill — the latter keeps the global Random one click away).
+  function applyCollapseToLabel(labelEl, collapsed) {
+    labelEl.classList.toggle('collapsed-group', collapsed);
+    const stripped = labelEl.textContent.replace(/^\s*[▸▾]\s*/, '');
+    labelEl.textContent = (collapsed ? '▸ ' : '▾ ') + stripped;
+    let sib = labelEl.nextElementSibling;
+    while (sib && !sib.classList.contains('practice-topic-group-label') && !sib.classList.contains('grammar-mode-group-label')) {
+      sib.style.display = collapsed ? 'none' : '';
+      sib = sib.nextElementSibling;
+    }
+  }
+  function toggleGroupCollapse(labelEl) {
+    applyCollapseToLabel(labelEl, !labelEl.classList.contains('collapsed-group'));
+  }
+  function initGroupCollapsibles() {
+    const PRACTICE_KEEP_OPEN = /Targets|By Part of Speech/;
+    const GRAMMAR_KEEP_OPEN = /Verbs|All/;
+    document.querySelectorAll('.practice-topic-group-label').forEach(label => {
+      label.addEventListener('click', () => toggleGroupCollapse(label));
+      applyCollapseToLabel(label, !PRACTICE_KEEP_OPEN.test(label.textContent));
+    });
+    document.querySelectorAll('.grammar-mode-group-label').forEach(label => {
+      label.addEventListener('click', () => toggleGroupCollapse(label));
+      applyCollapseToLabel(label, !GRAMMAR_KEEP_OPEN.test(label.textContent));
+    });
+  }
+
   // ── INIT ──
   renderTripSchedule();
   setInterval(renderTripSchedule, 60 * 60 * 1000); // refresh hourly — rolls over at midnight without reload
@@ -7069,6 +7107,7 @@
   initLt();
   initPimsleur();
   renderTransHistory();
+  initGroupCollapsibles();
   const nd = document.getElementById('note-date');
   if (nd) nd.value = new Date().toISOString().slice(0,10);
 
