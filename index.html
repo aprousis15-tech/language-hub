@@ -1882,6 +1882,22 @@
     padding: 10px 14px; border-radius: 0 8px 8px 0;
     text-align: left; margin: 14px auto 4px;
   }
+  /* Verb-group classifier: pre-answer clue button + body. Used by vgroup mode. */
+  .vgroup-clue-btn {
+    background: #fff3c4; color: #b76e00; border: 1px solid #ffd54f;
+    border-radius: 99px; padding: 5px 14px; font-size: 0.78rem;
+    font-family: 'Lato', sans-serif; font-weight: 600; cursor: pointer;
+    margin: 0 auto 14px; display: inline-block;
+  }
+  .vgroup-clue-btn:hover:not(:disabled) { background: #ffe082; }
+  .vgroup-clue-btn:disabled { opacity: 0.55; cursor: default; }
+  .vgroup-clue {
+    background: #fffde7; border-left: 3px solid #f9a825;
+    padding: 8px 12px; border-radius: 0 8px 8px 0;
+    text-align: left; max-width: 480px; margin: 0 auto 12px;
+    font-size: 0.88rem; color: #6a4f1a; font-style: italic;
+  }
+  .vgroup-clue strong { color: #b76e00; font-style: normal; }
   .grammar-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
   .grammar-btn {
     padding: 9px 22px; border-radius: 99px; border: 1px solid #4527a0;
@@ -3109,6 +3125,8 @@
       <div class="grammar-card">
         <div class="grammar-prompt-en" id="vgroup-en">…</div>
         <div class="grammar-prompt-greek" id="vgroup-prompt">…</div>
+        <button class="vgroup-clue-btn" id="vgroup-clue-btn" onclick="showVgroupClue()">💡 Show clue</button>
+        <div class="vgroup-clue" id="vgroup-clue" style="display:none;"></div>
         <div class="grammar-options" id="vgroup-options"></div>
         <div class="grammar-feedback" id="vgroup-feedback"></div>
       </div>
@@ -7719,6 +7737,39 @@
         <tr><td><span class="rule-greek">Πώς;</span></td><td>How?</td><td>ω + accent. πως (no accent) = "that"</td></tr>
       </table>
       <strong>Questions = intonation only.</strong> No auxiliary shuffle: <span class="rule-greek">Έχεις ψωμί.</span> → <span class="rule-greek">Έχεις ψωμί;</span> (same words, rising tone).
+    `,
+    vgroup: `
+      <strong>Decision tree — diagnose before you conjugate:</strong>
+      <br><br>
+      <strong>Step 1 — is the verb on the top-10 irregular list?</strong> If yes, the answer is <em>Irregular dual-stem</em>. No rule — memorize the perfective stem.
+      <table>
+        <tr><th>Present</th><th>Perfective stem</th><th>Past (I-form)</th></tr>
+        <tr><td><span class="rule-greek">βλέπω</span></td><td><span class="rule-greek">δω</span></td><td><span class="rule-greek">είδα</span></td></tr>
+        <tr><td><span class="rule-greek">λέω</span></td><td><span class="rule-greek">πω</span></td><td><span class="rule-greek">είπα</span></td></tr>
+        <tr><td><span class="rule-greek">τρώω</span></td><td><span class="rule-greek">φάω</span></td><td><span class="rule-greek">έφαγα</span></td></tr>
+        <tr><td><span class="rule-greek">πίνω</span> ⚠️</td><td><span class="rule-greek">πιω</span></td><td><span class="rule-greek">ήπια</span></td></tr>
+        <tr><td><span class="rule-greek">βρίσκω</span></td><td><span class="rule-greek">βρω</span></td><td><span class="rule-greek">βρήκα</span></td></tr>
+        <tr><td><span class="rule-greek">βάζω</span> ⚠️</td><td><span class="rule-greek">βάλω</span></td><td><span class="rule-greek">έβαλα</span></td></tr>
+        <tr><td><span class="rule-greek">παίρνω</span> ⚠️</td><td><span class="rule-greek">πάρω</span></td><td><span class="rule-greek">πήρα</span></td></tr>
+        <tr><td><span class="rule-greek">δίνω</span> ⚠️</td><td><span class="rule-greek">δώσω</span></td><td><span class="rule-greek">έδωσα</span></td></tr>
+        <tr><td><span class="rule-greek">φεύγω</span> ⚠️</td><td><span class="rule-greek">φύγω</span></td><td><span class="rule-greek">έφυγα</span></td></tr>
+        <tr><td><span class="rule-greek">μαθαίνω</span></td><td><span class="rule-greek">μάθω</span></td><td><span class="rule-greek">έμαθα</span></td></tr>
+      </table>
+      ⚠️ = looks regular but isn't. These are the worst traps — they end in -ζω or -νω or -γω like a Group A verb but break the rule.
+      <br><br>
+      <strong>Step 2 — otherwise, read the ending.</strong>
+      <table>
+        <tr><th>If the ending is...</th><th>Group</th><th>Perfective</th></tr>
+        <tr><td>Stressed <span class="rule-greek">-άω</span> / <span class="rule-greek">-ώ</span></td><td>B</td><td>→ <span class="rule-greek">-ήσω</span>  (μιλάω → μιλήσω, οδηγώ → οδηγήσω)</td></tr>
+        <tr><td><span class="rule-greek">-εύω</span></td><td>-εύω / -ώνω</td><td>→ <span class="rule-greek">-ψω</span>  (ταξιδεύω → ταξιδέψω)</td></tr>
+        <tr><td><span class="rule-greek">-ώνω</span></td><td>-εύω / -ώνω</td><td>→ <span class="rule-greek">-ώσω</span>  (τελειώνω → τελειώσω)</td></tr>
+        <tr><td><span class="rule-greek">-ζω</span></td><td>A</td><td>→ <span class="rule-greek">-σω</span>  (διαβάζω → διαβάσω)</td></tr>
+        <tr><td><span class="rule-greek">-φω</span> / <span class="rule-greek">-βω</span> / <span class="rule-greek">-πω</span> / <span class="rule-greek">-πτω</span></td><td>A</td><td>→ <span class="rule-greek">-ψω</span>  (γράφω → γράψω)</td></tr>
+        <tr><td><span class="rule-greek">-χω</span> / <span class="rule-greek">-γω</span></td><td>A</td><td>→ <span class="rule-greek">-ξω</span>  (τρέχω → τρέξω, ανοίγω → ανοίξω)</td></tr>
+        <tr><td><span class="rule-greek">-χνω</span></td><td>A</td><td>→ <span class="rule-greek">-ξω</span>, ν drops  (ψάχνω → ψάξω)</td></tr>
+        <tr><td><span class="rule-greek">-νω</span> (not on irreg list)</td><td>A</td><td>→ <span class="rule-greek">-σω</span>  (χάνω → χάσω)</td></tr>
+      </table>
+      <strong>Self-test:</strong> say the would-be regular aorist out loud. If it sounds wrong ("βάσω", "παίρσω", "πίσω"), you're hitting an irregular — switch to the top-10 list.
     `
   };
 
@@ -8718,41 +8769,106 @@
   // perfective stem. Trains the "diagnose-before-conjugate" reflex that
   // prevents φευγσουν / βασω class errors.
   const VGROUP_OPTIONS = ['Α (letter swap)', 'Β (-άω/-ώ → -ήσω)', '-εύω / -ώνω', 'Irregular dual-stem'];
+  // Each question carries:
+  //   clue → pre-answer pedagogical nudge (shown via 💡 Show clue button). Asks
+  //          a leading question or flags a trap without giving the answer.
+  //   hint → post-answer rule-explanation. Names the group, states the rule,
+  //          and shows how to use the perfective (να/θα + form, past).
   const VGROUP_QUESTIONS = [
     // A — letter swap
-    { en: 'to write',          word: 'γράφω',     answer: 'Α (letter swap)',          perfective: 'γράψω',     hint: 'A: -φω → -ψω. Same family as -βω/-πω/-πτω.' },
-    { en: 'to read',           word: 'διαβάζω',   answer: 'Α (letter swap)',          perfective: 'διαβάσω',   hint: 'A: -ζω → -σω.' },
-    { en: 'to buy',            word: 'αγοράζω',   answer: 'Α (letter swap)',          perfective: 'αγοράσω',   hint: 'A: -ζω → -σω.' },
-    { en: 'to clean',          word: 'καθαρίζω',  answer: 'Α (letter swap)',          perfective: 'καθαρίσω',  hint: 'A: -ζω → -σω.' },
-    { en: 'to run',            word: 'τρέχω',     answer: 'Α (letter swap)',          perfective: 'τρέξω',     hint: 'A: -χω → -ξω.' },
-    { en: 'to open',           word: 'ανοίγω',    answer: 'Α (letter swap)',          perfective: 'ανοίξω',    hint: 'A: -γω → -ξω.' },
-    { en: 'to make / fix',     word: 'φτιάχνω',   answer: 'Α (letter swap)',          perfective: 'φτιάξω',    hint: '⚠️ Trap. -χνω → -ξω (the ν drops). NOT φτιαχσω.' },
-    { en: 'to look for',       word: 'ψάχνω',     answer: 'Α (letter swap)',          perfective: 'ψάξω',      hint: '-χνω → -ξω (the ν drops).' },
-    { en: 'to lose',           word: 'χάνω',      answer: 'Α (letter swap)',          perfective: 'χάσω',      hint: 'A: -νω → -σω.' },
-    { en: 'to close',          word: 'κλείνω',    answer: 'Α (letter swap)',          perfective: 'κλείσω',    hint: 'A: -νω → -σω.' },
+    { en: 'to write', word: 'γράφω', answer: 'Α (letter swap)', perfective: 'γράψω',
+      clue: 'Ending: <strong>-φω</strong>. -φ + σ collapses into one letter in the aorist. Which group does that?',
+      hint: '<strong>Group A</strong> (letter swap). Rule: <strong>-φω / -βω / -πω / -πτω → -ψω</strong>. So γράφω → <span class="rule-greek">γράψω</span> (να γράψω, θα γράψω, έγραψα).' },
+    { en: 'to read', word: 'διαβάζω', answer: 'Α (letter swap)', perfective: 'διαβάσω',
+      clue: 'Ending: <strong>-ζω</strong>. The most common Group A pattern.',
+      hint: '<strong>Group A</strong>. Rule: <strong>-ζω → -σω</strong> (ζ + σ simplifies to σ). διαβάζω → <span class="rule-greek">διαβάσω</span> (να διαβάσω, θα διαβάσω, διάβασα).' },
+    { en: 'to buy', word: 'αγοράζω', answer: 'Α (letter swap)', perfective: 'αγοράσω',
+      clue: 'Ending: <strong>-ζω</strong>. Same pattern as διαβάζω.',
+      hint: '<strong>Group A</strong>. Rule: <strong>-ζω → -σω</strong>. αγοράζω → <span class="rule-greek">αγοράσω</span> (from η αγορά = market).' },
+    { en: 'to clean', word: 'καθαρίζω', answer: 'Α (letter swap)', perfective: 'καθαρίσω',
+      clue: 'Ending: <strong>-ζω</strong>.',
+      hint: '<strong>Group A</strong>. Rule: <strong>-ζω → -σω</strong>. καθαρίζω → <span class="rule-greek">καθαρίσω</span>.' },
+    { en: 'to run', word: 'τρέχω', answer: 'Α (letter swap)', perfective: 'τρέξω',
+      clue: 'Ending: <strong>-χω</strong>. -χ + σ also collapses into one letter.',
+      hint: '<strong>Group A</strong>. Rule: <strong>-χω / -γω → -ξω</strong>. τρέχω → <span class="rule-greek">τρέξω</span> (να τρέξω, έτρεξα).' },
+    { en: 'to open', word: 'ανοίγω', answer: 'Α (letter swap)', perfective: 'ανοίξω',
+      clue: 'Ending: <strong>-γω</strong>. Sibling of -χω.',
+      hint: '<strong>Group A</strong>. Rule: <strong>-γω / -χω → -ξω</strong>. ανοίγω → <span class="rule-greek">ανοίξω</span> (άνοιξα).' },
+    { en: 'to make / fix', word: 'φτιάχνω', answer: 'Α (letter swap)', perfective: 'φτιάξω',
+      clue: 'Ending: <strong>-χνω</strong>. The ν disappears in the aorist — but still Group A.',
+      hint: '<strong>Group A</strong> + ν-drop. Rule: <strong>-χνω → -ξω</strong> (the ν vanishes). φτιάχνω → <span class="rule-greek">φτιάξω</span>, NOT "φτιαχσω".' },
+    { en: 'to look for', word: 'ψάχνω', answer: 'Α (letter swap)', perfective: 'ψάξω',
+      clue: 'Ending: <strong>-χνω</strong>. Same pattern as φτιάχνω.',
+      hint: '<strong>Group A</strong> + ν-drop. Rule: <strong>-χνω → -ξω</strong>. ψάχνω → <span class="rule-greek">ψάξω</span>.' },
+    { en: 'to lose', word: 'χάνω', answer: 'Α (letter swap)', perfective: 'χάσω',
+      clue: 'Ending: <strong>-νω</strong>. ⚠️ Most -νω verbs ARE Group A — but cross-check the irregular list (βάζω, παίρνω, δίνω, μαθαίνω, πίνω all look like -νω too).',
+      hint: '<strong>Group A</strong>. Rule: <strong>-νω → -σω</strong>. χάνω → <span class="rule-greek">χάσω</span>. Beware: βάζω/παίρνω/δίνω/μαθαίνω/πίνω look -νω but are irregular.' },
+    { en: 'to close', word: 'κλείνω', answer: 'Α (letter swap)', perfective: 'κλείσω',
+      clue: 'Ending: <strong>-νω</strong>. Same as χάνω.',
+      hint: '<strong>Group A</strong>. Rule: <strong>-νω → -σω</strong>. κλείνω → <span class="rule-greek">κλείσω</span>.' },
     // B — -άω/-ώ → -ήσω
-    { en: 'to speak',          word: 'μιλάω',     answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'μιλήσω',    hint: 'B: -άω → -ήσω.' },
-    { en: 'to wake up',        word: 'ξυπνάω',    answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'ξυπνήσω',   hint: 'B: -άω → -ήσω.' },
-    { en: 'to ask',            word: 'ρωτάω',     answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'ρωτήσω',    hint: 'B: -άω → -ήσω.' },
-    { en: 'to walk',           word: 'περπατάω',  answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'περπατήσω', hint: 'B: -άω → -ήσω.' },
-    { en: 'to drive',          word: 'οδηγώ',     answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'οδηγήσω',   hint: 'B (stress-on-ending): -ώ → -ήσω.' },
-    { en: 'to try',            word: 'προσπαθώ',  answer: 'Β (-άω/-ώ → -ήσω)',        perfective: 'προσπαθήσω',hint: 'B: -ώ → -ήσω.' },
+    { en: 'to speak', word: 'μιλάω', answer: 'Β (-άω/-ώ → -ήσω)', perfective: 'μιλήσω',
+      clue: 'Stress on the <strong>ά</strong>: μι-<strong>ΛΑ</strong>-ω. Which group has stressed -άω endings?',
+      hint: '<strong>Group B</strong> (stressed -άω/-ώ). Rule: <strong>-άω → -ήσω</strong>. μιλάω → <span class="rule-greek">μιλήσω</span> (να μιλήσω, θα μιλήσω, μίλησα).' },
+    { en: 'to wake up', word: 'ξυπνάω', answer: 'Β (-άω/-ώ → -ήσω)', perfective: 'ξυπνήσω',
+      clue: 'Stressed <strong>-άω</strong>. Same pattern as μιλάω.',
+      hint: '<strong>Group B</strong>. Rule: <strong>-άω → -ήσω</strong>. ξυπνάω → <span class="rule-greek">ξυπνήσω</span>.' },
+    { en: 'to ask', word: 'ρωτάω', answer: 'Β (-άω/-ώ → -ήσω)', perfective: 'ρωτήσω',
+      clue: 'Stressed <strong>-άω</strong>.',
+      hint: '<strong>Group B</strong>. Rule: <strong>-άω → -ήσω</strong>. ρωτάω → <span class="rule-greek">ρωτήσω</span> (η ερώτηση = question).' },
+    { en: 'to walk', word: 'περπατάω', answer: 'Β (-άω/-ώ → -ήσω)', perfective: 'περπατήσω',
+      clue: 'Stressed <strong>-άω</strong>.',
+      hint: '<strong>Group B</strong>. Rule: <strong>-άω → -ήσω</strong>. περπατάω → <span class="rule-greek">περπατήσω</span>.' },
+    { en: 'to drive', word: 'οδηγώ', answer: 'Β (-άω/-ώ → -ήσω)', perfective: 'οδηγήσω',
+      clue: 'Stress on the <strong>ώ</strong>: ο-δη-<strong>ΓΩ</strong>. Stressed -ώ is the same group as -άω.',
+      hint: '<strong>Group B</strong> (stress on ending). Rule: <strong>-ώ → -ήσω</strong>. οδηγώ → <span class="rule-greek">οδηγήσω</span> (οδήγησα).' },
+    { en: 'to try', word: 'προσπαθώ', answer: 'Β (-άω/-ώ → -ήσω)', perfective: 'προσπαθήσω',
+      clue: 'Stressed <strong>-ώ</strong>. Same group as οδηγώ.',
+      hint: '<strong>Group B</strong>. Rule: <strong>-ώ → -ήσω</strong>. προσπαθώ → <span class="rule-greek">προσπαθήσω</span> (προσπάθησα).' },
     // -εύω / -ώνω group
-    { en: 'to travel',         word: 'ταξιδεύω',  answer: '-εύω / -ώνω',              perfective: 'ταξιδέψω',  hint: '-εύω → -ψω. The ευ collapses, σ disappears.' },
-    { en: 'to work',           word: 'δουλεύω',   answer: '-εύω / -ώνω',              perfective: 'δουλέψω',   hint: '-εύω → -ψω.' },
-    { en: 'to cook',           word: 'μαγειρεύω', answer: '-εύω / -ώνω',              perfective: 'μαγειρέψω', hint: '-εύω → -ψω.' },
-    { en: 'to finish',         word: 'τελειώνω',  answer: '-εύω / -ώνω',              perfective: 'τελειώσω',  hint: '-ώνω → -ώσω.' },
+    { en: 'to travel', word: 'ταξιδεύω', answer: '-εύω / -ώνω', perfective: 'ταξιδέψω',
+      clue: 'Ending: <strong>-εύω</strong>. A small, distinctive family of its own.',
+      hint: '<strong>-εύω group</strong>. Rule: <strong>-εύω → -ψω</strong> (the ευ collapses to ψ). ταξιδεύω → <span class="rule-greek">ταξιδέψω</span> (να ταξιδέψω, ταξίδεψα).' },
+    { en: 'to work', word: 'δουλεύω', answer: '-εύω / -ώνω', perfective: 'δουλέψω',
+      clue: 'Ending: <strong>-εύω</strong>.',
+      hint: '<strong>-εύω group</strong>. Rule: <strong>-εύω → -ψω</strong>. δουλεύω → <span class="rule-greek">δουλέψω</span> (δούλεψα).' },
+    { en: 'to cook', word: 'μαγειρεύω', answer: '-εύω / -ώνω', perfective: 'μαγειρέψω',
+      clue: 'Ending: <strong>-εύω</strong>.',
+      hint: '<strong>-εύω group</strong>. Rule: <strong>-εύω → -ψω</strong>. μαγειρεύω → <span class="rule-greek">μαγειρέψω</span>.' },
+    { en: 'to finish', word: 'τελειώνω', answer: '-εύω / -ώνω', perfective: 'τελειώσω',
+      clue: 'Ending: <strong>-ώνω</strong>. Sibling of the -εύω family.',
+      hint: '<strong>-ώνω group</strong> (same family as -εύω). Rule: <strong>-ώνω → -ώσω</strong>. τελειώνω → <span class="rule-greek">τελειώσω</span> (τελείωσα).' },
     // Irregular dual-stem
-    { en: 'to see',            word: 'βλέπω',     answer: 'Irregular dual-stem',      perfective: 'δω',        hint: '🔥 Irregular. Perfective stem δ-. NO predictable pattern — memorize as a chunk.' },
-    { en: 'to say',            word: 'λέω',       answer: 'Irregular dual-stem',      perfective: 'πω',        hint: '🔥 Irregular. Perfective stem π-. Memorize.' },
-    { en: 'to find',           word: 'βρίσκω',    answer: 'Irregular dual-stem',      perfective: 'βρω',       hint: '🔥 Irregular. Perfective stem βρ-. Looks like -σκω regular but isn\'t.' },
-    { en: 'to put / wear',     word: 'βάζω',      answer: 'Irregular dual-stem',      perfective: 'βάλω',      hint: '🔥 Irregular. Looks like a regular -ζω verb (would give βάσω) but the stem is βαλ-. Common trap.' },
-    { en: 'to take / get',     word: 'παίρνω',    answer: 'Irregular dual-stem',      perfective: 'πάρω',      hint: '🔥 Irregular. Looks like a regular -νω verb but the stem is πάρ-.' },
-    { en: 'to give',           word: 'δίνω',      answer: 'Irregular dual-stem',      perfective: 'δώσω',      hint: '🔥 Irregular. Stem δώσ- (vowel changes too).' },
-    { en: 'to learn',          word: 'μαθαίνω',   answer: 'Irregular dual-stem',      perfective: 'μάθω',      hint: '🔥 Irregular. Stem μαθ- (the αιν drops).' },
-    { en: 'to leave',          word: 'φεύγω',     answer: 'Irregular dual-stem',      perfective: 'φύγω',      hint: '🔥 Irregular. Stem φύγ-. The ευ → υ shift is the trap.' },
-    { en: 'to eat',            word: 'τρώω',      answer: 'Irregular dual-stem',      perfective: 'φάω',       hint: '🔥 Irregular. Completely different word for the perfective: φα-.' },
-    { en: 'to drink',          word: 'πίνω',      answer: 'Irregular dual-stem',      perfective: 'πιω',       hint: '🔥 Irregular. Perfective stem πι- (no -σω).' },
+    { en: 'to see', word: 'βλέπω', answer: 'Irregular dual-stem', perfective: 'δω',
+      clue: '⚠️ On the <strong>top-10 irregular list</strong>. The aorist stem looks nothing like the present.',
+      hint: '<strong>🔥 Irregular</strong> — top-10. Perfective stem <span class="rule-greek">δ-</span>: <span class="rule-greek">να δω</span>, <span class="rule-greek">θα δω</span>. Past: <span class="rule-greek">είδα</span>. Memorize as a unit, no rule.' },
+    { en: 'to say', word: 'λέω', answer: 'Irregular dual-stem', perfective: 'πω',
+      clue: '⚠️ Top-10 irregular. The verb-of-saying. Perfective stem is a single consonant.',
+      hint: '<strong>🔥 Irregular</strong> — top-10. Perfective stem <span class="rule-greek">π-</span>: <span class="rule-greek">να πω</span>, <span class="rule-greek">θα πω</span>. Past: <span class="rule-greek">είπα</span>.' },
+    { en: 'to find', word: 'βρίσκω', answer: 'Irregular dual-stem', perfective: 'βρω',
+      clue: '⚠️ Looks like a regular <strong>-σκω</strong> verb but it\'s IRREGULAR.',
+      hint: '<strong>🔥 Irregular</strong>. Stem <span class="rule-greek">βρ-</span>: <span class="rule-greek">να βρω</span>, <span class="rule-greek">θα βρω</span>. Past: <span class="rule-greek">βρήκα</span>.' },
+    { en: 'to put / wear', word: 'βάζω', answer: 'Irregular dual-stem', perfective: 'βάλω',
+      clue: '⚠️ TRAP. Ends in <strong>-ζω</strong> so looks Group A — but it\'s on the top-10 irregular list. The "regular" answer βάσω is WRONG.',
+      hint: '<strong>🔥 Trap</strong>. Would-be -ζω → -σω gives "βάσω" (wrong). Real stem is <span class="rule-greek">βαλ-</span>: <span class="rule-greek">να βάλω</span>, <span class="rule-greek">θα βάλω</span>. Past: <span class="rule-greek">έβαλα</span>.' },
+    { en: 'to take / get', word: 'παίρνω', answer: 'Irregular dual-stem', perfective: 'πάρω',
+      clue: '⚠️ TRAP. Ends in <strong>-νω</strong> so looks Group A — but it\'s irregular. Stem is totally different.',
+      hint: '<strong>🔥 Trap</strong>. Real stem <span class="rule-greek">πάρ-</span> (no σ): <span class="rule-greek">να πάρω</span>, <span class="rule-greek">θα πάρω</span>. Past: <span class="rule-greek">πήρα</span>.' },
+    { en: 'to give', word: 'δίνω', answer: 'Irregular dual-stem', perfective: 'δώσω',
+      clue: '⚠️ TRAP. Ends in <strong>-νω</strong> but is irregular. The vowel changes too (ι → ω).',
+      hint: '<strong>🔥 Trap</strong>. Stem <span class="rule-greek">δώσ-</span> (vowel shifts from ι to ω): <span class="rule-greek">να δώσω</span>, <span class="rule-greek">θα δώσω</span>. Past: <span class="rule-greek">έδωσα</span>.' },
+    { en: 'to learn', word: 'μαθαίνω', answer: 'Irregular dual-stem', perfective: 'μάθω',
+      clue: '⚠️ Irregular. The <strong>αιν</strong> chunk drops in the aorist.',
+      hint: '<strong>🔥 Irregular</strong>. αιν → drops. Stem <span class="rule-greek">μαθ-</span>: <span class="rule-greek">να μάθω</span>, <span class="rule-greek">θα μάθω</span>. Past: <span class="rule-greek">έμαθα</span>.' },
+    { en: 'to leave', word: 'φεύγω', answer: 'Irregular dual-stem', perfective: 'φύγω',
+      clue: '⚠️ TRAP. Ends in <strong>-γω</strong> so looks Group A — but it\'s irregular. The diphthong ευ shifts to υ.',
+      hint: '<strong>🔥 Trap</strong>. ευ → υ shift. Stem <span class="rule-greek">φύγ-</span>: <span class="rule-greek">να φύγω</span>, <span class="rule-greek">θα φύγω</span>. Past: <span class="rule-greek">έφυγα</span>.' },
+    { en: 'to eat', word: 'τρώω', answer: 'Irregular dual-stem', perfective: 'φάω',
+      clue: '⚠️ Irregular (vowel + ω family). The perfective is a <strong>completely different word</strong>.',
+      hint: '<strong>🔥 Irregular</strong>. Different word for the aorist: <span class="rule-greek">φα-</span>. <span class="rule-greek">να φάω</span>, <span class="rule-greek">θα φάω</span>. Past: <span class="rule-greek">έφαγα</span>.' },
+    { en: 'to drink', word: 'πίνω', answer: 'Irregular dual-stem', perfective: 'πιω',
+      clue: '⚠️ TRAP. Ends in <strong>-νω</strong> but is irregular. No -σω in the perfective.',
+      hint: '<strong>🔥 Trap</strong>. Stem <span class="rule-greek">πι-</span> (no σ at all): <span class="rule-greek">να πιω</span>, <span class="rule-greek">θα πιω</span>. Past: <span class="rule-greek">ήπια</span>.' },
   ];
 
   let gVgroupDeck = [], gVgroupIndex = 0, gVgroupCorrect = 0, gVgroupTotal = 0, gVgroupAnswered = false;
@@ -8774,6 +8890,14 @@
     const fb = document.getElementById('vgroup-feedback');
     fb.textContent = '';
     fb.classList.remove('show');
+    // Reset clue state: hide body, re-enable the button.
+    const clueBtn = document.getElementById('vgroup-clue-btn');
+    const clueBody = document.getElementById('vgroup-clue');
+    clueBody.style.display = 'none';
+    clueBody.innerHTML = '';
+    clueBtn.disabled = false;
+    clueBtn.style.display = q.clue ? '' : 'none';
+    clueBtn.textContent = '💡 Show clue';
     const optsHost = document.getElementById('vgroup-options');
     optsHost.innerHTML = '';
     VGROUP_OPTIONS.forEach(opt => {
@@ -8788,6 +8912,19 @@
     document.getElementById('vgroup-progress').textContent = `Question ${gVgroupIndex + 1} of ${gVgroupDeck.length}`;
     document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
     gVgroupAnswered = false;
+  }
+
+  // Reveal the per-question clue. Disables the button so it can't be re-clicked,
+  // but doesn't end the question — the user still has to pick a group.
+  function showVgroupClue() {
+    const q = gVgroupDeck[gVgroupIndex];
+    if (!q || !q.clue) return;
+    const body = document.getElementById('vgroup-clue');
+    body.innerHTML = q.clue;
+    body.style.display = '';
+    const btn = document.getElementById('vgroup-clue-btn');
+    btn.disabled = true;
+    btn.textContent = '💡 Clue shown';
   }
 
   function gVgroupAnswer(picked, btnEl, q) {
