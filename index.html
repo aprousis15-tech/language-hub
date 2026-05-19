@@ -1920,6 +1920,75 @@
     border-top: 1px dashed #ffd54f; padding-top: 8px; margin-top: 4px;
   }
   .vgroup-anchor-mnemonic strong { color: #b76e00; font-style: normal; }
+  /* Verb-group classifier: Level toggle (walkthrough vs quick classify). */
+  .vgroup-level-toggle {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 600px; margin: 0 auto 14px;
+  }
+  .vgroup-level-btn {
+    flex: 1; min-width: 220px; max-width: 290px;
+    background: white; border: 1.5px solid #c5b9e8;
+    border-radius: 12px; padding: 10px 14px; cursor: pointer;
+    font-family: 'Lato', sans-serif; text-align: left;
+    transition: all 0.15s; display: flex; align-items: center; gap: 10px;
+  }
+  .vgroup-level-btn:hover:not(.active) { background: #f5f2fb; }
+  .vgroup-level-btn.active {
+    background: #ede7f6; border-color: #4527a0;
+    box-shadow: 0 2px 8px rgba(69,39,160,0.12);
+  }
+  .vgroup-level-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 99px;
+    background: #ede7f6; color: #4527a0; font-weight: 700; font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+  .vgroup-level-btn.active .vgroup-level-num {
+    background: #4527a0; color: white;
+  }
+  .vgroup-level-label {
+    display: block; font-weight: 700; color: #2c1f4a; font-size: 0.92rem;
+    line-height: 1.2;
+  }
+  .vgroup-level-sub {
+    display: block; font-size: 0.76rem; color: #6a5a80; margin-top: 2px;
+    line-height: 1.2;
+  }
+  .vgroup-level-btn.active .vgroup-level-label { color: #4527a0; }
+  /* Direct classify (Level 2): four group buttons, each with a label + subtitle. */
+  .vgroup-direct {
+    max-width: 540px; margin: 6px auto 0;
+  }
+  .vgroup-direct-heading {
+    font-size: 0.86rem; color: #6a5a80; letter-spacing: 0.06em;
+    text-transform: uppercase; font-weight: 700;
+    text-align: center; margin-bottom: 10px;
+  }
+  .vgroup-direct-options {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  @media (max-width: 540px) { .vgroup-direct-options { grid-template-columns: 1fr; } }
+  .vgroup-direct-btn {
+    background: white; border: 1.5px solid #c5b9e8; border-radius: 10px;
+    padding: 12px 14px; cursor: pointer; text-align: left;
+    font-family: 'Lato', sans-serif; transition: all 0.15s;
+  }
+  .vgroup-direct-btn:hover:not(:disabled) { background: #ede7f6; border-color: #4527a0; }
+  .vgroup-direct-btn:disabled { cursor: default; opacity: 0.92; }
+  .vgroup-direct-btn.correct {
+    background: #d4f4dd; border-color: #2e7d32;
+  }
+  .vgroup-direct-btn.wrong {
+    background: #fde8e8; border-color: #c62828;
+  }
+  .vgroup-direct-btn .d-main {
+    font-weight: 700; color: #2c1f4a; font-size: 0.98rem; margin-bottom: 4px;
+  }
+  .vgroup-direct-btn.correct .d-main { color: #1b5e20; }
+  .vgroup-direct-btn.wrong .d-main { color: #b71c1c; }
+  .vgroup-direct-btn .d-sub {
+    font-size: 0.82rem; color: #6a5a80; font-family: 'Georgia', serif;
+  }
   /* Verb-group classifier: step-by-step walkthrough (STRESS → LIST → TAIL).
      Each step is a concrete diagnostic question with concrete options. The
      user works through the SLT algorithm explicitly; the group label is
@@ -3232,6 +3301,20 @@
 
     <!-- Verb Group Classifier — show present verb, pick the group, learn the perfective -->
     <div id="grammar-vgroup" style="display:none;">
+      <!-- Level toggle: walkthrough (guided 3-step) vs direct classify (1-shot).
+           Level 1 teaches the SLT algorithm; Level 2 tests internalization. -->
+      <div class="vgroup-level-toggle">
+        <button class="vgroup-level-btn active" id="vgroup-level-1-btn" onclick="setVgroupLevel(1)">
+          <span class="vgroup-level-num">1</span>
+          <span class="vgroup-level-label">SLT Walkthrough</span>
+          <span class="vgroup-level-sub">step-by-step diagnostic</span>
+        </button>
+        <button class="vgroup-level-btn" id="vgroup-level-2-btn" onclick="setVgroupLevel(2)">
+          <span class="vgroup-level-num">2</span>
+          <span class="vgroup-level-label">Quick Classify</span>
+          <span class="vgroup-level-sub">call the group in one click</span>
+        </button>
+      </div>
       <!-- Always-visible "three questions" reminder. The decision algorithm
            the rest of the drill assumes you're using. Collapsible so power users
            can hide it once internalized. -->
@@ -9099,10 +9182,20 @@
     };
   }
 
+  // Level 2 (Quick classify) option set — the four group labels with a
+  // one-line subtitle reminding what each one means. Picked in one click.
+  const VGROUP_DIRECT_OPTIONS = [
+    { key: 'Α (letter swap)',     label: 'Group A — letter swap',     sub: '-ζω/-φω/-χω/-νω → -σω/-ψω/-ξω/-σω' },
+    { key: 'Β (-άω/-ώ → -ήσω)',   label: 'Group B — stressed',        sub: 'final-stressed -άω / -ώ → -ήσω' },
+    { key: '-εύω / -ώνω',         label: '-εύω / -ώνω family',        sub: '-εύω → -ψω · -ώνω → -ώσω' },
+    { key: 'Irregular dual-stem', label: 'Irregular (Top-10 trap)',   sub: 'on the list — memorize the stem' },
+  ];
+
   let gVgroupDeck = [], gVgroupIndex = 0, gVgroupCorrect = 0, gVgroupTotal = 0;
-  let gVgroupStep = 0;          // index into VGROUP_STEPS (0..2)
-  let gVgroupHistory = [];      // [{ stepId, stepTitle, picked, pickedLabel, correct, correctLabel, isCorrect, whyOK, whyNO }]
-  let gVgroupComplete = false;  // walkthrough finished for current card
+  let gVgroupLevel = 1;         // 1 = SLT walkthrough, 2 = direct one-click classify
+  let gVgroupStep = 0;          // index into VGROUP_STEPS (0..2) — level 1 only
+  let gVgroupHistory = [];      // [{ stepId, ... }] — level 1 only
+  let gVgroupComplete = false;  // walkthrough/pick finished for current card
   let gVgroupQuestionWrong = false; // any sub-step missed → whole question counted wrong
 
   function initVgroupDrill() {
@@ -9110,6 +9203,16 @@
     gVgroupIndex = 0;
     gVgroupCorrect = 0;
     gVgroupTotal = 0;
+    showVgroupCard();
+  }
+
+  function setVgroupLevel(lvl) {
+    if (lvl !== 1 && lvl !== 2) return;
+    gVgroupLevel = lvl;
+    document.getElementById('vgroup-level-1-btn').classList.toggle('active', lvl === 1);
+    document.getElementById('vgroup-level-2-btn').classList.toggle('active', lvl === 2);
+    // Re-render the current card in the new level. Resets in-card state, but
+    // keeps the running deck + score so switching mid-session doesn't wipe progress.
     showVgroupCard();
   }
 
@@ -9126,7 +9229,7 @@
     clueBtn.disabled = false;
     clueBtn.style.display = q.clue ? '' : 'none';
     clueBtn.textContent = '💡 Show clue';
-    // Reset walkthrough state for this card
+    // Reset per-card state for both levels
     gVgroupStep = 0;
     gVgroupHistory = [];
     gVgroupComplete = false;
@@ -9137,7 +9240,66 @@
     fb.textContent = ''; fb.classList.remove('show');
     document.getElementById('vgroup-progress').textContent = `Question ${gVgroupIndex + 1} of ${gVgroupDeck.length}`;
     document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
-    renderVgroupStep();
+    // Route by level
+    if (gVgroupLevel === 2) {
+      renderVgroupDirect();
+    } else {
+      renderVgroupStep();
+    }
+  }
+
+  // Level 2: render the four group options as a single-pick grid. The label
+  // names the group plain-English; the subtitle reminds what defines it.
+  function renderVgroupDirect() {
+    const wt = document.getElementById('vgroup-walkthrough');
+    wt.innerHTML = '';
+    if (gVgroupComplete) return; // final reveal already shown by answer handler
+    const wrap = document.createElement('div');
+    wrap.className = 'vgroup-direct';
+    const heading = document.createElement('div');
+    heading.className = 'vgroup-direct-heading';
+    heading.textContent = 'Classify in one click';
+    wrap.appendChild(heading);
+    const opts = document.createElement('div');
+    opts.className = 'vgroup-direct-options';
+    for (const o of VGROUP_DIRECT_OPTIONS) {
+      const btn = document.createElement('button');
+      btn.className = 'vgroup-direct-btn';
+      btn.dataset.key = o.key;
+      btn.innerHTML = `<div class="d-main">${esc(o.label)}</div><div class="d-sub">${esc(o.sub)}</div>`;
+      btn.onclick = () => gVgroupDirectAnswer(o.key);
+      opts.appendChild(btn);
+    }
+    wrap.appendChild(opts);
+    wt.appendChild(wrap);
+  }
+
+  function gVgroupDirectAnswer(pickedKey) {
+    if (gVgroupComplete) return;
+    const q = gVgroupDeck[gVgroupIndex];
+    const isCorrect = pickedKey === q.answer;
+    gVgroupComplete = true;
+    gVgroupTotal++;
+    if (isCorrect) gVgroupCorrect++;
+    else recordMistake({
+      drill_type: 'verbs',
+      prompt: `${q.en} (${q.word}) — group?`,
+      correct: q.answer,
+      picked: pickedKey,
+      metadata: { source: 'vgroup-direct', verb: q.word, perfective: q.perfective }
+    });
+    document.querySelectorAll('.vgroup-direct-btn').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.key === q.answer) b.classList.add('correct');
+      else if (b.dataset.key === pickedKey) b.classList.add('wrong');
+    });
+    document.getElementById('vgroup-score').textContent = `Score: ${gVgroupCorrect}/${gVgroupTotal}`;
+    const finalEl = document.getElementById('vgroup-final');
+    finalEl.style.display = '';
+    finalEl.innerHTML = `
+      <div class="vgroup-final-head">${isCorrect ? '✓' : '✗'} ${esc(q.answer)} — perfective <span class="rule-greek">${esc(q.perfective)}</span></div>
+      <div class="vgroup-final-body">${q.hint}</div>
+    `;
   }
 
   function renderVgroupStep() {
