@@ -1919,6 +1919,19 @@
   .grammar-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #4527a0; margin-bottom: 6px; }
   .grammar-header p { font-size: 0.85rem; color: #6a5a80; }
   .grammar-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
+  /* Conjugation Drill subpanel — iframe wrapper for the standalone drill page. */
+  .conjdrill-frame-wrap { max-width: 760px; margin: 0 auto; }
+  .conjdrill-frame {
+    width: 100%; height: 78vh; min-height: 600px;
+    border: 1px solid #e1ecf4; border-radius: 12px;
+    background: white; box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    display: block;
+  }
+  .conjdrill-frame-link { text-align: right; margin-top: 6px; }
+  .conjdrill-frame-link a {
+    color: #0d4f8b; text-decoration: none; font-size: 0.85rem; font-weight: 600;
+  }
+  .conjdrill-frame-link a:hover { text-decoration: underline; }
   .grammar-mode-btn {
     padding: 8px 20px; border-radius: 99px; border: 1px solid #c5b9e8;
     background: white; font-size: 0.82rem; cursor: pointer;
@@ -3245,6 +3258,7 @@
       <div class="grammar-mode-group-label">▸ 🔥 Verbs</div>
       <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill (type 6 forms)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('pres2aor',this)">🔄 Present → Aorist</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('vgroup',this)">🗂️ Verb Group Classifier</button>
@@ -3439,6 +3453,23 @@
         <span class="grammar-score" id="subjfirst-score">Score: 0/0</span>
       </div>
       <div id="subjfirst-trainer-state" style="text-align:center;font-size:0.8rem;color:#7a6a55;margin-top:8px;"></div>
+    </div>
+
+    <!-- Conjugation Drill — iframe wrapper around the standalone /conjugation-drill.html.
+         Local-only, typed input. The standalone is the single source of truth for the
+         drill data and behavior; this subpanel just embeds it so it's reachable from the
+         hub without duplicating ~300 lines of JS/CSS. src is set lazily on first open
+         (see initConjDrillFrame) so the page-load cost is zero when the user doesn't
+         visit this mode. -->
+    <div id="grammar-conjdrill" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="conjdrill-frame" class="conjdrill-frame"
+                title="Greek Verb Conjugation Drill — -αω, -εω, -ω, -ώ"
+                loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="conjugation-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
     </div>
 
     <!-- Verb Group Classifier — show present verb, pick the group, learn the perfective -->
@@ -8633,6 +8664,7 @@
     document.getElementById('grammar-future').style.display = mode === 'future' ? '' : 'none';
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
+    document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
     document.getElementById('grammar-pres2aor').style.display = mode === 'pres2aor' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
@@ -8656,6 +8688,7 @@
     if (mode === 'future') initFutureDrill();
     if (mode === 'aspect') initAspectDrill();
     if (mode === 'vgroup') initVgroupDrill();
+    if (mode === 'conjdrill') initConjDrillFrame();
     if (mode === 'subjfirst') initSubjFirstDrill();
     if (mode === 'pres2aor') initPres2AorDrill();
     if (mode === 'verbdrill') initVerbDrill();
@@ -9589,6 +9622,16 @@
     showAspectCard();
   }
   function gAspectShuffle() { initAspectDrill(); }
+
+  // ── Conjugation Drill (subpanel) ──
+  // The drill itself lives in /conjugation-drill.html as a standalone page; this
+  // subpanel embeds it via iframe so the hub stays lean (no duplicated drill JS,
+  // no CSS collisions, single source of truth). src is set on first open so the
+  // iframe content isn't fetched until the user actually visits the mode.
+  function initConjDrillFrame() {
+    const f = document.getElementById('conjdrill-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'conjugation-drill.html');
+  }
 
   // ── Verb Group Classifier ──
   // Show a present-tense verb. User picks the group; feedback reveals the
