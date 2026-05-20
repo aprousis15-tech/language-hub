@@ -1,0 +1,9 @@
+{
+  "name": "language-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static language-learning hub with a serverless Claude grader at /api/claude.",
+  "engines": {
+    "node": ">=18"
+  }
+}
