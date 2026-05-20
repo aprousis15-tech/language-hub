@@ -1279,6 +1279,23 @@
     font-family: 'Playfair Display', serif; font-size: 1.45rem;
     color: #2c1f4a; line-height: 1.4; margin-bottom: 22px;
   }
+  /* Pre-record hint button + body. Sits between the English prompt and the
+     record button so the user can think the sentence through before speaking. */
+  .speak-hint-wrap { margin-bottom: 14px; }
+  .speak-hint-btn {
+    background: #fff3c4; color: #b76e00; border: 1px solid #ffd54f;
+    border-radius: 99px; padding: 5px 14px; font-size: 0.8rem;
+    font-family: 'Lato', sans-serif; font-weight: 600; cursor: pointer;
+  }
+  .speak-hint-btn:hover { background: #ffe082; }
+  .speak-hint-body {
+    margin-top: 10px; padding: 10px 14px;
+    background: #fffde7; border-left: 3px solid #f9a825;
+    border-radius: 0 8px 8px 0; text-align: left;
+    font-size: 0.92rem; color: #6a4f1a; line-height: 1.55;
+    max-width: 540px; margin-left: auto; margin-right: auto;
+  }
+  .speak-hint-body b { color: #00695c; font-family: 'Georgia', serif; font-weight: 700; }
   .speak-record-wrap { margin-bottom: 16px; }
   .speak-record-btn {
     background: linear-gradient(135deg, #d84315 0%, #bf360c 100%);
@@ -4241,6 +4258,14 @@
       <div class="speak-prompt-label">Say this in Greek:</div>
       <div class="speak-prompt-en" id="speak-prompt-en">—</div>
 
+      <!-- Pre-record hint: building blocks (verb form, key nouns, time words).
+           Doesn't give the full answer — just enough scaffolding to assemble
+           the sentence. Toggle so the user can hide it and retest themselves. -->
+      <div class="speak-hint-wrap">
+        <button class="speak-hint-btn" id="speak-hint-btn" onclick="toggleSpeakHint()">💡 Show hint</button>
+        <div class="speak-hint-body" id="speak-hint-body" style="display:none;"></div>
+      </div>
+
       <div class="speak-record-wrap">
         <button class="speak-record-btn" id="speak-record-btn" onclick="toggleSpeakRecord()">🎤 Click to record</button>
         <div class="speak-status" id="speak-status">Your browser needs Greek recognition (Chrome / Edge).</div>
@@ -6471,74 +6496,127 @@
   // Each prompt has a model answer + target grammar tag. Misses logged to
   // mistakes table with drill_type='speak'. Transcription noise has an
   // escape hatch so it doesn't pollute the grammar mistake log.
+  // Each prompt has a `hint` — the building blocks (verb form, key nouns,
+  // time words) so the user can assemble the sentence themselves. The hint
+  // never gives the full answer; the grader still grades whatever was spoken.
   const SPEAK_PROMPTS = [
     // Verbs — aorist (perfective past)
-    { en: "I bought bread yesterday.",                 model: "Αγόρασα ψωμί χθες.",                       target: "aorist of αγοράζω (1sg)" },
-    { en: "We bought books at the bookstore.",         model: "Αγοράσαμε βιβλία στο βιβλιοπωλείο.",         target: "aorist 1pl + neuter plural + στο" },
-    { en: "What did you eat yesterday?",               model: "Τι έφαγες χθες;",                            target: "aorist of τρώω (irregular: έφαγα) + question word" },
-    { en: "She gave me a gift.",                       model: "Μου έδωσε ένα δώρο.",                        target: "indirect-object pronoun + aorist of δίνω (έδωσε)" },
-    { en: "I forgot my wallet at home.",               model: "Ξέχασα το πορτοφόλι μου στο σπίτι.",          target: "aorist of ξεχνάω + possessive + στο" },
-    { en: "Where did you go yesterday?",               model: "Πού πήγες χθες;",                            target: "aorist of πάω (irregular: πήγα) + question" },
-    { en: "I told you yesterday.",                     model: "Σου είπα χθες.",                             target: "indirect pronoun + aorist of λέω (είπα)" },
-    { en: "Why are you late? (already arrived)",       model: "Γιατί άργησες;",                             target: "aorist of αργώ (-ώ verb)" },
-    { en: "I called you yesterday.",                   model: "Σου τηλεφώνησα χθες.",                       target: "indirect pronoun + aorist of τηλεφωνώ (-ώ → -ήσω)" },
-    { en: "Yesterday I was tired.",                    model: "Χθες ήμουν κουρασμένος.",                    target: "ήμουν (past of είμαι) + adjective agreement" },
+    { en: "I bought bread yesterday.",                 model: "Αγόρασα ψωμί χθες.",                       target: "aorist of αγοράζω (1sg)",
+      hint: "Aorist 1sg of αγοράζω = <b>αγόρασα</b> · bread = <b>ψωμί</b> · yesterday = <b>χθες</b>" },
+    { en: "We bought books at the bookstore.",         model: "Αγοράσαμε βιβλία στο βιβλιοπωλείο.",         target: "aorist 1pl + neuter plural + στο",
+      hint: "Aorist 1pl of αγοράζω = <b>αγοράσαμε</b> · books (neut plur) = <b>βιβλία</b> · σε + το = <b>στο</b> · bookstore = <b>βιβλιοπωλείο</b>" },
+    { en: "What did you eat yesterday?",               model: "Τι έφαγες χθες;",                            target: "aorist of τρώω (irregular: έφαγα) + question word",
+      hint: "what = <b>τι</b> · aorist 2sg of τρώω (irregular!) = <b>έφαγες</b> · yesterday = <b>χθες</b>" },
+    { en: "She gave me a gift.",                       model: "Μου έδωσε ένα δώρο.",                        target: "indirect-object pronoun + aorist of δίνω (έδωσε)",
+      hint: "me (indirect) = <b>μου</b> · aorist 3sg of δίνω = <b>έδωσε</b> · a gift (neut) = <b>ένα δώρο</b>. Order: pronoun before verb." },
+    { en: "I forgot my wallet at home.",               model: "Ξέχασα το πορτοφόλι μου στο σπίτι.",          target: "aorist of ξεχνάω + possessive + στο",
+      hint: "Aorist 1sg of ξεχνάω = <b>ξέχασα</b> · my wallet (neut acc) = <b>το πορτοφόλι μου</b> · at home = <b>στο σπίτι</b>" },
+    { en: "Where did you go yesterday?",               model: "Πού πήγες χθες;",                            target: "aorist of πάω (irregular: πήγα) + question",
+      hint: "where = <b>πού</b> · aorist 2sg of πάω (irregular!) = <b>πήγες</b> · yesterday = <b>χθες</b>" },
+    { en: "I told you yesterday.",                     model: "Σου είπα χθες.",                             target: "indirect pronoun + aorist of λέω (είπα)",
+      hint: "you (indirect) = <b>σου</b> · aorist 1sg of λέω (irregular!) = <b>είπα</b> · yesterday = <b>χθες</b>" },
+    { en: "Why are you late? (already arrived)",       model: "Γιατί άργησες;",                             target: "aorist of αργώ (-ώ verb)",
+      hint: "why = <b>γιατί</b> · aorist 2sg of αργώ = <b>άργησες</b> (-ώ → -ησα)" },
+    { en: "I called you yesterday.",                   model: "Σου τηλεφώνησα χθες.",                       target: "indirect pronoun + aorist of τηλεφωνώ (-ώ → -ήσω)",
+      hint: "you (indirect) = <b>σου</b> · aorist 1sg of τηλεφωνώ = <b>τηλεφώνησα</b> · yesterday = <b>χθες</b>" },
+    { en: "Yesterday I was tired.",                    model: "Χθες ήμουν κουρασμένος.",                    target: "ήμουν (past of είμαι) + adjective agreement",
+      hint: "yesterday = <b>χθες</b> · past of είμαι (1sg) = <b>ήμουν</b> · tired (masc) = <b>κουρασμένος</b>" },
 
     // Future θα + perfective
-    { en: "I'm going to the bank tomorrow morning.",   model: "Θα πάω στην τράπεζα αύριο το πρωί.",        target: "future θα + στην + part-of-day" },
-    { en: "I'll see you on Saturday.",                 model: "Θα σε δω το Σάββατο.",                       target: "future + irregular perfective δω + day" },
-    { en: "I want to go to Greece next year.",         model: "Θέλω να πάω στην Ελλάδα του χρόνου.",        target: "να + perfective + στην + του χρόνου" },
+    { en: "I'm going to the bank tomorrow morning.",   model: "Θα πάω στην τράπεζα αύριο το πρωί.",        target: "future θα + στην + part-of-day",
+      hint: "future = <b>θα</b> + perfective. πάω stays πάω → <b>θα πάω</b> · σε + την = <b>στην</b> · bank (fem) = <b>τράπεζα</b> · tomorrow morning = <b>αύριο το πρωί</b>" },
+    { en: "I'll see you on Saturday.",                 model: "Θα σε δω το Σάββατο.",                       target: "future + irregular perfective δω + day",
+      hint: "future = θα + perfective. βλέπω → irregular <b>δω</b> · you (object) = <b>σε</b> · on Saturday = <b>το Σάββατο</b> (neut, no preposition!)" },
+    { en: "I want to go to Greece next year.",         model: "Θέλω να πάω στην Ελλάδα του χρόνου.",        target: "να + perfective + στην + του χρόνου",
+      hint: "want = <b>θέλω</b> + να + perfective. πάω → <b>πάω</b> · σε + την = <b>στην</b> · Greece = <b>Ελλάδα</b> · next year = <b>του χρόνου</b>" },
 
     // Modal να-chains
-    { en: "Can you help me?",                          model: "Μπορείς να με βοηθήσεις;",                   target: "modal να-chain + object pronoun + perfective of βοηθάω" },
-    { en: "I want to learn Greek.",                    model: "Θέλω να μάθω ελληνικά.",                     target: "να + irregular perfective μάθω" },
-    { en: "Could you speak more slowly?",              model: "Μπορείτε να μιλάτε πιο αργά;",               target: "formal plural + comparative πιο" },
-    { en: "Can I sit here?",                           model: "Μπορώ να καθίσω εδώ;",                       target: "modal να + perfective of κάθομαι (καθίσω)" },
-    { en: "I'd like to try the moussaka.",             model: "Θα ήθελα να δοκιμάσω το μουσακά.",           target: "polite Θα ήθελα να + masculine accusative" },
+    { en: "Can you help me?",                          model: "Μπορείς να με βοηθήσεις;",                   target: "modal να-chain + object pronoun + perfective of βοηθάω",
+      hint: "can (2sg) = <b>μπορείς</b> + να + perfective. me (object) = <b>με</b> · perfective 2sg of βοηθάω = <b>βοηθήσεις</b>" },
+    { en: "I want to learn Greek.",                    model: "Θέλω να μάθω ελληνικά.",                     target: "να + irregular perfective μάθω",
+      hint: "<b>θέλω</b> + να + perfective. μαθαίνω → irregular <b>μάθω</b> · Greek (neut plur) = <b>ελληνικά</b>" },
+    { en: "Could you speak more slowly?",              model: "Μπορείτε να μιλάτε πιο αργά;",               target: "formal plural + comparative πιο",
+      hint: "polite plural can = <b>μπορείτε</b> + να + 2pl present (ongoing) of μιλάω = <b>μιλάτε</b> · more slowly = <b>πιο αργά</b>" },
+    { en: "Can I sit here?",                           model: "Μπορώ να καθίσω εδώ;",                       target: "modal να + perfective of κάθομαι (καθίσω)",
+      hint: "<b>μπορώ</b> + να + perfective. κάθομαι → <b>καθίσω</b> · here = <b>εδώ</b>" },
+    { en: "I'd like to try the moussaka.",             model: "Θα ήθελα να δοκιμάσω το μουσακά.",           target: "polite Θα ήθελα να + masculine accusative",
+      hint: "polite 'I'd like' = <b>θα ήθελα</b> + να + perfective. δοκιμάζω → <b>δοκιμάσω</b> · the moussaka (masc acc, drops ς) = <b>το μουσακά</b>" },
 
     // Articles, cases, σε-fusion
-    { en: "I live in Athens.",                         model: "Μένω στην Αθήνα.",                           target: "σε + feminine accusative (στην)" },
-    { en: "I'm going to my friends' house.",           model: "Πάω στο σπίτι των φίλων μου.",               target: "στο + plural genitive των" },
-    { en: "We're going to the beach on Sunday.",       model: "Πάμε στην παραλία την Κυριακή.",             target: "στην + day accusative (την)" },
-    { en: "I work at a hospital.",                     model: "Δουλεύω σε ένα νοσοκομείο.",                 target: "σε + indefinite article + neuter" },
-    { en: "The children are playing outside.",         model: "Τα παιδιά παίζουν έξω.",                     target: "neuter plural subject (Τα)" },
-    { en: "Open the door, please.",                    model: "Άνοιξε την πόρτα, παρακαλώ.",                target: "imperative + feminine accusative (την)" },
-    { en: "I drink coffee every morning.",             model: "Πίνω καφέ κάθε πρωί.",                       target: "present habitual + κάθε + part-of-day" },
+    { en: "I live in Athens.",                         model: "Μένω στην Αθήνα.",                           target: "σε + feminine accusative (στην)",
+      hint: "live = <b>μένω</b> · σε + την = <b>στην</b> · Athens (fem) = <b>Αθήνα</b>" },
+    { en: "I'm going to my friends' house.",           model: "Πάω στο σπίτι των φίλων μου.",               target: "στο + plural genitive των",
+      hint: "go = <b>πάω</b> · σε + το = <b>στο</b> · house (neut) = <b>σπίτι</b> · of my friends (gen plur — των for all genders) = <b>των φίλων μου</b>" },
+    { en: "We're going to the beach on Sunday.",       model: "Πάμε στην παραλία την Κυριακή.",             target: "στην + day accusative (την)",
+      hint: "we go = <b>πάμε</b> · σε + την = <b>στην</b> · beach (fem) = <b>παραλία</b> · on Sunday = <b>την Κυριακή</b> (no preposition!)" },
+    { en: "I work at a hospital.",                     model: "Δουλεύω σε ένα νοσοκομείο.",                 target: "σε + indefinite article + neuter",
+      hint: "work = <b>δουλεύω</b> · 'at a' (with indefinite) = <b>σε ένα</b> (no fusion) · hospital (neut) = <b>νοσοκομείο</b>" },
+    { en: "The children are playing outside.",         model: "Τα παιδιά παίζουν έξω.",                     target: "neuter plural subject (Τα)",
+      hint: "the children (neut plur subject) = <b>τα παιδιά</b> · 3pl present of παίζω = <b>παίζουν</b> · outside = <b>έξω</b>" },
+    { en: "Open the door, please.",                    model: "Άνοιξε την πόρτα, παρακαλώ.",                target: "imperative + feminine accusative (την)",
+      hint: "imperative 2sg of ανοίγω = <b>άνοιξε</b> · the door (fem acc) = <b>την πόρτα</b> · please = <b>παρακαλώ</b>" },
+    { en: "I drink coffee every morning.",             model: "Πίνω καφέ κάθε πρωί.",                       target: "present habitual + κάθε + part-of-day",
+      hint: "drink = <b>πίνω</b> · coffee (masc acc, drops ς) = <b>καφέ</b> · every morning = <b>κάθε πρωί</b>" },
 
     // Questions
-    { en: "What time does the restaurant open?",       model: "Τι ώρα ανοίγει το εστιατόριο;",              target: "Τι ώρα + 3sg present + neuter subject" },
-    { en: "Where is the toilet?",                      model: "Πού είναι η τουαλέτα;",                      target: "Πού + είναι + feminine nominative" },
-    { en: "How much does this cost?",                  model: "Πόσο κάνει αυτό;",                           target: "Πόσο κάνει + neuter demonstrative" },
-    { en: "Do you have any change?",                   model: "Έχεις ψιλά;",                                target: "Έχεις + neuter plural (informal request)" },
-    { en: "What's your name?",                         model: "Πώς σε λένε;",                               target: "Πώς σε λένε; idiom (lit. how do they call you)" },
+    { en: "What time does the restaurant open?",       model: "Τι ώρα ανοίγει το εστιατόριο;",              target: "Τι ώρα + 3sg present + neuter subject",
+      hint: "what time = <b>τι ώρα</b> · 3sg present of ανοίγω = <b>ανοίγει</b> · the restaurant (neut) = <b>το εστιατόριο</b>" },
+    { en: "Where is the toilet?",                      model: "Πού είναι η τουαλέτα;",                      target: "Πού + είναι + feminine nominative",
+      hint: "where = <b>πού</b> · is = <b>είναι</b> · the toilet (fem nom) = <b>η τουαλέτα</b>" },
+    { en: "How much does this cost?",                  model: "Πόσο κάνει αυτό;",                           target: "Πόσο κάνει + neuter demonstrative",
+      hint: "how much costs = <b>πόσο κάνει</b> · this (neut) = <b>αυτό</b>" },
+    { en: "Do you have any change?",                   model: "Έχεις ψιλά;",                                target: "Έχεις + neuter plural (informal request)",
+      hint: "have (2sg) = <b>έχεις</b> · change (lit. 'small things', neut plur) = <b>ψιλά</b>" },
+    { en: "What's your name?",                         model: "Πώς σε λένε;",                               target: "Πώς σε λένε; idiom (lit. how do they call you)",
+      hint: "idiom — lit. 'how do they call you'. how = <b>πώς</b> · you (object) = <b>σε</b> · they call = <b>λένε</b>" },
 
     // Negation
-    { en: "I don't want anything to drink.",           model: "Δεν θέλω τίποτα να πιω.",                    target: "double negation (δεν + τίποτα) + να + perfective πιω" },
-    { en: "I have never been to Crete.",               model: "Δεν έχω πάει ποτέ στην Κρήτη.",              target: "δεν + έχω + perfective + ποτέ + στην" },
-    { en: "She doesn't know the answer.",              model: "Δεν ξέρει την απάντηση.",                    target: "δεν + 3sg + feminine accusative" },
-    { en: "I haven't seen this movie.",                model: "Δεν έχω δει αυτή την ταινία.",               target: "perfect tense + demonstrative + feminine accusative" },
-    { en: "Don't speak so loud.",                      model: "Μη μιλάς τόσο δυνατά.",                      target: "μη + 2sg (imperfective imperative) + τόσο" },
-    { en: "Don't worry.",                              model: "Μην ανησυχείς.",                             target: "μην + 2sg present" },
+    { en: "I don't want anything to drink.",           model: "Δεν θέλω τίποτα να πιω.",                    target: "double negation (δεν + τίποτα) + να + perfective πιω",
+      hint: "negation = <b>δεν</b> + verb + <b>τίποτα</b> (double negation required!). want = θέλω · anything to drink: να + perfective. πίνω → <b>πιω</b>" },
+    { en: "I have never been to Crete.",               model: "Δεν έχω πάει ποτέ στην Κρήτη.",              target: "δεν + έχω + perfective + ποτέ + στην",
+      hint: "<b>δεν έχω</b> + perfective + <b>ποτέ</b> (double negation!). πάω → <b>πάει</b> form after έχω · σε + την = <b>στην</b> · Crete = <b>Κρήτη</b>" },
+    { en: "She doesn't know the answer.",              model: "Δεν ξέρει την απάντηση.",                    target: "δεν + 3sg + feminine accusative",
+      hint: "<b>δεν</b> + 3sg of ξέρω = <b>ξέρει</b> · the answer (fem acc) = <b>την απάντηση</b>" },
+    { en: "I haven't seen this movie.",                model: "Δεν έχω δει αυτή την ταινία.",               target: "perfect tense + demonstrative + feminine accusative",
+      hint: "perfect = <b>έχω</b> + perfective. βλέπω → irregular <b>δει</b> · this (fem) = <b>αυτή την</b> · movie (fem) = <b>ταινία</b>" },
+    { en: "Don't speak so loud.",                      model: "Μη μιλάς τόσο δυνατά.",                      target: "μη + 2sg (imperfective imperative) + τόσο",
+      hint: "negative imperative = <b>μη</b> + 2sg present of μιλάω = <b>μιλάς</b> · so loud = <b>τόσο δυνατά</b>" },
+    { en: "Don't worry.",                              model: "Μην ανησυχείς.",                             target: "μην + 2sg present",
+      hint: "<b>μην</b> (ν before vowel) + 2sg of ανησυχώ = <b>ανησυχείς</b>" },
 
     // Pronouns + idioms
-    { en: "I love you.",                               model: "Σε αγαπάω.",                                 target: "object pronoun + -αω verb" },
-    { en: "She likes the cat.",                        model: "Της αρέσει η γάτα.",                         target: "Της αρέσει construction (subject inverted)" },
-    { en: "Tell him to come tomorrow.",                model: "Πες του να έρθει αύριο.",                    target: "irregular imperative πες + indirect pronoun + να + irregular έρθει" },
-    { en: "Bring me a glass of water, please.",        model: "Φέρε μου ένα ποτήρι νερό, παρακαλώ.",        target: "imperative + indirect pronoun + indefinite + neuter" },
+    { en: "I love you.",                               model: "Σε αγαπάω.",                                 target: "object pronoun + -αω verb",
+      hint: "you (object, before verb) = <b>σε</b> · 1sg of αγαπάω = <b>αγαπάω</b>" },
+    { en: "She likes the cat.",                        model: "Της αρέσει η γάτα.",                         target: "Της αρέσει construction (subject inverted)",
+      hint: "Greek construction is reversed: 'to her, the cat pleases'. her (indirect) = <b>της</b> · pleases = <b>αρέσει</b> · the cat (fem subject) = <b>η γάτα</b>" },
+    { en: "Tell him to come tomorrow.",                model: "Πες του να έρθει αύριο.",                    target: "irregular imperative πες + indirect pronoun + να + irregular έρθει",
+      hint: "irregular imperative of λέω = <b>πες</b> · him (indirect) = <b>του</b> · να + perfective of έρχομαι (irregular!) = <b>έρθει</b> · tomorrow = <b>αύριο</b>" },
+    { en: "Bring me a glass of water, please.",        model: "Φέρε μου ένα ποτήρι νερό, παρακαλώ.",        target: "imperative + indirect pronoun + indefinite + neuter",
+      hint: "imperative 2sg of φέρνω = <b>φέρε</b> · me (indirect, AFTER imperative) = <b>μου</b> · a glass of water = <b>ένα ποτήρι νερό</b> · please = <b>παρακαλώ</b>" },
 
     // Verb groups
-    { en: "I'm hungry.",                               model: "Πεινάω.",                                    target: "stative -αω verb (πεινάω)" },
-    { en: "We walk to work every day.",                model: "Περπατάμε στη δουλειά κάθε μέρα.",            target: "-αω 1pl + στη(ν) + κάθε" },
-    { en: "I'm tired today.",                          model: "Είμαι κουρασμένος σήμερα.",                  target: "είμαι + masculine adjective agreement" },
-    { en: "They're sleeping now.",                     model: "Κοιμούνται τώρα.",                           target: "mediopassive 3pl (κοιμάμαι → κοιμούνται)" },
-    { en: "I need water.",                             model: "Χρειάζομαι νερό.",                           target: "mediopassive verb χρειάζομαι + neuter direct object" },
-    { en: "It's raining outside.",                     model: "Βρέχει έξω.",                                target: "impersonal verb βρέχει" },
-    { en: "I'm going home.",                           model: "Πάω σπίτι.",                                 target: "idiom: σπίτι without article (going home)" },
+    { en: "I'm hungry.",                               model: "Πεινάω.",                                    target: "stative -αω verb (πεινάω)",
+      hint: "Greek doesn't say 'I am hungry' — uses the stative -αω verb. 1sg of πεινάω = <b>πεινάω</b>" },
+    { en: "We walk to work every day.",                model: "Περπατάμε στη δουλειά κάθε μέρα.",            target: "-αω 1pl + στη(ν) + κάθε",
+      hint: "1pl of περπατάω = <b>περπατάμε</b> · σε + τη(ν) = <b>στη</b> · work (fem) = <b>δουλειά</b> · every day = <b>κάθε μέρα</b>" },
+    { en: "I'm tired today.",                          model: "Είμαι κουρασμένος σήμερα.",                  target: "είμαι + masculine adjective agreement",
+      hint: "am = <b>είμαι</b> · tired (masc, agrees with speaker) = <b>κουρασμένος</b> · today = <b>σήμερα</b>" },
+    { en: "They're sleeping now.",                     model: "Κοιμούνται τώρα.",                           target: "mediopassive 3pl (κοιμάμαι → κοιμούνται)",
+      hint: "mediopassive verb κοιμάμαι. 3pl = <b>κοιμούνται</b> · now = <b>τώρα</b>" },
+    { en: "I need water.",                             model: "Χρειάζομαι νερό.",                           target: "mediopassive verb χρειάζομαι + neuter direct object",
+      hint: "mediopassive 1sg = <b>χρειάζομαι</b> · water (neut acc) = <b>νερό</b>" },
+    { en: "It's raining outside.",                     model: "Βρέχει έξω.",                                target: "impersonal verb βρέχει",
+      hint: "weather verbs are impersonal — no subject. rains = <b>βρέχει</b> · outside = <b>έξω</b>" },
+    { en: "I'm going home.",                           model: "Πάω σπίτι.",                                 target: "idiom: σπίτι without article (going home)",
+      hint: "idiom — <b>πάω σπίτι</b>. σπίτι drops its article when it means 'home' as destination." },
 
     // Comparatives + extras
-    { en: "She is the most beautiful.",                model: "Είναι η πιο όμορφη.",                        target: "superlative with η πιο + feminine adjective" },
-    { en: "I bought two coffees.",                     model: "Αγόρασα δύο καφέδες.",                       target: "aorist + masculine plural accusative" },
-    { en: "I'm learning Greek for two months.",        model: "Μαθαίνω ελληνικά δύο μήνες.",                target: "Greek present for ongoing duration (no preposition)" },
+    { en: "She is the most beautiful.",                model: "Είναι η πιο όμορφη.",                        target: "superlative with η πιο + feminine adjective",
+      hint: "superlative = <b>η πιο</b> (fem) + adj. is = <b>είναι</b> · beautiful (fem) = <b>όμορφη</b>" },
+    { en: "I bought two coffees.",                     model: "Αγόρασα δύο καφέδες.",                       target: "aorist + masculine plural accusative",
+      hint: "aorist 1sg of αγοράζω = <b>αγόρασα</b> · two = <b>δύο</b> · coffees (masc plur acc) = <b>καφέδες</b>" },
+    { en: "I'm learning Greek for two months.",        model: "Μαθαίνω ελληνικά δύο μήνες.",                target: "Greek present for ongoing duration (no preposition)",
+      hint: "Greek uses PRESENT for ongoing duration (no 'for'!). 1sg of μαθαίνω = <b>μαθαίνω</b> · Greek = <b>ελληνικά</b> · two months = <b>δύο μήνες</b>" },
   ];
 
   let gSpeakDeck = [];          // current 5 prompts
@@ -6603,6 +6681,15 @@
     const tEl = document.getElementById('speak-transcript');
     tEl.textContent = '—';
     tEl.classList.remove('interim');
+    // Reset hint UI: collapsed, button shows show-state, only visible if prompt has a hint
+    const hintBody = document.getElementById('speak-hint-body');
+    const hintBtn = document.getElementById('speak-hint-btn');
+    if (hintBody && hintBtn) {
+      hintBody.style.display = 'none';
+      hintBody.innerHTML = '';
+      hintBtn.textContent = '💡 Show hint';
+      hintBtn.style.display = (q && q.hint) ? '' : 'none';
+    }
     document.getElementById('speak-feedback').style.display = 'none';
     document.getElementById('speak-feedback').innerHTML = '';
     document.getElementById('speak-next-wrap').style.display = 'none';
@@ -6621,6 +6708,29 @@
   // pass/fail color after the user advances to the next one. 'current' is the
   // active prompt; 'done' (gray) is past prompts that errored or were
   // miscaught; 'done ok'/'done no' is graded pass/fail.
+  // Toggle the building-blocks hint for the current prompt. Toggle (not
+  // one-shot) so the user can hide it after peeking and self-test.
+  function toggleSpeakHint() {
+    if (gSpeakIndex >= gSpeakDeck.length) return;
+    const q = gSpeakDeck[gSpeakIndex];
+    const body = document.getElementById('speak-hint-body');
+    const btn = document.getElementById('speak-hint-btn');
+    if (!q || !q.hint) {
+      body.innerHTML = '<em>No hint for this one — you\'re on your own.</em>';
+      body.style.display = '';
+      return;
+    }
+    const isHidden = body.style.display === 'none';
+    if (isHidden) {
+      body.innerHTML = q.hint;
+      body.style.display = '';
+      btn.textContent = '💡 Hide hint';
+    } else {
+      body.style.display = 'none';
+      btn.textContent = '💡 Show hint';
+    }
+  }
+
   function renderSpeakPips() {
     const host = document.getElementById('speak-pips');
     host.innerHTML = '';
