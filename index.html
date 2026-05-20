@@ -1238,8 +1238,22 @@
   .speak-header { text-align: center; padding: 24px 16px 8px; max-width: 720px; margin: 0 auto; }
   .speak-header h2 { font-family: 'Playfair Display', serif; color: #d84315; font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 6px; }
   .speak-header p { color: #5a3f30; font-size: 0.95rem; max-width: 580px; margin: 0 auto; }
+  /* Level filter — pill buttons matching speak-tab orange palette. */
+  .speak-level-filter {
+    max-width: 620px; margin: 14px auto 8px; display: flex; align-items: center;
+    gap: 8px; flex-wrap: wrap; justify-content: center;
+    font-size: 0.85rem; color: #5a3f30;
+  }
+  .speak-level-label { font-weight: 700; color: #6d4c41; margin-right: 2px; }
+  .speak-level-btn {
+    background: white; color: #d84315; border: 1.5px solid #ffb74d;
+    padding: 6px 14px; border-radius: 99px; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.82rem;
+  }
+  .speak-level-btn:hover { background: #fff3e0; }
+  .speak-level-btn.active { background: #d84315; color: white; border-color: #d84315; }
   .speak-progress {
-    max-width: 620px; margin: 18px auto 14px; display: flex; align-items: center;
+    max-width: 620px; margin: 8px auto 14px; display: flex; align-items: center;
     gap: 14px; flex-wrap: wrap; justify-content: center;
     font-size: 0.88rem; color: #5a3f30;
   }
@@ -4246,6 +4260,14 @@
       <p>Five English prompts. Read each one, speak the Greek out loud, and Claude grades against a model answer. One correction max, one model echo every time. Mic uses Greek recognition (Chrome/Edge).</p>
     </div>
 
+    <!-- Level filter — pulls from the beginner-only pool when active. Switch
+         resets the session so you immediately get prompts at the picked level. -->
+    <div class="speak-level-filter">
+      <span class="speak-level-label">Level:</span>
+      <button class="speak-level-btn active" id="speak-level-all-btn" onclick="setSpeakLevel('all')">All prompts</button>
+      <button class="speak-level-btn" id="speak-level-beg-btn" onclick="setSpeakLevel('beginner')">Beginner only</button>
+    </div>
+
     <div class="speak-progress" id="speak-progress-wrap">
       <span class="speak-progress-text" id="speak-progress-text">Prompt 1 of 5</span>
       <div class="speak-pips" id="speak-pips"></div>
@@ -6499,7 +6521,75 @@
   // Each prompt has a `hint` — the building blocks (verb form, key nouns,
   // time words) so the user can assemble the sentence themselves. The hint
   // never gives the full answer; the grader still grades whatever was spoken.
+  // `beginner: true` flags ultra-common phrases with 1-4 high-frequency words
+  // and present-tense / fixed-phrase grammar. The "Beginner only" filter pulls
+  // exclusively from this pool; "All" includes everything.
   const SPEAK_PROMPTS = [
+    // ─── BEGINNER: greetings, fixed phrases, yes/no ───
+    { en: "Hello (informal).",                         model: "Γεια σου.",                                  target: "informal greeting", beginner: true,
+      hint: "<b>γεια σου</b> = informal hello (lit. 'health to you'). Plural/formal: <b>γεια σας</b>." },
+    { en: "Good morning.",                             model: "Καλημέρα.",                                  target: "fixed greeting", beginner: true,
+      hint: "<b>καλημέρα</b> = lit. 'good day'. Used until ~noon." },
+    { en: "Good evening.",                             model: "Καλησπέρα.",                                 target: "fixed greeting", beginner: true,
+      hint: "<b>καλησπέρα</b> = lit. 'good evening'. Used afternoon onward." },
+    { en: "Goodbye.",                                  model: "Αντίο.",                                     target: "fixed greeting", beginner: true,
+      hint: "<b>αντίο</b> = from Italian addio. Casual goodbye also: γεια σου." },
+    { en: "Thank you.",                                model: "Ευχαριστώ.",                                 target: "fixed phrase", beginner: true,
+      hint: "1sg of ευχαριστώ = <b>ευχαριστώ</b> (lit. 'I give thanks'). Stress on the ώ." },
+    { en: "You're welcome / Please.",                  model: "Παρακαλώ.",                                  target: "fixed phrase (multipurpose)", beginner: true,
+      hint: "<b>παρακαλώ</b> serves as 'please', 'you're welcome', and 'how can I help you' — multi-purpose." },
+    { en: "Excuse me / Sorry.",                        model: "Συγγνώμη.",                                  target: "fixed phrase", beginner: true,
+      hint: "<b>συγγνώμη</b> works for both 'excuse me' and 'sorry'." },
+    { en: "Yes.",                                      model: "Ναι.",                                       target: "yes", beginner: true,
+      hint: "<b>ναι</b>. Trap: Greeks tilt their head UP for no — yes is a normal nod." },
+    { en: "No.",                                       model: "Όχι.",                                       target: "no", beginner: true,
+      hint: "<b>όχι</b>. Stress on the ό." },
+    { en: "Maybe.",                                    model: "Ίσως.",                                      target: "fixed adverb", beginner: true,
+      hint: "<b>ίσως</b> = maybe / perhaps." },
+    { en: "I don't know.",                             model: "Δεν ξέρω.",                                  target: "δεν + 1sg of ξέρω", beginner: true,
+      hint: "<b>δεν</b> (not) + <b>ξέρω</b> (I know)." },
+    { en: "Nice to meet you.",                         model: "Χαίρω πολύ.",                                target: "fixed phrase", beginner: true,
+      hint: "lit. 'I rejoice much' = <b>χαίρω πολύ</b>." },
+    { en: "How are you? (informal)",                   model: "Τι κάνεις;",                                 target: "informal greeting question", beginner: true,
+      hint: "lit. 'what are you doing?' = <b>τι κάνεις;</b> Standard greeting question." },
+    { en: "I'm fine.",                                 model: "Είμαι καλά.",                                target: "είμαι + adverb", beginner: true,
+      hint: "1sg of είμαι (to be) = <b>είμαι</b> · well = <b>καλά</b>. Standard reply to 'τι κάνεις;'" },
+    { en: "What's this?",                              model: "Τι είναι αυτό;",                             target: "basic question + neuter demonstrative", beginner: true,
+      hint: "what = <b>τι</b> · is = <b>είναι</b> · this (neut) = <b>αυτό</b>." },
+    { en: "I am American. (male)",                     model: "Είμαι Αμερικάνος.",                          target: "είμαι + nationality (masc)", beginner: true,
+      hint: "είμαι + nationality. American (masc) = <b>Αμερικάνος</b>. Fem: Αμερικανίδα." },
+    { en: "I'm from America.",                         model: "Είμαι από την Αμερική.",                     target: "είμαι + από + accusative", beginner: true,
+      hint: "είμαι + from = <b>από</b> · America (fem acc) = <b>την Αμερική</b>." },
+    { en: "My name is Anthony.",                       model: "Με λένε Άντονι.",                            target: "Με λένε X idiom", beginner: true,
+      hint: "lit. 'they call me X' = <b>με λένε</b> + name. me (object) = <b>με</b>." },
+    { en: "I speak a little Greek.",                   model: "Μιλάω λίγα ελληνικά.",                       target: "1sg + quantifier + neuter plural", beginner: true,
+      hint: "speak = <b>μιλάω</b> · a little = <b>λίγα</b> · Greek (neut plur) = <b>ελληνικά</b>." },
+    { en: "I want coffee.",                            model: "Θέλω καφέ.",                                 target: "θέλω + masculine accusative", beginner: true,
+      hint: "want = <b>θέλω</b> · coffee (masc acc, drops -ς) = <b>καφέ</b>." },
+    { en: "I want water.",                             model: "Θέλω νερό.",                                 target: "θέλω + neuter accusative", beginner: true,
+      hint: "<b>θέλω</b> + water (neut, no article needed) = <b>νερό</b>." },
+    { en: "I don't want it.",                          model: "Δεν το θέλω.",                               target: "δεν + neuter pronoun + θέλω", beginner: true,
+      hint: "<b>δεν</b> + it (neut, before verb) = <b>το</b> + <b>θέλω</b>." },
+    { en: "A coffee, please.",                         model: "Έναν καφέ, παρακαλώ.",                       target: "indefinite (masc acc) + παρακαλώ", beginner: true,
+      hint: "a (masc acc) = <b>έναν</b> · coffee (masc acc) = <b>καφέ</b> · please = <b>παρακαλώ</b>." },
+    { en: "Water, please.",                            model: "Νερό, παρακαλώ.",                            target: "neuter noun + παρακαλώ", beginner: true,
+      hint: "water (neut, no article) = <b>νερό</b> · please = <b>παρακαλώ</b>." },
+    { en: "The bill, please.",                         model: "Τον λογαριασμό, παρακαλώ.",                  target: "masculine accusative + παρακαλώ", beginner: true,
+      hint: "the bill (masc acc) = <b>τον λογαριασμό</b> · please = <b>παρακαλώ</b>." },
+    { en: "Cheers!",                                   model: "Στην υγειά μας!",                            target: "fixed toast", beginner: true,
+      hint: "lit. 'to our health'. <b>στην</b> + <b>υγειά μας</b>. Also acceptable: γεια μας." },
+    { en: "It's very good.",                           model: "Είναι πολύ καλό.",                           target: "είναι + adverb + neuter adj", beginner: true,
+      hint: "is = είναι · very = <b>πολύ</b> · good (neut) = <b>καλό</b>." },
+    { en: "I have a question.",                        model: "Έχω μια ερώτηση.",                           target: "έχω + indefinite + feminine acc", beginner: true,
+      hint: "1sg of έχω = <b>έχω</b> · a question (fem acc) = <b>μια ερώτηση</b>." },
+    { en: "Two beers.",                                model: "Δύο μπύρες.",                                target: "number + feminine plural acc", beginner: true,
+      hint: "two = <b>δύο</b> · beers (fem plur) = <b>μπύρες</b>." },
+    { en: "Three euros.",                              model: "Τρία ευρώ.",                                 target: "number (neut) + neuter noun", beginner: true,
+      hint: "three (neut) = <b>τρία</b> · euros (neut, doesn't decline) = <b>ευρώ</b>." },
+    { en: "I love Greece.",                            model: "Αγαπάω την Ελλάδα.",                         target: "1sg -αω + feminine accusative", beginner: true,
+      hint: "love = <b>αγαπάω</b> · Greece (fem acc) = <b>την Ελλάδα</b>." },
+
+    // ─── INTERMEDIATE / ADVANCED — original 50 ───
     // Verbs — aorist (perfective past)
     { en: "I bought bread yesterday.",                 model: "Αγόρασα ψωμί χθες.",                       target: "aorist of αγοράζω (1sg)",
       hint: "Aorist 1sg of αγοράζω = <b>αγόρασα</b> · bread = <b>ψωμί</b> · yesterday = <b>χθες</b>" },
@@ -6555,13 +6645,13 @@
       hint: "the children (neut plur subject) = <b>τα παιδιά</b> · 3pl present of παίζω = <b>παίζουν</b> · outside = <b>έξω</b>" },
     { en: "Open the door, please.",                    model: "Άνοιξε την πόρτα, παρακαλώ.",                target: "imperative + feminine accusative (την)",
       hint: "imperative 2sg of ανοίγω = <b>άνοιξε</b> · the door (fem acc) = <b>την πόρτα</b> · please = <b>παρακαλώ</b>" },
-    { en: "I drink coffee every morning.",             model: "Πίνω καφέ κάθε πρωί.",                       target: "present habitual + κάθε + part-of-day",
+    { en: "I drink coffee every morning.",             model: "Πίνω καφέ κάθε πρωί.",                       target: "present habitual + κάθε + part-of-day", beginner: true,
       hint: "drink = <b>πίνω</b> · coffee (masc acc, drops ς) = <b>καφέ</b> · every morning = <b>κάθε πρωί</b>" },
 
     // Questions
     { en: "What time does the restaurant open?",       model: "Τι ώρα ανοίγει το εστιατόριο;",              target: "Τι ώρα + 3sg present + neuter subject",
       hint: "what time = <b>τι ώρα</b> · 3sg present of ανοίγω = <b>ανοίγει</b> · the restaurant (neut) = <b>το εστιατόριο</b>" },
-    { en: "Where is the toilet?",                      model: "Πού είναι η τουαλέτα;",                      target: "Πού + είναι + feminine nominative",
+    { en: "Where is the toilet?",                      model: "Πού είναι η τουαλέτα;",                      target: "Πού + είναι + feminine nominative", beginner: true,
       hint: "where = <b>πού</b> · is = <b>είναι</b> · the toilet (fem nom) = <b>η τουαλέτα</b>" },
     { en: "How much does this cost?",                  model: "Πόσο κάνει αυτό;",                           target: "Πόσο κάνει + neuter demonstrative",
       hint: "how much costs = <b>πόσο κάνει</b> · this (neut) = <b>αυτό</b>" },
@@ -6581,11 +6671,11 @@
       hint: "perfect = <b>έχω</b> + perfective. βλέπω → irregular <b>δει</b> · this (fem) = <b>αυτή την</b> · movie (fem) = <b>ταινία</b>" },
     { en: "Don't speak so loud.",                      model: "Μη μιλάς τόσο δυνατά.",                      target: "μη + 2sg (imperfective imperative) + τόσο",
       hint: "negative imperative = <b>μη</b> + 2sg present of μιλάω = <b>μιλάς</b> · so loud = <b>τόσο δυνατά</b>" },
-    { en: "Don't worry.",                              model: "Μην ανησυχείς.",                             target: "μην + 2sg present",
+    { en: "Don't worry.",                              model: "Μην ανησυχείς.",                             target: "μην + 2sg present", beginner: true,
       hint: "<b>μην</b> (ν before vowel) + 2sg of ανησυχώ = <b>ανησυχείς</b>" },
 
     // Pronouns + idioms
-    { en: "I love you.",                               model: "Σε αγαπάω.",                                 target: "object pronoun + -αω verb",
+    { en: "I love you.",                               model: "Σε αγαπάω.",                                 target: "object pronoun + -αω verb", beginner: true,
       hint: "you (object, before verb) = <b>σε</b> · 1sg of αγαπάω = <b>αγαπάω</b>" },
     { en: "She likes the cat.",                        model: "Της αρέσει η γάτα.",                         target: "Της αρέσει construction (subject inverted)",
       hint: "Greek construction is reversed: 'to her, the cat pleases'. her (indirect) = <b>της</b> · pleases = <b>αρέσει</b> · the cat (fem subject) = <b>η γάτα</b>" },
@@ -6595,7 +6685,7 @@
       hint: "imperative 2sg of φέρνω = <b>φέρε</b> · me (indirect, AFTER imperative) = <b>μου</b> · a glass of water = <b>ένα ποτήρι νερό</b> · please = <b>παρακαλώ</b>" },
 
     // Verb groups
-    { en: "I'm hungry.",                               model: "Πεινάω.",                                    target: "stative -αω verb (πεινάω)",
+    { en: "I'm hungry.",                               model: "Πεινάω.",                                    target: "stative -αω verb (πεινάω)", beginner: true,
       hint: "Greek doesn't say 'I am hungry' — uses the stative -αω verb. 1sg of πεινάω = <b>πεινάω</b>" },
     { en: "We walk to work every day.",                model: "Περπατάμε στη δουλειά κάθε μέρα.",            target: "-αω 1pl + στη(ν) + κάθε",
       hint: "1pl of περπατάω = <b>περπατάμε</b> · σε + τη(ν) = <b>στη</b> · work (fem) = <b>δουλειά</b> · every day = <b>κάθε μέρα</b>" },
@@ -6605,9 +6695,9 @@
       hint: "mediopassive verb κοιμάμαι. 3pl = <b>κοιμούνται</b> · now = <b>τώρα</b>" },
     { en: "I need water.",                             model: "Χρειάζομαι νερό.",                           target: "mediopassive verb χρειάζομαι + neuter direct object",
       hint: "mediopassive 1sg = <b>χρειάζομαι</b> · water (neut acc) = <b>νερό</b>" },
-    { en: "It's raining outside.",                     model: "Βρέχει έξω.",                                target: "impersonal verb βρέχει",
+    { en: "It's raining outside.",                     model: "Βρέχει έξω.",                                target: "impersonal verb βρέχει", beginner: true,
       hint: "weather verbs are impersonal — no subject. rains = <b>βρέχει</b> · outside = <b>έξω</b>" },
-    { en: "I'm going home.",                           model: "Πάω σπίτι.",                                 target: "idiom: σπίτι without article (going home)",
+    { en: "I'm going home.",                           model: "Πάω σπίτι.",                                 target: "idiom: σπίτι without article (going home)", beginner: true,
       hint: "idiom — <b>πάω σπίτι</b>. σπίτι drops its article when it means 'home' as destination." },
 
     // Comparatives + extras
@@ -6623,6 +6713,7 @@
   let gSpeakIndex = 0;
   let gSpeakHits = 0;
   let gSpeakMisses = 0;
+  let gSpeakLevel = 'all';      // 'all' | 'beginner' — narrows the prompt pool
   let gSpeakResults = [];       // per-prompt result: { graded, passed, miscaught } — drives pip colors
   let gSpeakRecognition = null; // SpeechRecognition instance
   let gSpeakRecording = false;
@@ -6645,12 +6736,29 @@
   }
 
   function startSpeakSession() {
-    gSpeakDeck = shuffleSpeak(SPEAK_PROMPTS).slice(0, 5);
+    const pool = gSpeakLevel === 'beginner'
+      ? SPEAK_PROMPTS.filter(p => p.beginner === true)
+      : SPEAK_PROMPTS;
+    gSpeakDeck = shuffleSpeak(pool).slice(0, 5);
     gSpeakIndex = 0;
     gSpeakHits = 0;
     gSpeakMisses = 0;
     gSpeakResults = gSpeakDeck.map(() => ({ graded: false, passed: false, miscaught: false }));
     renderSpeakCard();
+  }
+
+  // Switch the active level. Rerolls the session so the next 5 prompts come
+  // from the picked pool — staying mid-session at the old level would feel
+  // inconsistent with the toggle.
+  function setSpeakLevel(level) {
+    if (level !== 'all' && level !== 'beginner') return;
+    gSpeakLevel = level;
+    document.getElementById('speak-level-all-btn').classList.toggle('active', level === 'all');
+    document.getElementById('speak-level-beg-btn').classList.toggle('active', level === 'beginner');
+    stopSpeakRecord();
+    document.getElementById('speak-done').style.display = 'none';
+    document.getElementById('speak-card').style.display = '';
+    startSpeakSession();
   }
 
   function resetSpeakSession() {
