@@ -1393,6 +1393,14 @@
   .srs-tinted.srs-imp .vd-input:focus { border-color: #e65100; }
   .srs-tinted.srs-imp .vd-submit-btn { background: #e65100; border-color: #e65100; }
   .srs-tinted.srs-imp .vd-hint-btn { color: #e65100; border-color: #e65100; }
+  .srs-tinted.srs-conj .vd-header h2 { color: #00695c; }
+  .srs-tinted.srs-conj .vd-prompt-word { color: #00695c; }
+  .srs-tinted.srs-conj .vd-dir-btn { border-color: #b2dfdb; color: #00695c; }
+  .srs-tinted.srs-conj .vd-dir-btn.active { background: #00695c; border-color: #00695c; }
+  .srs-tinted.srs-conj .vd-input { border-color: #b2dfdb; color: #00695c; }
+  .srs-tinted.srs-conj .vd-input:focus { border-color: #00695c; }
+  .srs-tinted.srs-conj .vd-submit-btn { background: #00695c; border-color: #00695c; }
+  .srs-tinted.srs-conj .vd-hint-btn { color: #00695c; border-color: #00695c; }
 
   /* Verb Drill tab */
   .vd-header { text-align: center; margin: 8px 0 22px; }
@@ -3267,6 +3275,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('future',this)">⏩ Future (θα)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('neg',this)">🚫 Negation (δεν/όχι)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbdrill',this)">📚 Verb Pairs (SRS)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('conjsrs',this)">📚 Conjugation (SRS)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('verbs')" title="Pick a random verb drill">🎲 Random verb</button>
 
       <div class="grammar-mode-group-label">▸ 📦 Nouns</div>
@@ -3756,6 +3765,49 @@
         </div>
         <div class="vd-empty" id="vd-empty" style="display:none;">
           <p><strong>✓ Caught up.</strong> No verbs due right now. Come back later — your reviews will surface again according to the SRS schedule.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conjugation SRS — present-tense forms (verb × pronoun), SRS-scheduled.
+         Reads from public.verb_conjugations (240 rows: 40 verbs × 6 forms).
+         Each (verb, pronoun) is scheduled independently — forms you keep
+         missing surface more often. Reuses the smTwoNext SM-2 algorithm. -->
+    <div id="grammar-conjsrs" class="srs-tinted srs-conj" style="display:none;">
+      <div class="vd-header">
+        <h2>📚 Conjugation Drill (SRS)</h2>
+        <p>Type the form for the given verb + pronoun. Real SRS scheduling — forms you keep missing come back sooner. 240 cards (40 verbs × 6 forms).</p>
+      </div>
+      <div class="vd-direction" id="conjsrs-directions">
+        <button class="vd-dir-btn active" data-group="all" onclick="setConjSrsGroup('all',this)">All groups</button>
+        <button class="vd-dir-btn" data-group="-αω" onclick="setConjSrsGroup('-αω',this)">-αω</button>
+        <button class="vd-dir-btn" data-group="-εω" onclick="setConjSrsGroup('-εω',this)">-εω</button>
+        <button class="vd-dir-btn" data-group="-ω" onclick="setConjSrsGroup('-ω',this)">-ω</button>
+        <button class="vd-dir-btn" data-group="-ώ" onclick="setConjSrsGroup('-ώ',this)">-ώ</button>
+      </div>
+      <div class="vd-stats">
+        <span><strong id="conjsrs-due-count">…</strong> due now</span>
+        <span><strong id="conjsrs-session-count">0</strong> reviewed this session</span>
+      </div>
+      <div id="conjsrs-card-wrap">
+        <div class="vd-card" id="conjsrs-card">
+          <div class="vd-prompt-word" id="conjsrs-prompt-word">Loading…</div>
+          <div class="vd-prompt-en" id="conjsrs-prompt-en">&nbsp;</div>
+          <input type="text" class="vd-input" id="conjsrs-input"
+                 placeholder="Type the form…"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                 lang="el"
+                 onkeydown="onConjSrsKey(event)">
+          <div class="vd-actions">
+            <button class="vd-submit-btn" id="conjsrs-submit" onclick="submitConjSrsAnswer()">Check ✓</button>
+            <button class="vd-hint-btn" id="conjsrs-hint-btn" onclick="showConjSrsHint()">💡 Hint</button>
+          </div>
+          <div class="vd-hint-body" id="conjsrs-hint-body" style="display:none;"></div>
+          <div class="vd-feedback" id="conjsrs-feedback" style="display:none;"></div>
+          <div class="vd-rating" id="conjsrs-rating" style="display:none;"></div>
+        </div>
+        <div class="vd-empty" id="conjsrs-empty" style="display:none;">
+          <p><strong>✓ Caught up.</strong> No conjugation cards due right now in this group. Try another group, or come back later.</p>
         </div>
       </div>
     </div>
@@ -8668,6 +8720,7 @@
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
     document.getElementById('grammar-pres2aor').style.display = mode === 'pres2aor' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
+    document.getElementById('grammar-conjsrs').style.display = mode === 'conjsrs' ? '' : 'none';
     document.getElementById('grammar-noundrill').style.display = mode === 'noundrill' ? '' : 'none';
     document.getElementById('grammar-adjdrill').style.display = mode === 'adjdrill' ? '' : 'none';
     document.getElementById('grammar-impdrill').style.display = mode === 'impdrill' ? '' : 'none';
@@ -8692,6 +8745,7 @@
     if (mode === 'subjfirst') initSubjFirstDrill();
     if (mode === 'pres2aor') initPres2AorDrill();
     if (mode === 'verbdrill') initVerbDrill();
+    if (mode === 'conjsrs') initConjSrsDrill();
     if (mode === 'noundrill') initSrsDrill('noundrill');
     if (mode === 'adjdrill') initSrsDrill('adjdrill');
     if (mode === 'impdrill') initSrsDrill('impdrill');
@@ -14005,6 +14059,201 @@
     if (window._supabase) {
       try { await window._supabase.from('vocab').update(next).eq('id', card.id); } catch {}
     }
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // CONJUGATION SRS DRILL — present-tense forms scheduled per-cell
+  // Queries public.verb_conjugations (240 rows: 40 verbs × 6 pronouns).
+  // Each (verb, pronoun) is its own SRS card; forms you keep missing
+  // come back sooner. Reuses smTwoNext for the SM-2 update.
+  // ──────────────────────────────────────────────────────────────
+  let gConjSrsState = null;
+
+  async function initConjSrsDrill() {
+    if (!gConjSrsState) {
+      gConjSrsState = {
+        currentCard: null,
+        group: 'all',           // filter: 'all' | '-αω' | '-εω' | '-ω' | '-ώ'
+        dueCount: 0,
+        sessionReviewed: 0,
+        isAnswered: false,
+        lastResult: null,
+        hintShown: false
+      };
+    }
+    const ready = await ensureSupabaseReady();
+    if (!ready) {
+      document.getElementById('conjsrs-prompt-word').textContent = 'Database not connected.';
+      document.getElementById('conjsrs-prompt-en').textContent = 'Refresh the page and try again.';
+      return;
+    }
+    await loadNextConjSrsCard();
+  }
+
+  async function loadNextConjSrsCard() {
+    if (!window._supabase) return;
+    const s = gConjSrsState;
+    const nowIso = new Date().toISOString();
+    let cardsQ = window._supabase
+      .from('verb_conjugations')
+      .select('id, verb_word, verb_en, verb_group, pronoun, pronoun_key, pronoun_en, form, note, srs_due_at, srs_interval_days, srs_ease, srs_reps')
+      .lte('srs_due_at', nowIso)
+      .order('srs_due_at', { ascending: true })
+      .limit(1);
+    let countQ = window._supabase
+      .from('verb_conjugations')
+      .select('id', { count: 'exact', head: true })
+      .lte('srs_due_at', nowIso);
+    if (s.group !== 'all') {
+      cardsQ = cardsQ.eq('verb_group', s.group);
+      countQ = countQ.eq('verb_group', s.group);
+    }
+    let nextCard = null, dueCount = 0;
+    try {
+      const [cardsRes, countRes] = await Promise.all([cardsQ, countQ]);
+      if (cardsRes.data && cardsRes.data.length > 0) nextCard = cardsRes.data[0];
+      dueCount = countRes.count || 0;
+    } catch (e) {
+      console.warn('ConjSrs: Supabase query failed', e);
+    }
+    s.currentCard = nextCard;
+    s.dueCount = dueCount;
+    s.isAnswered = false;
+    s.hintShown = false;
+    s.lastResult = null;
+    showConjSrsCard();
+  }
+
+  function showConjSrsCard() {
+    const s = gConjSrsState;
+    document.getElementById('conjsrs-due-count').textContent = s.dueCount;
+    document.getElementById('conjsrs-session-count').textContent = s.sessionReviewed;
+    if (!s.currentCard) {
+      document.getElementById('conjsrs-card').style.display = 'none';
+      document.getElementById('conjsrs-empty').style.display = '';
+      return;
+    }
+    document.getElementById('conjsrs-card').style.display = '';
+    document.getElementById('conjsrs-empty').style.display = 'none';
+    const c = s.currentCard;
+    // Prompt: "μιλάω (-αω)" + pronoun line
+    document.getElementById('conjsrs-prompt-word').innerHTML =
+      `<div style="font-size:1.4rem;color:#5a6f6c;font-weight:400;margin-bottom:6px;">${escapeHtml(c.verb_word)} <span style="font-size:0.75rem;color:#888;letter-spacing:0.08em;text-transform:uppercase;background:#e0f2f1;padding:2px 8px;border-radius:99px;vertical-align:middle;">${escapeHtml(c.verb_group)}</span></div>` +
+      `<div>${escapeHtml(c.pronoun)}</div>`;
+    document.getElementById('conjsrs-prompt-en').textContent =
+      `${c.verb_en} — ${c.pronoun_en}`;
+    const input = document.getElementById('conjsrs-input');
+    input.value = '';
+    input.className = 'vd-input';
+    input.disabled = false;
+    input.placeholder = `Type the ${c.pronoun} form…`;
+    document.getElementById('conjsrs-submit').disabled = false;
+    document.getElementById('conjsrs-hint-btn').disabled = false;
+    document.getElementById('conjsrs-hint-btn').textContent = '💡 Hint';
+    document.getElementById('conjsrs-hint-body').style.display = 'none';
+    document.getElementById('conjsrs-hint-body').textContent = '';
+    document.getElementById('conjsrs-feedback').style.display = 'none';
+    document.getElementById('conjsrs-feedback').textContent = '';
+    document.getElementById('conjsrs-rating').style.display = 'none';
+    document.getElementById('conjsrs-rating').innerHTML = '';
+    if (window.matchMedia && !window.matchMedia('(max-width: 540px)').matches) {
+      setTimeout(() => input.focus(), 50);
+    }
+  }
+
+  function setConjSrsGroup(group, btn) {
+    document.querySelectorAll('#conjsrs-directions .vd-dir-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    if (!gConjSrsState) return;
+    gConjSrsState.group = group;
+    loadNextConjSrsCard();
+  }
+
+  function onConjSrsKey(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (gConjSrsState && gConjSrsState.isAnswered) {
+        const firstRate = document.querySelector('#conjsrs-rating .vd-rate-btn');
+        if (firstRate) firstRate.click();
+      } else {
+        submitConjSrsAnswer();
+      }
+    }
+  }
+
+  function showConjSrsHint() {
+    const s = gConjSrsState;
+    if (!s || !s.currentCard) return;
+    const body = document.getElementById('conjsrs-hint-body');
+    const c = s.currentCard;
+    // Hint reveals first 2 characters + length pattern — enough nudge without giving it away
+    const len = (c.form || '').length;
+    const head = (c.form || '').slice(0, Math.min(2, Math.max(1, Math.floor(len / 3))));
+    body.innerHTML = `<strong>Starts with:</strong> <span style="font-family:'Georgia',serif;">${escapeHtml(head)}…</span> · <strong>length:</strong> ${len} letters`
+      + (c.note ? `<div style="margin-top:6px;font-style:italic;">💡 ${escapeHtml(c.note)}</div>` : '');
+    body.style.display = '';
+    s.hintShown = true;
+    document.getElementById('conjsrs-hint-btn').disabled = true;
+    document.getElementById('conjsrs-hint-btn').textContent = '💡 Hint shown';
+  }
+
+  function submitConjSrsAnswer() {
+    const s = gConjSrsState;
+    if (!s || !s.currentCard || s.isAnswered) return;
+    const c = s.currentCard;
+    const expected = c.form;
+    const userInput = document.getElementById('conjsrs-input').value;
+    const isCorrect = normalizeGreek(userInput) === normalizeGreek(expected);
+    s.isAnswered = true;
+    s.lastResult = { correct: isCorrect, expected, picked: userInput };
+    const input = document.getElementById('conjsrs-input');
+    input.classList.add(isCorrect ? 'correct' : 'wrong');
+    input.disabled = true;
+    document.getElementById('conjsrs-submit').disabled = true;
+    const fb = document.getElementById('conjsrs-feedback');
+    const noteBlock = c.note
+      ? `<div style="margin-top:8px;padding-top:6px;border-top:1px dashed currentColor;font-style:italic;font-size:0.9em;">💡 ${escapeHtml(c.note)}</div>`
+      : '';
+    if (isCorrect) {
+      fb.className = 'vd-feedback correct';
+      fb.innerHTML = '✓ Correct! &nbsp;<span class="vd-correct-answer">' + escapeHtml(expected) + '</span>' + noteBlock;
+    } else {
+      fb.className = 'vd-feedback wrong';
+      fb.innerHTML = '✗ Correct answer: <span class="vd-correct-answer">' + escapeHtml(expected) + '</span>' + noteBlock;
+      if (c.id) {
+        recordMistake({
+          drill_type: 'conjsrs',
+          prompt: `${c.verb_word} · ${c.pronoun}`,
+          correct: expected,
+          picked: userInput,
+          metadata: { source: 'conjsrs', verb_group: c.verb_group, pronoun_key: c.pronoun_key, conjugation_id: c.id }
+        });
+      }
+    }
+    fb.style.display = '';
+    const rating = document.getElementById('conjsrs-rating');
+    if (isCorrect) {
+      rating.innerHTML =
+        '<button class="vd-rate-btn vd-rate-hard" onclick="rateConjSrsCard(\'hard\')">😕 Hard</button>' +
+        '<button class="vd-rate-btn vd-rate-good" onclick="rateConjSrsCard(\'good\')">👍 Good</button>' +
+        '<button class="vd-rate-btn vd-rate-easy" onclick="rateConjSrsCard(\'easy\')">✨ Easy</button>';
+    } else {
+      rating.innerHTML = '<button class="vd-rate-btn vd-rate-hard" onclick="rateConjSrsCard(\'hard\')">👌 Got it — next</button>';
+    }
+    rating.style.display = '';
+  }
+
+  async function rateConjSrsCard(rating) {
+    const s = gConjSrsState;
+    if (!s || !s.currentCard) return;
+    const card = s.currentCard;
+    const next = smTwoNext(card, rating);
+    Object.assign(card, next);
+    if (window._supabase) {
+      try { await window._supabase.from('verb_conjugations').update(next).eq('id', card.id); } catch {}
+    }
+    s.sessionReviewed++;
+    await loadNextConjSrsCard();
   }
 
   function flashSkip() {
