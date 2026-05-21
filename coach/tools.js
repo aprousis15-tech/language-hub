@@ -153,7 +153,10 @@ const toolImplementations = {
 
   async query_recent_mistakes({ days, drill_type, limit } = {}) {
     const lookback = Math.max(1, Math.min(60, Number(days) || 14));
-    const cap = Math.max(1, Math.min(500, Number(limit) || 200));
+    // Default cap lowered 200→50: the largest single token sink in the run.
+    // 50 rows is plenty to spot top patterns; the agent can request more with
+    // an explicit limit if it needs deeper sampling.
+    const cap = Math.max(1, Math.min(500, Number(limit) || 50));
     const since = new Date(Date.now() - lookback * 86400000).toISOString();
     let path = `mistakes?select=*&created_at=gte.${encodeURIComponent(since)}` +
                `&order=created_at.desc&limit=${cap}`;

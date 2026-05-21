@@ -16,7 +16,13 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { tools, toolImplementations } = require('./tools');
 
-const MODEL = 'claude-opus-4-7';
+// Sonnet 4.6 is the right pick for this agent:
+// - Tool-use tasks: equivalent quality to Opus for structured generation
+// - 5x cheaper input/output ($3/$15 per M vs $15/$75)
+// - ~2x faster wall-clock → comfortable headroom under Vercel Hobby's 60s cap
+// - Opus is overkill for "read structured data, author a plan, save it"
+// Concrete impact: drops coach cost from ~$21/month to ~$4/month on daily cron.
+const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 4096;
 const MAX_TURNS = 20;
 const TOOL_RESULT_CAP = 50_000; // chars — trim huge query results to keep context lean
