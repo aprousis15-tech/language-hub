@@ -6489,6 +6489,10 @@
   // Records wrong answers across all 7 drills for the Review tab.
   // Drill-specific context goes into metadata (target_person, gender, topic, POS, etc).
   const MISTAKES_LS_KEY = 'langHub_mistakes_v1';
+  // Separate log for the Speak drill — captures every attempt (fail/note/clean)
+  // with structured weakness data. Feeds the future Agent SDK study coach.
+  // Lives in its own table (speak_observations) so the Review tab is untouched.
+  const SPEAK_OBS_LS_KEY = 'langHub_speak_obs_v1';
   async function recordMistake(entry) {
     const row = {
       drill_type: entry.drill_type,
@@ -6511,6 +6515,75 @@
       if (arr.length > 500) arr.length = 500;
       localStorage.setItem(MISTAKES_LS_KEY, JSON.stringify(arr));
     } catch {}
+  }
+
+  // Logs every Speak attempt (fail / note / clean) with structured weakness
+  // detail to the speak_observations table. Independent of recordMistake — the
+  // Review tab still reads only `mistakes` so its UX is unaffected. Falls back
+  // to localStorage if Supabase is missing OR if the table doesn't exist yet
+  // (e.g., user hasn't run the migration). Returns the inserted id or null.
+  async function logSpeakObservation(obs) {
+    const row = {
+      severity:        obs.severity,
+      drill_source:    obs.drill_source || 'daily-five',
+      english_prompt:  obs.english_prompt,
+      model_answer:    obs.model_answer,
+      transcript:      obs.transcript,
+      target_grammar:  obs.target_grammar || null,
+      score:           obs.score || null,
+      headline:        obs.headline || null,
+      correction:      obs.correction || null,
+      grammar_note:    obs.grammar_note || null,
+      weaknesses_observed: Array.isArray(obs.weaknesses_observed) ? obs.weaknesses_observed : [],
+      stt_provider:    obs.stt_provider || null,
+      audio_mime:      obs.audio_mime || null
+    };
+    if (window._supabase) {
+      try {
+        const { data, error } = await window._supabase
+          .from('speak_observations')
+          .insert([row])
+          .select('id')
+          .single();
+        if (!error && data) return data.id;
+        // Table-missing (42P01) or RLS denial falls through to local storage.
+      } catch {}
+    }
+    try {
+      const arr = JSON.parse(localStorage.getItem(SPEAK_OBS_LS_KEY) || '[]');
+      const id = 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      arr.unshift({ ...row, id, created_at: new Date().toISOString() });
+      if (arr.length > 1000) arr.length = 1000;
+      localStorage.setItem(SPEAK_OBS_LS_KEY, JSON.stringify(arr));
+      return id;
+    } catch {}
+    return null;
+  }
+
+  // Marks an existing observation as 'miscaught' so the agent can discount
+  // transcription-noise fails. Updates Supabase if it lives there; otherwise
+  // patches the localStorage record.
+  async function markSpeakObservationMiscaught(obsId) {
+    if (!obsId) return;
+    if (typeof obsId === 'string' && obsId.startsWith('local-')) {
+      try {
+        const arr = JSON.parse(localStorage.getItem(SPEAK_OBS_LS_KEY) || '[]');
+        const idx = arr.findIndex(r => r.id === obsId);
+        if (idx >= 0) {
+          arr[idx].miscaught_at = new Date().toISOString();
+          localStorage.setItem(SPEAK_OBS_LS_KEY, JSON.stringify(arr));
+        }
+      } catch {}
+      return;
+    }
+    if (window._supabase) {
+      try {
+        await window._supabase
+          .from('speak_observations')
+          .update({ miscaught_at: new Date().toISOString() })
+          .eq('id', obsId);
+      } catch {}
+    }
   }
 
   // ── DAILY FIVE SPEAKING DRILL ──
@@ -6726,6 +6799,14 @@
   let gMediaRecorder = null;
   let gMediaStream = null;
   let gMediaChunks = [];
+  // STT provenance — captured per attempt so logSpeakObservation can record
+  // which STT engine produced the transcript. 'web-speech' for Chrome's
+  // built-in, 'groq'/'openai' from the /api/transcribe response.
+  let gSpeakSttProvider = null;
+  let gSpeakAudioMime = null;
+  // Id of the just-inserted speak_observations row, so 'mic miscaught' can
+  // patch it instead of inserting a separate counter-note row.
+  let gSpeakLastObsId = null;
 
   function shuffleSpeak(arr) {
     const a = arr.slice();
@@ -6792,6 +6873,9 @@
     gSpeakTranscript = '';
     gSpeakLastGrading = null;
     gSpeakLogged = false;
+    gSpeakLastObsId = null;
+    gSpeakSttProvider = null;
+    gSpeakAudioMime = null;
     const tEl = document.getElementById('speak-transcript');
     tEl.textContent = '—';
     tEl.classList.remove('interim');
@@ -6899,6 +6983,8 @@
 
     r.onstart = () => {
       gSpeakRecording = true;
+      gSpeakSttProvider = 'web-speech';
+      gSpeakAudioMime = null;
       const btn = document.getElementById('speak-record-btn');
       btn.classList.add('recording');
       btn.textContent = '⏹ Stop';
@@ -7072,6 +7158,8 @@
           return;
         }
         gSpeakTranscript = (data.text || '').trim();
+        gSpeakSttProvider = data.provider || 'whisper';
+        gSpeakAudioMime = blob.type || null;
         const tEl = document.getElementById('speak-transcript');
         tEl.textContent = gSpeakTranscript || '(no speech detected)';
         tEl.classList.remove('interim');
@@ -7150,6 +7238,27 @@
     if (gSpeakResults[gSpeakIndex]) {
       gSpeakResults[gSpeakIndex] = { graded: true, passed, miscaught: false };
     }
+
+    // Log a structured observation for EVERY attempt — fails, near-misses,
+    // and clean passes. Powers the future Agent SDK study coach.
+    gSpeakLastObsId = await logSpeakObservation({
+      severity:           grading.severity || (passed ? 'clean' : 'fail'),
+      drill_source:       'daily-five',
+      english_prompt:     q.en,
+      model_answer:       q.model,
+      transcript,
+      target_grammar:     q.target,
+      score:              grading.score,
+      headline:           grading.headline,
+      correction:         grading.correction || null,
+      grammar_note:       grading.grammar_note || null,
+      weaknesses_observed: grading.weaknesses_observed || [],
+      stt_provider:       gSpeakSttProvider,
+      audio_mime:         gSpeakAudioMime
+    });
+
+    // Keep the existing Review-tab mistake row for hard fails only, so the
+    // Review UI stays exactly as it is today.
     if (!passed) {
       await recordMistake({
         drill_type: 'speak',
@@ -7173,12 +7282,28 @@
     const noteLine = grading.grammar_note
       ? `<div class="speak-fb-line"><strong>Rule:</strong> ${escHtml(grading.grammar_note)}</div>`
       : '';
+    // Surface every observed weakness — even on a pass — so the learner sees
+    // exactly what the grader flagged. Skipped silently when the array is empty
+    // (clean pass) so it doesn't add noise.
+    const weaknesses = Array.isArray(grading.weaknesses_observed) ? grading.weaknesses_observed : [];
+    const observedLine = weaknesses.length
+      ? `<div class="speak-fb-line"><strong>Heads up:</strong><ul style="margin:4px 0 0 18px; padding:0;">${
+          weaknesses.map(w =>
+            `<li><em>${escHtml(w.type || 'note')}</em> — ${escHtml(w.description || '')}${
+              w.expected || w.heard
+                ? ` <span style="color:#7a6a55;">(heard “${escHtml(w.heard || '')}” · expected “${escHtml(w.expected || '')}”)</span>`
+                : ''
+            }</li>`
+          ).join('')
+        }</ul></div>`
+      : '';
     fb.className = 'speak-feedback ' + (passed ? 'pass' : 'fix');
     fb.innerHTML = `
       <div class="speak-fb-head">${passed ? '✓' : '✗'} ${escHtml(grading.headline || '')}</div>
       ${correctionLine}
       <div class="speak-fb-line"><strong>Model:</strong> <span class="speak-fb-model">${escHtml(grading.model_echo || q.model)}</span></div>
       ${noteLine}
+      ${observedLine}
     `;
     document.getElementById('speak-next-wrap').style.display = '';
     // miscaught button only matters if the grade was a fail
@@ -7205,6 +7330,11 @@
         picked: (gSpeakTranscript || '').trim(),
         metadata: { source: 'daily-five', target: q.target, reason: 'user-flagged transcription miscaught' }
       });
+    }
+    // Patch the structured observation row so the agent discounts it instead
+    // of treating the noise as a real weakness.
+    if (gSpeakLastObsId) {
+      await markSpeakObservationMiscaught(gSpeakLastObsId);
     }
     if (gSpeakResults[gSpeakIndex]) {
       gSpeakResults[gSpeakIndex].miscaught = true;

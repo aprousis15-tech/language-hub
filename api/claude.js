@@ -88,14 +88,38 @@ Echo the model_answer back so the learner sees the ideal form even when correct.
 
 If you reconstructed Latin transcript into Greek to grade, mention this briefly in the headline so the learner knows it counted ("Heard as Latin — read as Θέλω καφέ. Pass.").
 
+OBSERVATIONS — capture every notable thing, even on a pass:
+For every grading, also produce a `weaknesses_observed` array of structured micro-observations. This data feeds a long-term learning agent — be specific and consistent.
+
+Every entry has the shape:
+{
+  "type": "pronunciation" | "stress" | "vowel" | "consonant" | "case" | "tense" | "person" | "number" | "gender" | "vocab" | "word_order" | "article" | "preposition",
+  "description": "<one-line description of the issue>",
+  "expected": "<the Greek form/sound that should have been produced>",
+  "heard": "<what the learner actually produced>"
+}
+
+- On a clean pass with no notable issues → empty array `[]`.
+- On a near-miss pass (you applied the phonetic proximity rule) → 1-3 observations describing the slips (pronunciation/stress/vowel/etc).
+- On a fix → 1-3 observations focused on the structural error that caused the fail.
+
+SEVERITY — assign exactly one:
+- "fail"  → score is "fix" (structural error, not understood by a native speaker)
+- "note"  → score is "pass" BUT there were 1+ observed weaknesses worth noting (near-miss pronunciation, wrong case but understood, stress slip, etc.)
+- "clean" → score is "pass" AND weaknesses_observed is empty (clean, natural-sounding production)
+
 Respond with VALID JSON ONLY. No markdown fences. No prose outside the JSON. Schema:
 
 {
   "score": "pass" | "fix",
+  "severity": "fail" | "note" | "clean",
   "headline": "<one short sentence — what they did right OR the single thing to fix>",
   "correction": "<the specific correction if score=fix, otherwise null. Quote the wrong fragment and give the right one.>",
   "model_echo": "<model_answer verbatim>",
-  "grammar_note": "<one-line reminder of the rule for target_grammar — always present, helps reinforce>"
+  "grammar_note": "<one-line reminder of the rule for target_grammar — always present, helps reinforce>",
+  "weaknesses_observed": [
+    { "type": "<one of the enum values above>", "description": "<...>", "expected": "<...>", "heard": "<...>" }
+  ]
 }`;
 
 const ANALYZE_SYSTEM_PROMPT = `You analyze Greek practice-session transcripts and extract structured feedback.
@@ -148,6 +172,14 @@ function validateGrading(obj) {
   if (obj.score !== 'pass' && obj.score !== 'fix') return 'score must be "pass" or "fix"';
   if (typeof obj.headline !== 'string') return 'headline missing';
   if (typeof obj.model_echo !== 'string') return 'model_echo missing';
+  // Backfill new fields if the model omitted them (e.g., transient prompt drift)
+  // so older clients don't break and the logger always has something to write.
+  if (obj.severity !== 'fail' && obj.severity !== 'note' && obj.severity !== 'clean') {
+    obj.severity = obj.score === 'fix' ? 'fail' : 'clean';
+  }
+  if (!Array.isArray(obj.weaknesses_observed)) obj.weaknesses_observed = [];
+  // If pass + non-empty observations, upgrade clean → note
+  if (obj.severity === 'clean' && obj.weaknesses_observed.length > 0) obj.severity = 'note';
   return null;
 }
 
