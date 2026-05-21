@@ -1466,10 +1466,44 @@
   .story-vocab-greek { font-family: 'Georgia', serif; color: #4a0e3a; font-weight: 700; margin-right: 6px; }
   .story-vocab-english { color: #2a1f25; }
   .story-vocab-note { color: #7a5a6c; font-style: italic; display: block; font-size: 0.85rem; margin-top: 2px; }
-  .story-questions-section { opacity: 0.7; }
-  .story-coming-soon { color: #a07a8a; font-size: 0.78rem; font-weight: 400; font-style: italic; }
-  .story-questions-list { padding-left: 22px; margin: 0; }
-  .story-questions-list li { padding: 6px 0; color: #4a3640; font-size: 0.92rem; }
+  .story-questions-section { }
+  .story-questions-score { color: #ad1457; font-size: 0.85rem; font-weight: 600; }
+  .story-questions-help { color: #7a5a6c; font-size: 0.85rem; font-style: italic; margin: 0 0 12px; }
+  .story-questions-list { padding: 0; margin: 0; list-style: none; counter-reset: storyq; }
+  .story-questions-list li {
+    padding: 12px 0 14px; border-bottom: 1px dashed #f3d3df; counter-increment: storyq;
+    position: relative; padding-left: 32px;
+  }
+  .story-questions-list li:last-child { border-bottom: none; }
+  .story-questions-list li::before {
+    content: counter(storyq); position: absolute; left: 0; top: 13px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #f8bbd0; color: #4a0e3a; font-size: 0.75rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .story-q-text { color: #2a1f25; font-size: 0.95rem; line-height: 1.4; }
+  .story-q-hint { color: #7a5a6c; font-size: 0.82rem; font-style: italic; margin-top: 3px; }
+  .story-q-controls { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .story-q-btn {
+    border: 1.5px solid #ad1457; background: white; color: #880e4f;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+  }
+  .story-q-btn:hover { background: #fce4ec; }
+  .story-q-btn.reveal { border-color: #6d4c41; color: #6d4c41; }
+  .story-q-btn.reveal:hover { background: #efebe9; }
+  .story-q-btn.gotit  { border-color: #2e7d32; color: #2e7d32; }
+  .story-q-btn.gotit:hover  { background: #e8f5e9; }
+  .story-q-btn.gotit.selected { background: #2e7d32; color: white; }
+  .story-q-btn.missed { border-color: #c62828; color: #c62828; }
+  .story-q-btn.missed:hover { background: #ffebee; }
+  .story-q-btn.missed.selected { background: #c62828; color: white; }
+  .story-q-answer {
+    margin-top: 8px; padding: 8px 12px; border-left: 3px solid #ad1457; background: #fce4ec;
+    border-radius: 0 6px 6px 0; display: none;
+  }
+  .story-q-answer.show { display: block; }
+  .story-q-answer-greek { font-family: 'Georgia', serif; color: #2a1f25; font-size: 0.95rem; }
+  .story-q-answer-english { color: #7a5a6c; font-style: italic; font-size: 0.85rem; margin-top: 3px; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
   /* Shared SRS-drill styling (used by grammar-verbdrill/noundrill/adjdrill/impdrill subpanels, with per-mode accent colors via the .srs-tinted wrapper) */
@@ -4424,7 +4458,8 @@
       </div>
 
       <div class="story-section story-questions-section">
-        <h4>❓ Comprehension <span class="story-coming-soon">(self-check coming in Phase 3)</span></h4>
+        <h4>❓ Comprehension <span class="story-questions-score" id="story-questions-score"></span></h4>
+        <p class="story-questions-help">Read each question, decide if you understand the story well enough to answer, then reveal the Greek answer to check.</p>
         <ol id="story-questions-list" class="story-questions-list"></ol>
       </div>
     </div>
@@ -7582,17 +7617,137 @@
       });
     }
 
-    // Questions — render as a teaser list for Phase 2; self-check coming Phase 3.
+    // Comprehension questions — interactive self-check.
+    // Per question: reveal answer, mark "Got it" / "Didn't get it" → logs to
+    // story_attempts so the agent later sees comprehension trends per day.
     const qList = document.getElementById('story-questions-list');
     if (qList) {
       qList.innerHTML = '';
       const qs = Array.isArray(s.questions) ? s.questions : [];
-      qs.forEach(q => {
+      qs.forEach((q, idx) => {
         const li = document.createElement('li');
-        li.textContent = q.q || '';
+
+        const text = document.createElement('div');
+        text.className = 'story-q-text';
+        text.textContent = q.q || '';
+        li.appendChild(text);
+
+        if (q.hint) {
+          const hint = document.createElement('div');
+          hint.className = 'story-q-hint';
+          hint.textContent = '🔑 hint: ' + q.hint;
+          li.appendChild(hint);
+        }
+
+        const controls = document.createElement('div');
+        controls.className = 'story-q-controls';
+
+        const revealBtn = document.createElement('button');
+        revealBtn.type = 'button';
+        revealBtn.className = 'story-q-btn reveal';
+        revealBtn.textContent = '🔎 Reveal answer';
+
+        const gotitBtn = document.createElement('button');
+        gotitBtn.type = 'button';
+        gotitBtn.className = 'story-q-btn gotit';
+        gotitBtn.textContent = '✓ Got it';
+
+        const missedBtn = document.createElement('button');
+        missedBtn.type = 'button';
+        missedBtn.className = 'story-q-btn missed';
+        missedBtn.textContent = '✗ Didn\'t get it';
+
+        controls.appendChild(revealBtn);
+        controls.appendChild(gotitBtn);
+        controls.appendChild(missedBtn);
+        li.appendChild(controls);
+
+        const answer = document.createElement('div');
+        answer.className = 'story-q-answer';
+        const aGreek = document.createElement('div');
+        aGreek.className = 'story-q-answer-greek';
+        aGreek.textContent = q.a_greek || '';
+        const aEnglish = document.createElement('div');
+        aEnglish.className = 'story-q-answer-english';
+        aEnglish.textContent = q.a_english || '';
+        answer.appendChild(aGreek);
+        answer.appendChild(aEnglish);
+        li.appendChild(answer);
+
+        revealBtn.onclick = () => {
+          const shown = answer.classList.toggle('show');
+          revealBtn.textContent = shown ? '🙈 Hide answer' : '🔎 Reveal answer';
+        };
+        gotitBtn.onclick = () => {
+          gotitBtn.classList.add('selected');
+          missedBtn.classList.remove('selected');
+          logStoryAttempt(s.id, idx, q, true);
+          updateStoryQuestionsScore();
+        };
+        missedBtn.onclick = () => {
+          missedBtn.classList.add('selected');
+          gotitBtn.classList.remove('selected');
+          // Auto-reveal the answer when they admit a miss — most useful next step.
+          if (!answer.classList.contains('show')) {
+            answer.classList.add('show');
+            revealBtn.textContent = '🙈 Hide answer';
+          }
+          logStoryAttempt(s.id, idx, q, false);
+          updateStoryQuestionsScore();
+        };
+
         qList.appendChild(li);
       });
     }
+
+    updateStoryQuestionsScore();
+  }
+
+  // Reads selection state from the DOM and renders "X/Y understood" next to
+  // the section heading. Driven by which buttons carry .selected — keeps the
+  // count in lockstep with what the user actually clicked.
+  function updateStoryQuestionsScore() {
+    const score = document.getElementById('story-questions-score');
+    if (!score) return;
+    const items = document.querySelectorAll('#story-questions-list li');
+    const total = items.length;
+    if (total === 0) { score.textContent = ''; return; }
+    let got = 0, answered = 0;
+    items.forEach(li => {
+      const g = li.querySelector('.story-q-btn.gotit.selected');
+      const m = li.querySelector('.story-q-btn.missed.selected');
+      if (g) { got++; answered++; }
+      else if (m) { answered++; }
+    });
+    score.textContent = answered ? `· ${got}/${total} understood` : '';
+  }
+
+  // Logs each question self-check to public.story_attempts. Falls back to
+  // localStorage if Supabase isn't reachable. Tagged with story_id so the
+  // agent can join with daily_stories for context. Best-effort — fire and
+  // forget; UI doesn't wait.
+  async function logStoryAttempt(storyId, questionIndex, question, understood) {
+    const row = {
+      story_id:    storyId,
+      understood:  !!understood,
+      notes:       JSON.stringify({
+        q_index:  questionIndex,
+        question: question && question.q,
+        hint:     question && question.hint
+      })
+    };
+    if (storyId && window._supabase) {
+      try {
+        const { error } = await window._supabase.from('story_attempts').insert([row]);
+        if (!error) return;
+      } catch {}
+    }
+    try {
+      const arr = JSON.parse(localStorage.getItem('langHub_story_attempts_v1') || '[]');
+      arr.unshift({ ...row, id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8), created_at: new Date().toISOString() });
+      if (arr.length > 500) arr.length = 500;
+      localStorage.setItem('langHub_story_attempts_v1', JSON.stringify(arr));
+    } catch {}
   }
 
   async function loadMistakes(limit) {
