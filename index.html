@@ -4257,7 +4257,7 @@
   <div class="container">
     <div class="speak-header">
       <h2>🎙️ Daily Five — Speaking Drill</h2>
-      <p>Five English prompts. Read each one, speak the Greek out loud, and Claude grades against a model answer. One correction max, one model echo every time. Mic uses Greek recognition (Chrome/Edge).</p>
+      <p>Five English prompts. Read each one, speak the Greek out loud, and Claude grades against a model answer. One correction max, one model echo every time. Mic uses browser STT on desktop Chrome/Edge, Whisper on iPhone/iPad.</p>
     </div>
 
     <!-- Level filter — pulls from the beginner-only pool when active. Switch
@@ -4290,7 +4290,7 @@
 
       <div class="speak-record-wrap">
         <button class="speak-record-btn" id="speak-record-btn" onclick="toggleSpeakRecord()">🎤 Click to record</button>
-        <div class="speak-status" id="speak-status">Your browser needs Greek recognition (Chrome / Edge).</div>
+        <div class="speak-status" id="speak-status">Tap the mic to start. Desktop Chrome/Edge use browser STT; iPhone uses Whisper.</div>
       </div>
 
       <div class="speak-transcript-wrap">
@@ -6715,11 +6715,17 @@
   let gSpeakMisses = 0;
   let gSpeakLevel = 'all';      // 'all' | 'beginner' — narrows the prompt pool
   let gSpeakResults = [];       // per-prompt result: { graded, passed, miscaught } — drives pip colors
-  let gSpeakRecognition = null; // SpeechRecognition instance
+  let gSpeakRecognition = null; // SpeechRecognition instance (Web Speech path)
   let gSpeakRecording = false;
   let gSpeakTranscript = '';    // final transcript so far
   let gSpeakLastGrading = null; // last Claude grading, for the "miscaught" escape hatch
   let gSpeakLogged = false;     // whether the current card's miss is already logged
+  // Whisper-fallback state: used on iOS (Safari/Chrome) and any browser where
+  // the Web Speech API isn't usable. Records with MediaRecorder, POSTs to
+  // /api/transcribe (server-side Whisper).
+  let gMediaRecorder = null;
+  let gMediaStream = null;
+  let gMediaChunks = [];
 
   function shuffleSpeak(arr) {
     const a = arr.slice();
@@ -6807,7 +6813,7 @@
     rec.disabled = false;
     rec.classList.remove('recording');
     rec.textContent = '🎤 Click to record';
-    document.getElementById('speak-status').textContent = 'Click to start (Chrome / Edge with mic access).';
+    document.getElementById('speak-status').textContent = 'Tap the mic to start (allow mic access).';
     document.getElementById('speak-status').classList.remove('error');
     renderSpeakPips();
   }
@@ -6862,13 +6868,27 @@
     startSpeakRecord();
   }
 
+  // iOS Safari and Chrome-on-iOS both use WebKit, which exposes
+  // SpeechRecognition but rejects it at runtime ('service-not-allowed').
+  // Detect upfront and skip straight to the Whisper path.
+  function isIOSWebKit() {
+    const ua = navigator.userAgent || '';
+    if (/iPhone|iPad|iPod/.test(ua)) return true;
+    // iPadOS 13+ reports as Mac — disambiguate by touch capability.
+    if (ua.includes('Mac') && navigator.maxTouchPoints > 1) return true;
+    return false;
+  }
+
+  // Dispatcher: pick Web Speech (free, instant) when usable, else fall back
+  // to MediaRecorder + /api/transcribe (server-side Whisper).
   function startSpeakRecord() {
+    if (isIOSWebKit()) { startWhisperRecord(); return; }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      document.getElementById('speak-status').textContent = 'Your browser does not support speech recognition. Use Chrome or Edge.';
-      document.getElementById('speak-status').classList.add('error');
-      return;
-    }
+    if (!SR) { startWhisperRecord(); return; }
+    startWebSpeechRecord(SR);
+  }
+
+  function startWebSpeechRecord(SR) {
     const r = new SR();
     r.lang = 'el-GR';
     r.continuous = false;
@@ -6904,12 +6924,21 @@
     };
     r.onerror = (event) => {
       const status = document.getElementById('speak-status');
+      // Auto-fall-back paths: browser exposes Web Speech but the service
+      // isn't actually available (iOS WebKit, offline, unsupported lang).
+      // Hand off to MediaRecorder + Whisper instead of dead-ending.
+      if (['service-not-allowed', 'network', 'language-not-supported'].includes(event.error)) {
+        status.classList.remove('error');
+        status.textContent = 'Browser STT unavailable — switching to Whisper…';
+        gSpeakRecording = false;
+        setTimeout(() => startWhisperRecord(), 50);
+        return;
+      }
       status.classList.add('error');
       const msg = {
         'no-speech': 'No speech detected. Try again — speak a bit louder.',
         'audio-capture': 'No microphone found. Check device settings.',
         'not-allowed': 'Mic permission denied. Allow microphone access for this site.',
-        'language-not-supported': 'Greek recognition not available in this browser. Try Chrome.',
       }[event.error] || ('Recognition error: ' + event.error);
       status.textContent = msg;
     };
@@ -6937,6 +6966,134 @@
   function stopSpeakRecord() {
     if (gSpeakRecognition && gSpeakRecording) {
       try { gSpeakRecognition.stop(); } catch {}
+    }
+    if (gMediaRecorder && gSpeakRecording) {
+      try { gMediaRecorder.stop(); } catch {}
+    }
+  }
+
+  // Whisper path — used on iOS (Safari/Chrome) and anywhere Web Speech fails.
+  // Records audio with MediaRecorder, sends base64 to /api/transcribe.
+  async function startWhisperRecord() {
+    const btn = document.getElementById('speak-record-btn');
+    const status = document.getElementById('speak-status');
+    status.classList.remove('error');
+
+    if (!window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = 'Audio recording not supported in this browser.';
+      status.classList.add('error');
+      return;
+    }
+
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) {
+      status.textContent = 'Mic permission denied or unavailable: ' + (e && e.message || e);
+      status.classList.add('error');
+      return;
+    }
+    gMediaStream = stream;
+
+    // Pick a MIME type the browser can produce. iOS → audio/mp4. Desktop
+    // Chrome/Firefox → audio/webm. Both work as Whisper inputs.
+    let mimeType = '';
+    const candidates = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+    for (const c of candidates) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) {
+        mimeType = c; break;
+      }
+    }
+
+    try {
+      gMediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    } catch (e) {
+      status.textContent = 'Could not start recorder: ' + (e && e.message || e);
+      status.classList.add('error');
+      stream.getTracks().forEach(t => t.stop());
+      return;
+    }
+
+    gMediaChunks = [];
+    gSpeakTranscript = '';
+    document.getElementById('speak-transcript').textContent = '…';
+
+    gMediaRecorder.ondataavailable = (ev) => {
+      if (ev.data && ev.data.size > 0) gMediaChunks.push(ev.data);
+    };
+
+    gMediaRecorder.onstart = () => {
+      gSpeakRecording = true;
+      btn.classList.add('recording');
+      btn.textContent = '⏹ Stop';
+      status.textContent = 'Listening… speak now in Greek. (Whisper STT)';
+      status.classList.remove('error');
+    };
+
+    gMediaRecorder.onstop = async () => {
+      gSpeakRecording = false;
+      btn.classList.remove('recording');
+      btn.textContent = '🎤 Record again';
+      try { stream.getTracks().forEach(t => t.stop()); } catch {}
+
+      if (!gMediaChunks.length) {
+        status.textContent = 'No audio captured. Try again — speak a bit longer.';
+        status.classList.add('error');
+        return;
+      }
+
+      const blob = new Blob(gMediaChunks, { type: gMediaRecorder.mimeType || mimeType || 'audio/webm' });
+      status.textContent = '⏳ Transcribing with Whisper…';
+      status.classList.remove('error');
+
+      const b64 = await new Promise((res) => {
+        const reader = new FileReader();
+        reader.onloadend = () => res((reader.result || '').toString().split(',')[1] || '');
+        reader.onerror = () => res('');
+        reader.readAsDataURL(blob);
+      });
+      if (!b64) {
+        status.textContent = 'Could not read audio. Try again.';
+        status.classList.add('error');
+        return;
+      }
+
+      try {
+        const resp = await fetch('/api/transcribe', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ audio_b64: b64, mime: blob.type, language: 'el' })
+        });
+        const data = await resp.json();
+        if (!data || !data.ok) {
+          const detail = (data && (data.hint || data.detail || data.error)) || 'unknown error';
+          status.textContent = '⚠️ Transcription failed: ' + detail;
+          status.classList.add('error');
+          return;
+        }
+        gSpeakTranscript = (data.text || '').trim();
+        const tEl = document.getElementById('speak-transcript');
+        tEl.textContent = gSpeakTranscript || '(no speech detected)';
+        tEl.classList.remove('interim');
+        const have = !!gSpeakTranscript;
+        document.getElementById('speak-submit-btn').disabled = !have;
+        document.getElementById('speak-redo-btn').disabled = false;
+        if (have) {
+          status.textContent = `Got it (Whisper · ${data.provider || 'stt'}). Hit "Grade my answer" or "Try again" to redo.`;
+        } else {
+          status.textContent = 'No speech detected. Try again — speak a bit louder.';
+          status.classList.add('error');
+        }
+      } catch (e) {
+        status.textContent = '⚠️ Could not reach /api/transcribe: ' + (e && e.message || e);
+        status.classList.add('error');
+      }
+    };
+
+    try { gMediaRecorder.start(); }
+    catch (e) {
+      status.textContent = 'Could not start mic: ' + (e && e.message || e);
+      status.classList.add('error');
     }
   }
 
