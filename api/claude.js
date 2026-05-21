@@ -3,15 +3,12 @@
 // the API key never touches the browser. Called by the Sessions tab in
 // index.html via POST /api/claude with body { action, payload }.
 
-// Model choice by action — keeps Opus for senior-level planning/analysis,
-// drops Sonnet on routine per-attempt grading.
-// - Opus 4.7  ($15/$75 per M): generate_plan + analyze_session — both require
-//   strategic reasoning across multiple data points.
-// - Sonnet 4.6 ($3/$15 per M): grade_speaking — single-sentence pass/fix call,
-//   runs many times per session, doesn't need Opus's depth. ~5x cost savings
-//   at typical usage with no observable quality change in grading.
+// HOTFIX 2026-05-21: my Sonnet ID guess ('claude-sonnet-4-6') returned a
+// non-JSON error from Anthropic, breaking the grader live. Reverting to
+// Opus 4.7 everywhere so grading works. Will look up the correct current
+// Sonnet model ID and re-apply the split in a follow-up.
 const MODEL_PLANNING = 'claude-opus-4-7';
-const MODEL_GRADING  = 'claude-sonnet-4-6';
+const MODEL_GRADING  = 'claude-opus-4-7';
 const MAX_TOKENS = 8192; // rule #4 floor
 
 const PLAN_GEN_SYSTEM_PROMPT = `You orchestrate a Greek learning sprint for a user preparing for a Greece trip. Target capability: transactional Greek plus small-talk initiation.

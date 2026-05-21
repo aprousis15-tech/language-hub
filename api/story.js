@@ -13,12 +13,9 @@
 // anon key (same key the browser uses). The daily_stories table has a
 // permissive RLS policy. No service-role key needed.
 
-// Sonnet 4.6 — story generation is routine content work, not planning or
-// roadmap-level reasoning. Sonnet's quality is indistinguishable from Opus
-// for "write a 5-sentence A2 Greek story with vocab notes and questions",
-// and it's 5x cheaper (~$3/month vs $15/month at daily runs).
-// Senior-level planning (coach agent, session plan/analysis) stays on Opus.
-const MODEL = 'claude-sonnet-4-6';
+// HOTFIX: 'claude-sonnet-4-6' returned non-JSON error from Anthropic.
+// Reverting to Opus 4.7 until the correct current Sonnet model ID is found.
+const MODEL = 'claude-opus-4-7';
 const MAX_TOKENS = 4096;
 const SUPABASE_URL = 'https://bdfjddzwvudqictvuvtr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj';
