@@ -60,10 +60,21 @@ module.exports = async function handler(req, res) {
             : audioMime.includes('wav')  ? 'wav'
             : 'webm';
 
+  // `prompt` biases Whisper to output in the target script — without it the
+  // model often returns Latin approximations like "Tello Cafe" for "Θέλω καφέ".
+  // Filled with a primer of common Greek words so it locks onto the alphabet.
+  // temperature=0 → deterministic, less hallucinated Latin output.
+  const promptByLang = {
+    el: 'Ελληνικά. Θέλω καφέ, νερό, παρακαλώ. Είμαι Αμερικάνος. Πάω στην Αθήνα. Πόσο κάνει αυτό; Καλημέρα, καλησπέρα, ευχαριστώ.',
+  };
+  const biasPrompt = (language && promptByLang[language]) || '';
+
   const form = new FormData();
   form.append('file', new Blob([buf], { type: audioMime }), `audio.${ext}`);
   form.append('model', model);
   if (language && typeof language === 'string') form.append('language', language);
+  if (biasPrompt) form.append('prompt', biasPrompt);
+  form.append('temperature', '0');
   form.append('response_format', 'json');
 
   let upstream;
