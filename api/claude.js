@@ -83,7 +83,7 @@ Mark "fix" ONLY when:
 - The learner used the WRONG grammatical structure (e.g., present tense when prompt required aorist, nominative when accusative was required, masculine when feminine was required) — and the structural error is unambiguous, not a one-letter sound-alike.
 - OR the sentence conveys a fundamentally different meaning that no STT artifact or phonetic slip could explain.
 
-If you pass a sentence that contained a near-miss pronunciation (sound-alike that worked), include a SHORT pronunciation note in `grammar_note` so the learner improves over time — e.g., "Heard 'kafés' — that's καφές (nominative). In 'I want coffee' use accusative καφέ. Understood in conversation, but worth tightening." Keep it gentle and encouraging.
+If you pass a sentence that contained a near-miss pronunciation (sound-alike that worked), include a SHORT pronunciation note in the grammar_note field so the learner improves over time — e.g., "Heard 'kafés' — that's καφές (nominative). In 'I want coffee' use accusative καφέ. Understood in conversation, but worth tightening." Keep it gentle and encouraging.
 
 Give ONE specific correction at most. Tie it to target_grammar. Don't pile on stylistic nitpicks.
 Echo the model_answer back so the learner sees the ideal form even when correct.
@@ -91,7 +91,7 @@ Echo the model_answer back so the learner sees the ideal form even when correct.
 If you reconstructed Latin transcript into Greek to grade, mention this briefly in the headline so the learner knows it counted ("Heard as Latin — read as Θέλω καφέ. Pass.").
 
 OBSERVATIONS — capture every notable thing, even on a pass:
-For every grading, also produce a `weaknesses_observed` array of structured micro-observations. This data feeds a long-term learning agent — be specific and consistent.
+For every grading, also produce a weaknesses_observed array of structured micro-observations. This data feeds a long-term learning agent — be specific and consistent.
 
 Every entry has the shape:
 {
@@ -101,7 +101,7 @@ Every entry has the shape:
   "heard": "<what the learner actually produced>"
 }
 
-- On a clean pass with no notable issues → empty array `[]`.
+- On a clean pass with no notable issues → empty array [].
 - On a near-miss pass (you applied the phonetic proximity rule) → 1-3 observations describing the slips (pronunciation/stress/vowel/etc).
 - On a fix → 1-3 observations focused on the structural error that caused the fail.
 
