@@ -1397,6 +1397,79 @@
   }
   .speak-done h3 { font-family: 'Playfair Display', serif; color: #1b5e20; margin-bottom: 8px; }
   .speak-done p { color: #2c4a2c; margin-bottom: 14px; }
+  /* ─── DAILY STORY ─── Burgundy palette so it reads distinct from Speak (orange) and Rules (teal). */
+  .lang-tab.active-story { color: #880e4f; border-bottom-color: #880e4f; background: white; font-weight: 700; }
+  .story-header { text-align: center; padding: 24px 16px 8px; max-width: 760px; margin: 0 auto; }
+  .story-header h2 { font-family: 'Playfair Display', serif; color: #880e4f; font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 6px; }
+  .story-header p { color: #5a3f30; font-size: 0.95rem; max-width: 600px; margin: 0 auto; }
+  .story-meta {
+    display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap;
+    background: #fce4ec; border: 1px solid #f8bbd0; padding: 10px 16px; border-radius: 10px;
+    max-width: 700px; margin: 14px auto 0;
+  }
+  .story-meta-item { color: #6d1b5e; font-size: 0.9rem; }
+  .story-meta-item strong { color: #4a0e3a; }
+  .story-refresh-btn {
+    background: white; color: #880e4f; border: 1.5px solid #ad1457; padding: 5px 12px;
+    border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-left: auto;
+  }
+  .story-refresh-btn:hover { background: #f8bbd0; }
+  .story-loading, .story-error {
+    max-width: 700px; margin: 24px auto; padding: 16px 20px; text-align: center;
+    border-radius: 10px; font-size: 0.95rem;
+  }
+  .story-loading { background: #fce4ec; color: #6d1b5e; border: 1px solid #f8bbd0; }
+  .story-error { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
+  .story-content {
+    max-width: 760px; margin: 18px auto; background: white;
+    border: 1px solid #f8bbd0; border-radius: 12px; padding: 24px 28px;
+    box-shadow: 0 2px 8px rgba(173, 20, 87, 0.06);
+  }
+  .story-title-greek { font-family: 'Georgia', serif; color: #4a0e3a; font-size: 1.5rem; margin-bottom: 2px; }
+  .story-title-english { color: #8a6a7a; font-style: italic; font-size: 0.95rem; margin-bottom: 18px; }
+  .story-sentences { list-style: none; counter-reset: storyline; padding: 0; margin: 0 0 22px; }
+  .story-sentences li {
+    counter-increment: storyline; position: relative; padding: 10px 0 10px 36px;
+    border-bottom: 1px dashed #f3d3df;
+  }
+  .story-sentences li:last-child { border-bottom: none; }
+  .story-sentences li::before {
+    content: counter(storyline); position: absolute; left: 0; top: 12px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #880e4f; color: white; font-size: 0.78rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .story-sentence-greek {
+    font-family: 'Georgia', serif; color: #2a1f25; font-size: 1.08rem; line-height: 1.5;
+    cursor: pointer; user-select: none;
+  }
+  .story-sentence-english {
+    color: #7a5a6c; font-size: 0.9rem; font-style: italic; margin-top: 6px;
+    padding-left: 8px; border-left: 3px solid #f8bbd0; display: none;
+  }
+  .story-sentence-english.show { display: block; }
+  .story-sentence-toggle {
+    background: none; border: none; color: #ad1457; font-size: 0.8rem; cursor: pointer;
+    padding: 4px 0 0; font-weight: 600;
+  }
+  .story-sentence-toggle:hover { text-decoration: underline; }
+  .story-section { margin-top: 22px; }
+  .story-section h4 {
+    font-family: 'Playfair Display', serif; color: #880e4f; font-size: 1.1rem;
+    margin-bottom: 10px; border-bottom: 1px solid #f3d3df; padding-bottom: 4px;
+  }
+  .story-vocab-list { list-style: none; padding: 0; margin: 0; }
+  .story-vocab-list li {
+    padding: 8px 0; border-bottom: 1px dashed #f8bbd0; font-size: 0.93rem;
+  }
+  .story-vocab-list li:last-child { border-bottom: none; }
+  .story-vocab-greek { font-family: 'Georgia', serif; color: #4a0e3a; font-weight: 700; margin-right: 6px; }
+  .story-vocab-english { color: #2a1f25; }
+  .story-vocab-note { color: #7a5a6c; font-style: italic; display: block; font-size: 0.85rem; margin-top: 2px; }
+  .story-questions-section { opacity: 0.7; }
+  .story-coming-soon { color: #a07a8a; font-size: 0.78rem; font-weight: 400; font-style: italic; }
+  .story-questions-list { padding-left: 22px; margin: 0; }
+  .story-questions-list li { padding: 6px 0; color: #4a3640; font-size: 0.92rem; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
   /* Shared SRS-drill styling (used by grammar-verbdrill/noundrill/adjdrill/impdrill subpanels, with per-mode accent colors via the .srs-tinted wrapper) */
@@ -2389,6 +2462,7 @@
   <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('speak')">🎙️ Speak</button>
+  <button class="lang-tab" onclick="switchLang('story')">📖 Daily Story</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
@@ -4315,6 +4389,44 @@
       <h3>✓ Daily Five complete</h3>
       <p>Score: <strong id="speak-final-score">0/5</strong>. Run another set, or come back tomorrow.</p>
       <button class="btn-speak primary" onclick="resetSpeakSession()">Practice another 5</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY STORY PANEL — Claude-generated A2 Greek story, one per day. Cached
+     server-side per ET date in public.daily_stories. Frontend just fetches. -->
+<div class="lang-panel" id="panel-story">
+  <div class="container">
+    <div class="story-header">
+      <h2>📖 Daily Greek Story</h2>
+      <p>A fresh 5-sentence story every day at A2 level. Read the Greek first, peek at the English when stuck. Vocabulary notes below the story.</p>
+    </div>
+
+    <div class="story-meta">
+      <span class="story-meta-item"><strong>Date:</strong> <span id="story-date">—</span></span>
+      <span class="story-meta-item"><strong>Level:</strong> <span id="story-level">A2</span></span>
+      <span class="story-meta-item"><strong>Topic:</strong> <span id="story-topic">—</span></span>
+      <button class="story-refresh-btn" onclick="refreshStory()" title="Generate a new story for today (replaces the cached one)">↺ New story</button>
+    </div>
+
+    <div id="story-loading" class="story-loading">⏳ Loading today's story…</div>
+    <div id="story-error" class="story-error" style="display:none;"></div>
+
+    <div id="story-content" class="story-content" style="display:none;">
+      <h3 id="story-title-greek" class="story-title-greek"></h3>
+      <div id="story-title-english" class="story-title-english"></div>
+
+      <ol id="story-sentences" class="story-sentences"></ol>
+
+      <div class="story-section">
+        <h4>📒 Vocabulary notes</h4>
+        <ul id="story-vocab-list" class="story-vocab-list"></ul>
+      </div>
+
+      <div class="story-section story-questions-section">
+        <h4>❓ Comprehension <span class="story-coming-soon">(self-check coming in Phase 3)</span></h4>
+        <ol id="story-questions-list" class="story-questions-list"></ol>
+      </div>
     </div>
   </div>
 </div>
@@ -7354,6 +7466,135 @@
     renderSpeakCard();
   }
 
+  // ── DAILY STORY ──
+  // Fetches today's story from /api/story (server-side cache + Claude
+  // generation). Loaded once per tab open; force-refresh via the
+  // "↺ New story" button replaces the cached row server-side.
+  let gStoryData = null;
+  let gStoryLoading = false;
+
+  async function initStory() {
+    if (gStoryData || gStoryLoading) return; // first open only — cached after
+    await loadStory(false);
+  }
+
+  async function refreshStory() {
+    if (gStoryLoading) return;
+    if (!confirm('Generate a fresh story for today? This replaces the cached one.')) return;
+    await loadStory(true);
+  }
+
+  async function loadStory(force) {
+    gStoryLoading = true;
+    const loading = document.getElementById('story-loading');
+    const content = document.getElementById('story-content');
+    const errBox = document.getElementById('story-error');
+    if (loading) loading.style.display = '';
+    if (content) content.style.display = 'none';
+    if (errBox) errBox.style.display = 'none';
+
+    try {
+      const url = '/api/story' + (force ? '?regenerate=1' : '');
+      const r = await fetch(url, { method: force ? 'POST' : 'GET' });
+      const data = await r.json();
+      if (!r.ok || !data.ok || !data.story) {
+        throw new Error(data && data.error ? data.error : 'unknown error');
+      }
+      gStoryData = data.story;
+      renderStory(data.story);
+      if (loading) loading.style.display = 'none';
+      if (content) content.style.display = '';
+    } catch (e) {
+      if (loading) loading.style.display = 'none';
+      if (errBox) {
+        errBox.style.display = '';
+        errBox.textContent = '⚠️ Could not load story: ' + (e && e.message || e);
+      }
+    } finally {
+      gStoryLoading = false;
+    }
+  }
+
+  function renderStory(s) {
+    // Meta strip
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+    setText('story-date', s.story_date || '');
+    setText('story-level', s.level || 'A2');
+    setText('story-topic', s.topic || '');
+
+    // Titles
+    const tg = document.getElementById('story-title-greek');
+    const te = document.getElementById('story-title-english');
+    if (tg) tg.textContent = s.title_greek || '';
+    if (te) te.textContent = s.title_english ? '“' + s.title_english + '”' : '';
+
+    // Sentences with click-to-reveal English
+    const list = document.getElementById('story-sentences');
+    if (list) {
+      list.innerHTML = '';
+      const sentences = Array.isArray(s.sentences) ? s.sentences : [];
+      sentences.forEach((line, idx) => {
+        const li = document.createElement('li');
+        const greek = document.createElement('div');
+        greek.className = 'story-sentence-greek';
+        greek.textContent = line.greek || '';
+        const english = document.createElement('div');
+        english.className = 'story-sentence-english';
+        english.id = 'story-sent-en-' + idx;
+        english.textContent = line.english || '';
+        const toggle = document.createElement('button');
+        toggle.className = 'story-sentence-toggle';
+        toggle.type = 'button';
+        toggle.textContent = '👁️ Show English';
+        toggle.onclick = () => {
+          const shown = english.classList.toggle('show');
+          toggle.textContent = shown ? '🙈 Hide English' : '👁️ Show English';
+        };
+        // Tap on the Greek line also toggles — easier on mobile.
+        greek.onclick = () => toggle.click();
+        li.appendChild(greek);
+        li.appendChild(english);
+        li.appendChild(toggle);
+        list.appendChild(li);
+      });
+    }
+
+    // Vocab notes
+    const vocab = document.getElementById('story-vocab-list');
+    if (vocab) {
+      vocab.innerHTML = '';
+      const notes = Array.isArray(s.vocab_notes) ? s.vocab_notes : [];
+      notes.forEach(n => {
+        const li = document.createElement('li');
+        const g = document.createElement('span');
+        g.className = 'story-vocab-greek';
+        g.textContent = n.greek || '';
+        const e = document.createElement('span');
+        e.className = 'story-vocab-english';
+        e.textContent = (n.greek ? '— ' : '') + (n.english || '');
+        const note = document.createElement('span');
+        note.className = 'story-vocab-note';
+        note.textContent = n.note || '';
+        li.appendChild(g);
+        li.appendChild(e);
+        if (n.note) li.appendChild(note);
+        vocab.appendChild(li);
+      });
+    }
+
+    // Questions — render as a teaser list for Phase 2; self-check coming Phase 3.
+    const qList = document.getElementById('story-questions-list');
+    if (qList) {
+      qList.innerHTML = '';
+      const qs = Array.isArray(s.questions) ? s.questions : [];
+      qs.forEach(q => {
+        const li = document.createElement('li');
+        li.textContent = q.q || '';
+        qList.appendChild(li);
+      });
+    }
+  }
+
   async function loadMistakes(limit) {
     let supaRows = [];
     if (window._supabase) {
@@ -7624,10 +7865,10 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-story','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
     const panelEl = document.getElementById('panel-' + lang);
     if (panelEl) panelEl.classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, rules:8, foundations:9, translate:10, notes:11, sessions:12, review:13};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, story:8, rules:9, foundations:10, translate:11, notes:12, sessions:13, review:14};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -7636,6 +7877,7 @@
     if (lang === 'grammar') { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'speak') { initSpeakDrill(); }
+    if (lang === 'story') { initStory(); }
     // If leaving Speak while recording, stop the mic so it doesn't keep
     // capturing in the background after the tab is hidden.
     if (lang !== 'speak' && typeof stopSpeakRecord === 'function') stopSpeakRecord();

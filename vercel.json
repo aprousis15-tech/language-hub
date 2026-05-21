@@ -3,11 +3,13 @@
   "builds": [
     { "src": "api/claude.js", "use": "@vercel/node" },
     { "src": "api/transcribe.js", "use": "@vercel/node" },
+    { "src": "api/story.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/claude", "dest": "/api/claude.js" },
     { "src": "/api/transcribe", "dest": "/api/transcribe.js" },
+    { "src": "/api/story", "dest": "/api/story.js" },
     { "src": "/(.*\\.html)", "dest": "/$1" },
     { "src": "/", "dest": "/index.html" }
   ]
