@@ -1504,6 +1504,70 @@
   .story-q-answer.show { display: block; }
   .story-q-answer-greek { font-family: 'Georgia', serif; color: #2a1f25; font-size: 0.95rem; }
   .story-q-answer-english { color: #7a5a6c; font-style: italic; font-size: 0.85rem; margin-top: 3px; }
+
+  /* ─── COACH (Today's Plan) ─── Indigo so it reads distinct from Speak (orange) and Story (burgundy). */
+  .lang-tab.active-coach { color: #283593; border-bottom-color: #283593; background: white; font-weight: 700; }
+  .coach-header { text-align: center; padding: 24px 16px 8px; max-width: 760px; margin: 0 auto; }
+  .coach-header h2 { font-family: 'Playfair Display', serif; color: #283593; font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 6px; }
+  .coach-header p { color: #4a4a6a; font-size: 0.95rem; max-width: 620px; margin: 0 auto; }
+  .coach-loading, .coach-error {
+    max-width: 700px; margin: 24px auto; padding: 16px 20px; text-align: center;
+    border-radius: 10px; font-size: 0.95rem;
+  }
+  .coach-loading { background: #e8eaf6; color: #283593; border: 1px solid #c5cae9; }
+  .coach-error { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
+  .coach-empty {
+    max-width: 600px; margin: 24px auto; padding: 36px 28px; text-align: center;
+    background: white; border: 1px dashed #9fa8da; border-radius: 12px;
+  }
+  .coach-empty-icon { font-size: 3rem; margin-bottom: 8px; }
+  .coach-empty h3 { font-family: 'Playfair Display', serif; color: #283593; margin-bottom: 8px; }
+  .coach-empty p { color: #4a4a6a; font-size: 0.95rem; margin-bottom: 18px; }
+  .coach-empty-cta {
+    background: #283593; color: white; border: none; padding: 10px 20px;
+    border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600;
+  }
+  .coach-empty-cta:hover { background: #1a237e; }
+  .coach-content {
+    max-width: 800px; margin: 18px auto; background: white;
+    border: 1px solid #c5cae9; border-radius: 12px; padding: 24px 28px;
+    box-shadow: 0 2px 8px rgba(40, 53, 147, 0.08);
+  }
+  .coach-meta {
+    display: flex; gap: 16px; flex-wrap: wrap; padding-bottom: 14px;
+    border-bottom: 1px solid #e8eaf6; margin-bottom: 18px; font-size: 0.9rem; color: #4a4a6a;
+  }
+  .coach-meta-item strong { color: #283593; }
+  .coach-section { margin-top: 18px; }
+  .coach-section h4 {
+    font-family: 'Playfair Display', serif; color: #283593; font-size: 1.1rem;
+    margin-bottom: 8px; border-bottom: 1px solid #e8eaf6; padding-bottom: 4px;
+  }
+  .coach-section-foot { color: #6a6a8a; font-size: 0.82rem; font-style: italic; margin-top: 6px; }
+  .coach-why { background: #f5f6fb; padding: 14px 16px; border-radius: 8px; border-left: 4px solid #283593; }
+  .coach-why h4 { border-bottom: none; margin-top: 0; padding-bottom: 0; }
+  .coach-why p { color: #2a2a4a; font-size: 0.95rem; margin: 4px 0 8px; line-height: 1.45; }
+  .coach-focus-areas { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .coach-focus-tag {
+    background: #283593; color: white; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 600;
+  }
+  .coach-speak-prompts { padding-left: 20px; margin: 0; }
+  .coach-speak-prompts li { padding: 8px 0; border-bottom: 1px dashed #e8eaf6; }
+  .coach-speak-prompts li:last-child { border-bottom: none; }
+  .coach-prompt-en { color: #2a2a4a; font-size: 0.96rem; }
+  .coach-prompt-target { color: #5c6bc0; font-size: 0.8rem; font-style: italic; display: block; margin-top: 2px; }
+  .coach-prompt-hint { color: #6a6a8a; font-size: 0.82rem; display: block; margin-top: 2px; }
+  .coach-grammar-lesson { color: #2a2a4a; font-size: 0.93rem; line-height: 1.55; }
+  .coach-grammar-lesson p { margin: 6px 0; }
+  .coach-grammar-lesson strong, .coach-grammar-lesson b { color: #283593; }
+  .coach-grammar-lesson .greek { font-family: 'Georgia', serif; color: #1a237e; font-weight: 600; }
+  .coach-vocab-focus { list-style: none; padding: 0; margin: 0; }
+  .coach-vocab-focus li {
+    padding: 6px 0; border-bottom: 1px dashed #e8eaf6; font-size: 0.92rem; color: #2a2a4a;
+  }
+  .coach-vocab-focus li:last-child { border-bottom: none; }
+  .coach-vocab-focus .greek { font-family: 'Georgia', serif; color: #283593; font-weight: 700; margin-right: 6px; }
   .lang-tab.active-rules { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .lang-tab.active-foundations { color: #5d4037; border-bottom-color: #5d4037; background: white; font-weight: 700; }
   /* Shared SRS-drill styling (used by grammar-verbdrill/noundrill/adjdrill/impdrill subpanels, with per-mode accent colors via the .srs-tinted wrapper) */
@@ -2497,6 +2561,7 @@
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('speak')">🎙️ Speak</button>
   <button class="lang-tab" onclick="switchLang('story')">📖 Daily Story</button>
+  <button class="lang-tab" onclick="switchLang('coach')">🤖 Coach</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
   <button class="lang-tab" onclick="switchLang('foundations')">📖 Foundations</button>
   <button class="lang-tab" onclick="switchLang('translate')">🔤 Translate</button>
@@ -4461,6 +4526,60 @@
         <h4>❓ Comprehension <span class="story-questions-score" id="story-questions-score"></span></h4>
         <p class="story-questions-help">Read each question, decide if you understand the story well enough to answer, then reveal the Greek answer to check.</p>
         <ol id="story-questions-list" class="story-questions-list"></ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COACH PANEL — Today's Plan, generated nightly by the Claude Agent SDK
+     coach. Phase A is empty-state-only; once the agent ships, plans appear
+     here automatically. Fully isolated from the rest of the site — if the
+     agent fails or never runs, this panel just shows the empty state. -->
+<div class="lang-panel" id="panel-coach">
+  <div class="container">
+    <div class="coach-header">
+      <h2>🤖 Today's Plan</h2>
+      <p>Each morning, a Claude-powered study coach looks at your speaking observations and writes a personalized plan: 5 fresh speak prompts targeting your weak spots, a short grammar mini-lesson, and a vocab focus list.</p>
+    </div>
+
+    <div id="coach-loading" class="coach-loading">⏳ Loading today's plan…</div>
+    <div id="coach-error" class="coach-error" style="display:none;"></div>
+
+    <!-- Empty state — what you see when the agent hasn't run yet -->
+    <div id="coach-empty" class="coach-empty" style="display:none;">
+      <div class="coach-empty-icon">🤖</div>
+      <h3>No plan yet</h3>
+      <p>The agent runs nightly at 5am ET. Once enabled, today's plan will appear here automatically. Until then, drive a few speak sessions so the coach has data to learn from.</p>
+      <button class="coach-empty-cta" onclick="switchLang('speak')">🎙️ Open Speak drill</button>
+    </div>
+
+    <!-- Populated state — rendered when a plan row exists -->
+    <div id="coach-content" class="coach-content" style="display:none;">
+      <div class="coach-meta">
+        <span class="coach-meta-item"><strong>Plan for:</strong> <span id="coach-plan-date">—</span></span>
+        <span class="coach-meta-item"><strong>Generated:</strong> <span id="coach-generated-at">—</span></span>
+      </div>
+
+      <div class="coach-section coach-why">
+        <h4>🎯 Why these picks</h4>
+        <p id="coach-why-picked">—</p>
+        <div id="coach-focus-areas" class="coach-focus-areas"></div>
+      </div>
+
+      <div class="coach-section">
+        <h4>🎙️ Today's 5 speak prompts</h4>
+        <ol id="coach-speak-prompts" class="coach-speak-prompts"></ol>
+        <p class="coach-section-foot">Switch to <a onclick="switchLang('speak')" style="cursor:pointer;color:#1565c0;text-decoration:underline;">Speak</a> to drill these. (Auto-loading these into Speak is a Phase 2 polish.)</p>
+      </div>
+
+      <div class="coach-section">
+        <h4>📚 Grammar focus</h4>
+        <div id="coach-grammar-lesson" class="coach-grammar-lesson"></div>
+      </div>
+
+      <div class="coach-section" id="coach-vocab-section">
+        <h4>📒 Vocab focus</h4>
+        <ul id="coach-vocab-focus" class="coach-vocab-focus"></ul>
       </div>
     </div>
   </div>
@@ -7750,6 +7869,160 @@
     } catch {}
   }
 
+  // ── COACH (Today's Plan) ──
+  // Read-only view of whatever the Claude Agent SDK coach last produced.
+  // Empty state until the agent runs; the agent itself ships in a later phase.
+  let gCoachPlan = null;
+  let gCoachLoading = false;
+
+  async function initCoach() {
+    if (gCoachLoading) return;
+    await loadCoachPlan();
+  }
+
+  async function loadCoachPlan() {
+    gCoachLoading = true;
+    const loading = document.getElementById('coach-loading');
+    const errBox  = document.getElementById('coach-error');
+    const empty   = document.getElementById('coach-empty');
+    const content = document.getElementById('coach-content');
+    if (loading) loading.style.display = '';
+    if (errBox)  errBox.style.display  = 'none';
+    if (empty)   empty.style.display   = 'none';
+    if (content) content.style.display = 'none';
+
+    try {
+      const r = await fetch('/api/coach/plan-today');
+      const data = await r.json();
+      if (!r.ok || !data.ok) throw new Error(data && data.error ? data.error : 'request failed');
+      gCoachPlan = data.plan;
+      if (loading) loading.style.display = 'none';
+      if (data.plan) {
+        renderCoachPlan(data.plan);
+        if (content) content.style.display = '';
+      } else {
+        if (empty) empty.style.display = '';
+      }
+    } catch (e) {
+      if (loading) loading.style.display = 'none';
+      // On error, fall through to empty state — never block other tabs.
+      // Surface the detail in the error banner for debugging.
+      if (errBox) {
+        errBox.style.display = '';
+        errBox.textContent = '⚠️ Could not load coach plan: ' + (e && e.message || e);
+      }
+      if (empty) empty.style.display = '';
+    } finally {
+      gCoachLoading = false;
+    }
+  }
+
+  function renderCoachPlan(p) {
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+    setText('coach-plan-date', p.plan_date || '');
+    setText('coach-generated-at', p.generated_at ? new Date(p.generated_at).toLocaleString() : '');
+    setText('coach-why-picked', p.why_picked || '');
+
+    // Focus areas (chips)
+    const focus = document.getElementById('coach-focus-areas');
+    if (focus) {
+      focus.innerHTML = '';
+      const areas = Array.isArray(p.focus_areas) ? p.focus_areas : [];
+      areas.forEach(a => {
+        const tag = document.createElement('span');
+        tag.className = 'coach-focus-tag';
+        tag.textContent = typeof a === 'string' ? a : (a && (a.label || a.name) || JSON.stringify(a));
+        focus.appendChild(tag);
+      });
+    }
+
+    // Speak prompts
+    const speakList = document.getElementById('coach-speak-prompts');
+    if (speakList) {
+      speakList.innerHTML = '';
+      const prompts = Array.isArray(p.speak_prompts) ? p.speak_prompts : [];
+      prompts.forEach(pr => {
+        const li = document.createElement('li');
+        const en = document.createElement('div');
+        en.className = 'coach-prompt-en';
+        en.textContent = pr.en || pr.english || '';
+        li.appendChild(en);
+        if (pr.target) {
+          const tg = document.createElement('span');
+          tg.className = 'coach-prompt-target';
+          tg.textContent = 'target: ' + pr.target;
+          li.appendChild(tg);
+        }
+        if (pr.hint) {
+          const hint = document.createElement('span');
+          hint.className = 'coach-prompt-hint';
+          hint.innerHTML = '💡 ' + pr.hint; // hints can contain <b> tags from the agent
+          li.appendChild(hint);
+        }
+        speakList.appendChild(li);
+      });
+    }
+
+    // Grammar lesson — agent may write Markdown-ish or plain text. Keep simple.
+    const lesson = document.getElementById('coach-grammar-lesson');
+    if (lesson) {
+      lesson.innerHTML = '';
+      const g = p.grammar_lesson;
+      if (g && typeof g === 'object') {
+        if (g.title) {
+          const h = document.createElement('p');
+          h.innerHTML = '<strong>' + escHtml(g.title) + '</strong>';
+          lesson.appendChild(h);
+        }
+        const body = g.body || g.text || g.lesson;
+        if (body) {
+          const p2 = document.createElement('p');
+          p2.textContent = body;
+          lesson.appendChild(p2);
+        }
+        if (Array.isArray(g.examples)) {
+          g.examples.forEach(ex => {
+            const exP = document.createElement('p');
+            exP.innerHTML = '<span class="greek">' + escHtml(ex.greek || '') + '</span> — ' + escHtml(ex.english || '');
+            lesson.appendChild(exP);
+          });
+        }
+      } else if (typeof g === 'string') {
+        const p2 = document.createElement('p');
+        p2.textContent = g;
+        lesson.appendChild(p2);
+      } else {
+        lesson.innerHTML = '<p style="color:#6a6a8a;font-style:italic;">No grammar lesson today.</p>';
+      }
+    }
+
+    // Vocab focus
+    const vocabSection = document.getElementById('coach-vocab-section');
+    const vocabList = document.getElementById('coach-vocab-focus');
+    const vocab = Array.isArray(p.vocab_focus) ? p.vocab_focus : [];
+    if (vocabList) {
+      vocabList.innerHTML = '';
+      vocab.forEach(v => {
+        const li = document.createElement('li');
+        const g = document.createElement('span');
+        g.className = 'greek';
+        g.textContent = v.greek || '';
+        const en = document.createElement('span');
+        en.textContent = (v.greek ? '— ' : '') + (v.english || '');
+        li.appendChild(g);
+        li.appendChild(en);
+        if (v.note) {
+          const n = document.createElement('span');
+          n.style.cssText = 'color:#6a6a8a;font-style:italic;display:block;font-size:0.85rem;margin-top:2px;';
+          n.textContent = v.note;
+          li.appendChild(n);
+        }
+        vocabList.appendChild(li);
+      });
+    }
+    if (vocabSection) vocabSection.style.display = vocab.length ? '' : 'none';
+  }
+
   async function loadMistakes(limit) {
     let supaRows = [];
     if (window._supabase) {
@@ -8020,10 +8293,10 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-story','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-story','active-coach','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
     const panelEl = document.getElementById('panel-' + lang);
     if (panelEl) panelEl.classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, story:8, rules:9, foundations:10, translate:11, notes:12, sessions:13, review:14};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, story:8, coach:9, rules:10, foundations:11, translate:12, notes:13, sessions:14, review:15};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -8033,6 +8306,7 @@
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'speak') { initSpeakDrill(); }
     if (lang === 'story') { initStory(); }
+    if (lang === 'coach') { initCoach(); }
     // If leaving Speak while recording, stop the mic so it doesn't keep
     // capturing in the background after the tab is hidden.
     if (lang !== 'speak' && typeof stopSpeakRecord === 'function') stopSpeakRecord();
