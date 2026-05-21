@@ -13,9 +13,11 @@
 // anon key (same key the browser uses). The daily_stories table has a
 // permissive RLS policy. No service-role key needed.
 
-// HOTFIX: 'claude-sonnet-4-6' returned non-JSON error from Anthropic.
-// Reverting to Opus 4.7 until the correct current Sonnet model ID is found.
-const MODEL = 'claude-opus-4-7';
+// Sonnet 4.6 — story generation is routine A2-level content work, not deep
+// reasoning. Verified ID per Anthropic docs (2026-05-21). The earlier outage
+// was unescaped backticks in api/claude.js's grading prompt, not this file.
+// ~5x cheaper than Opus; quality indistinguishable for this task.
+const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 4096;
 const SUPABASE_URL = 'https://bdfjddzwvudqictvuvtr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj';

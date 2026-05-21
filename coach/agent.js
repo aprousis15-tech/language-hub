@@ -16,9 +16,12 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { tools, toolImplementations } = require('./tools');
 
-// HOTFIX: 'claude-sonnet-4-6' returned non-JSON error from Anthropic API.
-// Reverting to Opus 4.7 until the correct current Sonnet model ID is found.
-const MODEL = 'claude-opus-4-7';
+// Sonnet 4.6 — coach work is structured templating (read mistakes, find top
+// patterns, generate 5 prompts, write A2 lesson, save). Verified ID per
+// Anthropic docs (2026-05-21). The earlier outage was a backtick bug in
+// api/claude.js, not this model. ~5x cheaper than Opus, ~2x faster wall-
+// clock → comfortable headroom under Vercel Hobby's 60s function cap.
+const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 4096;
 const MAX_TURNS = 20;
 const TOOL_RESULT_CAP = 50_000; // chars — trim huge query results to keep context lean

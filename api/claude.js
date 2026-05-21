@@ -3,12 +3,14 @@
 // the API key never touches the browser. Called by the Sessions tab in
 // index.html via POST /api/claude with body { action, payload }.
 
-// HOTFIX 2026-05-21: my Sonnet ID guess ('claude-sonnet-4-6') returned a
-// non-JSON error from Anthropic, breaking the grader live. Reverting to
-// Opus 4.7 everywhere so grading works. Will look up the correct current
-// Sonnet model ID and re-apply the split in a follow-up.
+// Model split per action — verified via Anthropic docs at
+// https://platform.claude.com/docs/en/docs/about-claude/models/overview (2026-05-21):
+//   claude-opus-4-7   ($5/$25 per M)  Senior reasoning, planning, analysis.
+//   claude-sonnet-4-6 ($3/$15 per M)  Routine per-attempt grading.
+// Earlier outage at line 86 was unescaped backticks inside the system
+// prompt, not the model ID — that turned out to be valid all along.
 const MODEL_PLANNING = 'claude-opus-4-7';
-const MODEL_GRADING  = 'claude-opus-4-7';
+const MODEL_GRADING  = 'claude-sonnet-4-6';
 const MAX_TOKENS = 8192; // rule #4 floor
 
 const PLAN_GEN_SYSTEM_PROMPT = `You orchestrate a Greek learning sprint for a user preparing for a Greece trip. Target capability: transactional Greek plus small-talk initiation.
