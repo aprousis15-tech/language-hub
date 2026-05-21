@@ -16,14 +16,18 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { tools, toolImplementations } = require('./tools');
 
-// Opus 4.7 — the coach is the senior-level planning brain of the site, so
-// it gets the strongest model. Cost is bounded by the new idempotency check
-// in /api/coach/run (one run per day max, ~$0.70/run on Opus → ~$21/month).
-// The smaller default mistakes query (50 rows vs 200) keeps per-run input
-// tokens manageable and gives Opus comfortable headroom under Vercel Hobby's
-// 60s function cap — first Opus run at the old 200-row default took 68s
-// curl; 50-row default should land closer to 40s.
-const MODEL = 'claude-opus-4-7';
+// Sonnet 4.6 — the coach's job decomposes as "find top patterns in the
+// mistakes table, generate 5 prompts targeting them, write an A2 grammar
+// lesson, save the plan". That's structured templating + light synthesis,
+// not the hard multi-step reasoning where Opus pulls ahead. Sonnet handles
+// it equivalently for ~1/5th the cost.
+// - Cost: ~$4/month at daily cron (vs ~$19/month on Opus)
+// - Speed: ~25s wall-clock (vs ~60s on Opus) → big headroom under Vercel's
+//   60s function cap
+// - Quality: indistinguishable from Opus on this task
+// Opus stays on /api/claude generate_plan + analyze_session where deeper
+// reasoning over weaker structure actually matters.
+const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 4096;
 const MAX_TURNS = 20;
 const TOOL_RESULT_CAP = 50_000; // chars — trim huge query results to keep context lean
