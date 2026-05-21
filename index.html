@@ -3500,6 +3500,9 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('noundrill',this)">📦 Noun Pairs (SRS)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('nouns')" title="Pick a random noun drill">🎲 Random noun</button>
 
+      <div class="grammar-mode-group-label">▸ 🧍 Pronouns</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('pronouns',this)">🧍 Object Pronouns (him/her/his)</button>
+
       <div class="grammar-mode-group-label">▸ 🎨 Adjectives</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adjdrill',this)">🎨 Adj Forms (SRS)</button>
@@ -3547,6 +3550,25 @@
       <div class="grammar-progress">
         <span id="art-progress">Question 1 of 15</span>
         <span class="grammar-score" id="art-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- Object Pronouns drill — the τον/την/του/της double-life as articles AND pronouns -->
+    <div id="grammar-pronouns" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="pron-prompt">…</div>
+        <div class="grammar-prompt-en" id="pron-en">…</div>
+        <div class="grammar-options" id="pron-options"></div>
+        <div class="grammar-feedback" id="pron-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gPronBack()">← Back</button>
+        <button class="grammar-btn" onclick="gPronNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gPronShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="pron-progress">Question 1 of 28</span>
+        <span class="grammar-score" id="pron-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -9698,6 +9720,50 @@
   // Rule reminders mapped per grammar drill mode. Shown in the disclosure
   // above the active drill. Click "See full Rules tab →" to jump to the full version.
   const DRILL_RULES = {
+    pronouns: `
+      <strong>The big idea:</strong> the little words <span class="rule-greek">τον / την / το / τους / τις / τα / του / της</span> have a <em>double life</em> in Greek. They are the definite article ("the") AND they are personal pronouns ("him / her / it / them / his / her"). Same forms, different jobs. What tells you which job?
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><strong>Position</strong> — articles come <em>before a noun</em>, pronouns come <em>before the verb</em> (or after the noun, for possessives).</li>
+        <li><strong>Case</strong> — accusative forms do object work, genitive forms do "to him/her" and possessive work.</li>
+      </ul>
+      <strong>The three pronoun roles (memorize this table):</strong>
+      <table>
+        <tr><th>Role</th><th>Masc.</th><th>Fem.</th><th>Neut.</th><th>Plural (all genders)</th></tr>
+        <tr><td><strong>Direct object</strong> (him / her / it / them) — BEFORE the verb<br/><span style="font-weight:normal; color:#7a6a55;">"I see __"</span></td>
+            <td><span class="rule-greek">τον</span></td><td><span class="rule-greek">την</span></td><td><span class="rule-greek">το</span></td>
+            <td><span class="rule-greek">τους</span> (m) · <span class="rule-greek">τις</span> (f) · <span class="rule-greek">τα</span> (n)</td></tr>
+        <tr><td><strong>Indirect object</strong> (to him / to her / to them) — BEFORE the verb<br/><span style="font-weight:normal; color:#7a6a55;">"I gave __ a gift"</span></td>
+            <td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td>
+            <td><span class="rule-greek">τους</span> (all genders)</td></tr>
+        <tr><td><strong>Possessive</strong> (his / her / their) — AFTER the noun<br/><span style="font-weight:normal; color:#7a6a55;">"the book __"</span></td>
+            <td><span class="rule-greek">του</span></td><td><span class="rule-greek">της</span></td><td><span class="rule-greek">του</span></td>
+            <td><span class="rule-greek">τους</span> (all genders)</td></tr>
+        <tr><td><strong>Subject</strong> (he / she / it) — usually OMITTED in Greek; used for emphasis only</td>
+            <td><span class="rule-greek">αυτός</span></td><td><span class="rule-greek">αυτή</span></td><td><span class="rule-greek">αυτό</span></td>
+            <td><span class="rule-greek">αυτοί / αυτές / αυτά</span></td></tr>
+      </table>
+      <strong>Key insight #1 — possessive matches the OWNER, not the noun.</strong>
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><span class="rule-greek">η μητέρα του</span> = "HIS mother" — του because the owner is HE, even though μητέρα is feminine.</li>
+        <li><span class="rule-greek">ο φίλος της</span> = "HER (male) friend" — της because the owner is SHE, even though φίλος is masculine.</li>
+      </ul>
+      <strong>Key insight #2 — position tells you article vs. pronoun.</strong>
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><span class="rule-greek">Τον άντρα βλέπω.</span> = "I see THE man." → <span class="rule-greek">τον</span> is the ARTICLE (it sits before the noun άντρα).</li>
+        <li><span class="rule-greek">Τον βλέπω.</span> = "I see HIM." → <span class="rule-greek">τον</span> is the PRONOUN (it sits right before the verb, no noun after).</li>
+      </ul>
+      <strong>Key insight #3 — pronouns hug the verb, but imperatives flip the order.</strong>
+      <ul style="margin: 6px 0 8px 18px;">
+        <li>Declarative: <span class="rule-greek">Της λέω την αλήθεια.</span> ("I tell her the truth.") — pronoun BEFORE the verb.</li>
+        <li>Imperative: <span class="rule-greek">Πες της την αλήθεια!</span> ("Tell her the truth!") — pronoun AFTER the verb.</li>
+      </ul>
+      <strong>Key insight #4 — some Greek verbs take the genitive (indirect object) where English uses a direct object.</strong>
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><span class="rule-greek">του τηλεφωνώ</span> = "I phone him" (not <span class="rule-greek">τον τηλεφωνώ</span>) — τηλεφωνώ takes genitive.</li>
+        <li><span class="rule-greek">της μιλάω</span> = "I talk to her" — μιλάω takes genitive.</li>
+        <li>Verbs that take genitive in Greek: <span class="rule-greek">τηλεφωνώ, μιλάω, αρέσει, χρειάζομαι, μοιάζω</span>.</li>
+      </ul>
+    `,
     articles: `
       <strong>Articles change by case AND number.</strong> Six cells per gender — three cases × singular/plural.
       <table>
@@ -9975,6 +10041,7 @@
     btn.classList.add('active');
     updateDrillRuleDisclosure(mode);
     document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
+    document.getElementById('grammar-pronouns').style.display = mode === 'pronouns' ? '' : 'none';
     document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
     document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
     document.getElementById('grammar-adj').style.display = mode === 'adj' ? '' : 'none';
@@ -10000,6 +10067,7 @@
     // Stop any running gender tap when leaving
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
+    if (mode === 'pronouns') initPronounsDrill();
     if (mode === 'verbs') initVerbsDrill();
     if (mode === 'preps') initPrepsDrill();
     if (mode === 'adj') initAdjDrill();
@@ -10028,6 +10096,7 @@
   const GRAMMAR_MODE_GROUPS = {
     verbs: ['typea','verbs','aspect','pres2aor','vgroup','subjfirst','aorist','future','neg'],
     nouns: ['articles','gtap','preps'],
+    pronouns: ['pronouns'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
   };
@@ -10180,6 +10249,157 @@
 
   function gArtShuffle() {
     initArticlesDrill();
+  }
+
+  // ── OBJECT PRONOUNS DRILL ──
+  // The most-confused area for English speakers learning Greek: the words
+  // τον/την/το/τους/τις/τα/του/της/τους work as BOTH the definite article
+  // AND as personal pronouns (him/her/it/them/his/her/their). Same form,
+  // different role. The case (acc vs gen) and position (before verb vs
+  // after noun) tell you which.
+  //
+  // CORE TABLE (memorize):
+  //   Direct obj (him/her/it)    — BEFORE the verb — acc:  τον / την / το · plur τους / τις / τα
+  //   Indirect obj (to him/her)  — BEFORE the verb — gen:  του / της / του · plur τους (all genders)
+  //   Possessive (his/her)       — AFTER the noun  — gen:  του / της / του · plur τους
+  //   Subject (he/she)           — usually OMITTED — αυτός / αυτή / αυτό (only used for emphasis)
+  //
+  // Questions are ordered pedagogically:
+  //   1-2   Subject pronouns (αυτός / αυτή — used only for emphasis)
+  //   3-7   Direct object singular (him / her / it before the verb)
+  //   8-10  Direct object plural (them)
+  //   11-14 Indirect object singular (to him / to her)
+  //   15    Indirect object plural (to them)
+  //   16-21 Possessive singular (his / her — after the noun)
+  //   22-23 Possessive plural (their — after the noun)
+  //   24-26 Combined sentences (multiple pronouns at once)
+  //   27-28 Imperative + pronoun (placement flips to AFTER the verb)
+  const PRONOUN_QUESTIONS = [
+    // Subject pronouns — usually dropped in Greek. Used here for emphasis.
+    { prompt: '___ είναι Έλληνας.', en: 'HE is Greek. (emphatic)', answer: 'Αυτός', options: ['Αυτός','Αυτή','Αυτό','Τον'], hint: 'Subject "he" = αυτός. Greek normally DROPS the subject pronoun — only use it for emphasis or contrast.' },
+    { prompt: '___ είναι γιατρός.', en: 'SHE is a doctor. (emphatic)', answer: 'Αυτή', options: ['Αυτός','Αυτή','Αυτό','Την'], hint: 'Subject "she" = αυτή. Only used for emphasis; "Είναι γιατρός" (no pronoun) is the default.' },
+
+    // Direct object singular — him / her / it. Pronoun goes BEFORE the verb.
+    { prompt: '___ βλέπω.', en: 'I see HIM.', answer: 'Τον', options: ['Τον','Την','Το','Του'], hint: 'Direct object "him" = τον (masc accusative). Goes BEFORE the verb when the subject is dropped. Same form as the masc-acc article — case tells you the role.' },
+    { prompt: '___ αγαπάω.', en: 'I love HER.', answer: 'Την', options: ['Τον','Την','Το','Της'], hint: 'Direct object "her" = την (fem accusative). Position: BEFORE the verb. The article την is the same form — context disambiguates.' },
+    { prompt: '___ ξέρω καλά.', en: 'I know HIM well.', answer: 'Τον', options: ['Τον','Την','Το','Του'], hint: 'Direct object "him" → τον. Adverb καλά after the verb is fine; the pronoun still hugs the verb.' },
+    { prompt: '___ ακούει κάθε μέρα.', en: 'She hears HIM every day.', answer: 'Τον', options: ['Τον','Την','Το','Τους'], hint: 'Direct object "him" → τον. The subject "she" is dropped (default in Greek); the verb ending -ει tells you it is 3rd person.' },
+    { prompt: 'Είναι ωραίο βιβλίο. ___ διαβάζω.', en: "It is a nice book. I am reading IT.", answer: 'Το', options: ['Τον','Την','Το','Τα'], hint: 'βιβλίο is neuter → "it" = το (neut accusative). Goes BEFORE the verb.' },
+
+    // Direct object plural — them
+    { prompt: '___ βλέπω.', en: 'I see THEM (the men / mixed group).', answer: 'τους', options: ['τους','τις','τα','των'], hint: 'Direct object "them" (masc plural OR mixed group) = τους. Goes BEFORE the verb. Same form as the masc-plural-acc article.' },
+    { prompt: '___ αγαπάει η μητέρα της.', en: 'Her mother loves THEM (the girls).', answer: 'τις', options: ['τους','τις','τα','τη'], hint: 'Direct object "them" (all-feminine) = τις. Position: BEFORE the verb. Subject "her mother" can come after.' },
+    { prompt: '___ ξέρω καλά.', en: 'I know THEM (the children) well.', answer: 'τα', options: ['τους','τις','τα','του'], hint: 'παιδιά (children) is neuter plural → "them" = τα. Neuter never changes between nom and acc.' },
+
+    // Indirect object singular — to him / to her. Takes the genitive form.
+    { prompt: '___ έδωσα ένα δώρο.', en: 'I gave HIM a gift.', answer: 'Του', options: ['Του','Της','Τον','Την'], hint: 'Indirect object "to him" = του (masc genitive). Order: pronoun BEFORE verb, then the thing given. Compare with direct object τον — same gender, different case.' },
+    { prompt: '___ είπα την αλήθεια.', en: 'I told HER the truth.', answer: 'Της', options: ['Του','Της','Την','Τις'], hint: 'Indirect object "to her" = της (fem genitive). Of these little words, της is the fem "to her / her"; του is the masc one.' },
+    { prompt: '___ γράφω κάθε μέρα.', en: 'I write to HIM every day.', answer: 'Του', options: ['Του','Της','Τον','Τους'], hint: 'γράφω ("write") takes an indirect object for the recipient → "to him" = του. NOT τον — that would be "I write him" as the direct object, which does not work in Greek.' },
+    { prompt: '___ τηλεφώνησα χθες.', en: 'I called HER yesterday.', answer: 'Της', options: ['Του','Της','Την','Τις'], hint: 'τηλεφωνώ ("phone someone") takes a genitive object in Greek — quirk. So "called her" = της τηλεφώνησα, not την.' },
+
+    // Indirect object plural — to them
+    { prompt: '___ έστειλα ένα μήνυμα.', en: 'I sent THEM a message.', answer: 'Τους', options: ['Τους','Τις','Τα','Των'], hint: 'Indirect object "to them" = τους for ALL genders (masc/fem/neut plural). One form covers everyone.' },
+
+    // Possessive singular — his / her. Goes AFTER the noun (with article in front).
+    { prompt: 'το βιβλίο ___', en: 'HIS book', answer: 'του', options: ['του','της','τους','τον'], hint: 'Possessive "his" = του. Word order: το βιβλίο του (the book of-him). Possessive ALWAYS comes after the noun, never before.' },
+    { prompt: 'η αδερφή ___', en: 'HER sister', answer: 'της', options: ['του','της','τους','την'], hint: 'Possessive "her" = της. Pattern: [article] [noun] [possessive]. Note the article η stays — possessives do not replace the article.' },
+    { prompt: 'ο πατέρας ___', en: 'HIS father', answer: 'του', options: ['του','της','τους','τον'], hint: 'Possessive "his" → του. Same form whether the noun is masc/fem/neut — only the OWNER (he/she/they) matters.' },
+    { prompt: 'το αυτοκίνητό ___', en: 'HER car', answer: 'της', options: ['του','της','τους','την'], hint: 'Possessive "her" = της. When the noun ends in a vowel and the possessive follows, the stress often doubles onto the last syllable of the noun: αυτοκίνητό της.' },
+    { prompt: 'η μητέρα ___', en: 'HIS mother', answer: 'του', options: ['του','της','τους','τον'], hint: 'Trap: "his mother" — the OWNER is HIM (του), even though the noun μητέρα is feminine. Pick by who owns it, not by what gender the noun is.' },
+    { prompt: 'ο φίλος ___', en: 'HER friend (male)', answer: 'της', options: ['του','της','τους','την'], hint: 'Trap: "her friend (male)" — the OWNER is SHE (της), even though φίλος is masculine. Possessive matches the OWNER, not the noun.' },
+
+    // Possessive plural — their
+    { prompt: 'το σπίτι ___', en: 'THEIR house', answer: 'τους', options: ['του','της','τους','τα'], hint: 'Possessive "their" = τους for all genders. Same form as "to them" — context (after a noun vs before a verb) disambiguates.' },
+    { prompt: 'τα παιδιά ___', en: 'THEIR children', answer: 'τους', options: ['του','της','τους','τα'], hint: '"Their" → τους regardless of the noun gender. Do not confuse with τα (the children); both can appear in the same phrase: τα παιδιά τους.' },
+
+    // Combined sentences — multiple pronouns in one
+    { prompt: '___ είπα το όνομά ___.', en: 'I told HIM HER name. (ind.obj + poss)', answer: 'Του · της', options: ['Του · της','Της · του','Τον · την','Του · τους'], hint: 'Two pronouns: "to him" = Του (BEFORE verb), "her name" = το όνομά της (possessive AFTER noun). Word slots fill independently.' },
+    { prompt: 'Η μητέρα ___ ___ αγαπάει πολύ.', en: 'HIS mother loves HER very much. (poss + dir.obj)', answer: 'του · την', options: ['του · την','της · τον','του · τον','τους · την'], hint: 'First blank is possessive "his" after μητέρα → του. Second is direct object "her" before αγαπάει → την.' },
+    { prompt: '___ έδωσα το βιβλίο ___.', en: 'I gave HIM HER book. (ind.obj + poss)', answer: 'Του · της', options: ['Του · της','Της · του','Τον · την','Τους · της'], hint: 'First: "to him" before the verb → Του. Second: "her" after βιβλίο → της. Two different jobs for two different little words.' },
+
+    // Imperatives — pronoun goes AFTER the verb (only place this happens)
+    { prompt: 'Πες ___ να έρθει.', en: 'Tell HIM to come. (imperative)', answer: 'του', options: ['του','της','τον','τους'], hint: 'IMPORTANT: after a positive imperative, the pronoun flips to AFTER the verb. "Tell" takes an indirect object → του. NOT τον.' },
+    { prompt: 'Φέρε ___ ένα ποτήρι νερό.', en: 'Bring HER a glass of water. (imperative)', answer: 'της', options: ['του','της','την','τις'], hint: 'After the imperative φέρε ("bring"), the pronoun comes AFTER. Indirect object "to her" → της. Compare a normal declarative: Της φέρνω νερό (pronoun BEFORE the verb).' },
+  ];
+
+  let gPronDeck = [], gPronIndex = 0, gPronCorrect = 0, gPronTotal = 0, gPronAnswered = false;
+
+  function initPronounsDrill() {
+    gPronDeck = shuffled(PRONOUN_QUESTIONS);
+    gPronIndex = 0;
+    gPronCorrect = 0;
+    gPronTotal = 0;
+    gPronAnswered = false;
+    showPronCard();
+  }
+
+  function showPronCard() {
+    const q = gPronDeck[gPronIndex];
+    if (!q) return;
+    const promptEl = document.getElementById('pron-prompt');
+    // Combined-question prompts can have TWO blanks. Render each ___ as a
+    // styled span so the user sees where to fill.
+    promptEl.innerHTML = q.prompt.replace(/___/g, '<span class="grammar-prompt-blank">___</span>');
+    document.getElementById('pron-en').textContent = q.en;
+    const fb = document.getElementById('pron-feedback');
+    fb.textContent = '';
+    fb.classList.remove('show');
+    const optsHost = document.getElementById('pron-options');
+    optsHost.innerHTML = '';
+    q.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gPronAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('pron-progress').textContent = `Question ${gPronIndex + 1} of ${gPronDeck.length}`;
+    document.getElementById('pron-score').textContent = `Score: ${gPronCorrect}/${gPronTotal}`;
+    gPronAnswered = false;
+  }
+
+  function gPronAnswer(picked, btnEl, q) {
+    if (gPronAnswered) return;
+    gPronAnswered = true;
+    gPronTotal++;
+    if (picked === q.answer) gPronCorrect++;
+    else recordMistake({
+      drill_type: 'pronouns', prompt: q.prompt, correct: q.answer, picked: picked,
+      metadata: { en: q.en, hint: q.hint }
+    });
+    const allBtns = document.querySelectorAll('#pron-options .grammar-option');
+    allBtns.forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    // Fill the blank(s) with the correct answer in the prompt. Two-slot
+    // prompts have the answer string in "word1 · word2" form; split and
+    // walk through the ___ occurrences.
+    const promptEl = document.getElementById('pron-prompt');
+    const parts = q.answer.split(' · ');
+    let i = 0;
+    promptEl.innerHTML = q.prompt.replace(/___/g, () => {
+      const v = parts[i] !== undefined ? parts[i] : q.answer;
+      i++;
+      return `<span class="grammar-prompt-blank">${v}</span>`;
+    });
+    const fb = document.getElementById('pron-feedback');
+    fb.textContent = '💡 ' + q.hint;
+    fb.classList.add('show');
+    document.getElementById('pron-score').textContent = `Score: ${gPronCorrect}/${gPronTotal}`;
+  }
+
+  function gPronNext() {
+    gPronIndex = (gPronIndex + 1) % gPronDeck.length;
+    showPronCard();
+  }
+  function gPronBack() {
+    gPronIndex = (gPronIndex - 1 + gPronDeck.length) % gPronDeck.length;
+    showPronCard();
+  }
+  function gPronShuffle() {
+    initPronounsDrill();
   }
 
   // Type B verbs (-άω) — endings: -άω/-ώ, -άς, -άει/-ά, -άμε/-ούμε, -άτε, -άνε/-ούν(ε)
@@ -15980,6 +16200,7 @@
 
   const REVIEW_DRILL_LABELS = {
     articles: { label: 'Articles', tag: 'review-tag-articles' },
+    pronouns: { label: 'Pronouns', tag: 'review-tag-articles' },
     verbs: { label: 'Verbs', tag: 'review-tag-verbs' },
     preps: { label: 'Prepositions', tag: 'review-tag-preps' },
     adj: { label: 'Adjective', tag: 'review-tag-adj' },
