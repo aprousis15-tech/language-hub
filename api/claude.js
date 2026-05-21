@@ -3,10 +3,15 @@
 // the API key never touches the browser. Called by the Sessions tab in
 // index.html via POST /api/claude with body { action, payload }.
 
-// Verified via web search on 2026-04-22:
-// - Opus 4.7 released 2026-04-16 (https://www.anthropic.com/claude/opus)
-// - Pricing ~$15/$75 per M tokens (https://claude.com/pricing)
-const MODEL = 'claude-opus-4-7';
+// Model choice by action — keeps Opus for senior-level planning/analysis,
+// drops Sonnet on routine per-attempt grading.
+// - Opus 4.7  ($15/$75 per M): generate_plan + analyze_session — both require
+//   strategic reasoning across multiple data points.
+// - Sonnet 4.6 ($3/$15 per M): grade_speaking — single-sentence pass/fix call,
+//   runs many times per session, doesn't need Opus's depth. ~5x cost savings
+//   at typical usage with no observable quality change in grading.
+const MODEL_PLANNING = 'claude-opus-4-7';
+const MODEL_GRADING  = 'claude-sonnet-4-6';
 const MAX_TOKENS = 8192; // rule #4 floor
 
 const PLAN_GEN_SYSTEM_PROMPT = `You orchestrate a Greek learning sprint for a user preparing for a Greece trip. Target capability: transactional Greek plus small-talk initiation.
@@ -212,6 +217,10 @@ module.exports = async function handler(req, res) {
     action === 'grade_speaking'  ? GRADE_SPEAKING_SYSTEM_PROMPT :
     ANALYZE_SYSTEM_PROMPT;
 
+  // grade_speaking is the routine per-attempt call → Sonnet. Everything else
+  // is strategic (plan generation, session analysis) → Opus.
+  const model = action === 'grade_speaking' ? MODEL_GRADING : MODEL_PLANNING;
+
   let upstream;
   try {
     upstream = await fetch('https://api.anthropic.com/v1/messages', {
@@ -222,7 +231,7 @@ module.exports = async function handler(req, res) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: MODEL,
+        model,
         max_tokens: MAX_TOKENS,
         system: systemPrompt,
         messages: [{ role: 'user', content: JSON.stringify(payload) }],
