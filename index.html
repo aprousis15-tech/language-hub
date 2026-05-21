@@ -1523,11 +1523,22 @@
   .coach-empty-icon { font-size: 3rem; margin-bottom: 8px; }
   .coach-empty h3 { font-family: 'Playfair Display', serif; color: #283593; margin-bottom: 8px; }
   .coach-empty p { color: #4a4a6a; font-size: 0.95rem; margin-bottom: 18px; }
+  .coach-empty-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .coach-empty-cta {
     background: #283593; color: white; border: none; padding: 10px 20px;
     border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600;
   }
   .coach-empty-cta:hover { background: #1a237e; }
+  .coach-empty-cta:disabled { background: #9fa8da; cursor: not-allowed; }
+  .coach-empty-cta-alt { background: white; color: #283593; border: 1.5px solid #283593; }
+  .coach-empty-cta-alt:hover { background: #e8eaf6; }
+  .coach-run-status {
+    margin-top: 14px; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem;
+    text-align: left; line-height: 1.45;
+  }
+  .coach-run-status.info  { background: #e8eaf6; color: #283593; border: 1px solid #c5cae9; }
+  .coach-run-status.ok    { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+  .coach-run-status.err   { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
   .coach-content {
     max-width: 800px; margin: 18px auto; background: white;
     border: 1px solid #c5cae9; border-radius: 12px; padding: 24px 28px;
@@ -4549,8 +4560,12 @@
     <div id="coach-empty" class="coach-empty" style="display:none;">
       <div class="coach-empty-icon">🤖</div>
       <h3>No plan yet</h3>
-      <p>The agent runs nightly at 5am ET. Once enabled, today's plan will appear here automatically. Until then, drive a few speak sessions so the coach has data to learn from.</p>
-      <button class="coach-empty-cta" onclick="switchLang('speak')">🎙️ Open Speak drill</button>
+      <p>The agent runs nightly at 5am ET once enabled. Set <code>COACH_ENABLED=true</code> in Vercel env vars, then trigger it manually below to test or wait for the cron.</p>
+      <div class="coach-empty-actions">
+        <button class="coach-empty-cta" onclick="runCoachNow()">🚀 Run agent now</button>
+        <button class="coach-empty-cta coach-empty-cta-alt" onclick="switchLang('speak')">🎙️ Open Speak</button>
+      </div>
+      <div id="coach-run-status" class="coach-run-status" style="display:none;"></div>
     </div>
 
     <!-- Populated state — rendered when a plan row exists -->
@@ -8021,6 +8036,49 @@
       });
     }
     if (vocabSection) vocabSection.style.display = vocab.length ? '' : 'none';
+  }
+
+  // Manual agent trigger — fires /api/coach/run. Useful for testing without
+  // waiting for the nightly cron. Hits the same env-gated endpoint, so the
+  // first call after deploy returns a "skipped" no-op until COACH_ENABLED is
+  // set to "true" in Vercel.
+  async function runCoachNow() {
+    const btn = document.querySelector('#coach-empty .coach-empty-cta');
+    const status = document.getElementById('coach-run-status');
+    if (!btn || !status) return;
+    btn.disabled = true;
+    const originalLabel = btn.textContent;
+    btn.textContent = '⏳ Running…';
+    status.style.display = '';
+    status.className = 'coach-run-status info';
+    status.textContent = 'Agent running — this takes 20-60 seconds. Reading observations, drafting plan, saving…';
+
+    try {
+      const r = await fetch('/api/coach/run', { method: 'POST' });
+      const data = await r.json();
+      if (!r.ok) {
+        status.className = 'coach-run-status err';
+        status.textContent = '⚠️ Agent failed: ' + (data && data.error || ('HTTP ' + r.status));
+      } else if (data.skipped) {
+        status.className = 'coach-run-status info';
+        status.textContent = 'ℹ️ Agent skipped: ' + (data.reason || 'COACH_ENABLED not set') +
+          ' Set COACH_ENABLED=true in Vercel env vars and redeploy.';
+      } else if (data.ok && data.saved_plan_id) {
+        status.className = 'coach-run-status ok';
+        status.textContent = `✓ Plan saved (${data.turns} turns, ${data.tool_calls && data.tool_calls.length} tool calls, ${Math.round((data.duration_ms||0)/1000)}s). Loading…`;
+        // Reload the plan we just generated
+        setTimeout(() => loadCoachPlan(), 500);
+      } else {
+        status.className = 'coach-run-status err';
+        status.textContent = '⚠️ Agent finished without saving a plan. Summary: ' + (data.summary || 'no summary');
+      }
+    } catch (e) {
+      status.className = 'coach-run-status err';
+      status.textContent = '⚠️ Could not reach /api/coach/run: ' + (e && e.message || e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
   }
 
   async function loadMistakes(limit) {

@@ -2,8 +2,11 @@
   "name": "language-hub",
   "version": "1.0.0",
   "private": true,
-  "description": "Static language-learning hub with a serverless Claude grader at /api/claude.",
+  "description": "Static language-learning hub with a serverless Claude grader at /api/claude and a nightly Claude-powered study coach at /api/coach/run.",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0"
   }
 }
