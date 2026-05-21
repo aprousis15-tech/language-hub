@@ -7,10 +7,9 @@
 //
 // Env vars used:
 //   ANTHROPIC_API_KEY  — required, agent's Claude calls
-//   COACH_ENABLED      — Phase C safety gate. Set to "true" in Vercel to allow
-//                        the agent to actually run. Anything else returns a
-//                        no-op so cron/manual triggers don't burn tokens until
-//                        you're ready.
+//   COACH_DISABLED     — optional opt-out kill-switch. Set to "true" in Vercel
+//                        to pause the agent (cron + manual triggers both no-op).
+//                        Default behavior: enabled — agent runs whenever hit.
 //
 // vercel.json sets maxDuration: 60 for this route — agent typically finishes
 // in 20-40s with ~8-12 tool turns on Opus.
@@ -30,13 +29,13 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Phase C safety gate: only run when explicitly enabled. Returns 200 so
-  // cron doesn't retry-loop — the no-op is intentional.
-  if (process.env.COACH_ENABLED !== 'true') {
+  // Opt-out kill-switch: default is run. Set COACH_DISABLED=true in Vercel
+  // env vars to pause cron + manual triggers without redeploying code.
+  if (process.env.COACH_DISABLED === 'true') {
     res.status(200).json({
       ok: false,
       skipped: true,
-      reason: 'COACH_ENABLED env var is not "true". Set it in Vercel to activate the agent.'
+      reason: 'COACH_DISABLED env var is "true". Unset it (or set to anything else) to re-enable.'
     });
     return;
   }
