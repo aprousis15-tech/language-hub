@@ -8569,7 +8569,9 @@
   }
 
   function fcNext() {
-    fcIndex = (fcIndex + 1) % fcDeck.length;
+    const _r = advanceOrReshuffle(fcDeck, fcIndex);
+    fcDeck = _r.deck;
+    fcIndex = _r.index;
     showCard();
   }
 
@@ -10238,7 +10240,9 @@
   }
 
   function gArtNext() {
-    gArtIndex = (gArtIndex + 1) % gArtDeck.length;
+    const _r = advanceOrReshuffle(gArtDeck, gArtIndex);
+    gArtDeck = _r.deck;
+    gArtIndex = _r.index;
     showArtCard();
   }
 
@@ -10391,7 +10395,9 @@
   }
 
   function gPronNext() {
-    gPronIndex = (gPronIndex + 1) % gPronDeck.length;
+    const _r = advanceOrReshuffle(gPronDeck, gPronIndex);
+    gPronDeck = _r.deck;
+    gPronIndex = _r.index;
     showPronCard();
   }
   function gPronBack() {
@@ -10499,7 +10505,9 @@
   }
 
   function gVerbNext() {
-    gVerbIndex = (gVerbIndex + 1) % gVerbDeck.length;
+    const _r = advanceOrReshuffle(gVerbDeck, gVerbIndex);
+    gVerbDeck = _r.deck;
+    gVerbIndex = _r.index;
     showVerbCard();
   }
 
@@ -10600,7 +10608,9 @@
   }
 
   function gTypeANext() {
-    gTypeAIndex = (gTypeAIndex + 1) % gTypeADeck.length;
+    const _r = advanceOrReshuffle(gTypeADeck, gTypeAIndex);
+    gTypeADeck = _r.deck;
+    gTypeAIndex = _r.index;
     showTypeACard();
   }
 
@@ -10702,7 +10712,9 @@
   }
 
   function gTimeNext() {
-    gTimeIndex = (gTimeIndex + 1) % gTimeDeck.length;
+    const _r = advanceOrReshuffle(gTimeDeck, gTimeIndex);
+    gTimeDeck = _r.deck;
+    gTimeIndex = _r.index;
     showTimeCard();
   }
 
@@ -10794,7 +10806,9 @@
   }
 
   function gNegNext() {
-    gNegIndex = (gNegIndex + 1) % gNegDeck.length;
+    const _r = advanceOrReshuffle(gNegDeck, gNegIndex);
+    gNegDeck = _r.deck;
+    gNegIndex = _r.index;
     showNegCard();
   }
 
@@ -10893,7 +10907,9 @@
   }
 
   function gAoristNext() {
-    gAoristIndex = (gAoristIndex + 1) % gAoristDeck.length;
+    const _r = advanceOrReshuffle(gAoristDeck, gAoristIndex);
+    gAoristDeck = _r.deck;
+    gAoristIndex = _r.index;
     showAoristCard();
   }
   function gAoristBack() {
@@ -10993,7 +11009,9 @@
   }
 
   function gQwordsNext() {
-    gQwordsIndex = (gQwordsIndex + 1) % gQwordsDeck.length;
+    const _r = advanceOrReshuffle(gQwordsDeck, gQwordsIndex);
+    gQwordsDeck = _r.deck;
+    gQwordsIndex = _r.index;
     showQwordsCard();
   }
   function gQwordsBack() {
@@ -11097,7 +11115,9 @@
   }
 
   function gFutureNext() {
-    gFutureIndex = (gFutureIndex + 1) % gFutureDeck.length;
+    const _r = advanceOrReshuffle(gFutureDeck, gFutureIndex);
+    gFutureDeck = _r.deck;
+    gFutureIndex = _r.index;
     showFutureCard();
   }
   function gFutureBack() {
@@ -11189,7 +11209,9 @@
   }
 
   function gAspectNext() {
-    gAspectIndex = (gAspectIndex + 1) % gAspectDeck.length;
+    const _r = advanceOrReshuffle(gAspectDeck, gAspectIndex);
+    gAspectDeck = _r.deck;
+    gAspectIndex = _r.index;
     showAspectCard();
   }
   function gAspectBack() {
@@ -11655,7 +11677,9 @@
   function esc(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function gVgroupNext() {
-    gVgroupIndex = (gVgroupIndex + 1) % gVgroupDeck.length;
+    const _r = advanceOrReshuffle(gVgroupDeck, gVgroupIndex);
+    gVgroupDeck = _r.deck;
+    gVgroupIndex = _r.index;
     showVgroupCard();
   }
   function gVgroupBack() {
@@ -11763,7 +11787,9 @@
   }
 
   function gPres2AorNext() {
-    gPres2AorIndex = (gPres2AorIndex + 1) % gPres2AorDeck.length;
+    const _r = advanceOrReshuffle(gPres2AorDeck, gPres2AorIndex);
+    gPres2AorDeck = _r.deck;
+    gPres2AorIndex = _r.index;
     showPres2AorCard();
   }
   function gPres2AorBack() {
@@ -11950,7 +11976,9 @@
   }
 
   function gSubjFirstNext() {
-    gSubjFirstIndex = (gSubjFirstIndex + 1) % gSubjFirstDeck.length;
+    const _r = advanceOrReshuffle(gSubjFirstDeck, gSubjFirstIndex);
+    gSubjFirstDeck = _r.deck;
+    gSubjFirstIndex = _r.index;
     gSubjFirstTrainerOn = getSubjFirstSuccessCount() < SUBJFIRST_TRAINER_THRESHOLD;
     showSubjFirstCard();
   }
@@ -12048,7 +12076,9 @@
   }
 
   function gDaysNext() {
-    gDaysIndex = (gDaysIndex + 1) % gDaysDeck.length;
+    const _r = advanceOrReshuffle(gDaysDeck, gDaysIndex);
+    gDaysDeck = _r.deck;
+    gDaysIndex = _r.index;
     showDaysCard();
   }
   function gDaysBack() {
@@ -12150,7 +12180,9 @@
   }
 
   function gQstartNext() {
-    gQstartIndex = (gQstartIndex + 1) % gQstartDeck.length;
+    const _r = advanceOrReshuffle(gQstartDeck, gQstartIndex);
+    gQstartDeck = _r.deck;
+    gQstartIndex = _r.index;
     showQstartCard();
   }
   function gQstartBack() {
@@ -12239,7 +12271,9 @@
   }
 
   function gPrepNext() {
-    gPrepIndex = (gPrepIndex + 1) % gPrepDeck.length;
+    const _r = advanceOrReshuffle(gPrepDeck, gPrepIndex);
+    gPrepDeck = _r.deck;
+    gPrepIndex = _r.index;
     showPrepCard();
   }
 
@@ -12553,6 +12587,26 @@
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+  }
+
+  // Advance a drill deck by one position. If we'd wrap past the end, reshuffle
+  // the existing deck instead of replaying the same order — and re-roll once
+  // if the new deck would start with the question we just showed (so the
+  // wraparound never produces an immediate duplicate).
+  //
+  // Returns { deck, index } so the caller can write back both. Pattern:
+  //   const r = advanceOrReshuffle(gXxxDeck, gXxxIndex);
+  //   gXxxDeck = r.deck; gXxxIndex = r.index;
+  function advanceOrReshuffle(deck, index) {
+    if (index + 1 < deck.length) return { deck, index: index + 1 };
+    const lastSeen = deck[index];
+    let newDeck = shuffled(deck);
+    let tries = 0;
+    while (newDeck[0] === lastSeen && tries < 5) {
+      newDeck = shuffled(deck);
+      tries++;
+    }
+    return { deck: newDeck, index: 0 };
   }
 
   let gPracticeVocab = null;
@@ -14303,7 +14357,9 @@
 
   function gListenNext() {
     if (gListenAutoTimer) { clearTimeout(gListenAutoTimer); gListenAutoTimer = null; }
-    gListenIndex = (gListenIndex + 1) % gListenDeck.length;
+    const _r = advanceOrReshuffle(gListenDeck, gListenIndex);
+    gListenDeck = _r.deck;
+    gListenIndex = _r.index;
     showListenCard();
   }
 
@@ -14665,7 +14721,9 @@
   }
 
   function gTypeNext() {
-    gTypeIndex = (gTypeIndex + 1) % gTypeDeck.length;
+    const _r = advanceOrReshuffle(gTypeDeck, gTypeIndex);
+    gTypeDeck = _r.deck;
+    gTypeIndex = _r.index;
     showTypeCard();
   }
 
@@ -14941,7 +14999,9 @@
   }
 
   function gMultiNext() {
-    gMultiIndex = (gMultiIndex + 1) % gMultiDeck.length;
+    const _r = advanceOrReshuffle(gMultiDeck, gMultiIndex);
+    gMultiDeck = _r.deck;
+    gMultiIndex = _r.index;
     showMultiCard();
   }
   function gMultiBack() {
@@ -15778,7 +15838,9 @@
   }
 
   function flashSkip() {
-    gFlashIndex = (gFlashIndex + 1) % gFlashDeck.length;
+    const _r = advanceOrReshuffle(gFlashDeck, gFlashIndex);
+    gFlashDeck = _r.deck;
+    gFlashIndex = _r.index;
     showFlashCard();
   }
 
