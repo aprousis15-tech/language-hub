@@ -76,6 +76,19 @@ function stripJsonFences(text) {
   if (s.startsWith('```')) {
     s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '');
   }
+  // Embedded fenced JSON inside prose — extract first fenced block that parses.
+  const fenced = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced && fenced[1]) {
+    const candidate = fenced[1].trim();
+    try { JSON.parse(candidate); return candidate; } catch {}
+  }
+  // Last-resort: first { to last } slice.
+  const first = s.indexOf('{');
+  const last  = s.lastIndexOf('}');
+  if (first !== -1 && last > first) {
+    const candidate = s.slice(first, last + 1);
+    try { JSON.parse(candidate); return candidate; } catch {}
+  }
   return s.trim();
 }
 

@@ -149,8 +149,26 @@ Scoring anchors: 1-3 beginner struggle and mostly English. 4-6 transactional wit
 
 function stripJsonFences(text) {
   let s = (text || '').trim();
+  // 1) Whole response wrapped in ```json ... ``` or ``` ... ``` — strip outer fences.
   if (s.startsWith('```')) {
     s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '');
+  }
+  // 2) Embedded fenced JSON inside surrounding prose — extract the first
+  //    fenced block that parses. Defensive: Sonnet sometimes adds an
+  //    explanatory paragraph before the JSON when its input was malformed,
+  //    despite the "respond with VALID JSON ONLY" instruction.
+  const fenced = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced && fenced[1]) {
+    const candidate = fenced[1].trim();
+    try { JSON.parse(candidate); return candidate; } catch {}
+  }
+  // 3) Last-resort: greedily grab from the first { to the last }. Handles
+  //    cases where prose surrounds bare JSON with no fences at all.
+  const first = s.indexOf('{');
+  const last  = s.lastIndexOf('}');
+  if (first !== -1 && last > first) {
+    const candidate = s.slice(first, last + 1);
+    try { JSON.parse(candidate); return candidate; } catch {}
   }
   return s.trim();
 }
