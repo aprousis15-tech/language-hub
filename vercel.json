@@ -6,6 +6,7 @@
     { "src": "api/story.js", "use": "@vercel/node" },
     { "src": "api/coach/plan-today.js", "use": "@vercel/node" },
     { "src": "api/coach/run.js", "use": "@vercel/node" },
+    { "src": "api/tutor/chat.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" }
   ],
   "routes": [
@@ -14,6 +15,7 @@
     { "src": "/api/story", "dest": "/api/story.js" },
     { "src": "/api/coach/plan-today", "dest": "/api/coach/plan-today.js" },
     { "src": "/api/coach/run", "dest": "/api/coach/run.js" },
+    { "src": "/api/tutor/chat", "dest": "/api/tutor/chat.js" },
     { "src": "/(.*\\.html)", "dest": "/$1" },
     { "src": "/", "dest": "/index.html" }
   ],

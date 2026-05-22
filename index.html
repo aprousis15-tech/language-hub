@@ -1557,6 +1557,93 @@
   .story-q-answer-greek { font-family: 'Georgia', serif; color: #2a1f25; font-size: 0.95rem; }
   .story-q-answer-english { color: #7a5a6c; font-style: italic; font-size: 0.85rem; margin-top: 3px; }
 
+  /* ─── CONVERSATION TUTOR ─── Teal so it reads distinct from other AI tabs. */
+  .lang-tab.active-tutor { color: #00838f; border-bottom-color: #00838f; background: white; font-weight: 700; }
+  .tutor-header { text-align: center; padding: 24px 16px 8px; max-width: 760px; margin: 0 auto; }
+  .tutor-header h2 { font-family: 'Playfair Display', serif; color: #00838f; font-size: clamp(1.6rem, 4vw, 2.2rem); margin-bottom: 6px; }
+  .tutor-header p { color: #4a5a5a; font-size: 0.95rem; max-width: 620px; margin: 0 auto; }
+  /* Scenario picker */
+  .tutor-pick {
+    max-width: 800px; margin: 18px auto; padding: 20px;
+    background: white; border: 1px solid #b2dfdb; border-radius: 12px;
+  }
+  .tutor-pick h3 { font-family: 'Playfair Display', serif; color: #00838f; margin-bottom: 14px; text-align: center; }
+  .tutor-scenarios {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .tutor-scenario-btn {
+    display: flex; flex-direction: column; align-items: flex-start;
+    background: #e0f2f1; border: 1.5px solid #b2dfdb; color: #004d40;
+    padding: 12px 14px; border-radius: 10px; cursor: pointer;
+    font-size: 1rem; font-weight: 700; text-align: left;
+    transition: transform 0.1s, border-color 0.15s;
+  }
+  .tutor-scenario-btn:hover { background: #b2dfdb; border-color: #00838f; transform: translateY(-1px); }
+  .tutor-scenario-btn span { display: block; color: #6a8a8a; font-size: 0.78rem; font-weight: 400; font-style: italic; margin-top: 3px; }
+  /* Active conversation view */
+  .tutor-active { max-width: 800px; margin: 18px auto; }
+  .tutor-active-header {
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    background: #e0f2f1; padding: 10px 14px; border-radius: 10px; font-size: 0.9rem; color: #004d40;
+  }
+  .tutor-turn-count { color: #6a8a8a; font-size: 0.85rem; }
+  .tutor-end-btn {
+    margin-left: auto; background: white; color: #00838f; border: 1.5px solid #00838f;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+  }
+  .tutor-end-btn:hover { background: #e0f2f1; }
+  .tutor-end-btn.primary { background: #00838f; color: white; }
+  .tutor-end-btn.primary:hover { background: #006064; }
+  .tutor-conversation {
+    background: white; border: 1px solid #b2dfdb; border-radius: 12px;
+    padding: 16px; margin-top: 12px; max-height: 50vh; overflow-y: auto;
+  }
+  .tutor-msg { padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; max-width: 85%; }
+  .tutor-msg.assistant { background: #e0f2f1; color: #004d40; margin-right: auto; }
+  .tutor-msg.user { background: #fff3e0; color: #4e342e; margin-left: auto; text-align: right; }
+  .tutor-msg-greek { font-family: 'Georgia', serif; font-size: 1.02rem; line-height: 1.45; }
+  .tutor-msg-english { color: #6a8a8a; font-style: italic; font-size: 0.85rem; margin-top: 4px; display: none; }
+  .tutor-msg-english.show { display: block; }
+  .tutor-msg-toggle {
+    background: none; border: none; color: #00838f; font-size: 0.78rem; cursor: pointer;
+    padding: 4px 0 0; font-weight: 600;
+  }
+  .tutor-msg-toggle:hover { text-decoration: underline; }
+  .tutor-corrections {
+    background: #fffde7; border: 1px solid #fff59d; border-radius: 10px;
+    padding: 12px 14px; margin-top: 12px;
+  }
+  .tutor-corrections h4 { font-family: 'Playfair Display', serif; color: #f57c00; margin-bottom: 6px; font-size: 1rem; }
+  .tutor-corrections ul { padding-left: 18px; margin: 0; }
+  .tutor-corrections li { color: #5d4037; font-size: 0.88rem; padding: 4px 0; }
+  /* Mic interaction */
+  .tutor-mic-wrap { text-align: center; margin-top: 16px; }
+  .tutor-status { color: #4a5a5a; font-size: 0.88rem; margin-bottom: 8px; min-height: 1.2em; }
+  .tutor-status.error { color: #c62828; }
+  .tutor-mic-btn {
+    background: #00838f; color: white; border: none;
+    padding: 14px 28px; border-radius: 999px; cursor: pointer;
+    font-size: 1.05rem; font-weight: 700; transition: transform 0.1s, box-shadow 0.15s;
+  }
+  .tutor-mic-btn:hover { background: #006064; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,131,143,0.32); }
+  .tutor-mic-btn:disabled { background: #80cbc4; cursor: not-allowed; }
+  .tutor-mic-btn.recording {
+    background: #c62828; animation: speakPulse 1.2s ease-in-out infinite;
+  }
+  .tutor-interim { color: #6a8a8a; font-style: italic; font-size: 0.9rem; margin-top: 8px; min-height: 1.2em; }
+  /* Recap */
+  .tutor-recap {
+    max-width: 700px; margin: 24px auto; padding: 28px;
+    background: white; border: 1px solid #b2dfdb; border-radius: 12px; text-align: center;
+  }
+  .tutor-recap h3 { font-family: 'Playfair Display', serif; color: #00838f; margin-bottom: 8px; }
+  .tutor-recap-body { color: #4a5a5a; font-size: 0.95rem; line-height: 1.5; margin-bottom: 18px; text-align: left; }
+  .tutor-recap-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .tutor-error {
+    max-width: 700px; margin: 24px auto; padding: 16px 20px; text-align: center;
+    background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; border-radius: 10px; font-size: 0.95rem;
+  }
   /* ─── COACH (Today's Plan) ─── Indigo so it reads distinct from Speak (orange) and Story (burgundy). */
   .lang-tab.active-coach { color: #283593; border-bottom-color: #283593; background: white; font-weight: 700; }
   .coach-header { text-align: center; padding: 24px 16px 8px; max-width: 760px; margin: 0 auto; }
@@ -2634,6 +2721,7 @@
   <button class="lang-tab" onclick="switchLang('grammar')">🧠 Grammar Drill</button>
   <button class="lang-tab" onclick="switchLang('practice')">🎧 Practice</button>
   <button class="lang-tab" onclick="switchLang('speak')">🎙️ Speak</button>
+  <button class="lang-tab" onclick="switchLang('tutor')">🗣️ Conversation</button>
   <button class="lang-tab" onclick="switchLang('story')">📖 Daily Story</button>
   <button class="lang-tab" onclick="switchLang('coach')">🤖 Coach</button>
   <button class="lang-tab" onclick="switchLang('rules')">📚 Rules</button>
@@ -4605,6 +4693,68 @@
       <p>Score: <strong id="speak-final-score">0/5</strong>. Run another set, or come back tomorrow.</p>
       <button class="btn-speak primary" onclick="resetSpeakSession()">Practice another 5</button>
     </div>
+  </div>
+</div>
+
+<!-- CONVERSATION TUTOR PANEL — voice-in/voice-out role-play with a Greek-
+     speaking persona via Gemini 2.5 Flash (free tier). The iTalki replacement.
+     Pick a scenario, speak Greek into the mic, hear the AI speak back. -->
+<div class="lang-panel" id="panel-tutor">
+  <div class="container">
+    <div class="tutor-header">
+      <h2>🗣️ Conversation</h2>
+      <p>Pick a scenario, have a real Greek conversation. Speak in Greek (Whisper transcribes), AI plays the role and replies in Greek (your phone speaks it back). Mistakes get noted on the side without interrupting the conversation.</p>
+    </div>
+
+    <!-- Scenario picker (shown until a scenario is chosen) -->
+    <div id="tutor-pick" class="tutor-pick">
+      <h3>Pick a scene</h3>
+      <div class="tutor-scenarios">
+        <button class="tutor-scenario-btn" data-scenario="cafe">☕ Café<span>order a coffee, small-talk</span></button>
+        <button class="tutor-scenario-btn" data-scenario="taverna">🍽️ Taverna<span>order food at a Plaka taverna</span></button>
+        <button class="tutor-scenario-btn" data-scenario="taxi">🚕 Taxi<span>chat with an Athens cabbie</span></button>
+        <button class="tutor-scenario-btn" data-scenario="hotel">🏨 Hotel<span>check in, ask about wifi/breakfast</span></button>
+        <button class="tutor-scenario-btn" data-scenario="market">🛒 Market<span>browse the laiki, haggle a little</span></button>
+        <button class="tutor-scenario-btn" data-scenario="dad">👨 Your Dad<span>call from your Greek dad</span></button>
+        <button class="tutor-scenario-btn" data-scenario="doctor">🏥 Doctor<span>describe a minor complaint</span></button>
+        <button class="tutor-scenario-btn" data-scenario="free">💬 Free talk<span>open-ended chat</span></button>
+      </div>
+    </div>
+
+    <!-- Active conversation view -->
+    <div id="tutor-active" class="tutor-active" style="display:none;">
+      <div class="tutor-active-header">
+        <span><strong>Scene:</strong> <span id="tutor-scenario-label">—</span></span>
+        <span class="tutor-turn-count"><span id="tutor-turn-num">0</span> turns</span>
+        <button class="tutor-end-btn" onclick="tutorWrapUp()">End session</button>
+      </div>
+
+      <div id="tutor-conversation" class="tutor-conversation"></div>
+
+      <div id="tutor-corrections-panel" class="tutor-corrections" style="display:none;">
+        <h4>✏️ Notes on your Greek</h4>
+        <ul id="tutor-corrections-list"></ul>
+      </div>
+
+      <div class="tutor-mic-wrap">
+        <div id="tutor-status" class="tutor-status">Tap the mic when ready.</div>
+        <button class="tutor-mic-btn" id="tutor-mic-btn" onclick="tutorToggleMic()">🎤 Tap to speak</button>
+        <div id="tutor-interim" class="tutor-interim"></div>
+      </div>
+    </div>
+
+    <!-- End-of-session recap -->
+    <div id="tutor-recap" class="tutor-recap" style="display:none;">
+      <h3>✓ Session complete</h3>
+      <div id="tutor-recap-body"></div>
+      <div class="tutor-recap-actions">
+        <button class="tutor-end-btn primary" onclick="tutorStartNew()">🗣️ New conversation</button>
+        <button class="tutor-end-btn" onclick="switchLang('speak')">🎙️ Drill phrases in Speak</button>
+      </div>
+    </div>
+
+    <!-- Error banner -->
+    <div id="tutor-error" class="tutor-error" style="display:none;"></div>
   </div>
 </div>
 
@@ -8081,6 +8231,318 @@
     } catch {}
   }
 
+  // ── CONVERSATION TUTOR ──
+  // Voice-in/voice-out role-play with a Greek persona via Gemini 2.5 Flash
+  // (free tier). The iTalki replacement. Pick a scenario, speak Greek into
+  // the mic, hear the AI speak back. Mistakes show on the side without
+  // breaking the conversation flow.
+  //
+  // Stack: Groq Whisper (STT) → /api/tutor/chat (Gemini) → browser TTS.
+  // Cost: $0/mo within Gemini Flash's 1,500-req/day free tier.
+  let gTutorScenario = null;
+  let gTutorHistory = [];        // [{ role: 'user' | 'model', text, english? }]
+  let gTutorCorrections = [];    // user-visible side notes
+  let gTutorUserTurns = 0;
+  let gTutorMediaRecorder = null;
+  let gTutorMediaStream = null;
+  let gTutorMediaChunks = [];
+  let gTutorRecording = false;
+  let gTutorInFlight = false;
+
+  const TUTOR_SCENARIOS = {
+    cafe: '☕ Café',
+    taverna: '🍽️ Taverna',
+    taxi: '🚕 Taxi',
+    hotel: '🏨 Hotel',
+    market: '🛒 Market',
+    dad: '👨 Your Dad',
+    doctor: '🏥 Doctor',
+    free: '💬 Free talk'
+  };
+
+  function initTutor() {
+    // Wire scenario picker once. Repeat opens just reset visibility.
+    if (!initTutor._wired) {
+      document.querySelectorAll('.tutor-scenario-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          tutorStartScenario(btn.dataset.scenario);
+        });
+      });
+      initTutor._wired = true;
+    }
+    // Default state — show picker, hide everything else
+    document.getElementById('tutor-pick').style.display = '';
+    document.getElementById('tutor-active').style.display = 'none';
+    document.getElementById('tutor-recap').style.display = 'none';
+    document.getElementById('tutor-error').style.display = 'none';
+  }
+
+  function tutorStartScenario(key) {
+    if (!TUTOR_SCENARIOS[key]) return;
+    gTutorScenario = key;
+    gTutorHistory = [];
+    gTutorCorrections = [];
+    gTutorUserTurns = 0;
+    document.getElementById('tutor-pick').style.display = 'none';
+    document.getElementById('tutor-active').style.display = '';
+    document.getElementById('tutor-recap').style.display = 'none';
+    document.getElementById('tutor-scenario-label').textContent = TUTOR_SCENARIOS[key];
+    document.getElementById('tutor-turn-num').textContent = '0';
+    document.getElementById('tutor-conversation').innerHTML = '';
+    document.getElementById('tutor-corrections-panel').style.display = 'none';
+    document.getElementById('tutor-corrections-list').innerHTML = '';
+    document.getElementById('tutor-status').textContent = 'Loading the scene…';
+    document.getElementById('tutor-interim').textContent = '';
+    // Kick off — let the AI open the scene with a greeting
+    tutorSendTurn('');
+  }
+
+  function tutorStartNew() {
+    initTutor(); // resets to picker
+  }
+
+  async function tutorSendTurn(userText) {
+    if (gTutorInFlight) return;
+    gTutorInFlight = true;
+    const status = document.getElementById('tutor-status');
+    const micBtn = document.getElementById('tutor-mic-btn');
+    micBtn.disabled = true;
+    status.classList.remove('error');
+    status.textContent = userText ? '⏳ Listening to you, thinking…' : '⏳ Opening the scene…';
+
+    // Show the user turn in the UI immediately
+    if (userText) {
+      gTutorUserTurns++;
+      document.getElementById('tutor-turn-num').textContent = gTutorUserTurns;
+      tutorAppendMessage('user', userText, null);
+    }
+
+    let data;
+    try {
+      const r = await fetch('/api/tutor/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          scenario: gTutorScenario,
+          history: gTutorHistory,
+          user_text: userText,
+          learner_name: 'Anthony'
+        })
+      });
+      data = await r.json();
+      if (!data.ok) {
+        const msg = data.hint ? data.error + ' — ' + data.hint : (data.error || 'unknown error');
+        throw new Error(msg);
+      }
+    } catch (e) {
+      status.classList.add('error');
+      status.textContent = '⚠️ ' + (e && e.message || e);
+      micBtn.disabled = false;
+      gTutorInFlight = false;
+      return;
+    }
+
+    // Append user turn to history AFTER successful call (Gemini sees it via user_text)
+    if (userText) gTutorHistory.push({ role: 'user', text: userText });
+    // Append model reply
+    gTutorHistory.push({ role: 'model', text: data.reply_greek, english: data.reply_english });
+
+    tutorAppendMessage('assistant', data.reply_greek, data.reply_english);
+    // Speak the reply aloud (free browser TTS)
+    speakGreek(data.reply_greek);
+
+    // Correction side panel
+    if (data.correction) {
+      gTutorCorrections.push(data.correction);
+      const panel = document.getElementById('tutor-corrections-panel');
+      const list  = document.getElementById('tutor-corrections-list');
+      const li = document.createElement('li');
+      li.textContent = data.correction;
+      list.appendChild(li);
+      panel.style.display = '';
+    }
+
+    // Scenario wrap-up
+    if (data.scenario_status === 'resolved') {
+      status.textContent = '✓ Scene wrapped naturally. Click "End session" for the recap.';
+    } else {
+      status.textContent = 'Tap the mic when you\'re ready to reply.';
+    }
+    micBtn.disabled = false;
+    gTutorInFlight = false;
+  }
+
+  function tutorAppendMessage(role, greek, english) {
+    const host = document.getElementById('tutor-conversation');
+    const msg = document.createElement('div');
+    msg.className = 'tutor-msg ' + role;
+    const greekDiv = document.createElement('div');
+    greekDiv.className = 'tutor-msg-greek';
+    greekDiv.innerHTML = escHtml(greek) + (role === 'assistant' ? ' ' + speakBtnHtml(greek, { small: true }) : '');
+    msg.appendChild(greekDiv);
+    if (english) {
+      const en = document.createElement('div');
+      en.className = 'tutor-msg-english';
+      en.textContent = english;
+      const t = document.createElement('button');
+      t.type = 'button';
+      t.className = 'tutor-msg-toggle';
+      t.textContent = '👁️ Show English';
+      t.onclick = () => {
+        const shown = en.classList.toggle('show');
+        t.textContent = shown ? '🙈 Hide English' : '👁️ Show English';
+      };
+      msg.appendChild(en);
+      msg.appendChild(t);
+    }
+    host.appendChild(msg);
+    host.scrollTop = host.scrollHeight;
+  }
+
+  // ── Tutor mic loop (mirrors the Speak drill's Whisper path) ──
+  async function tutorToggleMic() {
+    if (gTutorRecording) { tutorStopMic(); return; }
+    await tutorStartMic();
+  }
+
+  async function tutorStartMic() {
+    const status = document.getElementById('tutor-status');
+    const btn = document.getElementById('tutor-mic-btn');
+    status.classList.remove('error');
+    if (!window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = 'Audio recording not supported in this browser.';
+      status.classList.add('error');
+      return;
+    }
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) {
+      status.textContent = 'Mic permission denied: ' + (e && e.message || e);
+      status.classList.add('error');
+      return;
+    }
+    gTutorMediaStream = stream;
+
+    let mimeType = '';
+    const candidates = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+    for (const c of candidates) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) {
+        mimeType = c; break;
+      }
+    }
+    try {
+      gTutorMediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    } catch (e) {
+      status.textContent = 'Could not start recorder: ' + (e && e.message || e);
+      status.classList.add('error');
+      stream.getTracks().forEach(t => t.stop());
+      return;
+    }
+    gTutorMediaChunks = [];
+
+    gTutorMediaRecorder.ondataavailable = (ev) => {
+      if (ev.data && ev.data.size > 0) gTutorMediaChunks.push(ev.data);
+    };
+    gTutorMediaRecorder.onstart = () => {
+      gTutorRecording = true;
+      btn.classList.add('recording');
+      btn.textContent = '⏹ Stop';
+      status.textContent = 'Listening… speak in Greek.';
+    };
+    gTutorMediaRecorder.onstop = async () => {
+      gTutorRecording = false;
+      btn.classList.remove('recording');
+      btn.textContent = '🎤 Tap to speak';
+      try { stream.getTracks().forEach(t => t.stop()); } catch {}
+      if (!gTutorMediaChunks.length) {
+        status.textContent = 'No audio captured. Try again.';
+        status.classList.add('error');
+        return;
+      }
+      const blob = new Blob(gTutorMediaChunks, { type: gTutorMediaRecorder.mimeType || mimeType || 'audio/webm' });
+      status.textContent = '⏳ Transcribing…';
+      const b64 = await new Promise((res) => {
+        const r = new FileReader();
+        r.onloadend = () => res((r.result || '').toString().split(',')[1] || '');
+        r.onerror = () => res('');
+        r.readAsDataURL(blob);
+      });
+      if (!b64) {
+        status.textContent = 'Could not read audio.';
+        status.classList.add('error');
+        return;
+      }
+      try {
+        const resp = await fetch('/api/transcribe', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ audio_b64: b64, mime: blob.type, language: 'el' })
+        });
+        const data = await resp.json();
+        if (!data || !data.ok) {
+          status.textContent = '⚠️ Transcription failed.';
+          status.classList.add('error');
+          return;
+        }
+        const said = (data.text || '').trim();
+        if (!said) {
+          status.textContent = 'No speech heard. Try again.';
+          status.classList.add('error');
+          return;
+        }
+        // Show what was heard in the interim line briefly, then send to Gemini
+        document.getElementById('tutor-interim').textContent = '“' + said + '”';
+        tutorSendTurn(said);
+      } catch (e) {
+        status.textContent = '⚠️ ' + (e && e.message || e);
+        status.classList.add('error');
+      }
+    };
+
+    try { gTutorMediaRecorder.start(); }
+    catch (e) {
+      status.textContent = 'Could not start mic: ' + (e && e.message || e);
+      status.classList.add('error');
+    }
+  }
+
+  function tutorStopMic() {
+    if (gTutorMediaRecorder && gTutorRecording) {
+      try { gTutorMediaRecorder.stop(); } catch {}
+    }
+  }
+
+  async function tutorWrapUp() {
+    if (gTutorInFlight) tutorStopMic();
+    document.getElementById('tutor-active').style.display = 'none';
+    document.getElementById('tutor-recap').style.display = '';
+    const body = document.getElementById('tutor-recap-body');
+    const turns = gTutorUserTurns;
+    const corrCount = gTutorCorrections.length;
+    body.innerHTML =
+      '<p><strong>Scene:</strong> ' + (TUTOR_SCENARIOS[gTutorScenario] || '—') + '</p>' +
+      '<p><strong>Your turns:</strong> ' + turns + '</p>' +
+      '<p><strong>Corrections noted:</strong> ' + corrCount + '</p>' +
+      (corrCount > 0
+        ? '<p><strong>What to tighten:</strong></p><ul>' +
+          gTutorCorrections.map(c => '<li>' + escHtml(c) + '</li>').join('') + '</ul>'
+        : '<p>No corrections — clean conversation. Nice work.</p>');
+
+    // Persist to Supabase for the Coach agent to read
+    const row = {
+      scenario:        gTutorScenario,
+      turns:           gTutorHistory,
+      user_turn_count: turns,
+      resolved:        gTutorHistory.length > 0 &&
+                       gTutorHistory[gTutorHistory.length - 1].scenario_status === 'resolved',
+      summary:         { corrections: gTutorCorrections }
+    };
+    if (window._supabase) {
+      try { await window._supabase.from('tutor_sessions').insert([row]); } catch {}
+    }
+  }
+
   // ── COACH (Today's Plan) ──
   // Read-only view of whatever the Claude Agent SDK coach last produced.
   // Empty state until the agent runs; the agent itself ships in a later phase.
@@ -8563,10 +9025,10 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-story','active-coach','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-tutor','active-story','active-coach','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
     const panelEl = document.getElementById('panel-' + lang);
     if (panelEl) panelEl.classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, story:8, coach:9, rules:10, foundations:11, translate:12, notes:13, sessions:14, review:15};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, tutor:8, story:9, coach:10, rules:11, foundations:12, translate:13, notes:14, sessions:15, review:16};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
     if (lang === 'vocab') renderVocab();
@@ -8575,6 +9037,7 @@
     if (lang === 'grammar') { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'speak') { initSpeakDrill(); }
+    if (lang === 'tutor') { initTutor(); }
     if (lang === 'story') { initStory(); }
     if (lang === 'coach') { initCoach(); }
     // If leaving Speak while recording, stop the mic so it doesn't keep
