@@ -10180,6 +10180,46 @@
     // -ος trap nouns (-ος usually masc, BUT…)
     { prompt: '___ λάθος είναι μεγάλο.', en: 'The mistake is big.', answer: 'Το', options: ['Ο','Η','Το'], hint: '⚠️ Trap! λάθος ends in -ος but is NEUTER (also: μέρος, δάσος, βάθος, ύψος). Use neut το, not masc ο.' },
     { prompt: '___ οδός είναι κλειστή.', en: 'The road is closed.', answer: 'Η', options: ['Ο','Η','Το'], hint: '⚠️ Trap! οδός ends in -ος but is FEMININE — exception. Adj κλειστή agrees: fem.' },
+
+    // ─── EXPANSION: Greece-trip vocab + general A2 (mix) ───
+    // Restaurants & food
+    { prompt: 'Πάω ___ εστιατόριο απόψε.', en: "I'm going to the restaurant tonight.", answer: 'στο', options: ['στον','στην','στο'], hint: 'εστιατόριο is neuter → σε + το = στο' },
+    { prompt: 'Φέρε ___ μενού, παρακαλώ.', en: 'Bring the menu, please.', answer: 'το', options: ['τον','την','το'], hint: 'μενού is neuter acc → το (foreign loan, stays neuter)' },
+    { prompt: 'Πληρώνω ___ λογαριασμό.', en: "I'm paying the bill.", answer: 'τον', options: ['τον','την','το'], hint: 'λογαριασμός is masc → acc τον λογαριασμό (drops -ς)' },
+    { prompt: '___ σερβιτόρος είναι ευγενικός.', en: 'The waiter is polite.', answer: 'Ο', options: ['Ο','Η','Το'], hint: 'σερβιτόρος is masc sing nom → ο' },
+    { prompt: 'Πάμε ___ ταβέρνα.', en: "Let's go to the tavern.", answer: 'στην', options: ['στον','στην','στο'], hint: 'ταβέρνα is fem → σε + την = στην' },
+    { prompt: 'Δοκίμασα ___ μουσακά.', en: 'I tried the moussaka.', answer: 'τον', options: ['τον','την','το'], hint: 'μουσακάς is masc → acc drops -ς: τον μουσακά' },
+    { prompt: '___ τυρί είναι ωραίο.', en: 'The cheese is nice.', answer: 'Το', options: ['Ο','Η','Το'], hint: 'τυρί is neuter sing nom → το' },
+    { prompt: 'Παρήγγειλα ___ σαλάτα.', en: 'I ordered a salad.', answer: 'μια', options: ['ένας','έναν','μια','ένα'], hint: 'σαλάτα is fem → indefinite fem = μια / μία (variant — both fine)' },
+
+    // Transport
+    { prompt: 'Παίρνω ___ ταξί στο αεροδρόμιο.', en: "I'm taking a taxi to the airport.", answer: 'ένα', options: ['ένας','έναν','μία','ένα'], hint: 'ταξί is neuter (foreign loan) → indef neut = ένα. Neuter never changes for case.' },
+    { prompt: '___ λεωφορείο έρχεται.', en: 'The bus is coming.', answer: 'Το', options: ['Ο','Η','Το'], hint: 'λεωφορείο is neuter sing nom → το' },
+    { prompt: 'Είμαι ___ αεροδρόμιο.', en: "I'm at the airport.", answer: 'στο', options: ['στον','στην','στο'], hint: 'αεροδρόμιο is neuter → σε + το = στο' },
+    { prompt: 'Χάσαμε ___ πλοίο.', en: 'We missed the boat.', answer: 'το', options: ['τον','την','το'], hint: 'πλοίο is neuter → acc το' },
+    { prompt: 'Αγόρασα ___ εισιτήριο.', en: 'I bought a ticket.', answer: 'ένα', options: ['ένας','έναν','μία','ένα'], hint: 'εισιτήριο is neuter → indef ένα' },
+
+    // Places
+    { prompt: 'Είμαι ___ παραλία.', en: "I'm at the beach.", answer: 'στην', options: ['στον','στην','στο'], hint: 'παραλία is fem → σε + την = στην' },
+    { prompt: 'Πάμε ___ νησί αύριο.', en: "We're going to the island tomorrow.", answer: 'στο', options: ['στον','στην','στο'], hint: 'νησί is neuter → σε + το = στο' },
+    { prompt: 'Επισκέπτομαι ___ μουσείο.', en: "I'm visiting the museum.", answer: 'το', options: ['τον','την','το'], hint: 'μουσείο is neuter → acc το' },
+    { prompt: '___ εκκλησία είναι όμορφη.', en: 'The church is beautiful.', answer: 'Η', options: ['Ο','Η','Το'], hint: 'εκκλησία is fem sing nom → η' },
+    { prompt: 'Πάω ___ αγορά.', en: "I'm going to the market.", answer: 'στην', options: ['στον','στην','στο'], hint: 'αγορά is fem → σε + την = στην' },
+    { prompt: 'Μένω ___ ξενοδοχείο.', en: "I'm staying at the hotel.", answer: 'στο', options: ['στον','στην','στο'], hint: 'ξενοδοχείο is neuter → στο' },
+    { prompt: 'Περπατάω ___ Ακρόπολη.', en: 'I walk to the Acropolis.', answer: 'στην', options: ['στον','στην','στο'], hint: 'Ακρόπολη is fem → στην. Greek place names usually take an article.' },
+    { prompt: 'Είδα ___ Παρθενώνα.', en: 'I saw the Parthenon.', answer: 'τον', options: ['τον','την','το'], hint: 'Παρθενώνας is masc → acc drops -ς: τον Παρθενώνα' },
+
+    // General A2 — family / work / weather / life
+    { prompt: '___ οικογένειά μου είναι μεγάλη.', en: 'My family is big.', answer: 'Η', options: ['Ο','Η','Το'], hint: 'οικογένεια is fem sing nom → η. (Possessive μου after the noun adds a stress mark: οικογένειά.)' },
+    { prompt: 'Δουλεύω ___ νοσοκομείο.', en: 'I work at the hospital.', answer: 'στο', options: ['στον','στην','στο'], hint: 'νοσοκομείο is neuter → στο' },
+    { prompt: 'Πάει ___ σχολείο κάθε μέρα.', en: 'She goes to school every day.', answer: 'στο', options: ['στον','στην','στο'], hint: 'σχολείο is neuter → στο' },
+    { prompt: '___ χρόνος περνάει γρήγορα.', en: 'Time passes quickly.', answer: 'Ο', options: ['Ο','Η','Το'], hint: 'χρόνος is masc sing nom → ο' },
+    { prompt: 'Αγαπάω ___ ζωή μου.', en: 'I love my life.', answer: 'τη', options: ['τον','τη','την','το'], hint: 'ζωή is fem → acc την, often drops ν before consonant: τη ζωή. (Either τη or την is acceptable before ζ.)' },
+    { prompt: 'Έχω ___ καινούργια δουλειά.', en: 'I have a new job.', answer: 'μια', options: ['ένας','έναν','μια','ένα'], hint: 'δουλειά is fem → indef fem = μια / μία' },
+    { prompt: '___ καιρός είναι ωραίος σήμερα.', en: 'The weather is nice today.', answer: 'Ο', options: ['Ο','Η','Το'], hint: 'καιρός is masc sing nom → ο' },
+    { prompt: 'Διαβάζω ___ εφημερίδα.', en: "I'm reading the newspaper.", answer: 'την', options: ['τον','την','το'], hint: 'εφημερίδα is fem → acc την' },
+    { prompt: '___ άνθρωποι είναι φιλικοί.', en: 'The people are friendly.', answer: 'Οι', options: ['Οι','Τα','Τους'], hint: 'άνθρωποι is masc plur → nom οι (shared with fem in plural nom)' },
+    { prompt: 'Παίρνω ___ μάθημα.', en: 'I take a lesson.', answer: 'ένα', options: ['ένας','έναν','μία','ένα'], hint: 'μάθημα is neuter → indef ένα' },
   ];
 
   let gArtDeck = [], gArtIndex = 0, gArtCorrect = 0, gArtTotal = 0, gArtAnswered = false;
@@ -10324,6 +10364,40 @@
     // Imperatives — pronoun goes AFTER the verb (only place this happens)
     { prompt: 'Πες ___ να έρθει.', en: 'Tell HIM to come. (imperative)', answer: 'του', options: ['του','της','τον','τους'], hint: 'IMPORTANT: after a positive imperative, the pronoun flips to AFTER the verb. "Tell" takes an indirect object → του. NOT τον.' },
     { prompt: 'Φέρε ___ ένα ποτήρι νερό.', en: 'Bring HER a glass of water. (imperative)', answer: 'της', options: ['του','της','την','τις'], hint: 'After the imperative φέρε ("bring"), the pronoun comes AFTER. Indirect object "to her" → της. Compare a normal declarative: Της φέρνω νερό (pronoun BEFORE the verb).' },
+
+    // ─── EXPANSION: trip + general A2 (mix) ───
+    // Direct object — trip context (extra)
+    { prompt: '___ έχασα στο αεροδρόμιο.', en: 'I lost IT (the bag).', answer: 'Την', options: ['Τον','Την','Το','Τα'], hint: 'τσάντα (bag) is fem → την. Direct object → before the verb.' },
+    { prompt: '___ βρήκα στο τραπέζι.', en: 'I found IT (the wallet).', answer: 'Το', options: ['Τον','Την','Το','Τα'], hint: 'πορτοφόλι (wallet) is neut → το' },
+    { prompt: '___ έχω στην τσάντα μου.', en: 'I have IT (the passport).', answer: 'Το', options: ['Τον','Την','Το','Τα'], hint: 'διαβατήριο (passport) is neut → το' },
+    { prompt: '___ πληρώνω αύριο.', en: "I'll pay HIM (the waiter) tomorrow.", answer: 'Τον', options: ['Τον','Την','Το','Τους'], hint: 'σερβιτόρος is masc → τον' },
+    { prompt: '___ συνάντησα στη βάρκα.', en: 'I met HER on the boat.', answer: 'Την', options: ['Τον','Την','Το','Τις'], hint: 'fem direct object → την' },
+    { prompt: '___ ευχαριστώ πολύ.', en: 'Thank YOU very much. (formal/plural)', answer: 'Σας', options: ['Σε','Σας','Σου','Τους'], hint: 'Polite/plural "you" object = σας. (σε = informal sing; σας = formal sing OR plural.)' },
+    { prompt: '___ ξέρω αυτή την πόλη.', en: 'I know THIS CITY well.', answer: 'Την', options: ['Τον','Την','Το','Τις'], hint: 'πόλη is fem → την. Cities are personified as fem (η Αθήνα).' },
+
+    // Indirect object — trip / requests (extra)
+    { prompt: '___ ζήτησα ένα ποτήρι νερό.', en: 'I asked HIM for a glass of water.', answer: 'Του', options: ['Του','Της','Τον','Τους'], hint: 'ζητώ ("ask for") takes indirect object → "from him" = του' },
+    { prompt: '___ έδωσα φιλοδώρημα.', en: 'I gave HER a tip.', answer: 'Της', options: ['Του','Της','Την','Τις'], hint: 'fem indirect → της. φιλοδώρημα ("tip") is a common Greece-trip word.' },
+    { prompt: '___ έστειλα ένα μήνυμα.', en: 'I sent HER a message.', answer: 'Της', options: ['Του','Της','Την','Τους'], hint: 'στέλνω takes indirect object → fem "to her" = της' },
+    { prompt: '___ εξήγησα τον δρόμο.', en: 'I explained the road TO HIM.', answer: 'Του', options: ['Του','Της','Τον','Τους'], hint: 'εξηγώ ("explain to") takes indirect object → masc "to him" = του' },
+    { prompt: '___ είπα ευχαριστώ.', en: 'I said thanks TO THEM.', answer: 'Τους', options: ['Του','Της','Τους','Τις'], hint: 'indirect "to them" = τους (one form for all genders in plural genitive)' },
+    { prompt: '___ έδειξα τη φωτογραφία.', en: 'I showed HIM the photo.', answer: 'Του', options: ['Του','Της','Τον','Τους'], hint: 'δείχνω ("show") takes indirect → masc "to him" = του' },
+
+    // Possessive — trip / everyday (extra)
+    { prompt: 'το διαβατήριο ___', en: 'HIS passport', answer: 'του', options: ['του','της','τους','τον'], hint: 'masc owner → του. Possessive ALWAYS after the noun.' },
+    { prompt: 'η τσάντα ___', en: 'HER bag', answer: 'της', options: ['του','της','τους','την'], hint: 'fem owner → της. Bag is η τσάντα (fem) but possessive depends on the OWNER, not the bag.' },
+    { prompt: 'το όνομα ___', en: 'HIS name', answer: 'του', options: ['του','της','τους','τον'], hint: 'masc owner → του. Note the stress pattern: το όνομά του (όνομα picks up an extra stress mark before the enclitic).' },
+    { prompt: 'ο φίλος ___ από το νησί', en: 'HIS friend (male) from the island', answer: 'του', options: ['του','της','τους','τον'], hint: 'masc owner → του. Note: φίλος is masc but the possessive matches the OWNER.' },
+    { prompt: 'τα παιδιά ___', en: 'HER children', answer: 'της', options: ['του','της','τους','τα'], hint: 'fem owner → της. Children is τα παιδιά (neut plur) but the possessive matches the OWNER.' },
+    { prompt: 'το ξενοδοχείο ___', en: 'THEIR hotel', answer: 'τους', options: ['του','της','τους','τα'], hint: '"Their" → τους for all genders. Position: AFTER the noun.' },
+    { prompt: 'η μάνα ___', en: 'MY mother', answer: 'μου', options: ['μου','σου','του','της'], hint: '"My" = μου. Full series: μου / σου / του-της / μας / σας / τους.' },
+    { prompt: 'το αυτοκίνητο ___', en: 'YOUR (informal) car', answer: 'σου', options: ['μου','σου','του','της'], hint: '"Your" (singular informal) = σου' },
+
+    // Combined / advanced (extra)
+    { prompt: '___ έδωσα ___ τσάντα.', en: 'I gave HIM HER bag. (ind.obj + poss)', answer: 'Του · της', options: ['Του · της','Της · του','Τον · την','Τους · της'], hint: 'First: "to him" = Του (before verb). Second: "her" possessive on τσάντα = της (after noun).' },
+    { prompt: 'Η μητέρα ___ ___ ξέρει καλά.', en: 'HIS mother knows HER well. (poss + dir.obj)', answer: 'του · την', options: ['του · την','της · τον','του · τον','τους · την'], hint: 'First: possessive "his" after μητέρα → του. Second: direct object "her" before ξέρει → την.' },
+    { prompt: '___ μιλάει συχνά.', en: 'He talks TO HER often. (μιλάω takes genitive)', answer: 'Της', options: ['Του','Της','Την','Τις'], hint: 'μιλάω takes genitive in Greek (it is a "to whom" verb, not "what" verb) → της' },
+    { prompt: '___ αρέσει η Ελλάδα.', en: 'HE likes Greece. (αρέσει construction)', answer: 'Του', options: ['Του','Της','Τον','Αυτός'], hint: 'αρέσει = "is pleasing to". Subject is η Ελλάδα; the LIKER is the indirect object: του αρέσει = "Greece is pleasing TO HIM" = "he likes Greece".' },
   ];
 
   let gPronDeck = [], gPronIndex = 0, gPronCorrect = 0, gPronTotal = 0, gPronAnswered = false;
@@ -10655,6 +10729,29 @@
     { en: 'on July 15th',      prompt: '___ δεκαπέντε Ιουλίου', answer: 'στις', options: ['τον','την','το','στις'], hint: '📅 Dates always → στις. Note Ιουλίου (genitive: "of July").' },
     // Years → το
     { en: 'in 2026',           prompt: '___ είκοσι έξι',       answer: 'το',   options: ['τον','την','το','στις'], hint: 'Years take το (neuter — implicit "the [year] twenty-six").' }
+  ,
+
+    // ─── EXPANSION: Greece-trip schedules + general A2 ───
+    // Trip schedules
+    { en: 'The boat leaves AT noon.',                 prompt: 'Το πλοίο φεύγει ___ μεσημέρι.',         answer: 'το',       options: ['το','στο','την','στις'],         hint: '"At noon" = το μεσημέρι. Article-only, NO preposition (one of the time-phrase quirks).' },
+    { en: 'The museum opens AT nine.',                prompt: 'Το μουσείο ανοίγει ___ εννιά.',          answer: 'στις',     options: ['στο','στις','στην','στη'],       hint: 'Clock times use στις (σε + τις, fem plural ώρες implied).' },
+    { en: "I'm coming IN two hours.",                prompt: 'Έρχομαι ___ δύο ώρες.',                  answer: 'σε',       options: ['σε','στις','από','με'],          hint: '"In X (period)" = σε + indefinite count. No fusion: σε δύο ώρες.' },
+    { en: "I'll leave IN five minutes.",             prompt: 'Θα φύγω ___ πέντε λεπτά.',               answer: 'σε',       options: ['σε','στις','με','από'],          hint: '"In X minutes" = σε + acc. σε πέντε λεπτά.' },
+    { en: 'IN a quarter (15 min) the bus leaves.',    prompt: '___ ένα τέταρτο φεύγει το λεωφορείο.',    answer: 'Σε',       options: ['Σε','Στο','Στις','Με'],          hint: '"In a quarter hour" = σε ένα τέταρτο.' },
+    { en: 'I saw George LAST week.',                  prompt: 'Είδα τον Γιώργο ___ προηγούμενη βδομάδα.', answer: 'την',     options: ['την','τη','στην','στις'],        hint: '"Last week" = την προηγούμενη βδομάδα. Article-only for past-time phrases.' },
+    { en: "We'll talk NEXT week.",                   prompt: 'Θα τα πούμε ___ άλλη βδομάδα.',          answer: 'την',      options: ['την','στην','τις','τη'],         hint: '"Next week" = την άλλη βδομάδα. Article-only.' },
+    { en: "We've been here SINCE Monday.",           prompt: 'Είμαστε εδώ ___ Δευτέρα.',               answer: 'από τη',   options: ['από τη','την','στη','με τη'],    hint: '"Since X (day)" = από + acc: από τη Δευτέρα.' },
+    { en: 'I worked FOR ten hours.',                  prompt: 'Δούλεψα ___ δέκα ώρες.',                 answer: 'για',      options: ['για','σε','με','από'],           hint: '"For X (duration)" = για + acc: για δέκα ώρες.' },
+    { en: "I haven't seen him SINCE September.",     prompt: 'Δεν τον βλέπω ___ Σεπτέμβριο.',          answer: 'από τον',  options: ['από τον','στον','τον','με τον'], hint: '"Since September" = από + masc acc. Months are masculine.' },
+    { en: 'We go to the beach ON the weekend.',       prompt: 'Πάμε στην παραλία ___ Σαββατοκύριακο.',  answer: 'το',       options: ['το','στο','την','τη'],           hint: '"On the weekend" = το Σαββατοκύριακο. Article-only.' },
+    // General A2 time phrases
+    { en: 'AT 1:30 we go.',                           prompt: '___ μιάμιση πάμε.',                      answer: 'Στις',     options: ['Στο','Στις','Στην','Στη'],       hint: 'Times → στις. (στις μιάμιση = at half past one.)' },
+    { en: 'EVERY morning I go to work.',              prompt: '___ πρωί πάω στη δουλειά.',              answer: 'Κάθε',     options: ['Κάθε','Όλο','Στο','Την'],        hint: '"Every X" = κάθε. Never changes for gender/case.' },
+    { en: 'EVERY Saturday we go to the market.',      prompt: '___ Σάββατο πάμε στην αγορά.',           answer: 'Κάθε',     options: ['Κάθε','Το','Στο','Στις'],        hint: '"Every Saturday" = κάθε Σάββατο. (For "on Saturday" alone you would use το Σάββατο.)' },
+    { en: 'TWO YEARS AGO I lived in Greece.',         prompt: '___ δύο χρόνια έμενα στην Ελλάδα.',      answer: 'Πριν',     options: ['Πριν','Σε','Από','Για'],         hint: '"X ago" = πριν + acc: πριν δύο χρόνια.' },
+    { en: 'I arrived AT 9 in the morning.',           prompt: 'Έφτασα ___ εννιά το πρωί.',              answer: 'στις',     options: ['στις','στο','στη','την'],        hint: 'Clock time → στις. "In the morning" = το πρωί (article-only).' },
+    { en: 'I work UNTIL 6.',                          prompt: 'Δουλεύω ___ έξι.',                      answer: 'μέχρι τις', options: ['μέχρι τις','στις','έως τις','από τις'], hint: '"Until X" = μέχρι / έως + acc time: μέχρι τις έξι.' },
+    { en: "It's been a long time SINCE I saw you.",  prompt: 'Πάει καιρός ___ σε είδα.',               answer: 'από τότε που', options: ['από τότε που','από','πριν','μέχρι'], hint: '"Since the time when" = από τότε που. (Conjunction phrase, not the article-only past-time pattern.)' }
   ];
 
   let gTimeDeck = [], gTimeIndex = 0, gTimeCorrect = 0, gTimeTotal = 0, gTimeAnswered = false;
@@ -10849,6 +10946,29 @@
     { en: 'I asked a question',      prompt: '___ μια ερώτηση.',             answer: 'Ρώτησα',   options: ['Ρώτησα','Ρωτάω','Ρώτησες','Είπα'],      hint: '✅ ρωτάω → ρώτησα. -άω → -ησα.' },
     { en: 'I walked to the office',  prompt: '___ στο γραφείο.',             answer: 'Περπάτησα',options: ['Περπάτησα','Περπατάω','Περπάτησες','Πήγα'], hint: '✅ περπατάω → περπάτησα. -άω → -ησα.' },
     { en: 'I did the homework',      prompt: '___ τα μαθήματα.',             answer: 'Έκανα',    options: ['Έκανα','Κάνω','Έκανες','Πήγα'],         hint: '✅ κάνω → έκανα. ε- augment, -α ending.' },
+  
+
+    // ─── EXPANSION: Greece-trip + general A2 aorist ───
+    // Trip
+    { en: 'Yesterday I arrived in Athens.',           prompt: 'Χθες ___ στην Αθήνα.',                 answer: 'έφτασα',         options: ['έφτασα','φτάνω','έφτασες','φτάσει'],                hint: '✅ φτάνω → έφτασα. ε- augment, -σα.' },
+    { en: 'I ordered a coffee and water.',            prompt: '___ έναν καφέ και νερό.',               answer: 'Παρήγγειλα',     options: ['Παρήγγειλα','Παραγγέλνω','Παρήγγειλε','Παραγγέλνεις'], hint: '✅ παραγγέλνω → παρήγγειλα. Irregular augment.' },
+    { en: 'How much did you pay for the room?',       prompt: 'Πόσα ___ για το δωμάτιο;',              answer: 'πλήρωσες',       options: ['πληρώνεις','πλήρωσα','πλήρωσες','πλήρωσε'],         hint: '✅ πληρώνω → πλήρωσες (2sg). -νω → -σα.' },
+    { en: 'Maria lost her wallet in the metro.',      prompt: 'Η Μαρία ___ το πορτοφόλι της.',         answer: 'έχασε',          options: ['χάνει','έχασα','έχασε','έχασες'],                   hint: '✅ χάνω → έχασε (3sg). ε- augment.' },
+    { en: 'Finally we found the hotel!',              prompt: 'Επιτέλους ___ το ξενοδοχείο!',          answer: 'βρήκαμε',        options: ['βρίσκουμε','βρήκα','βρήκαμε','βρήκατε'],            hint: '⚠️ βρίσκω → βρήκα/βρήκαμε. Irregular — totally different stem.' },
+    { en: 'I met a nice man at the beach.',           prompt: '___ έναν ωραίο άντρα στην παραλία.',    answer: 'Γνώρισα',        options: ['Γνωρίζω','Γνώρισα','Γνώρισες','Γνώρισε'],          hint: '✅ γνωρίζω → γνώρισα. -ζω → -σα.' },
+    { en: 'I asked the waiter for the bill.',         prompt: '___ τον σερβιτόρο για τον λογαριασμό.', answer: 'Ζήτησα',         options: ['Ζητάω','Ζήτησα','Ζήτησε','Ζήτησες'],                hint: '✅ ζητώ (ask FOR) → ζήτησα. NOT ρωτώ (ask a question).' },
+    { en: 'We took nice photos on the island.',       prompt: '___ ωραίες φωτογραφίες στο νησί.',      answer: 'Βγάλαμε',        options: ['Βγάζουμε','Βγάλαμε','Βγάλατε','Βγήκαμε'],          hint: '⚠️ βγάζω φωτογραφίες (take photos) → βγάλαμε. Do not confuse with βγαίνω (go out) → βγήκα.' },
+    { en: 'The boat left from Piraeus.',              prompt: 'Το πλοίο ___ από τον Πειραιά.',         answer: 'έφυγε',          options: ['φεύγει','έφυγα','έφυγε','έφυγες'],                  hint: '✅ φεύγω → έφυγε (3sg). ε- augment.' },
+    { en: 'I saw a beautiful church.',                prompt: '___ μια όμορφη εκκλησία.',              answer: 'Είδα',           options: ['Βλέπω','Είδα','Είδε','Είδες'],                      hint: '⚠️ βλέπω → είδα. Completely irregular.' },
+    { en: 'We ate fish at the tavern.',               prompt: '___ ψάρι στην ταβέρνα.',                answer: 'Φάγαμε',         options: ['Τρώμε','Φάγαμε','Φάγατε','Φάγαμε'],                 hint: '⚠️ τρώω → έφαγα/φάγαμε. Irregular stem.' },
+    { en: 'I stayed three days in Crete.',            prompt: '___ τρεις μέρες στην Κρήτη.',           answer: 'Έμεινα',         options: ['Μένω','Έμεινα','Έμεινε','Έμεινες'],                hint: '✅ μένω → έμεινα. ε- augment, -α.' },
+    // General A2
+    { en: 'Last night I read a nice book.',           prompt: 'Χθες το βράδυ ___ ένα ωραίο βιβλίο.',   answer: 'διάβασα',        options: ['διαβάζω','διάβασα','διάβασε','διάβασες'],          hint: '✅ διαβάζω → διάβασα. -ζω → -σα.' },
+    { en: 'I went to work early.',                    prompt: '___ στη δουλειά νωρίς.',                answer: 'Πήγα',           options: ['Πάω','Πήγα','Πήγε','Πήγες'],                       hint: '⚠️ πάω → πήγα. Irregular, very common.' },
+    { en: 'Last year we traveled to Spain.',          prompt: 'Πέρυσι ___ στην Ισπανία.',              answer: 'ταξιδέψαμε',     options: ['ταξιδεύουμε','ταξίδεψα','ταξιδέψαμε','ταξιδέψατε'], hint: '✅ ταξιδεύω → ταξιδέψαμε. -εύω → -εψα.' },
+    { en: 'I drank a coffee in the morning.',         prompt: '___ έναν καφέ το πρωί.',                answer: 'Ήπια',           options: ['Πίνω','Ήπια','Ήπιε','Ήπιες'],                       hint: '⚠️ πίνω → ήπια. Fully irregular.' },
+    { en: 'When did you leave the beach?',            prompt: 'Πότε ___ από την παραλία;',             answer: 'έφυγες',         options: ['φεύγεις','έφυγα','έφυγες','έφυγε'],                hint: '✅ φεύγω → έφυγες (2sg).' },
+    { en: 'I called my friend yesterday.',            prompt: '___ τον φίλο μου χθες.',                answer: 'Πήρα τηλέφωνο',  options: ['Παίρνω τηλέφωνο','Πήρα τηλέφωνο','Πήρε τηλέφωνο','Πήρες τηλέφωνο'], hint: '✅ idiom: παίρνω τηλέφωνο → πήρα τηλέφωνο. Alt: του τηλεφώνησα.' },
   ];
 
   let gAoristDeck = [], gAoristIndex = 0, gAoristCorrect = 0, gAoristTotal = 0, gAoristAnswered = false;
