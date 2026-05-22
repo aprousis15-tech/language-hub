@@ -3495,6 +3495,7 @@
 
       <div class="grammar-mode-group-label">▸ 📦 Nouns</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('articles',this)">📐 Articles + στον/στην/στο</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('secontract',this)">🔗 σε + article (στον/στην/στο + traps)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('noundrill',this)">📦 Noun Pairs (SRS)</button>
@@ -3569,6 +3570,25 @@
       <div class="grammar-progress">
         <span id="pron-progress">Question 1 of 28</span>
         <span class="grammar-score" id="pron-score">Score: 0/0</span>
+      </div>
+    </div>
+
+    <!-- σε + article contracts — focused drill on στον/στην/στο plus traps -->
+    <div id="grammar-secontract" style="display:none;">
+      <div class="grammar-card">
+        <div class="grammar-prompt-greek" id="se-prompt">…</div>
+        <div class="grammar-prompt-en" id="se-en">…</div>
+        <div class="grammar-options" id="se-options"></div>
+        <div class="grammar-feedback" id="se-feedback"></div>
+      </div>
+      <div class="grammar-controls">
+        <button class="grammar-btn grammar-btn-secondary" onclick="gSeBack()">← Back</button>
+        <button class="grammar-btn" onclick="gSeNext()">Next →</button>
+        <button class="grammar-btn grammar-btn-secondary" onclick="gSeShuffle()">🔀 Shuffle</button>
+      </div>
+      <div class="grammar-progress">
+        <span id="se-progress">Question 1 of 25</span>
+        <span class="grammar-score" id="se-score">Score: 0/0</span>
       </div>
     </div>
 
@@ -9722,6 +9742,48 @@
   // Rule reminders mapped per grammar drill mode. Shown in the disclosure
   // above the active drill. Click "See full Rules tab →" to jump to the full version.
   const DRILL_RULES = {
+    secontract: `
+      <strong>The single rule:</strong> the preposition <span class="rule-greek">σε</span> means "to / in / at / on" in Greek. When it meets the <em>definite</em> article, the two words MERGE into one word, written together. Never write σε + article uncontracted in standard Greek.
+      <table>
+        <tr><th>Number</th><th>Masc.</th><th>Fem.</th><th>Neut.</th></tr>
+        <tr><td><strong>Singular</strong></td><td><span class="rule-greek">στον</span><br/><span style="color:#7a6a55;font-size:0.85rem;">σε + τον</span></td><td><span class="rule-greek">στη(ν)</span><br/><span style="color:#7a6a55;font-size:0.85rem;">σε + τη(ν)</span></td><td><span class="rule-greek">στο</span><br/><span style="color:#7a6a55;font-size:0.85rem;">σε + το</span></td></tr>
+        <tr><td><strong>Plural</strong></td><td><span class="rule-greek">στους</span><br/><span style="color:#7a6a55;font-size:0.85rem;">σε + τους</span></td><td><span class="rule-greek">στις</span><br/><span style="color:#7a6a55;font-size:0.85rem;">σε + τις</span></td><td><span class="rule-greek">στα</span><br/><span style="color:#7a6a55;font-size:0.85rem;">σε + τα</span></td></tr>
+      </table>
+      <strong>One preposition, three English meanings.</strong> Greek doesn't distinguish "to" vs "in" vs "at" — context tells you which:
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><span class="rule-greek">Μένω στην Αθήνα.</span> = "I live IN Athens." (location)</li>
+        <li><span class="rule-greek">Πάω στην Αθήνα.</span> = "I'm going TO Athens." (destination)</li>
+        <li><span class="rule-greek">Είμαι στη δουλειά.</span> = "I'm AT work." (location)</li>
+      </ul>
+      <strong>Indefinite article: NO fusion.</strong> When you use "a / an" (the indefinite article), σε stays as two separate words:
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><span class="rule-greek">σε ένα σπίτι</span> = "in / to a house" (NOT στο — that's "the").</li>
+        <li><span class="rule-greek">σε μία τράπεζα</span> = "at a bank".</li>
+        <li><span class="rule-greek">σε έναν φίλο</span> = "to a friend" (masc acc gets -ν even when not fusing).</li>
+      </ul>
+      <strong>Clock times always use στις.</strong> The fem plural ώρες (hours) is implied:
+      <ul style="margin: 6px 0 8px 18px;">
+        <li><span class="rule-greek">στις 8</span>, <span class="rule-greek">στις 10:30</span>, <span class="rule-greek">στις μιάμιση</span>. Even 1:30 uses στις — μιάμιση is treated as the ώρα (fem).</li>
+      </ul>
+      <strong>⚠️ TRAPS — when σε is NOT used.</strong> These time phrases take the ARTICLE ALONE, no preposition:
+      <table>
+        <tr><th>Phrase</th><th>Correct</th><th>Common mistake</th></tr>
+        <tr><td>"on Monday"</td><td><span class="rule-greek">τη Δευτέρα</span></td><td>❌ στη Δευτέρα</td></tr>
+        <tr><td>"on Tuesday"</td><td><span class="rule-greek">την Τρίτη</span></td><td>❌ στην Τρίτη</td></tr>
+        <tr><td>"on Saturday"</td><td><span class="rule-greek">το Σάββατο</span></td><td>❌ στο Σάββατο</td></tr>
+        <tr><td>"in September"</td><td><span class="rule-greek">τον Σεπτέμβριο</span></td><td>❌ στον Σεπτέμβριο</td></tr>
+        <tr><td>"in 2026"</td><td><span class="rule-greek">το 2026</span></td><td>❌ στο 2026</td></tr>
+        <tr><td>"in the morning"</td><td><span class="rule-greek">το πρωί</span></td><td>❌ στο πρωί</td></tr>
+        <tr><td>"at night"</td><td><span class="rule-greek">τη νύχτα</span></td><td>❌ στη νύχτα</td></tr>
+      </table>
+      <strong>Mental model:</strong>
+      <ul style="margin: 6px 0 8px 18px;">
+        <li>σε + DEFINITE article → ALWAYS fuses (στον / στη(ν) / στο · στους / στις / στα).</li>
+        <li>σε + INDEFINITE article → NEVER fuses (σε έναν / σε μία / σε ένα).</li>
+        <li>Days / months / years / parts of day → ARTICLE ONLY, no σε. The article alone carries the "on / in / at" meaning for these time periods.</li>
+        <li>Clock times → always στις (the fem plural).</li>
+      </ul>
+    `,
     pronouns: `
       <strong>The big idea:</strong> the little words <span class="rule-greek">τον / την / το / τους / τις / τα / του / της</span> have a <em>double life</em> in Greek. They are the definite article ("the") AND they are personal pronouns ("him / her / it / them / his / her"). Same forms, different jobs. What tells you which job?
       <ul style="margin: 6px 0 8px 18px;">
@@ -10093,6 +10155,7 @@
     updateDrillRuleDisclosure(mode);
     document.getElementById('grammar-articles').style.display = mode === 'articles' ? '' : 'none';
     document.getElementById('grammar-pronouns').style.display = mode === 'pronouns' ? '' : 'none';
+    document.getElementById('grammar-secontract').style.display = mode === 'secontract' ? '' : 'none';
     document.getElementById('grammar-verbs').style.display = mode === 'verbs' ? '' : 'none';
     document.getElementById('grammar-preps').style.display = mode === 'preps' ? '' : 'none';
     document.getElementById('grammar-adj').style.display = mode === 'adj' ? '' : 'none';
@@ -10119,6 +10182,7 @@
     if (mode !== 'gtap' && gGtapState && gGtapState.running) gtapEnd(true);
     if (mode === 'articles') initArticlesDrill();
     if (mode === 'pronouns') initPronounsDrill();
+    if (mode === 'secontract') initSecontractDrill();
     if (mode === 'verbs') initVerbsDrill();
     if (mode === 'preps') initPrepsDrill();
     if (mode === 'adj') initAdjDrill();
@@ -10146,7 +10210,7 @@
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
     verbs: ['typea','verbs','aspect','pres2aor','vgroup','subjfirst','aorist','future','neg'],
-    nouns: ['articles','gtap','preps'],
+    nouns: ['articles','secontract','gtap','preps'],
     pronouns: ['pronouns'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
@@ -10546,6 +10610,120 @@
   function gPronShuffle() {
     initPronounsDrill();
   }
+
+  // ── σε + ARTICLE CONTRACTS DRILL ──
+  // The single trickiest pattern for English speakers: Greek fuses the
+  // preposition σε ("to" / "in" / "at") with the definite article every
+  // time. στον / στη(ν) / στο · στους / στις / στα. But there are TRAPS
+  // where σε is NOT used: days, months, and years take ARTICLE ONLY
+  // (τη Δευτέρα, τον Σεπτέμβριο, το 2026 — never στη/στον/στο).
+  //
+  // Questions are ordered:
+  //   1-8   Singular σε + def article  (στον/στην/στο)
+  //   9-14  Plural σε + def article    (στους/στις/στα)
+  //   15-18 Clock times                (στις)
+  //   19-22 σε + INDEFINITE (no fusion: σε ένα / σε μία / σε έναν)
+  //   23-25 Traps — no σε for days/months/years
+  const SECONTRACT_QUESTIONS = [
+    // ─── Singular σε + def article ───
+    { prompt: 'Μένω ___ Αθήνα.',             en: 'I live IN Athens.',                  answer: 'στην', options: ['στον','στην','στο'],                 hint: 'Αθήνα is fem → σε + την = στην. Greek uses ONE preposition (σε) for both "to" and "in" — same form, context tells you which.' },
+    { prompt: 'Δουλεύω ___ τράπεζα.',        en: 'I work AT the bank.',                answer: 'στην', options: ['στον','στην','στο'],                 hint: 'τράπεζα is fem → σε + την = στην' },
+    { prompt: 'Πάω ___ σχολείο.',            en: 'I am going TO school.',              answer: 'στο',  options: ['στον','στην','στο'],                 hint: 'σχολείο is neut → σε + το = στο. Same form whether "in" or "to".' },
+    { prompt: 'Είμαι ___ νοσοκομείο.',       en: 'I am AT the hospital.',              answer: 'στο',  options: ['στον','στην','στο'],                 hint: 'νοσοκομείο is neut → στο' },
+    { prompt: 'Μένω ___ Πειραιά.',           en: 'I live IN Piraeus.',                 answer: 'στον', options: ['στον','στην','στο'],                 hint: 'Πειραιάς is masc → σε + τον = στον. Masc acc drops -ς (Πειραιά).' },
+    { prompt: 'Πάω ___ γιατρό.',             en: 'I am going TO the doctor.',          answer: 'στον', options: ['στον','στην','στο'],                 hint: 'γιατρός is masc → σε + τον = στον. Fixed idiom for "to the doctor".' },
+    { prompt: 'Πάμε ___ παραλία.',           en: 'We are going TO the beach.',         answer: 'στην', options: ['στον','στην','στο'],                 hint: 'παραλία is fem → στην' },
+    { prompt: 'Δουλεύει ___ αεροδρόμιο.',    en: 'He works AT the airport.',           answer: 'στο',  options: ['στον','στην','στο'],                 hint: 'αεροδρόμιο is neut → στο' },
+
+    // ─── Plural σε + def article ───
+    { prompt: 'Πάω ___ φίλους μου.',         en: "I am going TO my friends.",          answer: 'στους', options: ['στους','στις','στα'],               hint: 'φίλους is masc plur → σε + τους = στους' },
+    { prompt: 'Πάμε ___ αγορές.',            en: 'We are going shopping (TO the markets).', answer: 'στις', options: ['στους','στις','στα'],          hint: 'αγορές is fem plur → σε + τις = στις' },
+    { prompt: 'Τα παιδιά παίζουν ___ κήπους.', en: 'The children play IN the gardens.', answer: 'στους', options: ['στους','στις','στα'],               hint: 'κήπους is masc plur → στους' },
+    { prompt: 'Πάμε ___ μαγαζιά.',           en: 'We are going TO the shops.',         answer: 'στα',   options: ['στους','στις','στα'],               hint: 'μαγαζιά is neut plur → σε + τα = στα' },
+    { prompt: 'Είδαμε αρχαία ___ νησιά.',    en: 'We saw ruins ON the islands.',       answer: 'στα',   options: ['στους','στις','στα'],               hint: 'νησιά is neut plur → στα' },
+    { prompt: 'Δουλεύει ___ μεγάλες πόλεις.', en: 'She works IN the big cities.',      answer: 'στις',  options: ['στους','στις','στα'],               hint: 'πόλεις is fem plur → στις. (Article + adj + noun all agree fem plur acc.)' },
+
+    // ─── Clock times — always στις ───
+    { prompt: 'Φεύγουμε ___ οκτώ.',          en: 'We leave AT 8.',                     answer: 'στις', options: ['στις','στο','στη','στον'],            hint: 'Clock times → στις (σε + τις, fem plural ώρες implied). Universal rule for hours.' },
+    { prompt: 'Έρχεται ___ δέκα.',           en: 'He comes AT 10.',                    answer: 'στις', options: ['στις','στο','στη','στον'],            hint: 'Times always → στις.' },
+    { prompt: 'Συνάντηση ___ μιάμιση.',      en: 'Meeting AT 1:30.',                   answer: 'στις', options: ['στις','στο','στη','τη'],              hint: 'Times → στις even for 1 — μία/μιάμιση is the ώρα (fem).' },
+    { prompt: 'Πάμε ___ έντεκα και τέταρτο.', en: 'We go AT 11:15.',                   answer: 'στις', options: ['στις','στο','στη','τη'],              hint: 'Same rule — clock times = στις.' },
+
+    // ─── σε + INDEFINITE article (NO fusion) ───
+    { prompt: 'Δουλεύω ___ μεγάλη εταιρεία.', en: 'I work AT a big company.',          answer: 'σε μια', options: ['σε μια','στη','με μία','σε ένα'],   hint: '⚠️ σε + INDEFINITE article does NOT fuse. εταιρεία is fem → σε μια εταιρεία (στη would mean "the" — definite).' },
+    { prompt: 'Πήγα ___ καφέ.',              en: 'I went TO a café.',                  answer: 'σε ένα', options: ['στο','σε ένα','με ένα','στον'],     hint: '⚠️ "A café" is INDEFINITE → σε ένα does NOT fuse → σε ένα καφέ. (στο καφέ would mean "to THE café".)' },
+    { prompt: 'Μένω ___ σπίτι κοντά στη θάλασσα.', en: 'I live IN a house near the sea.', answer: 'σε ένα', options: ['στο','σε ένα','με ένα','στον'], hint: '⚠️ Indefinite "a house" → σε ένα σπίτι. Definite would have been στο σπίτι ("in THE house").' },
+    { prompt: 'Μιλάω ___ Έλληνα.',           en: 'I am talking TO a Greek (man).',     answer: 'σε έναν', options: ['στον','σε έναν','με έναν','σε ένας'], hint: '⚠️ σε + indefinite masc acc = σε έναν (with -ν for masc acc, but TWO separate words — no fusion).' },
+
+    // ─── Traps — when NO σε is used (article-only for time periods) ───
+    { prompt: 'Έρχομαι ___ Δευτέρα.',        en: 'I am coming ON Monday.',             answer: 'τη',   options: ['στη','τη','την','στη(ν)'],            hint: '⚠️ TRAP: days of the week take ARTICLE ONLY — NO σε. "On Monday" = τη Δευτέρα (NOT στη Δευτέρα). The article alone carries the "on" meaning.' },
+    { prompt: 'Τα γενέθλιά μου είναι ___ Σεπτέμβριο.', en: 'My birthday is IN September.', answer: 'τον', options: ['στον','τον','την','στο'],         hint: '⚠️ TRAP: months take ARTICLE ONLY — NO σε. "In September" = τον Σεπτέμβριο (NOT στον). Months are masculine.' },
+    { prompt: 'Παντρεύτηκα ___ 2020.',       en: 'I got married IN 2020.',             answer: 'το',   options: ['στο','το','τον','στις'],              hint: '⚠️ TRAP: years take ARTICLE ONLY — NO σε. "In 2020" = το 2020 (NOT στο). Year takes the neuter article το.' },
+  ];
+
+  let gSeDeck = [], gSeIndex = 0, gSeCorrect = 0, gSeTotal = 0, gSeAnswered = false;
+
+  function initSecontractDrill() {
+    gSeDeck = shuffled(SECONTRACT_QUESTIONS);
+    gSeIndex = 0; gSeCorrect = 0; gSeTotal = 0; gSeAnswered = false;
+    showSeCard();
+  }
+
+  function showSeCard() {
+    const q = gSeDeck[gSeIndex];
+    if (!q) return;
+    const promptEl = document.getElementById('se-prompt');
+    promptEl.innerHTML = q.prompt.replace('___', '<span class="grammar-prompt-blank">___</span>');
+    document.getElementById('se-en').textContent = q.en;
+    const fb = document.getElementById('se-feedback');
+    fb.textContent = ''; fb.classList.remove('show');
+    const optsHost = document.getElementById('se-options');
+    optsHost.innerHTML = '';
+    q.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'grammar-option';
+      b.textContent = opt;
+      b.onclick = () => gSeAnswer(opt, b, q);
+      optsHost.appendChild(b);
+    });
+    document.getElementById('se-progress').textContent = `Question ${gSeIndex + 1} of ${gSeDeck.length}`;
+    document.getElementById('se-score').textContent = `Score: ${gSeCorrect}/${gSeTotal}`;
+    gSeAnswered = false;
+  }
+
+  function gSeAnswer(picked, btnEl, q) {
+    if (gSeAnswered) return;
+    gSeAnswered = true;
+    gSeTotal++;
+    if (picked === q.answer) gSeCorrect++;
+    else recordMistake({
+      drill_type: 'secontract', prompt: q.prompt, correct: q.answer, picked: picked,
+      metadata: { en: q.en, hint: q.hint }
+    });
+    const allBtns = document.querySelectorAll('#se-options .grammar-option');
+    allBtns.forEach(b => {
+      b.classList.add('disabled');
+      if (b.textContent === q.answer) b.classList.add('correct');
+      else if (b === btnEl && picked !== q.answer) b.classList.add('wrong');
+    });
+    const promptEl = document.getElementById('se-prompt');
+    promptEl.innerHTML = q.prompt.replace('___', `<span class="grammar-prompt-blank">${q.answer}</span>`);
+    const fb = document.getElementById('se-feedback');
+    fb.textContent = '💡 ' + q.hint;
+    fb.classList.add('show');
+    document.getElementById('se-score').textContent = `Score: ${gSeCorrect}/${gSeTotal}`;
+  }
+
+  function gSeNext() {
+    const _r = advanceOrReshuffle(gSeDeck, gSeIndex);
+    gSeDeck = _r.deck; gSeIndex = _r.index;
+    showSeCard();
+  }
+  function gSeBack() {
+    gSeIndex = (gSeIndex - 1 + gSeDeck.length) % gSeDeck.length;
+    showSeCard();
+  }
+  function gSeShuffle() { initSecontractDrill(); }
 
   // Type B verbs (-άω) — endings: -άω/-ώ, -άς, -άει/-ά, -άμε/-ούμε, -άτε, -άνε/-ούν(ε)
   // Drill picks a random verb + random target person, presents all 6 forms shuffled,
@@ -16448,6 +16626,7 @@
   const REVIEW_DRILL_LABELS = {
     articles: { label: 'Articles', tag: 'review-tag-articles' },
     pronouns: { label: 'Pronouns', tag: 'review-tag-articles' },
+    secontract: { label: 'σε + article', tag: 'review-tag-articles' },
     verbs: { label: 'Verbs', tag: 'review-tag-verbs' },
     preps: { label: 'Prepositions', tag: 'review-tag-preps' },
     adj: { label: 'Adjective', tag: 'review-tag-adj' },
