@@ -6,7 +6,10 @@
     { "src": "api/story.js", "use": "@vercel/node" },
     { "src": "api/coach/plan-today.js", "use": "@vercel/node" },
     { "src": "api/coach/run.js", "use": "@vercel/node" },
-    { "src": "*.html", "use": "@vercel/static" }
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "sw.js", "use": "@vercel/static" },
+    { "src": "manifest.json", "use": "@vercel/static" },
+    { "src": "icon.svg", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/claude", "dest": "/api/claude.js" },
@@ -14,6 +17,24 @@
     { "src": "/api/story", "dest": "/api/story.js" },
     { "src": "/api/coach/plan-today", "dest": "/api/coach/plan-today.js" },
     { "src": "/api/coach/run", "dest": "/api/coach/run.js" },
+    {
+      "src": "/sw.js",
+      "dest": "/sw.js",
+      "headers": {
+        "service-worker-allowed": "/",
+        "cache-control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json",
+      "headers": { "content-type": "application/manifest+json; charset=utf-8" }
+    },
+    {
+      "src": "/icon.svg",
+      "dest": "/icon.svg",
+      "headers": { "content-type": "image/svg+xml; charset=utf-8" }
+    },
     { "src": "/(.*\\.html)", "dest": "/$1" },
     { "src": "/", "dest": "/index.html" }
   ],
