@@ -1414,6 +1414,58 @@
     border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-left: auto;
   }
   .story-refresh-btn:hover { background: #f8bbd0; }
+  /* Read / Dictation mode toggle buttons. Active pill highlighted. */
+  .story-mode-btn {
+    background: white; color: #6d4c41; border: 1.5px solid #d6b3a5; padding: 5px 11px;
+    border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+  }
+  .story-mode-btn:hover { background: #fdebe8; }
+  .story-mode-btn.active { background: #880e4f; color: white; border-color: #880e4f; }
+  /* Dictation-mode layout: hide the read-mode pieces, show the dictation block */
+  .story-content .story-sentence-dictation { display: none; }
+  .story-content.story-dictation-active .story-sentence-greek { display: none; }
+  .story-content.story-dictation-active .story-sentence-english { display: none; }
+  .story-content.story-dictation-active .story-sentence-toggle { display: none; }
+  .story-content.story-dictation-active .story-sentence-dictation { display: block; }
+  /* Dictation block styling */
+  .story-sentence-dictation {
+    background: #fcfafb; border: 1px solid #f3d3df; border-radius: 8px;
+    padding: 12px 14px; margin-top: 4px;
+  }
+  .story-dict-prompt { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .story-dict-label { color: #6d4c41; font-size: 0.85rem; font-weight: 600; }
+  .story-dict-slow {
+    background: rgba(255,255,255,0.6); border: 1px solid #c5cae9; color: #283593;
+    padding: 2px 7px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+    line-height: 1; transition: transform 0.1s;
+  }
+  .story-dict-slow:hover { background: #e8eaf6; transform: scale(1.06); }
+  .story-dict-slow.speaking { background: #283593; color: white; animation: speakPulse 0.9s ease-in-out infinite; }
+  .story-dict-input {
+    width: 100%; padding: 8px 10px; border: 1.5px solid #d6b3a5; border-radius: 6px;
+    font-family: 'Georgia', serif; font-size: 1rem; color: #2a1f25; box-sizing: border-box;
+  }
+  .story-dict-input:focus { outline: none; border-color: #880e4f; }
+  .story-dict-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .story-dict-check, .story-dict-reveal {
+    background: white; border: 1.5px solid #ad1457; color: #880e4f; padding: 5px 12px;
+    border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+  }
+  .story-dict-check { background: #ad1457; color: white; border-color: #ad1457; }
+  .story-dict-check:hover { background: #880e4f; }
+  .story-dict-reveal { color: #6d4c41; border-color: #d6b3a5; }
+  .story-dict-reveal:hover { background: #fdebe8; }
+  .story-dict-feedback {
+    margin-top: 10px; padding: 8px 10px; border-radius: 6px; font-size: 0.9rem; line-height: 1.5;
+  }
+  .story-dict-feedback.good { background: #e8f5e9; border-left: 3px solid #2e7d32; color: #1b5e20; }
+  .story-dict-feedback.partial { background: #fff8e1; border-left: 3px solid #f57c00; color: #5d4037; }
+  .story-dict-diff { font-family: 'Georgia', serif; margin-bottom: 6px; }
+  .story-dict-diff .diff-ok { color: #2e7d32; }
+  .story-dict-diff .diff-wrong { color: #c62828; text-decoration: underline; text-decoration-style: wavy; cursor: help; }
+  .story-dict-diff .diff-missing { color: #c62828; background: #ffebee; padding: 0 3px; border-radius: 3px; text-decoration: line-through; }
+  .story-dict-diff .diff-extra { color: #ef6c00; text-decoration: line-through; }
+  .story-dict-correct { color: #4a3640; font-size: 0.92rem; }
   .story-loading, .story-error {
     max-width: 700px; margin: 24px auto; padding: 16px 20px; text-align: center;
     border-radius: 10px; font-size: 0.95rem;
@@ -1523,6 +1575,17 @@
   .coach-empty-icon { font-size: 3rem; margin-bottom: 8px; }
   .coach-empty h3 { font-family: 'Playfair Display', serif; color: #283593; margin-bottom: 8px; }
   .coach-empty p { color: #4a4a6a; font-size: 0.95rem; margin-bottom: 18px; }
+  /* Inline 🔊 buttons used anywhere a Greek string can be spoken aloud.
+     Free browser TTS — no API. Pulses while speaking, dims when no voice. */
+  .speak-btn-inline {
+    background: rgba(255,255,255,0.6); border: 1px solid #c5cae9; color: #283593;
+    padding: 2px 7px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+    margin: 0 4px; line-height: 1; vertical-align: middle; transition: transform 0.1s;
+  }
+  .speak-btn-inline:hover { background: #e8eaf6; transform: scale(1.06); }
+  .speak-btn-inline.speaking { background: #283593; color: white; animation: speakPulse 0.9s ease-in-out infinite; }
+  .speak-btn-inline.no-voice { opacity: 0.35; cursor: help; }
+  .speak-btn-inline.small { font-size: 0.78rem; padding: 1px 5px; }
   .coach-empty-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .coach-empty-cta {
     background: #283593; color: white; border: none; padding: 10px 20px;
@@ -4558,6 +4621,8 @@
       <span class="story-meta-item"><strong>Date:</strong> <span id="story-date">—</span></span>
       <span class="story-meta-item"><strong>Level:</strong> <span id="story-level">A2</span></span>
       <span class="story-meta-item"><strong>Topic:</strong> <span id="story-topic">—</span></span>
+      <button class="story-mode-btn" id="story-mode-read" onclick="setStoryMode('read')" title="Read mode — Greek text + click-to-reveal English">📖 Read</button>
+      <button class="story-mode-btn" id="story-mode-dictation" onclick="setStoryMode('dictation')" title="Dictation mode — hear the Greek and type what you heard">📝 Dictation</button>
       <button class="story-refresh-btn" onclick="refreshStory()" title="Generate a new story for today (replaces the cached one)">↺ New story</button>
     </div>
 
@@ -7715,6 +7780,8 @@
       renderStory(data.story);
       if (loading) loading.style.display = 'none';
       if (content) content.style.display = '';
+      // Default to read mode on each (re)load.
+      setStoryMode('read');
     } catch (e) {
       if (loading) loading.style.display = 'none';
       if (errBox) {
@@ -7739,16 +7806,25 @@
     if (tg) tg.textContent = s.title_greek || '';
     if (te) te.textContent = s.title_english ? '“' + s.title_english + '”' : '';
 
-    // Sentences with click-to-reveal English
+    // Sentences with click-to-reveal English + 🔊 hear + dictation block.
+    // Each li renders BOTH read-mode and dictation-mode layouts; CSS class
+    // .story-dictation-active on the container toggles which is shown.
     const list = document.getElementById('story-sentences');
     if (list) {
       list.innerHTML = '';
       const sentences = Array.isArray(s.sentences) ? s.sentences : [];
       sentences.forEach((line, idx) => {
         const li = document.createElement('li');
+        li.dataset.idx = idx;
+        const greekText = line.greek || '';
+
+        // Read-mode block (Greek line + reveal-English toggle)
         const greek = document.createElement('div');
         greek.className = 'story-sentence-greek';
-        greek.textContent = line.greek || '';
+        // Render text + inline 🔊 button so the user can hear native-voice Greek.
+        // Tap-to-toggle-English target excludes the button (delegated handler
+        // stops propagation), so the 🔊 doesn't accidentally reveal the English.
+        greek.innerHTML = escHtml(greekText) + ' ' + speakBtnHtml(greekText, { small: true });
         const english = document.createElement('div');
         english.className = 'story-sentence-english';
         english.id = 'story-sent-en-' + idx;
@@ -7761,11 +7837,70 @@
           const shown = english.classList.toggle('show');
           toggle.textContent = shown ? '🙈 Hide English' : '👁️ Show English';
         };
-        // Tap on the Greek line also toggles — easier on mobile.
-        greek.onclick = () => toggle.click();
+        // Tap on the Greek text (NOT the 🔊 button — that stops propagation)
+        // also toggles English — easier on mobile.
+        greek.addEventListener('click', (e) => {
+          if (e.target.closest('[data-speak]')) return;
+          toggle.click();
+        });
+
+        // Dictation-mode block — hidden by default via CSS; .story-dictation-active flips it
+        const dict = document.createElement('div');
+        dict.className = 'story-sentence-dictation';
+        dict.innerHTML =
+          '<div class="story-dict-prompt">' +
+            '<span class="story-dict-label">Sentence ' + (idx+1) + '</span>' +
+            ' ' + speakBtnHtml(greekText) +
+            ' <button type="button" class="story-dict-slow" data-speak="' + greekText.replace(/"/g, '&quot;') + '" title="Hear it (slower)">🐢</button>' +
+          '</div>' +
+          '<input type="text" class="story-dict-input" placeholder="Type the Greek you heard…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">' +
+          '<div class="story-dict-actions">' +
+            '<button type="button" class="story-dict-check">✓ Check</button>' +
+            '<button type="button" class="story-dict-reveal">👁️ Reveal</button>' +
+          '</div>' +
+          '<div class="story-dict-feedback" style="display:none;"></div>';
+
         li.appendChild(greek);
         li.appendChild(english);
         li.appendChild(toggle);
+        li.appendChild(dict);
+
+        // Dictation interactions
+        const input  = dict.querySelector('.story-dict-input');
+        const checkB = dict.querySelector('.story-dict-check');
+        const revealB= dict.querySelector('.story-dict-reveal');
+        const slowB  = dict.querySelector('.story-dict-slow');
+        const fb     = dict.querySelector('.story-dict-feedback');
+
+        // Slow playback — uses speakGreek directly so we can pass a slower rate
+        slowB.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          slowB.classList.add('speaking');
+          speakGreek(greekText, {
+            rate: 0.65,
+            onend: () => slowB.classList.remove('speaking'),
+            onerror: () => slowB.classList.remove('speaking')
+          });
+        });
+
+        checkB.addEventListener('click', () => {
+          const typed = (input.value || '').trim();
+          if (!typed) { input.focus(); return; }
+          const diff = diffGreek(typed, greekText);
+          fb.innerHTML = diff.html + '<div class="story-dict-correct"><strong>Correct:</strong> ' + escHtml(greekText) + '</div>';
+          fb.className = 'story-dict-feedback ' + (diff.exact ? 'good' : 'partial');
+          fb.style.display = '';
+        });
+        revealB.addEventListener('click', () => {
+          fb.innerHTML = '<div class="story-dict-correct"><strong>Answer:</strong> ' + escHtml(greekText) + '</div>';
+          fb.className = 'story-dict-feedback partial';
+          fb.style.display = '';
+        });
+        // Enter key submits Check
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); checkB.click(); }
+        });
+
         list.appendChild(li);
       });
     }
@@ -7877,6 +8012,26 @@
     }
 
     updateStoryQuestionsScore();
+  }
+
+  // Story mode toggle — flips between read (Greek visible, click-to-reveal
+  // English) and dictation (Greek hidden behind 🔊, you type, get diff).
+  // Pure CSS-based via a class on the content container. State persists per
+  // session (page reload returns to read mode).
+  function setStoryMode(mode) {
+    const content = document.getElementById('story-content');
+    if (!content) return;
+    const readBtn = document.getElementById('story-mode-read');
+    const dictBtn = document.getElementById('story-mode-dictation');
+    if (mode === 'dictation') {
+      content.classList.add('story-dictation-active');
+      readBtn && readBtn.classList.remove('active');
+      dictBtn && dictBtn.classList.add('active');
+    } else {
+      content.classList.remove('story-dictation-active');
+      readBtn && readBtn.classList.add('active');
+      dictBtn && dictBtn.classList.remove('active');
+    }
   }
 
   // Reads selection state from the DOM and renders "X/Y understood" next to
@@ -8016,6 +8171,15 @@
           hint.innerHTML = '💡 ' + pr.hint; // hints can contain <b> tags from the agent
           li.appendChild(hint);
         }
+        // 🔊 hear-the-model button — speaks the Greek model answer aloud
+        // without revealing the spelled-out text. Lets the user attempt the
+        // Greek by ear before checking the written form in the Speak drill.
+        if (pr.model) {
+          const hearWrap = document.createElement('div');
+          hearWrap.style.marginTop = '4px';
+          hearWrap.innerHTML = '<span style="font-size:0.82rem;color:#6a6a8a;">Hear the model:</span> ' + speakBtnHtml(pr.model);
+          li.appendChild(hearWrap);
+        }
         speakList.appendChild(li);
       });
     }
@@ -8040,7 +8204,8 @@
         if (Array.isArray(g.examples)) {
           g.examples.forEach(ex => {
             const exP = document.createElement('p');
-            exP.innerHTML = '<span class="greek">' + escHtml(ex.greek || '') + '</span> — ' + escHtml(ex.english || '');
+            exP.innerHTML = '<span class="greek">' + escHtml(ex.greek || '') + '</span> ' +
+              speakBtnHtml(ex.greek, { small: true }) + ' — ' + escHtml(ex.english || '');
             lesson.appendChild(exP);
           });
         }
@@ -8067,6 +8232,11 @@
         const en = document.createElement('span');
         en.textContent = (v.greek ? '— ' : '') + (v.english || '');
         li.appendChild(g);
+        if (v.greek) {
+          const sp = document.createElement('span');
+          sp.innerHTML = speakBtnHtml(v.greek, { small: true });
+          li.appendChild(sp);
+        }
         li.appendChild(en);
         if (v.note) {
           const n = document.createElement('span');
@@ -14558,6 +14728,105 @@
       }
     }, 1500);
   }
+
+  // Light Greek-string diff for the dictation drill. Normalizes accents
+  // and trailing punctuation so the learner isn't penalized for missing
+  // a tonos or omitting the final period. Returns:
+  //   { exact: bool, html: highlighted diff of typed vs target }
+  // Strategy: word-level compare (split on whitespace), then character-level
+  // diff inside each word using LCS. Free, runs entirely in the browser.
+  function normalizeGreekForDiff(s) {
+    return (s || '')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '') // strip accents
+      .replace(/[.,;·!?…]/g, '')        // strip punctuation
+      .replace(/ς/g, 'σ')               // final/medial sigma equivalent
+      .toLowerCase()
+      .trim();
+  }
+  function diffGreek(typed, target) {
+    const a = normalizeGreekForDiff(typed);
+    const b = normalizeGreekForDiff(target);
+    const exact = a === b;
+    // Word-level visual diff over the raw typed string vs raw target.
+    const tWords = (typed || '').trim().split(/\s+/).filter(Boolean);
+    const gWords = (target || '').trim().split(/\s+/).filter(Boolean);
+    const n = Math.max(tWords.length, gWords.length);
+    const parts = [];
+    for (let i = 0; i < n; i++) {
+      const tw = tWords[i] || '';
+      const gw = gWords[i] || '';
+      if (!tw) parts.push('<span class="diff-missing">' + escHtml(gw) + '</span>');
+      else if (!gw) parts.push('<span class="diff-extra">' + escHtml(tw) + '</span>');
+      else if (normalizeGreekForDiff(tw) === normalizeGreekForDiff(gw))
+        parts.push('<span class="diff-ok">' + escHtml(tw) + '</span>');
+      else
+        parts.push('<span class="diff-wrong" title="Expected: ' + escHtml(gw) + '">' + escHtml(tw) + '</span>');
+    }
+    const html = '<div class="story-dict-diff">' + parts.join(' ') + '</div>';
+    return { exact, html };
+  }
+
+  // Reusable Greek TTS. Use anywhere a 🔊 button wants to speak a Greek
+  // string. Free, on-device, no API. Cancels any in-flight utterance first
+  // so back-to-back clicks don't queue up.
+  //
+  // Usage: speakGreek("Καλημέρα")
+  //        speakGreek(text, { rate: 0.85, onend: () => ... })
+  function speakGreek(text, opts) {
+    opts = opts || {};
+    const synth = window.speechSynthesis;
+    if (!synth || !text) return;
+    synth.cancel();
+    ensureGreekVoice(voice => {
+      if (!voice) {
+        // No Greek voice installed — fail silently. UI will indicate this
+        // via the button styling rather than an annoying alert.
+        if (opts.onmissing) opts.onmissing();
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(String(text));
+      u.voice = voice;
+      u.lang = voice.lang || 'el-GR';
+      u.rate = typeof opts.rate === 'number' ? opts.rate : 0.92;
+      u.pitch = 1.0;
+      if (opts.onend)   u.onend = opts.onend;
+      if (opts.onerror) u.onerror = opts.onerror;
+      synth.speak(u);
+    });
+  }
+
+  // Inline-button HTML helper. Renders a tiny 🔊 button that speaks the
+  // given Greek text. Uses data-speak attribute so a single delegated
+  // listener handles all of them (set up at the end of the script). The
+  // text is JSON-escaped to keep quotes safe inside attribute values.
+  function speakBtnHtml(greekText, opts) {
+    if (!greekText) return '';
+    const enc = String(greekText).replace(/"/g, '&quot;');
+    const cls = (opts && opts.small) ? 'speak-btn-inline small' : 'speak-btn-inline';
+    return `<button type="button" class="${cls}" data-speak="${enc}" title="Hear it in Greek" aria-label="Hear in Greek">🔊</button>`;
+  }
+
+  // Delegated click handler — wired once at script load time. Any element
+  // with data-speak triggers speakGreek with that attribute value.
+  document.addEventListener('click', function(e) {
+    const t = e.target.closest && e.target.closest('[data-speak]');
+    if (!t) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const text = t.getAttribute('data-speak');
+    if (!text) return;
+    t.classList.add('speaking');
+    speakGreek(text, {
+      onend: () => t.classList.remove('speaking'),
+      onerror: () => t.classList.remove('speaking'),
+      onmissing: () => {
+        t.classList.remove('speaking');
+        t.classList.add('no-voice');
+        t.title = 'No Greek voice installed on this device';
+      }
+    });
+  });
 
   function setPracticeMode(mode, btn) {
     document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
