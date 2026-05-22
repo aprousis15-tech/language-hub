@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Language Learning Hub</title>
 
+<!-- PWA: web manifest, theme color, and Apple-specific tags for the
+     "Add to Home Screen" experience on iOS. The service worker registers
+     from a small inline script at the bottom of <body>. -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#283593">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Greek">
+<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -1556,6 +1567,33 @@
   .story-q-answer.show { display: block; }
   .story-q-answer-greek { font-family: 'Georgia', serif; color: #2a1f25; font-size: 0.95rem; }
   .story-q-answer-english { color: #7a5a6c; font-style: italic; font-size: 0.85rem; margin-top: 3px; }
+
+  /* ─── PWA UPDATE BANNER ───
+     Small bar pinned to the top that appears only when the service worker
+     detects a new deployment. Tap to reload into the fresh version. */
+  .pwa-update-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: #283593; color: white; padding: 10px 16px;
+    text-align: center; font-size: 0.92rem; font-weight: 600;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(40, 53, 147, 0.3);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .pwa-update-banner:hover { background: #1a237e; }
+  .pwa-update-banner .pwa-update-dismiss {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem;
+    cursor: pointer; opacity: 0.85;
+  }
+  .pwa-update-banner .pwa-update-dismiss:hover { opacity: 1; background: rgba(255,255,255,0.25); }
+  /* Offline indicator — small pill at the bottom so it's clear when AI
+     features will fail. Drills still work; this just sets expectations. */
+  .pwa-offline-pill {
+    position: fixed; bottom: 12px; right: 12px; z-index: 9998;
+    background: rgba(60, 60, 80, 0.95); color: white;
+    padding: 6px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  .pwa-offline-pill::before { content: '⚡ '; }
 
   /* ─── COACH (Today's Plan) ─── Indigo so it reads distinct from Speak (orange) and Story (burgundy). */
   .lang-tab.active-coach { color: #283593; border-bottom-color: #283593; background: white; font-weight: 700; }
@@ -14827,6 +14865,88 @@
       }
     });
   });
+
+  // ── PWA: service-worker registration + offline awareness ──
+  // Registers /sw.js on load. When the SW detects a newer deployment, shows
+  // a dismissible banner at the top so the user has a clear path to the
+  // latest code. Also shows a small "offline" pill when navigator.onLine
+  // flips false, so the user knows why AI features (grader, tutor, story
+  // generation) won't work — drills continue working from cache.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
+        // Check for an update every time the page loads
+        reg.update().catch(() => {});
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // A new SW is installed but the old one is still controlling
+              // the page. Show the banner so the user can refresh in.
+              showPwaUpdateBanner(newWorker);
+            }
+          });
+        });
+        // If a SW takes control mid-session (after the user accepts the
+        // update banner), reload so they get the fresh assets.
+        let refreshed = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshed) return;
+          refreshed = true;
+          location.reload();
+        });
+      }).catch(err => {
+        // Registration failures are non-fatal — the site works fine without
+        // the SW. Log for debugging but don't bother the user.
+        console.warn('Service worker registration failed:', err);
+      });
+    });
+
+    // Offline pill
+    function updateOfflinePill() {
+      const existing = document.getElementById('pwa-offline-pill');
+      if (!navigator.onLine) {
+        if (!existing) {
+          const pill = document.createElement('div');
+          pill.id = 'pwa-offline-pill';
+          pill.className = 'pwa-offline-pill';
+          pill.textContent = 'Offline — drills work, AI features paused';
+          document.body.appendChild(pill);
+        }
+      } else if (existing) {
+        existing.remove();
+      }
+    }
+    window.addEventListener('online',  updateOfflinePill);
+    window.addEventListener('offline', updateOfflinePill);
+    document.addEventListener('DOMContentLoaded', updateOfflinePill);
+  }
+
+  function showPwaUpdateBanner(newWorker) {
+    // Avoid duplicate banners
+    if (document.getElementById('pwa-update-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'pwa-update-banner';
+    banner.className = 'pwa-update-banner';
+    banner.innerHTML =
+      '<span>🔄 New version ready — tap to refresh.</span>' +
+      '<button type="button" class="pwa-update-dismiss" title="Dismiss this banner (you can refresh later)">Later</button>';
+    // Tap the banner (anywhere except Dismiss) to activate the new SW
+    banner.addEventListener('click', (e) => {
+      if (e.target.closest('.pwa-update-dismiss')) return;
+      newWorker.postMessage({ action: 'skipWaiting' });
+      // controllerchange listener above will reload the page once the new
+      // SW takes control. If that doesn't fire within 2 seconds (some
+      // browsers misbehave), force a reload as a safety net.
+      setTimeout(() => location.reload(), 2000);
+    });
+    banner.querySelector('.pwa-update-dismiss').addEventListener('click', (e) => {
+      e.stopPropagation();
+      banner.remove();
+    });
+    document.body.appendChild(banner);
+  }
 
   function setPracticeMode(mode, btn) {
     document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
