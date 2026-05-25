@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Preposition Drill — σε, από, με, για, προς…</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #1a5f7a;
+    --sky: #2e86ab;
+    --sand: #f4e9d8;
+    --white: #fdfaf6;
+    --dark: #1e2a35;
+    --greek-blue: #0d4f8b;
+    --teal: #00695c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--white);
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header.top { text-align: center; margin-bottom: 24px; }
+  header.top h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--greek-blue);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin-bottom: 6px;
+  }
+  header.top p { color: #4a6f8a; font-size: 0.95rem; }
+  .group-filter {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .group-btn {
+    padding: 7px 16px; border-radius: 99px; border: 1.5px solid #bbdefb;
+    background: white; color: var(--greek-blue); font-size: 0.85rem;
+    cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 600;
+  }
+  .group-btn:hover { background: #e3f2fd; }
+  .group-btn.active { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
+  .stats {
+    text-align: center; font-size: 0.88rem; color: #4a6f8a;
+    margin-bottom: 18px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+  }
+  .stats strong { color: #0d47a1; font-size: 1.05rem; }
+  .stats .correct-stat strong { color: #2e7d32; }
+  .stats .wrong-stat strong { color: #c62828; }
+  .card {
+    max-width: 560px; margin: 0 auto; background: white;
+    border-radius: 14px; padding: 28px 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border: 1px solid #e1ecf4; text-align: center;
+  }
+  .meta {
+    font-size: 0.78rem; color: #888; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .meta .group-pill {
+    display: inline-block; background: #e3f2fd; color: var(--greek-blue);
+    padding: 2px 10px; border-radius: 99px; font-weight: 700;
+  }
+  .prompt-greek {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem; color: var(--teal); font-weight: 600;
+    line-height: 1.4; min-height: 60px;
+  }
+  .blank {
+    display: inline-block;
+    border-bottom: 3px solid var(--greek-blue);
+    min-width: 80px; padding: 0 6px;
+    color: var(--greek-blue);
+    font-style: italic; opacity: 0.7;
+  }
+  .blank.filled {
+    border-bottom-color: #2e7d32;
+    color: #2e7d32; font-style: normal; opacity: 1;
+  }
+  .prompt-en {
+    font-size: 0.95rem; color: #5a6f6c; font-style: italic;
+    margin: 10px 0 20px;
+  }
+  .input {
+    width: 100%; max-width: 360px; padding: 12px 16px;
+    font-size: 1.3rem;
+    font-family: 'Georgia', serif;
+    border: 2px solid #bbdefb; border-radius: 8px;
+    text-align: center; box-sizing: border-box;
+    color: var(--teal);
+  }
+  .input:focus { outline: none; border-color: var(--greek-blue); }
+  .input.correct { border-color: #2e7d32; background: #e8f5e9; }
+  .input.wrong { border-color: #c62828; background: #ffebee; }
+  .actions {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  .btn {
+    padding: 9px 20px; border-radius: 99px;
+    font-family: 'Lato', sans-serif; font-weight: 700;
+    font-size: 0.88rem; cursor: pointer;
+    border: 1.5px solid var(--greek-blue);
+  }
+  .btn-primary { background: var(--greek-blue); color: white; }
+  .btn-primary:hover { background: #0a3d6e; }
+  .btn-secondary { background: white; color: var(--greek-blue); }
+  .btn-secondary:hover { background: #e3f2fd; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .feedback {
+    margin-top: 16px; padding: 12px 14px; border-radius: 8px;
+    font-size: 0.95rem; text-align: left;
+  }
+  .feedback.ok { background: #e8f5e9; color: #1b5e20; border-left: 4px solid #2e7d32; }
+  .feedback.no { background: #ffebee; color: #b71c1c; border-left: 4px solid #c62828; }
+  .feedback .answer-line { font-family: 'Georgia', serif; font-size: 1.2rem; margin-top: 4px; }
+  .feedback .note-line {
+    margin-top: 10px; padding-top: 8px; border-top: 1px dashed currentColor;
+    font-size: 0.92rem; opacity: 0.9; font-style: italic;
+  }
+  .feedback .note-line strong { font-style: normal; }
+  .feedback .accept-line {
+    font-size: 0.82rem; margin-top: 4px; opacity: 0.8;
+  }
+  .empty-state {
+    text-align: center; padding: 28px; color: #4a6f8a;
+  }
+  .rule-box {
+    margin: 0 auto 18px; max-width: 620px;
+    background: #f3e5f5; border-left: 4px solid #8e24aa;
+    border-radius: 6px; padding: 12px 16px; font-size: 0.9rem;
+    color: #4a148c;
+  }
+  .rule-box strong { color: #6a1b9a; }
+  .ref-wrap { margin-top: 28px; max-width: 620px; margin-left: auto; margin-right: auto; }
+  .ref-toggle {
+    display: block; width: 100%; padding: 10px;
+    background: #fffbeb; border: 1.5px solid #ffe082; border-radius: 8px;
+    color: #b76e00; font-weight: 700; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-size: 0.9rem;
+  }
+  .ref-body { display: none; margin-top: 12px; }
+  .ref-body.open { display: block; }
+  .ref-block { margin-bottom: 22px; }
+  .ref-block h3 {
+    font-family: 'Playfair Display', serif;
+    color: #b76e00; margin-bottom: 6px;
+    font-size: 1.1rem;
+  }
+  .ref-block .ref-rule {
+    font-size: 0.85rem; color: #6a4f1a;
+    background: #fff8e1; padding: 8px 12px; border-radius: 6px;
+    border-left: 3px solid #ffb300;
+    margin-bottom: 10px;
+  }
+  .ref-block ul { list-style: none; padding-left: 4px; }
+  .ref-block li {
+    padding: 4px 0; font-size: 0.9rem; color: #4a3a1a;
+    border-bottom: 1px dotted #ffe082;
+  }
+  .ref-block li b { color: var(--teal); font-family: 'Georgia', serif; }
+  .ref-block li i { color: #888; font-style: italic; }
+  .footer-back { text-align: center; margin-top: 32px; }
+  .footer-back a {
+    color: var(--greek-blue); text-decoration: none;
+    font-size: 0.9rem; font-weight: 600;
+  }
+  .footer-back a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Greek Preposition Drill</h1>
+    <p>σε · από · με · για · προς · πριν/μετά · χωρίς · μέχρι — fill in the blank.</p>
+  </header>
+
+  <div class="group-filter" id="group-filter">
+    <button class="group-btn active" data-group="all">All prepositions</button>
+    <button class="group-btn" data-group="σε">σε / στο-στη-στον</button>
+    <button class="group-btn" data-group="από">από</button>
+    <button class="group-btn" data-group="με">με</button>
+    <button class="group-btn" data-group="για">για</button>
+    <button class="group-btn" data-group="προς">προς</button>
+    <button class="group-btn" data-group="πριν/μετά">πριν / μετά</button>
+    <button class="group-btn" data-group="χωρίς/εκτός/αντί">χωρίς / εκτός / αντί</button>
+    <button class="group-btn" data-group="μέχρι/κατά">μέχρι / κατά</button>
+  </div>
+
+  <div class="rule-box" id="rule-box">
+    <strong>Cheat:</strong>
+    <span id="rule-text">All prepositions mixed. Pick one above to focus on a single preposition.</span>
+  </div>
+
+  <div class="stats">
+    <span><strong id="stat-pos">1</strong> / <strong id="stat-total">0</strong></span>
+    <span class="correct-stat">✓ <strong id="stat-correct">0</strong></span>
+    <span class="wrong-stat">✗ <strong id="stat-wrong">0</strong></span>
+    <span>streak <strong id="stat-streak">0</strong></span>
+  </div>
+
+  <div class="card" id="card">
+    <div class="meta">
+      <span class="group-pill" id="meta-group">σε</span>
+    </div>
+    <div class="prompt-greek" id="prompt-greek">…</div>
+    <div class="prompt-en" id="prompt-en">…</div>
+    <input type="text" class="input" id="input"
+           lang="el" autocomplete="off" autocorrect="off"
+           autocapitalize="off" spellcheck="false"
+           placeholder="type the preposition…">
+    <div class="actions">
+      <button class="btn btn-primary" id="submit-btn">Check ✓</button>
+      <button class="btn btn-secondary" id="skip-btn">Skip →</button>
+      <button class="btn btn-secondary" id="reveal-btn">Reveal</button>
+    </div>
+    <div class="feedback" id="feedback" style="display:none;"></div>
+  </div>
+
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <h2>✓ Round complete</h2>
+    <p>Click Restart to shuffle and go again.</p>
+    <div style="margin-top: 16px;">
+      <button class="btn btn-primary" id="restart-btn">Restart round</button>
+    </div>
+  </div>
+
+  <div class="ref-wrap">
+    <button class="ref-toggle" id="ref-toggle">Show preposition reference ▾</button>
+    <div class="ref-body" id="ref-body"></div>
+  </div>
+
+  <div class="footer-back">
+    <a href="./index.html">← Back to Language Hub</a>
+  </div>
+</div>
+
+<script>
+  // ---- Data ----
+  // Each group entry holds the preposition family, a one-line rule, and a list of
+  // sentences. A sentence's `answer` is the exact form that fills the blank
+  // (already contracted, e.g. "στο", "στην", "στους"). `accept` (optional) lists
+  // additional surface forms that should also be marked correct — useful for
+  // optional final-ν (e.g. "στη" / "στην", "την" / "τη"), shorthand variants
+  // (μετά / μετά από), and stress-only spellings (μέχρι / μεχρι already handled
+  // by normalize()).
+  const GROUPS = [
+    {
+      group: 'σε',
+      rule: 'σε = at / in / to / on. Almost always contracts with the article: σε+ο→στο, σε+τον→στον, σε+τη(ν)→στη(ν), σε+οι/τους→στους, σε+τις→στις, σε+τα→στα.',
+      items: [
+        { prompt: 'Πάω ___ σπίτι.', en: 'I am going home (to the house).',
+          answer: 'στο', accept: [],
+          note: "σε + το → στο. Bare 'σε σπίτι' is wrong; the article is required." },
+        { prompt: 'Μένω ___ Αθήνα.', en: 'I live in Athens.',
+          answer: 'στην', accept: ['στη'],
+          note: "Cities take the feminine article: η Αθήνα → στην Αθήνα. Final ν kept before α (vowel)." },
+        { prompt: 'Είμαστε ___ δουλειά.', en: 'We are at work.',
+          answer: 'στη', accept: ['στην'],
+          note: "η δουλειά → στη(ν) δουλειά. Final ν optional before δ." },
+        { prompt: 'Πηγαίνω ___ σχολείο.', en: 'I go to school.',
+          answer: 'στο', accept: [],
+          note: "το σχολείο → στο σχολείο. Neuter -ο noun, plain στο." },
+        { prompt: 'Ο Γιάννης είναι ___ γιατρό.', en: 'John is at the doctor’s.',
+          answer: 'στον', accept: [],
+          note: "ο γιατρός → στον γιατρό. Masculine accusative keeps the ν." },
+        { prompt: 'Μιλάει ___ τηλέφωνο.', en: 'He is talking on the phone.',
+          answer: 'στο', accept: [],
+          note: "Idiom: 'on the phone' = στο τηλέφωνο, not 'πάνω στο'." },
+        { prompt: 'Τα παιδιά είναι ___ πάρκο.', en: 'The kids are in the park.',
+          answer: 'στο', accept: [],
+          note: "το πάρκο → στο πάρκο." },
+        { prompt: 'Ζω ___ Ελλάδα.', en: 'I live in Greece.',
+          answer: 'στην', accept: ['στη'],
+          note: "η Ελλάδα → στην Ελλάδα. Final ν kept before vowel (Ε)." },
+        { prompt: 'Πηγαίνουμε ___ θάλασσα.', en: 'We are going to the sea / beach.',
+          answer: 'στη', accept: ['στην'],
+          note: "η θάλασσα → στη(ν) θάλασσα. Final ν optional before θ." },
+        { prompt: 'Είμαι ___ πανεπιστήμιο.', en: 'I am at university.',
+          answer: 'στο', accept: [],
+          note: "το πανεπιστήμιο → στο πανεπιστήμιο." },
+        { prompt: 'Μιλάει ___ παιδιά.', en: 'She is talking to the kids.',
+          answer: 'στα', accept: [],
+          note: "τα παιδιά → στα παιδιά. Neuter plural." },
+        { prompt: 'Δίνω το βιβλίο ___ φίλους μου.', en: 'I am giving the book to my friends.',
+          answer: 'στους', accept: [],
+          note: "οι φίλοι (masc. pl.) → accusative τους φίλους → στους φίλους." },
+        { prompt: 'Πάμε ___ φίλες μας.', en: 'We are going to our (female) friends.',
+          answer: 'στις', accept: [],
+          note: "οι φίλες → accusative τις φίλες → στις φίλες." },
+        { prompt: 'Επιστρέφω ___ τρεις.', en: "I'm coming back at three (o'clock).",
+          answer: 'στις', accept: [],
+          note: "Clock times use στις: στις τρεις, στις πέντε. Exception: 'at one' = στη μία." },
+        { prompt: 'Φεύγουμε ___ μία.', en: "We're leaving at one (o'clock).",
+          answer: 'στη', accept: ['στην'],
+          note: "Only 'at one' uses singular: στη μία (η μία ώρα). All other hours → στις." },
+        { prompt: 'Σκέφτομαι να πάω ___ Παρίσι.', en: "I'm thinking of going to Paris.",
+          answer: 'στο', accept: [],
+          note: "Cities ending in -ι are neuter: το Παρίσι → στο Παρίσι. Same for το Λονδίνο." },
+        { prompt: 'Είμαι ___ αεροδρόμιο.', en: 'I am at the airport.',
+          answer: 'στο', accept: [],
+          note: "το αεροδρόμιο → στο αεροδρόμιο." },
+        { prompt: 'Ζω ___ Νέα Υόρκη εδώ και 10 χρόνια.', en: 'I have lived in New York for 10 years.',
+          answer: 'στη', accept: ['στην'],
+          note: "η Νέα Υόρκη → στη(ν) Νέα Υόρκη. Final ν optional before ν of 'Νέα'." }
+      ]
+    },
+    {
+      group: 'από',
+      rule: 'από = from / by / through / off. Marks origin, separation, agent of passive, and material. Never contracts with the article.',
+      items: [
+        { prompt: 'Είμαι ___ την Ελλάδα.', en: 'I am from Greece.',
+          answer: 'από', note: "Origin / nationality: I am from X." },
+        { prompt: 'Ο Γιάννης γύρισε ___ τη δουλειά.', en: 'John came back from work.',
+          answer: 'από', note: "Separation / source of motion: από + accusative." },
+        { prompt: 'Κατεβαίνω ___ το λεωφορείο.', en: 'I am getting off the bus.',
+          answer: 'από', note: "από = off (separation from transport)." },
+        { prompt: 'Το γράμμα γράφτηκε ___ τον Γιάννη.', en: 'The letter was written by John.',
+          answer: 'από', note: "Agent of passive: written/done BY = από." },
+        { prompt: 'Πέρασα ___ το σπίτι σου.', en: 'I dropped by your house.',
+          answer: 'από', note: "από = by / through (passing through a place)." },
+        { prompt: 'Πεθαίνω ___ την πείνα.', en: "I'm dying of hunger.",
+          answer: 'από', note: "από = of/from (cause): die OF, suffer FROM." },
+        { prompt: 'Το δαχτυλίδι είναι ___ χρυσό.', en: 'The ring is (made) of gold.',
+          answer: 'από', note: "από = of/from (material): made OF." },
+        { prompt: 'Ένα ___ τα παιδιά είναι άρρωστο.', en: 'One of the children is sick.',
+          answer: 'από', note: "Partitive: one OF (a group) = ένα από." },
+        { prompt: 'Πίνω καφέ ___ το πρωί.', en: "I've been drinking coffee since morning.",
+          answer: 'από', note: "από + time = since (starting point in time)." },
+        { prompt: 'Είναι μεγαλύτερος ___ μένα.', en: 'He is older than me.',
+          answer: 'από', note: "Comparative: μεγαλύτερος / πιο μεγάλος ΑΠΟ = -er THAN." }
+      ]
+    },
+    {
+      group: 'με',
+      rule: 'με = with / by (means) / in (manner). Three buckets: company (with someone), instrument (by train), and manner (with care).',
+      items: [
+        { prompt: 'Πάω σινεμά ___ τον Γιάννη.', en: "I'm going to the cinema with John.",
+          answer: 'με', note: "Company / accompaniment: WITH a person." },
+        { prompt: 'Ταξιδεύω ___ τρένο.', en: 'I travel by train.',
+          answer: 'με', note: "Means of transport: BY train/car/plane = με τρένο/αυτοκίνητο/αεροπλάνο. No article." },
+        { prompt: 'Σε αγαπώ ___ όλη μου την καρδιά.', en: 'I love you with all my heart.',
+          answer: 'με', note: "Manner with abstract: WITH all my heart / with care / με προσοχή." },
+        { prompt: 'Έγραψα το γράμμα ___ στυλό.', en: 'I wrote the letter with a pen.',
+          answer: 'με', note: "Instrument: WITH (a tool). No article when generic." },
+        { prompt: 'Καφές ___ γάλα, παρακαλώ.', en: 'Coffee with milk, please.',
+          answer: 'με', note: "Coffee/tea/food WITH ingredient = με γάλα, με ζάχαρη, με λεμόνι." },
+        { prompt: 'Συμφωνώ ___ εσένα.', en: 'I agree with you.',
+          answer: 'με', note: "συμφωνώ με = agree WITH. Many verbs fix με: μιλάω με, παντρεύομαι με." },
+        { prompt: 'Παίζω ποδόσφαιρο ___ τους φίλους μου.', en: 'I play soccer with my friends.',
+          answer: 'με', note: "Company in plural: WITH my friends = με τους φίλους μου." }
+      ]
+    },
+    {
+      group: 'για',
+      rule: 'για = for / about / to (purpose). Marks recipient/benefit, topic of speech/thought, purpose, and direction of travel.',
+      items: [
+        { prompt: 'Αυτό το δώρο είναι ___ σένα.', en: 'This gift is for you.',
+          answer: 'για', note: "Recipient / benefit: FOR (someone)." },
+        { prompt: 'Μιλάμε ___ το ταξίδι.', en: 'We are talking about the trip.',
+          answer: 'για', note: "Topic of speech/thought: talk/think ABOUT = μιλάω / σκέφτομαι ΓΙΑ." },
+        { prompt: 'Ψάχνω ___ ένα εστιατόριο.', en: "I'm looking for a restaurant.",
+          answer: 'για', note: "Seeking / purpose: looking FOR, waiting FOR (ψάχνω / περιμένω για)." },
+        { prompt: 'Φεύγω ___ την Αθήνα.', en: "I'm leaving for Athens.",
+          answer: 'για', note: "Direction of travel: leaving FOR a destination = φεύγω για." },
+        { prompt: 'Έχω καλά νέα ___ σένα.', en: 'I have good news for you.',
+          answer: 'για', note: "Benefit / about: news FOR you / news ABOUT something." },
+        { prompt: 'Δούλεψα εδώ ___ δέκα χρόνια.', en: 'I worked here for ten years.',
+          answer: 'για', note: "Duration: FOR + time period = για + χρόνια/μήνες/ώρες." },
+        { prompt: 'Είναι ___ γέλια.', en: "It's laughable / ridiculous.",
+          answer: 'για', note: "Idiom: είναι για γέλια / για κλάματα = it's worth laughing/crying at." }
+      ]
+    },
+    {
+      group: 'προς',
+      rule: 'προς = toward / to (less specific than σε). Direction without arrival, and a few fixed expressions (προς τιμήν, προς το παρόν).',
+      items: [
+        { prompt: 'Πάω ___ το κέντρο.', en: "I'm heading toward the center.",
+          answer: 'προς', note: "Direction without arrival. σε implies destination; προς only direction." },
+        { prompt: 'Γύρισε ___ εμένα.', en: 'He turned toward me.',
+          answer: 'προς', note: "Physical orientation: turn / face TOWARD = γυρίζω / στρέφομαι προς." },
+        { prompt: '___ το παρόν δεν έχω χρόνο.', en: 'For the moment, I have no time.',
+          answer: 'Προς', accept: ['προς'],
+          note: "Fixed phrase: προς το παρόν = for the moment / for now." },
+        { prompt: 'Ένα δώρο ___ τιμήν σου.', en: 'A gift in your honor.',
+          answer: 'προς', note: "Fixed: προς τιμήν + gen. = in honor of." }
+      ]
+    },
+    {
+      group: 'πριν/μετά',
+      rule: 'πριν = before · μετά = after. Both take από before a noun in most cases (πριν από / μετά από), but the από is often dropped colloquially before time expressions.',
+      items: [
+        { prompt: 'Θα φάμε ___ τη δουλειά.', en: 'We will eat after work.',
+          answer: 'μετά', accept: ['μετά από'],
+          note: "μετά (από) + acc. = after. Colloquial Greek often drops the από." },
+        { prompt: 'Γύρισε ___ μία ώρα.', en: 'She came back after an hour.',
+          answer: 'μετά από', accept: ['μετά'],
+          note: "Duration after a stretch: μετά από + time period is the cleaner form." },
+        { prompt: 'Πλένω τα δόντια μου ___ τον ύπνο.', en: 'I brush my teeth before sleep.',
+          answer: 'πριν', accept: ['πριν από'],
+          note: "πριν (από) + acc. = before. Drop από if it sounds natural." },
+        { prompt: 'Ήρθε ___ δύο μέρες.', en: 'He came two days ago.',
+          answer: 'πριν', accept: ['πριν από'],
+          note: "πριν + time = ago. 'πριν δύο μέρες' / 'πριν από δύο μέρες' both fine." },
+        { prompt: 'Σε είδα ___ που έφυγες.', en: 'I saw you before you left.',
+          answer: 'πριν', note: "Before a clause: πριν + verb (no από)." },
+        { prompt: 'Θα φύγω αμέσως ___ το γεύμα.', en: "I'll leave right after the meal.",
+          answer: 'μετά από', accept: ['μετά'],
+          note: "μετά από + concrete event." }
+      ]
+    },
+    {
+      group: 'χωρίς/εκτός/αντί',
+      rule: 'χωρίς = without · εκτός (από) = except (for) · αντί (για) = instead of. All three take accusative; χωρίς να + verb = without -ing.',
+      items: [
+        { prompt: 'Καφές ___ ζάχαρη, παρακαλώ.', en: 'Coffee without sugar, please.',
+          answer: 'χωρίς', note: "χωρίς + acc. = without." },
+        { prompt: 'Έφυγε ___ να μιλήσει.', en: 'He left without speaking.',
+          answer: 'χωρίς', note: "χωρίς να + subjunctive = without -ing." },
+        { prompt: 'Όλοι ήρθαν ___ από εμένα.', en: 'Everyone came except me.',
+          answer: 'εκτός', note: "εκτός από = except (for). Always paired with από before a noun." },
+        { prompt: 'Πίνω τσάι ___ για καφέ.', en: 'I drink tea instead of coffee.',
+          answer: 'αντί', note: "αντί (για) = instead of. With concrete nouns, αντί για is standard." },
+        { prompt: '___ να φύγεις, μείνε λίγο ακόμα.', en: 'Instead of leaving, stay a bit longer.',
+          answer: 'Αντί', accept: ['αντί'],
+          note: "αντί να + subjunctive = instead of -ing." },
+        { prompt: 'Είμαστε όλοι έτοιμοι ___ από τον Γιάννη.', en: 'We are all ready except for John.',
+          answer: 'εκτός', note: "εκτός από + person = except for (someone)." }
+      ]
+    },
+    {
+      group: 'μέχρι/κατά',
+      rule: 'μέχρι = until / up to (endpoint in time or space) · κατά = during / approximately / against. κατά τη διάρκεια = during. κατά τις 5 = around 5.',
+      items: [
+        { prompt: 'Περιμένω ___ τις 10.', en: "I'll wait until 10.",
+          answer: 'μέχρι', note: "μέχρι + time = until. Endpoint, not duration." },
+        { prompt: 'Διάβαζα ___ τη διάρκεια του μαθήματος.', en: 'I was reading during the lesson.',
+          answer: 'κατά', note: "κατά τη διάρκεια + gen. = during (the duration of). The standard 'during' phrase." },
+        { prompt: 'Θα έρθω ___ τις πέντε.', en: "I'll come around five.",
+          answer: 'κατά', note: "κατά + clock time = around / approximately." },
+        { prompt: 'Είναι ___ της κυβέρνησης.', en: 'He is against the government.',
+          answer: 'κατά', note: "κατά + gen. = against (opposed to). Contrast with υπέρ = in favor of." },
+        { prompt: 'Έτρεξα ___ το σπίτι μου.', en: 'I ran (all the way) up to my house.',
+          answer: 'μέχρι', note: "μέχρι + place = up to / as far as (spatial endpoint)." },
+        { prompt: 'Δούλεψε εδώ ___ πέρυσι.', en: 'He worked here until last year.',
+          answer: 'μέχρι', note: "μέχρι + time reference = until (then)." }
+      ]
+    }
+  ];
+
+  // ---- Deck build ----
+  function buildDeck(groupFilter) {
+    const cards = [];
+    for (const g of GROUPS) {
+      if (groupFilter !== 'all' && g.group !== groupFilter) continue;
+      for (const item of g.items) {
+        cards.push({
+          group: g.group,
+          prompt: item.prompt,
+          en: item.en,
+          answer: item.answer,
+          accept: item.accept || [],
+          note: item.note
+        });
+      }
+    }
+    return shuffle(cards);
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Normalize Greek: lowercase, strip diacritics, final-ς == σ, collapse whitespace.
+  function norm(s) {
+    return s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[ςσ]/g, 'σ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  // Render the prompt with the blank replaced by either a placeholder or the
+  // answer (after grading).
+  function renderPrompt(promptText, fill) {
+    const safe = esc(promptText);
+    const replacement = fill
+      ? `<span class="blank filled">${esc(fill)}</span>`
+      : `<span class="blank">_____</span>`;
+    return safe.replace('___', replacement);
+  }
+
+  // ---- State ----
+  let deck = [];
+  let pos = 0;
+  let correct = 0;
+  let wrong = 0;
+  let streak = 0;
+  let currentGroup = 'all';
+  let answered = false;
+
+  // ---- DOM ----
+  const el = (id) => document.getElementById(id);
+  const inputEl = el('input');
+  const submitBtn = el('submit-btn');
+  const skipBtn = el('skip-btn');
+  const revealBtn = el('reveal-btn');
+  const restartBtn = el('restart-btn');
+  const feedbackEl = el('feedback');
+  const cardEl = el('card');
+  const emptyEl = el('empty-state');
+
+  // ---- Render ----
+  function renderCard() {
+    if (pos >= deck.length) {
+      cardEl.style.display = 'none';
+      emptyEl.style.display = '';
+      renderStats();
+      return;
+    }
+    cardEl.style.display = '';
+    emptyEl.style.display = 'none';
+    const c = deck[pos];
+    el('meta-group').textContent = c.group;
+    el('prompt-greek').innerHTML = renderPrompt(c.prompt, null);
+    el('prompt-en').textContent = c.en;
+    inputEl.value = '';
+    inputEl.classList.remove('correct', 'wrong');
+    inputEl.disabled = false;
+    feedbackEl.style.display = 'none';
+    feedbackEl.innerHTML = '';
+    submitBtn.textContent = 'Check ✓';
+    submitBtn.disabled = false;
+    revealBtn.disabled = false;
+    answered = false;
+    inputEl.focus();
+    renderStats();
+  }
+
+  function renderStats() {
+    el('stat-pos').textContent = Math.min(pos + 1, deck.length);
+    el('stat-total').textContent = deck.length;
+    el('stat-correct').textContent = correct;
+    el('stat-wrong').textContent = wrong;
+    el('stat-streak').textContent = streak;
+  }
+
+  function renderRule() {
+    const ruleEl = el('rule-text');
+    if (currentGroup === 'all') {
+      ruleEl.textContent = 'All prepositions mixed. Click a group above to focus on one preposition family.';
+    } else {
+      const g = GROUPS.find(g => g.group === currentGroup);
+      ruleEl.textContent = g ? g.rule : '';
+    }
+  }
+
+  // Reference block — quick-scan lookup of every preposition with examples.
+  function renderRef() {
+    const host = el('ref-body');
+    host.innerHTML = '';
+    for (const g of GROUPS) {
+      const block = document.createElement('div');
+      block.className = 'ref-block';
+      const examples = g.items.slice(0, 4).map(it => {
+        const filled = it.prompt.replace('___', `<b>${esc(it.answer)}</b>`);
+        return `<li>${filled} <i>— ${esc(it.en)}</i></li>`;
+      }).join('');
+      block.innerHTML = `
+        <h3>${esc(g.group)}</h3>
+        <div class="ref-rule">${esc(g.rule)}</div>
+        <ul>${examples}</ul>
+      `;
+      host.appendChild(block);
+    }
+  }
+
+  // ---- Actions ----
+  function buildFeedback(label, answer, accept, note) {
+    const acceptLine = (accept && accept.length)
+      ? `<div class="accept-line">Also accepted: ${accept.map(a => esc(a)).join(', ')}</div>`
+      : '';
+    const noteBlock = note
+      ? `<div class="note-line"><strong>💡 Why:</strong> ${esc(note)}</div>`
+      : '';
+    return `<div>${label}</div><div class="answer-line">${esc(answer)}</div>${acceptLine}${noteBlock}`;
+  }
+
+  function grade() {
+    if (answered) { next(); return; }
+    const c = deck[pos];
+    const guess = inputEl.value.trim();
+    if (!guess) return;
+    const candidates = [c.answer, ...(c.accept || [])].map(norm);
+    const isCorrect = candidates.includes(norm(guess));
+    answered = true;
+    if (isCorrect) {
+      correct++;
+      streak++;
+      inputEl.classList.add('correct');
+      feedbackEl.className = 'feedback ok';
+      feedbackEl.innerHTML = buildFeedback('✓ Correct!', c.answer, c.accept, c.note);
+    } else {
+      wrong++;
+      streak = 0;
+      inputEl.classList.add('wrong');
+      feedbackEl.className = 'feedback no';
+      feedbackEl.innerHTML = buildFeedback('✗ Answer:', c.answer, c.accept, c.note);
+    }
+    // Reveal the filled blank in the prompt now.
+    el('prompt-greek').innerHTML = renderPrompt(c.prompt, c.answer);
+    feedbackEl.style.display = '';
+    submitBtn.textContent = 'Next →';
+    renderStats();
+  }
+
+  function next() { pos++; renderCard(); }
+
+  function skip() {
+    if (!answered) { wrong++; streak = 0; }
+    pos++;
+    renderCard();
+  }
+
+  function reveal() {
+    if (answered) return;
+    const c = deck[pos];
+    inputEl.value = c.answer;
+    inputEl.classList.add('wrong');
+    feedbackEl.className = 'feedback no';
+    feedbackEl.innerHTML = buildFeedback('Answer:', c.answer, c.accept, c.note);
+    el('prompt-greek').innerHTML = renderPrompt(c.prompt, c.answer);
+    feedbackEl.style.display = '';
+    answered = true;
+    wrong++;
+    streak = 0;
+    submitBtn.textContent = 'Next →';
+    renderStats();
+  }
+
+  function restart() {
+    deck = buildDeck(currentGroup);
+    pos = 0;
+    correct = 0;
+    wrong = 0;
+    streak = 0;
+    renderCard();
+  }
+
+  function setGroup(g) {
+    currentGroup = g;
+    document.querySelectorAll('.group-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.group === g);
+    });
+    renderRule();
+    restart();
+  }
+
+  // ---- Events ----
+  submitBtn.addEventListener('click', grade);
+  skipBtn.addEventListener('click', skip);
+  revealBtn.addEventListener('click', reveal);
+  restartBtn.addEventListener('click', restart);
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); grade(); }
+  });
+  document.querySelectorAll('.group-btn').forEach(b => {
+    b.addEventListener('click', () => setGroup(b.dataset.group));
+  });
+  el('ref-toggle').addEventListener('click', () => {
+    const body = el('ref-body');
+    const open = body.classList.toggle('open');
+    el('ref-toggle').textContent = open ? 'Hide preposition reference ▴' : 'Show preposition reference ▾';
+  });
+
+  // ---- Init ----
+  renderRule();
+  renderRef();
+  restart();
+</script>
+</body>
+</html>

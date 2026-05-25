@@ -3599,6 +3599,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('secontract',this)">🔗 σε + article (στον/στην/στο + traps)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('gtap',this)">🎯 Gender Tap (30s)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('preps',this)">🔗 Prepositions</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('prepdrill',this)">⌨️ Preposition Drill (typed, all preps)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('noundrill',this)">📦 Noun Pairs (SRS)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('nouns')" title="Pick a random noun drill">🎲 Random noun</button>
 
@@ -3835,6 +3836,23 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="conjugation-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preposition Drill — iframe wrapper around the standalone /prepositions-drill.html.
+         Same pattern as the conjugation-drill iframe above: the standalone page is the
+         single source of truth, this subpanel just embeds it. src is set lazily on first
+         open (see initPrepDrillFrame) so the page-load cost is zero when the user
+         doesn't visit this mode. Reuses the .conjdrill-frame-* CSS classes since the
+         layout is identical. -->
+    <div id="grammar-prepdrill" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="prepdrill-frame" class="conjdrill-frame"
+                title="Greek Preposition Drill — σε, από, με, για, προς…"
+                loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="prepositions-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -10377,6 +10395,7 @@
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
+    document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
     document.getElementById('grammar-pres2aor').style.display = mode === 'pres2aor' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
@@ -10404,6 +10423,7 @@
     if (mode === 'aspect') initAspectDrill();
     if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'conjdrill') initConjDrillFrame();
+    if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'subjfirst') initSubjFirstDrill();
     if (mode === 'pres2aor') initPres2AorDrill();
     if (mode === 'verbdrill') initVerbDrill();
@@ -10418,7 +10438,7 @@
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
     verbs: ['typea','verbs','aspect','pres2aor','vgroup','subjfirst','aorist','future','neg'],
-    nouns: ['articles','secontract','gtap','preps'],
+    nouns: ['articles','secontract','gtap','preps','prepdrill'],
     pronouns: ['pronouns'],
     adj:   ['adj'],
     adv:   ['time','days','qwords','qstart'],
@@ -11799,6 +11819,16 @@
   function initConjDrillFrame() {
     const f = document.getElementById('conjdrill-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'conjugation-drill.html');
+  }
+
+  // ── Preposition Drill (subpanel) ──
+  // Same lazy-iframe pattern as the conjugation drill above. The standalone page
+  // /prepositions-drill.html owns the drill data and behavior; this just sets src
+  // on first open so we don't fetch ~30KB of HTML when the user never visits the
+  // mode.
+  function initPrepDrillFrame() {
+    const f = document.getElementById('prepdrill-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'prepositions-drill.html');
   }
 
   // ── Verb Group Classifier ──
