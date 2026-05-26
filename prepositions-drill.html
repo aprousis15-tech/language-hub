@@ -34,7 +34,11 @@
   header.top p { color: #4a6f8a; font-size: 0.95rem; }
   .group-filter {
     display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-    margin-bottom: 18px;
+    margin-bottom: 6px;
+  }
+  .filter-hint {
+    text-align: center; font-size: 0.78rem; color: #7a8aa0;
+    margin-bottom: 18px; font-style: italic;
   }
   .group-btn {
     padding: 7px 16px; border-radius: 99px; border: 1.5px solid #bbdefb;
@@ -189,6 +193,7 @@
     <button class="group-btn" data-group="χωρίς/εκτός/αντί">χωρίς / εκτός / αντί</button>
     <button class="group-btn" data-group="μέχρι/κατά">μέχρι / κατά</button>
   </div>
+  <div class="filter-hint">Tap multiple groups to mix them. Tap a group again to remove it.</div>
 
   <div class="rule-box" id="rule-box">
     <strong>Cheat:</strong>
@@ -504,10 +509,14 @@
   ];
 
   // ---- Deck build ----
-  function buildDeck(groupFilter) {
+  // selectedGroups is a Set<string> of group names. Empty Set means "all groups"
+  // — that's the sentinel for the unfiltered case, and matches the visual state
+  // where only the 'All prepositions' button is highlighted.
+  function buildDeck(selectedGroups) {
+    const all = !selectedGroups || selectedGroups.size === 0;
     const cards = [];
     for (const g of GROUPS) {
-      if (groupFilter !== 'all' && g.group !== groupFilter) continue;
+      if (!all && !selectedGroups.has(g.group)) continue;
       for (const item of g.items) {
         cards.push({
           group: g.group,
@@ -564,7 +573,9 @@
   let correct = 0;
   let wrong = 0;
   let streak = 0;
-  let currentGroup = 'all';
+  // Multi-select group filter. Empty Set = "all" (no filter), which is the
+  // default at page load. Adding any group switches into custom-selection mode.
+  const selectedGroups = new Set();
   let answered = false;
 
   // ---- DOM ----
@@ -615,11 +626,17 @@
 
   function renderRule() {
     const ruleEl = el('rule-text');
-    if (currentGroup === 'all') {
-      ruleEl.textContent = 'All prepositions mixed. Click a group above to focus on one preposition family.';
-    } else {
-      const g = GROUPS.find(g => g.group === currentGroup);
+    if (selectedGroups.size === 0) {
+      ruleEl.textContent = 'All prepositions mixed. Tap groups above to pick a custom mix.';
+    } else if (selectedGroups.size === 1) {
+      const only = [...selectedGroups][0];
+      const g = GROUPS.find(g => g.group === only);
       ruleEl.textContent = g ? g.rule : '';
+    } else {
+      // Multiple groups — listing each rule would be a wall of text. Just show
+      // what's mixed; user can solo a group to see its rule.
+      const names = [...selectedGroups].join(' · ');
+      ruleEl.textContent = `Mixed (${selectedGroups.size} groups): ${names}. Tap a single group to see its rule.`;
     }
   }
 
@@ -707,7 +724,7 @@
   }
 
   function restart() {
-    deck = buildDeck(currentGroup);
+    deck = buildDeck(selectedGroups);
     pos = 0;
     correct = 0;
     wrong = 0;
@@ -715,11 +732,32 @@
     renderCard();
   }
 
-  function setGroup(g) {
-    currentGroup = g;
+  // Reflect the current selectedGroups Set onto the button row. The 'all' button
+  // lights up exactly when no individual group is selected.
+  function renderGroupButtons() {
     document.querySelectorAll('.group-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.group === g);
+      const g = b.dataset.group;
+      if (g === 'all') {
+        b.classList.toggle('active', selectedGroups.size === 0);
+      } else {
+        b.classList.toggle('active', selectedGroups.has(g));
+      }
     });
+  }
+
+  // Toggle a group's membership in the selection. Clicking 'all' clears the
+  // selection (= unfiltered). Clicking any other group toggles it on/off; if
+  // the user toggles the last group off, we fall back to 'all' rather than
+  // showing an empty deck.
+  function toggleGroup(g) {
+    if (g === 'all') {
+      selectedGroups.clear();
+    } else if (selectedGroups.has(g)) {
+      selectedGroups.delete(g);
+    } else {
+      selectedGroups.add(g);
+    }
+    renderGroupButtons();
     renderRule();
     restart();
   }
@@ -733,7 +771,7 @@
     if (e.key === 'Enter') { e.preventDefault(); grade(); }
   });
   document.querySelectorAll('.group-btn').forEach(b => {
-    b.addEventListener('click', () => setGroup(b.dataset.group));
+    b.addEventListener('click', () => toggleGroup(b.dataset.group));
   });
   el('ref-toggle').addEventListener('click', () => {
     const body = el('ref-body');
