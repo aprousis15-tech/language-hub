@@ -1659,6 +1659,23 @@
   .coach-why { background: #f5f6fb; padding: 14px 16px; border-radius: 8px; border-left: 4px solid #283593; }
   .coach-why h4 { border-bottom: none; margin-top: 0; padding-bottom: 0; }
   .coach-why p { color: #2a2a4a; font-size: 0.95rem; margin: 4px 0 8px; line-height: 1.45; }
+  .coach-why-body { color: #2a2a4a; font-size: 0.95rem; line-height: 1.45; margin: 4px 0 8px; }
+  .coach-why-body p { margin: 4px 0; }
+  /* Chunked-beat list: turns wall-of-text into scannable bullets. Used by
+     both 'Why these picks' and the 'Grammar focus' lesson body — the JS
+     splitIntoBeats() helper decides whether the source string warrants a
+     list (multi-sentence) or stays as a single paragraph. */
+  .coach-beats { list-style: none; padding: 0; margin: 6px 0 8px; }
+  .coach-beats li {
+    position: relative; padding: 6px 0 6px 20px;
+    border-bottom: 1px dashed #d7daee; line-height: 1.5;
+    color: #2a2a4a; font-size: 0.93rem;
+  }
+  .coach-beats li:last-child { border-bottom: none; }
+  .coach-beats li::before {
+    content: '▸'; position: absolute; left: 2px; top: 6px;
+    color: #5c6bc0; font-size: 0.85em; font-weight: 700;
+  }
   .coach-focus-areas { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .coach-focus-tag {
     background: #283593; color: white; padding: 3px 10px; border-radius: 12px;
@@ -4740,7 +4757,9 @@
 
       <div class="coach-section coach-why">
         <h4>🎯 Why these picks</h4>
-        <p id="coach-why-picked">—</p>
+        <!-- Was a <p> — switched to <div> so the renderer can drop a <ul> of
+             chunked beats inside it (a <ul> nested in <p> is invalid HTML). -->
+        <div id="coach-why-picked" class="coach-why-body">—</div>
         <div id="coach-focus-areas" class="coach-focus-areas"></div>
       </div>
 
@@ -8185,11 +8204,52 @@
     }
   }
 
+  // Break a wall-of-text string into discrete "beats" so it can be rendered as
+  // a scannable bulleted list instead of a single chunky paragraph.
+  //   1. If the agent included newlines, respect them (cleanest signal).
+  //   2. Otherwise split on sentence-final punctuation followed by whitespace +
+  //      a capital letter (Latin or Greek). Lookbehind keeps the punctuation
+  //      glued to the leading sentence ("Foo. Bar." → ["Foo.", "Bar."]).
+  // Returns an array; caller decides whether the count is enough to warrant
+  // a list vs. a single paragraph.
+  function splitIntoBeats(s) {
+    if (!s || typeof s !== 'string') return [];
+    let parts = s.split(/\n+/).map(t => t.trim()).filter(Boolean);
+    if (parts.length > 1) return parts;
+    parts = s.split(/(?<=[.!?;])\s+(?=[A-ZΑ-Ω])/g).map(t => t.trim()).filter(Boolean);
+    return parts;
+  }
+
+  // Render a possibly-multi-sentence string into a host element as either a
+  // single <p> (1 beat) or a bulleted .coach-beats list (2+ beats). Clears
+  // the host first. Safe to call with empty/missing strings — renders a dash.
+  function renderBeats(host, str) {
+    if (!host) return;
+    host.innerHTML = '';
+    const beats = splitIntoBeats(str || '');
+    if (beats.length <= 1) {
+      const p = document.createElement('p');
+      p.textContent = beats[0] || '—';
+      host.appendChild(p);
+      return;
+    }
+    const ul = document.createElement('ul');
+    ul.className = 'coach-beats';
+    beats.forEach(b => {
+      const li = document.createElement('li');
+      li.textContent = b;
+      ul.appendChild(li);
+    });
+    host.appendChild(ul);
+  }
+
   function renderCoachPlan(p) {
     const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
     setText('coach-plan-date', p.plan_date || '');
     setText('coach-generated-at', p.generated_at ? new Date(p.generated_at).toLocaleString() : '');
-    setText('coach-why-picked', p.why_picked || '');
+    // Why-picked: chunked beats instead of a single paragraph (much easier to
+    // skim when the agent writes 3-4 sentences of reasoning).
+    renderBeats(document.getElementById('coach-why-picked'), p.why_picked);
 
     // Focus areas (chips)
     const focus = document.getElementById('coach-focus-areas');
@@ -8253,9 +8313,11 @@
         }
         const body = g.body || g.text || g.lesson;
         if (body) {
-          const p2 = document.createElement('p');
-          p2.textContent = body;
-          lesson.appendChild(p2);
+          // Chunk the lesson body into beats — same treatment as why-picked.
+          // We append into a temporary wrapper so renderBeats can clear it.
+          const wrap = document.createElement('div');
+          lesson.appendChild(wrap);
+          renderBeats(wrap, body);
         }
         if (Array.isArray(g.examples)) {
           g.examples.forEach(ex => {
@@ -8266,9 +8328,8 @@
           });
         }
       } else if (typeof g === 'string') {
-        const p2 = document.createElement('p');
-        p2.textContent = g;
-        lesson.appendChild(p2);
+        // String form (no title/examples) — still chunk into beats.
+        renderBeats(lesson, g);
       } else {
         lesson.innerHTML = '<p style="color:#6a6a8a;font-style:italic;">No grammar lesson today.</p>';
       }
