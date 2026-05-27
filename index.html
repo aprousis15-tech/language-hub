@@ -3638,6 +3638,9 @@
       <div class="grammar-mode-group-label">▸ ❗ Imperatives</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('impdrill',this)">❗ Imperative Drill (SRS)</button>
 
+      <div class="grammar-mode-group-label">▸ 💬 Conversation</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('convprep',this)">💬 Conversation Prep (pre-session study)</button>
+
       <div class="grammar-mode-group-label">▸ All</div>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode()" title="Pick a random drill from any category">🎲 Random (all)</button>
     </div>
@@ -3870,6 +3873,22 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="prepositions-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversation Prep — iframe wrapper around the standalone /conversation-prep.html.
+         Same lazy-iframe pattern as the conjugation and preposition drills. This one is
+         a pre-session STUDY tool, not a drill — structured conversation flows with the
+         tutor's likely prompts + the user's response options + bridging vocab + grammar
+         traps. Has hide-English / hide-Greek study modes for self-quizzing. -->
+    <div id="grammar-convprep" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="convprep-frame" class="conjdrill-frame"
+                title="Greek Conversation Prep — pre-session study"
+                loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="conversation-prep.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -10457,6 +10476,7 @@
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
+    document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
     document.getElementById('grammar-pres2aor').style.display = mode === 'pres2aor' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
@@ -10485,6 +10505,7 @@
     if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'conjdrill') initConjDrillFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
+    if (mode === 'convprep') initConvPrepFrame();
     if (mode === 'subjfirst') initSubjFirstDrill();
     if (mode === 'pres2aor') initPres2AorDrill();
     if (mode === 'verbdrill') initVerbDrill();
@@ -11890,6 +11911,16 @@
   function initPrepDrillFrame() {
     const f = document.getElementById('prepdrill-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'prepositions-drill.html');
+  }
+
+  // ── Conversation Prep (subpanel) ──
+  // Same lazy-iframe pattern. /conversation-prep.html is a pre-session study
+  // guide (not a drill) — structured conversation flows with tutor prompts +
+  // response options + bridging vocab + grammar traps. Has hide-en/hide-gr
+  // study modes for self-quizzing.
+  function initConvPrepFrame() {
+    const f = document.getElementById('convprep-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'conversation-prep.html');
   }
 
   // ── Verb Group Classifier ──

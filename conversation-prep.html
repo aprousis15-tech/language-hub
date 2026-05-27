@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Conversation Prep — pre-session study</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #1a5f7a;
+    --sky: #2e86ab;
+    --sand: #f4e9d8;
+    --white: #fdfaf6;
+    --dark: #1e2a35;
+    --greek-blue: #0d4f8b;
+    --teal: #00695c;
+    --plum: #6a1b9a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--white);
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  header.top { text-align: center; margin-bottom: 20px; }
+  header.top h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--greek-blue);
+    font-size: clamp(1.6rem, 4vw, 2.1rem);
+    margin-bottom: 6px;
+  }
+  header.top p { color: #4a6f8a; font-size: 0.92rem; }
+
+  /* Topic selector */
+  .topic-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .topic-btn {
+    padding: 8px 16px; border-radius: 99px; border: 1.5px solid #bbdefb;
+    background: white; color: var(--greek-blue); font-size: 0.88rem;
+    cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 600;
+  }
+  .topic-btn:hover:not(.disabled) { background: #e3f2fd; }
+  .topic-btn.active { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
+  .topic-btn.disabled { opacity: 0.4; cursor: not-allowed; font-style: italic; }
+
+  /* View-mode toggle row — the hide-Greek / hide-English study modes */
+  .modes-bar {
+    display: flex; gap: 6px; justify-content: center; align-items: center;
+    margin-bottom: 22px; padding: 8px 12px;
+    background: #f3e5f5; border-radius: 8px;
+    border: 1px solid #e1bee7;
+    flex-wrap: wrap;
+  }
+  .modes-label { font-size: 0.78rem; color: var(--plum); font-weight: 700; }
+  .mode-btn {
+    padding: 5px 12px; font-size: 0.78rem; border-radius: 6px;
+    border: 1.5px solid #ce93d8; background: white; color: var(--plum);
+    cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 600;
+  }
+  .mode-btn:hover { background: #f3e5f5; }
+  .mode-btn.active { background: var(--plum); color: white; border-color: var(--plum); }
+
+  /* Topic header (blurb + level pill) */
+  .topic-header {
+    background: white; border-radius: 12px; padding: 16px 18px;
+    border: 1px solid #e1ecf4; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 18px;
+  }
+  .topic-header .level-pill {
+    display: inline-block; background: #e3f2fd; color: var(--greek-blue);
+    padding: 2px 10px; border-radius: 99px; font-weight: 700;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-right: 8px;
+  }
+  .topic-header h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--greek-blue); display: inline; font-size: 1.15rem;
+  }
+  .topic-header .blurb {
+    color: #5a6f8a; font-size: 0.9rem; margin-top: 6px; line-height: 1.5;
+  }
+
+  /* Section card */
+  .section {
+    background: white; border-radius: 12px; padding: 18px 20px;
+    border: 1px solid #e1ecf4; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 16px;
+  }
+  .section-head {
+    display: flex; align-items: center; gap: 8px;
+    padding-bottom: 10px; margin-bottom: 12px;
+    border-bottom: 1px solid #eef3f9;
+  }
+  .section-head .emoji { font-size: 1.15rem; }
+  .section-head h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--greek-blue); font-size: 1.05rem;
+  }
+  .section-intro {
+    color: #5a6f8a; font-size: 0.88rem; line-height: 1.5;
+    margin-bottom: 12px; font-style: italic;
+  }
+  .section-tip {
+    margin-top: 10px; padding: 8px 12px; border-radius: 6px;
+    background: #fff8e1; border-left: 3px solid #ffb300;
+    color: #6a4f1a; font-size: 0.85rem; line-height: 1.5;
+  }
+  .section-tip strong { color: #b76e00; }
+
+  /* Greek / English line styling — the workhorse component */
+  .line {
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eef3f9;
+  }
+  .line:last-child { border-bottom: none; }
+  .line .greek {
+    font-family: 'Georgia', serif;
+    color: var(--teal); font-weight: 600;
+    flex: 1; font-size: 1rem;
+    transition: opacity 0.15s;
+  }
+  .line .en {
+    color: #6a6a8a; font-size: 0.85rem; font-style: italic;
+    flex: 1; transition: opacity 0.15s;
+  }
+  .line .speak {
+    border: none; background: transparent; cursor: pointer;
+    font-size: 0.95rem; padding: 2px 4px; color: var(--greek-blue);
+    opacity: 0.6;
+  }
+  .line .speak:hover { opacity: 1; }
+  /* Mode: hide English (force you to recall meaning from Greek) */
+  body.mode-hide-en .line .en,
+  body.mode-hide-en .turn-en,
+  body.mode-hide-en .example-en,
+  body.mode-hide-en .template-en,
+  body.mode-hide-en .followup-en { visibility: hidden; }
+  /* Mode: hide Greek (force you to produce Greek from English) */
+  body.mode-hide-gr .line .greek,
+  body.mode-hide-gr .turn-greek,
+  body.mode-hide-gr .example-greek,
+  body.mode-hide-gr .template-greek,
+  body.mode-hide-gr .followup-greek { visibility: hidden; }
+
+  /* Exchange section — turn-by-turn dialogue */
+  .turn {
+    margin-bottom: 12px; padding: 10px 12px;
+    border-radius: 8px;
+  }
+  .turn.who-tutor { background: #e3f2fd; border-left: 3px solid var(--greek-blue); }
+  .turn.who-you   { background: #e8f5e9; border-left: 3px solid #2e7d32; }
+  .turn-who {
+    font-size: 0.72rem; color: #6a6a8a;
+    letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .turn.who-tutor .turn-who { color: var(--greek-blue); }
+  .turn.who-you   .turn-who { color: #2e7d32; }
+  .turn-greek {
+    font-family: 'Georgia', serif; color: var(--teal);
+    font-size: 1.05rem; font-weight: 600;
+  }
+  .turn-en {
+    color: #6a6a8a; font-size: 0.85rem; font-style: italic;
+    margin-top: 2px;
+  }
+  .turn-slots {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #c5e1c8;
+  }
+  .turn-slots-label {
+    font-size: 0.74rem; color: #4a6f4a;
+    text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  /* Template + example */
+  .template {
+    background: #fffbeb; border-left: 3px solid #ffb300;
+    padding: 10px 12px; border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  .template-label {
+    font-size: 0.72rem; color: #b76e00;
+    text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .template-greek {
+    font-family: 'Georgia', serif; color: var(--teal);
+    font-size: 1.05rem; font-weight: 600;
+  }
+  .template-en { color: #6a6a8a; font-size: 0.85rem; font-style: italic; margin-top: 2px; }
+  .example {
+    background: #f3e5f5; border-left: 3px solid var(--plum);
+    padding: 10px 12px; border-radius: 6px;
+    margin-top: 12px;
+  }
+  .example-label {
+    font-size: 0.72rem; color: var(--plum);
+    text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .example-greek {
+    font-family: 'Georgia', serif; color: #4a148c;
+    font-size: 1.02rem; font-weight: 600; line-height: 1.4;
+  }
+  .example-en { color: #6a4f7a; font-size: 0.85rem; font-style: italic; margin-top: 4px; }
+
+  /* Verb / phrase bank */
+  .bank { margin-top: 10px; }
+  .bank-title {
+    font-size: 0.78rem; color: var(--greek-blue);
+    text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  /* Follow-ups */
+  .followup {
+    background: #fafafa; border-radius: 8px;
+    padding: 12px; margin-bottom: 12px;
+    border: 1px solid #eef3f9;
+  }
+  .followup-question {
+    margin-bottom: 8px; padding-bottom: 8px;
+    border-bottom: 1px solid #eef3f9;
+  }
+  .followup-q-label {
+    font-size: 0.7rem; color: var(--greek-blue);
+    text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .followup-greek {
+    font-family: 'Georgia', serif; color: var(--greek-blue);
+    font-size: 1rem; font-weight: 600;
+  }
+  .followup-en { color: #6a6a8a; font-size: 0.85rem; font-style: italic; margin-top: 2px; }
+  .followup-responses-label {
+    font-size: 0.7rem; color: #2e7d32;
+    text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  /* Grammar trap card */
+  .grammar-trap {
+    background: #ffebee; border-left: 3px solid #c62828;
+    padding: 10px 12px; border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .grammar-trap-title {
+    font-weight: 700; color: #b71c1c; font-size: 0.92rem;
+    margin-bottom: 3px;
+  }
+  .grammar-trap-body {
+    color: #6a3a3a; font-size: 0.88rem; line-height: 1.5;
+  }
+  .grammar-trap-body .gr {
+    font-family: 'Georgia', serif; color: var(--teal); font-weight: 600;
+  }
+
+  /* Footer */
+  .footer-back { text-align: center; margin-top: 32px; }
+  .footer-back a {
+    color: var(--greek-blue); text-decoration: none;
+    font-size: 0.9rem; font-weight: 600;
+  }
+  .footer-back a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Conversation Prep</h1>
+    <p>Pre-session study guide — what your tutor will likely ask + your response options.</p>
+  </header>
+
+  <div class="topic-bar" id="topic-bar"></div>
+
+  <div class="modes-bar">
+    <span class="modes-label">Study mode:</span>
+    <button class="mode-btn active" data-mode="both">Both languages</button>
+    <button class="mode-btn" data-mode="hide-en">Hide English</button>
+    <button class="mode-btn" data-mode="hide-gr">Hide Greek</button>
+  </div>
+
+  <div id="topic-host"></div>
+
+  <div class="footer-back">
+    <a href="./index.html">← Back to Language Hub</a>
+  </div>
+</div>
+
+<script>
+  // ──────────────────────────────────────────────────────────────────────────
+  // DATA — conversation topics
+  // ──────────────────────────────────────────────────────────────────────────
+  // Each topic is a structured walk-through of a likely tutor conversation:
+  // - opening exchange (tutor greets you → you respond + throw a question back)
+  // - overview template (a 2-sentence summary the tutor can build follow-ups on)
+  // - follow-up Q&A bundle (the questions she's most likely to ask next)
+  // - bridging phrases (connective tissue to sound less robotic)
+  // - turn-it-back-on-her phrases (your listening rep generator)
+  // - optional pivots (e.g. mention the upcoming trip)
+  // - grammar traps (the 3 things to watch in this topic)
+  //
+  // To add a new topic: append another entry to TOPICS with the same shape.
+  // The renderer is shape-aware — anything you add to a 'sections' array will
+  // be rendered by kind. Supported kinds: 'exchange', 'template', 'followups',
+  // 'list', 'optional', 'grammar'.
+  // ──────────────────────────────────────────────────────────────────────────
+  const TOPICS = [
+    {
+      id: 'weekend',
+      title: 'About your weekend',
+      icon: '🗓️',
+      level: 'A2 / B1',
+      blurb: 'Use this before your Sunday or Monday tutor session — the most common opening topic. Sofia will almost always lead with "How was your weekend?"',
+      sections: [
+        // ── Opening exchange ──
+        {
+          kind: 'exchange',
+          label: 'Opening',
+          emoji: '👋',
+          intro: 'Sofia greets you and asks how the weekend was. Have a one-line answer + a thrown-back question ready.',
+          turns: [
+            {
+              who: 'tutor',
+              greek: 'Γεια σου, Αντώνη! Πώς πέρασες το Σαββατοκύριακο;',
+              english: 'Hi Anthony! How was your weekend?'
+            },
+            {
+              who: 'you',
+              greek: 'Γεια σου, Σοφία! Πέρασα πολύ ___. Εσύ;',
+              english: 'Hi Sofia! I had a very ___ time. And you?',
+              slots: [
+                { greek: 'ωραία', english: 'nice' },
+                { greek: 'καλά', english: 'good' },
+                { greek: 'χάλια', english: 'terrible (slangy)' },
+                { greek: 'κουραστικά', english: 'tiring' },
+                { greek: 'χαλαρά', english: 'relaxed / chill' }
+              ]
+            }
+          ],
+          tip: 'Always toss back <strong>Εσύ;</strong> ("And you?"). Keeps the session conversational and forces Sofia to produce Greek you have to parse.'
+        },
+
+        // ── Overview ──
+        {
+          kind: 'template',
+          label: 'Overview',
+          emoji: '📋',
+          intro: 'Open with a 2-sentence summary so Sofia has hooks for follow-ups. Use the past tense (aorist).',
+          template: {
+            greek: 'Το Σάββατο ___, και την Κυριακή ___.',
+            english: 'On Saturday ___, and on Sunday ___.'
+          },
+          bank: {
+            title: 'Verb bank — past tense (aorist)',
+            items: [
+              { greek: 'πήγα στο γυμναστήριο', english: 'I went to the gym' },
+              { greek: 'είδα μια ταινία', english: 'I watched a movie' },
+              { greek: 'συνάντησα φίλους', english: 'I met up with friends' },
+              { greek: 'έφαγα έξω', english: 'I ate out' },
+              { greek: 'ήπια καφέ με ___', english: 'I had coffee with ___' },
+              { greek: 'δούλεψα από το σπίτι', english: 'I worked from home' },
+              { greek: 'ξεκουράστηκα', english: 'I rested' },
+              { greek: 'περπάτησα στο πάρκο', english: 'I walked in the park' },
+              { greek: 'μαγείρεψα', english: 'I cooked' },
+              { greek: 'κοιμήθηκα μέχρι αργά', english: 'I slept in' },
+              { greek: 'έκανα ψώνια', english: 'I went shopping' },
+              { greek: 'πήγα για βραδινό', english: 'I went out for dinner' },
+              { greek: 'κάναμε πεζοπορία', english: 'we went hiking' },
+              { greek: 'είδα την οικογένειά μου', english: 'I saw my family' },
+              { greek: 'έγραψα κώδικα', english: 'I wrote code' },
+              { greek: 'διάβασα', english: 'I read / studied' }
+            ]
+          },
+          example: {
+            greek: 'Το Σάββατο πήγα στο γυμναστήριο και μετά συνάντησα φίλους για δείπνο. Την Κυριακή ξεκουράστηκα και διάβασα ελληνικά.',
+            english: 'On Saturday I went to the gym and then met friends for dinner. On Sunday I rested and studied Greek.'
+          }
+        },
+
+        // ── Follow-ups ──
+        {
+          kind: 'followups',
+          label: 'Follow-ups',
+          emoji: '❓',
+          intro: "These are the questions Sofia is most likely to ask next. Have one response ready for each — improvise the rest.",
+          questions: [
+            {
+              tutor: { greek: 'Με ποιον ήσουν;', english: 'Who were you with?' },
+              responses: [
+                { greek: 'Ήμουν με τον φίλο μου τον ___', english: 'I was with my friend [name]' },
+                { greek: 'Με την κοπέλα μου', english: 'With my girlfriend' },
+                { greek: 'Με την οικογένειά μου', english: 'With my family' },
+                { greek: 'Ήμουν μόνος μου', english: 'I was alone' }
+              ]
+            },
+            {
+              tutor: { greek: 'Πού πήγατε;', english: 'Where did you go?' },
+              responses: [
+                { greek: 'Πήγαμε σε ένα εστιατόριο στο ___', english: 'We went to a restaurant in [neighborhood]' },
+                { greek: 'Πήγαμε στο κέντρο', english: 'We went downtown' },
+                { greek: 'Έμεινα στο σπίτι', english: 'I stayed home' },
+                { greek: 'Σε ένα μπαρ κοντά στο σπίτι μου', english: 'To a bar near my place' }
+              ]
+            },
+            {
+              tutor: { greek: 'Σου άρεσε; / Πώς ήταν;', english: 'Did you like it? / How was it?' },
+              responses: [
+                { greek: 'Ναι, μου άρεσε πολύ!', english: 'Yes, I liked it a lot!' },
+                { greek: 'Ήταν τέλειο!', english: 'It was perfect!' },
+                { greek: 'Ήταν εντάξει', english: 'It was OK' },
+                { greek: 'Όχι και τόσο', english: 'Not really' },
+                { greek: 'Ήταν χάλια', english: 'It was terrible (informal)' }
+              ]
+            },
+            {
+              tutor: { greek: 'Τι έφαγες;', english: 'What did you eat?' },
+              responses: [
+                { greek: 'Έφαγα ___. Ήταν πολύ νόστιμο.', english: 'I ate ___. It was very tasty.' },
+                { greek: 'πίτσα / σούσι / μπέργκερ', english: 'pizza / sushi / burger' },
+                { greek: 'μακαρόνια / σαλάτα', english: 'pasta / salad' },
+                { greek: 'κοτόπουλο / ψάρι', english: 'chicken / fish' }
+              ]
+            },
+            {
+              tutor: { greek: 'Είχες χρόνο να ξεκουραστείς;', english: 'Did you have time to rest?' },
+              responses: [
+                { greek: 'Ναι, αρκετά. Κοιμήθηκα μέχρι αργά την Κυριακή.', english: 'Yes, plenty. I slept in on Sunday.' },
+                { greek: 'Όχι πραγματικά, ήταν γεμάτο σαββατοκύριακο.', english: 'Not really — it was a packed weekend.' }
+              ]
+            }
+          ]
+        },
+
+        // ── Bridging phrases ──
+        {
+          kind: 'list',
+          label: 'Bridging words',
+          emoji: '🌉',
+          intro: 'Sprinkle these between sentences. They buy thinking time AND make you sound more fluent. Memorize 3-4 you actually like.',
+          items: [
+            { greek: 'Λοιπόν…', english: 'So… / Well…' },
+            { greek: 'Βασικά…', english: 'Basically…' },
+            { greek: 'Μετά / Στη συνέχεια', english: 'Then / Afterwards' },
+            { greek: 'Επίσης', english: 'Also' },
+            { greek: 'Για να σου πω την αλήθεια…', english: 'To tell you the truth…' },
+            { greek: 'Δεν θυμάμαι ακριβώς, αλλά…', english: "I don't remember exactly, but…" },
+            { greek: 'Πώς να το πω…', english: 'How can I put it…' },
+            { greek: 'Νομίζω ότι…', english: 'I think that…' },
+            { greek: 'Στην αρχή ___, αλλά μετά ___', english: 'At first ___, but then ___' }
+          ]
+        },
+
+        // ── Turn it back on Sofia ──
+        {
+          kind: 'list',
+          label: 'Turn it back on Sofia',
+          emoji: '🔄',
+          intro: "After ~2 min of you talking, flip it. Listening retell practice in disguise. Then ask a follow-up question of your own.",
+          items: [
+            { greek: 'Κι εσύ, Σοφία, τι έκανες το Σαββατοκύριακο;', english: 'And you, Sofia, what did you do this weekend?' },
+            { greek: 'Πέρασες ωραία;', english: 'Did you have a nice time?' },
+            { greek: 'Έβγαλες χρόνο να βγεις;', english: 'Did you find time to go out?' },
+            { greek: 'Με ποιον ήσουν;', english: 'Who were you with?' },
+            { greek: 'Πού πήγες;', english: 'Where did you go?' }
+          ]
+        },
+
+        // ── Optional pivot: the trip ──
+        {
+          kind: 'optional',
+          label: 'Optional — slide in the trip',
+          emoji: '✈️',
+          intro: "Toward the end of weekend talk, drop this to pivot naturally into trip prep. Gives Sofia an opening to ask trip questions in Greek.",
+          content: {
+            greek: 'Α, και κάτι ακόμα — σε περίπου τέσσερις εβδομάδες φεύγω για την Ελλάδα! Μετράω αντίστροφα.',
+            english: "Oh, and one more thing — in about four weeks I'm leaving for Greece! I'm counting down."
+          }
+        },
+
+        // ── Grammar traps ──
+        {
+          kind: 'grammar',
+          label: 'Grammar traps',
+          emoji: '⚠️',
+          intro: 'Three things to watch when talking about the past weekend.',
+          items: [
+            {
+              title: 'Past tense = aorist',
+              body: '<span class="gr">πήγα</span> (I went), <span class="gr">είδα</span> (I saw), <span class="gr">έφαγα</span> (I ate), <span class="gr">ήπια</span> (I drank). Don\'t accidentally use the present.'
+            },
+            {
+              title: 'Με ποιον (with whom) takes accusative',
+              body: '<span class="gr">Με τον φίλο μου</span>, NOT <span class="gr">με ο φίλος μου</span>. Same for <span class="gr">με την μητέρα μου</span>, <span class="gr">με τους φίλους μου</span>.'
+            },
+            {
+              title: 'Σαββατοκύριακο is neuter',
+              body: '<span class="gr">Το</span> Σαββατοκύριακο. Not η or ο. Same for <span class="gr">το πρωί</span>, <span class="gr">το βράδυ</span>, <span class="gr">το απόγευμα</span>.'
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // Topics that will be added later — shown disabled in the topic bar so the
+  // user knows the page will grow but they can't click them yet.
+  const COMING_SOON_TOPICS = [
+    { id: 'your-day', title: 'Your day' },
+    { id: 'the-trip', title: 'The trip to Greece' },
+    { id: 'food', title: 'Food & ordering' },
+    { id: 'work', title: 'Work & job' },
+    { id: 'family', title: 'Family & home' }
+  ];
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // RENDERING
+  // ──────────────────────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  // Browser-native Greek TTS — no backend dependency. Falls back silently if
+  // the user's browser doesn't have a Greek voice installed.
+  function speakGreek(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel(); // stop any in-flight utterance
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'el-GR';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+
+  // Inline 🔊 button next to each Greek phrase. data-speak holds the text so
+  // a single delegated click handler can read it.
+  function speakBtn(greek) {
+    return `<button class="speak" type="button" data-speak="${esc(greek)}" title="Hear it" aria-label="Hear it">🔊</button>`;
+  }
+
+  // Build the "Greek — English" inline line used in lists and banks.
+  function renderLine(item) {
+    return `
+      <div class="line">
+        <span class="greek">${esc(item.greek)}</span>
+        ${speakBtn(item.greek)}
+        <span class="en">— ${esc(item.english)}</span>
+      </div>
+    `;
+  }
+
+  function renderSection_exchange(s) {
+    const turns = s.turns.map(t => {
+      const whoLabel = t.who === 'tutor' ? 'Sofia says' : 'You say';
+      const slots = t.slots
+        ? `<div class="turn-slots">
+             <div class="turn-slots-label">Pick one to fill ___:</div>
+             ${t.slots.map(renderLine).join('')}
+           </div>`
+        : '';
+      return `
+        <div class="turn who-${t.who}">
+          <div class="turn-who">${whoLabel}</div>
+          <div class="turn-greek">${esc(t.greek)} ${speakBtn(t.greek)}</div>
+          <div class="turn-en">${esc(t.english)}</div>
+          ${slots}
+        </div>
+      `;
+    }).join('');
+    const tip = s.tip ? `<div class="section-tip">💡 ${s.tip}</div>` : '';
+    return `
+      ${sectionHead(s)}
+      ${turns}
+      ${tip}
+    `;
+  }
+
+  function renderSection_template(s) {
+    const bank = s.bank ? `
+      <div class="bank">
+        <div class="bank-title">${esc(s.bank.title)}</div>
+        ${s.bank.items.map(renderLine).join('')}
+      </div>` : '';
+    const example = s.example ? `
+      <div class="example">
+        <div class="example-label">Example you could say</div>
+        <div class="example-greek">${esc(s.example.greek)} ${speakBtn(s.example.greek)}</div>
+        <div class="example-en">${esc(s.example.english)}</div>
+      </div>` : '';
+    return `
+      ${sectionHead(s)}
+      <div class="template">
+        <div class="template-label">Template</div>
+        <div class="template-greek">${esc(s.template.greek)}</div>
+        <div class="template-en">${esc(s.template.english)}</div>
+      </div>
+      ${bank}
+      ${example}
+    `;
+  }
+
+  function renderSection_followups(s) {
+    const qs = s.questions.map(q => `
+      <div class="followup">
+        <div class="followup-question">
+          <div class="followup-q-label">Sofia asks</div>
+          <div class="followup-greek">${esc(q.tutor.greek)} ${speakBtn(q.tutor.greek)}</div>
+          <div class="followup-en">${esc(q.tutor.english)}</div>
+        </div>
+        <div class="followup-responses-label">You can answer with</div>
+        ${q.responses.map(renderLine).join('')}
+      </div>
+    `).join('');
+    return `
+      ${sectionHead(s)}
+      ${qs}
+    `;
+  }
+
+  function renderSection_list(s) {
+    return `
+      ${sectionHead(s)}
+      ${s.items.map(renderLine).join('')}
+    `;
+  }
+
+  function renderSection_optional(s) {
+    return `
+      ${sectionHead(s)}
+      <div class="example">
+        <div class="example-label">Drop this in casually</div>
+        <div class="example-greek">${esc(s.content.greek)} ${speakBtn(s.content.greek)}</div>
+        <div class="example-en">${esc(s.content.english)}</div>
+      </div>
+    `;
+  }
+
+  function renderSection_grammar(s) {
+    const items = s.items.map(it => `
+      <div class="grammar-trap">
+        <div class="grammar-trap-title">${esc(it.title)}</div>
+        <div class="grammar-trap-body">${it.body /* trusted markup with <span class="gr"> */}</div>
+      </div>
+    `).join('');
+    return `
+      ${sectionHead(s)}
+      ${items}
+    `;
+  }
+
+  function sectionHead(s) {
+    const intro = s.intro ? `<div class="section-intro">${esc(s.intro)}</div>` : '';
+    return `
+      <div class="section-head">
+        <span class="emoji">${esc(s.emoji)}</span>
+        <h3>${esc(s.label)}</h3>
+      </div>
+      ${intro}
+    `;
+  }
+
+  const RENDERERS = {
+    exchange:  renderSection_exchange,
+    template:  renderSection_template,
+    followups: renderSection_followups,
+    list:      renderSection_list,
+    optional:  renderSection_optional,
+    grammar:   renderSection_grammar
+  };
+
+  function renderTopic(topic) {
+    const host = document.getElementById('topic-host');
+    const header = `
+      <div class="topic-header">
+        <span class="level-pill">${esc(topic.level)}</span>
+        <h2>${esc(topic.icon)} ${esc(topic.title)}</h2>
+        <div class="blurb">${esc(topic.blurb)}</div>
+      </div>
+    `;
+    const sections = topic.sections.map(s => {
+      const render = RENDERERS[s.kind];
+      if (!render) return '';
+      return `<div class="section">${render(s)}</div>`;
+    }).join('');
+    host.innerHTML = header + sections;
+  }
+
+  function renderTopicBar(currentId) {
+    const host = document.getElementById('topic-bar');
+    const real = TOPICS.map(t =>
+      `<button class="topic-btn${t.id === currentId ? ' active' : ''}" data-topic="${esc(t.id)}">${esc(t.icon)} ${esc(t.title)}</button>`
+    ).join('');
+    const soon = COMING_SOON_TOPICS.map(t =>
+      `<button class="topic-btn disabled" disabled title="Coming soon">${esc(t.title)} (soon)</button>`
+    ).join('');
+    host.innerHTML = real + soon;
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // EVENTS + INIT
+  // ──────────────────────────────────────────────────────────────────────────
+  // Mode toggle — switches body classes that drive the hide-en / hide-gr CSS
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      document.body.classList.remove('mode-hide-en', 'mode-hide-gr');
+      const m = b.dataset.mode;
+      if (m === 'hide-en') document.body.classList.add('mode-hide-en');
+      if (m === 'hide-gr') document.body.classList.add('mode-hide-gr');
+    });
+  });
+
+  // Delegated click for the 🔊 speak buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.speak');
+    if (!btn) return;
+    e.preventDefault();
+    speakGreek(btn.dataset.speak);
+  });
+
+  // Delegated click for the topic bar (real topics only — disabled ones do nothing)
+  document.getElementById('topic-bar').addEventListener('click', (e) => {
+    const btn = e.target.closest('.topic-btn');
+    if (!btn || btn.classList.contains('disabled')) return;
+    const id = btn.dataset.topic;
+    const topic = TOPICS.find(t => t.id === id);
+    if (!topic) return;
+    renderTopicBar(id);
+    renderTopic(topic);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Initial render
+  renderTopicBar(TOPICS[0].id);
+  renderTopic(TOPICS[0]);
+</script>
+</body>
+</html>
