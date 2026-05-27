@@ -192,6 +192,7 @@
     <button class="group-btn" data-group="πριν/μετά">πριν / μετά</button>
     <button class="group-btn" data-group="χωρίς/εκτός/αντί">χωρίς / εκτός / αντί</button>
     <button class="group-btn" data-group="μέχρι/κατά">μέχρι / κατά</button>
+    <button class="group-btn" data-group="ας">ας (let's…)</button>
   </div>
   <div class="filter-hint">Tap multiple groups to mix them. Tap a group again to remove it.</div>
 
@@ -504,6 +505,40 @@
           answer: 'μέχρι', note: "μέχρι + place = up to / as far as (spatial endpoint)." },
         { prompt: 'Δούλεψε εδώ ___ πέρυσι.', en: 'He worked here until last year.',
           answer: 'μέχρι', note: "μέχρι + time reference = until (then)." }
+      ]
+    },
+    {
+      // ας isn't a preposition — it's a modal/hortative particle. Including it
+      // here because the fill-in-the-blank drill format works identically and
+      // the user has no other 'function word' drill yet. Treat this group as
+      // the start of a 'function words' section that may grow later.
+      group: 'ας',
+      rule: "ας = let's / let me / let him (hortative/permissive particle). Pairs with the PERFECTIVE verb stem (πω-, δούμε, φάμε), never the imperfective. Negative: ας μην + verb. Idioms: ας πούμε = let's say (universal filler), ας είναι = so be it.",
+      items: [
+        { prompt: '___ πάμε στην παραλία!', en: "Let's go to the beach!",
+          answer: 'Ας', accept: ['ας'],
+          note: "ας + perfective 1pl = let's [do]. πάμε is already the perfective of πάω. Most common everyday usage." },
+        { prompt: '___ πούμε ότι έχεις δίκιο.', en: "Let's say you're right.",
+          answer: 'Ας', accept: ['ας'],
+          note: "'ας πούμε' is a universal Greek filler/hedge, like English 'let's say' or 'for instance'. You'll hear it constantly in real conversation." },
+        { prompt: '___ πει αυτό που θέλει.', en: 'Let him say whatever he wants.',
+          answer: 'Ας', accept: ['ας'],
+          note: "ας + 3rd person perfective = let him/her/them [do]. Permissive — granting permission or expressing indifference." },
+        { prompt: '___ δούμε τι θα γίνει.', en: "Let's see what happens.",
+          answer: 'Ας', accept: ['ας'],
+          note: "δούμε = perfective 1pl of βλέπω. 'Ας δούμε' = let's wait and see — common way to defer a decision." },
+        { prompt: '___ μην το κάνεις.', en: "Don't do it (suggested).",
+          answer: 'Ας', accept: ['ας'],
+          note: "Negative form: ας μην + perfective. Softer than 'μην το κάνεις!' (don't do it!) — more of a suggestion or wish than a command." },
+        { prompt: '___ φάμε πρώτα και μετά μιλάμε.', en: "Let's eat first and then talk.",
+          answer: 'Ας', accept: ['ας'],
+          note: "φάμε = perfective of τρώω. Pattern: ας + perfective 1pl for 'let's [do X]'." },
+        { prompt: '___ είναι.', en: 'So be it.',
+          answer: 'Ας', accept: ['ας'],
+          note: "Fixed expression. 'Ας είναι' = let it be / so be it — resignation or acceptance. Also: 'ας όψεται' (= curse him for it) is a related fixed idiom." },
+        { prompt: '___ μην τους πούμε τίποτα.', en: "Let's not tell them anything.",
+          answer: 'Ας', accept: ['ας'],
+          note: "ας μην + 1pl perfective = let's not [do]. The negative hortative. πούμε = perfective of λέω." }
       ]
     }
   ];
