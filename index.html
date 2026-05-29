@@ -1624,6 +1624,13 @@
   .speak-btn-inline.speaking { background: #283593; color: white; animation: speakPulse 0.9s ease-in-out infinite; }
   .speak-btn-inline.no-voice { opacity: 0.35; cursor: help; }
   .speak-btn-inline.small { font-size: 0.78rem; padding: 1px 5px; }
+  /* Drill-speak buttons inject themselves next to each grammar-drill prompt.
+     The prompt is typically display: block so we give the button a small
+     top margin and float it to inline placement under the prompt. */
+  .drill-speak-btn {
+    display: inline-block; margin: 6px 0 10px; font-size: 0.9rem;
+    padding: 3px 9px; border-radius: 7px;
+  }
   .coach-empty-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .coach-empty-cta {
     background: #283593; color: white; border: none; padding: 10px 20px;
@@ -14987,6 +14994,71 @@
       }
     });
   });
+
+  // Variant: data-speak-el="<element-id>" speaks the LIVE textContent of
+  // the element with that id. Used by the grammar drills, where the prompt
+  // text changes on each card (and again when the blank fills with the
+  // answer). The handler strips underscore placeholders so reading a
+  // prompt BEFORE answering speaks the sentence frame with a silent gap
+  // where the blank is; reading AFTER answering speaks the full correct
+  // sentence. Same delegated pattern — one listener for the whole page.
+  document.addEventListener('click', function(e) {
+    const t = e.target.closest && e.target.closest('[data-speak-el]');
+    if (!t) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const id = t.getAttribute('data-speak-el');
+    const src = id && document.getElementById(id);
+    if (!src) return;
+    // textContent gives us just the text — children are flattened, the 🔊
+    // glyph in sibling buttons is NOT included because we read the source
+    // element, not the wrapper. Underscores are the fill-blank placeholder.
+    let text = (src.textContent || '').replace(/_+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!text || text === '…') return;
+    t.classList.add('speaking');
+    speakGreek(text, {
+      onend: () => t.classList.remove('speaking'),
+      onerror: () => t.classList.remove('speaking'),
+      onmissing: () => {
+        t.classList.remove('speaking');
+        t.classList.add('no-voice');
+        t.title = 'No Greek voice installed on this device';
+      }
+    });
+  });
+
+  // Auto-inject a 🔊 button next to every grammar-drill prompt on first
+  // load. The button reads the prompt's live text via the data-speak-el
+  // delegated handler above. One pass at DOM-ready hits all ~17 drills
+  // (Articles, Pronouns, σε+article, Aorist, Time, Negation, Question
+  // Words, Future, Aspect, Verb Group, Subject-First, Pres→Aorist, Days,
+  // Question Starters, Prepositions, Adjectives, Type A/B verbs) because
+  // every drill prompt shares the class .grammar-prompt-greek.
+  //
+  // The button is inserted as a SIBLING of the prompt, not a child, so it
+  // survives the prompt's innerHTML rewrite on each new card.
+  // Idempotent: re-running won't double up if the button already exists.
+  function injectDrillSpeakButtons() {
+    document.querySelectorAll('.grammar-prompt-greek').forEach(promptEl => {
+      if (!promptEl.id) return;
+      // Skip if a 🔊 button already follows
+      const next = promptEl.nextElementSibling;
+      if (next && next.classList && next.classList.contains('drill-speak-btn')) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'speak-btn-inline drill-speak-btn';
+      btn.setAttribute('data-speak-el', promptEl.id);
+      btn.setAttribute('aria-label', 'Hear the sentence in Greek');
+      btn.title = 'Hear the sentence in Greek';
+      btn.textContent = '🔊';
+      promptEl.insertAdjacentElement('afterend', btn);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', injectDrillSpeakButtons);
+  // Also call it once on script load in case the listener missed
+  // (defensive — DOM is already parsed by the time this script runs since
+  // it lives at the bottom of <body>).
+  if (document.readyState !== 'loading') injectDrillSpeakButtons();
 
   // ── PWA: service-worker registration + offline awareness ──
   // Registers /sw.js on load. When the SW detects a newer deployment, shows
