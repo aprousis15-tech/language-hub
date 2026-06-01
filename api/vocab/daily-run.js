@@ -7,18 +7,24 @@
 //   1. Read recent vocab from Supabase to build a duplicate-avoidance list.
 //   2. Read recent mistakes from public.mistakes for weakness signal.
 //   3. Read recent speak_observations for spoken-pattern signal.
-//   4. Call Claude Sonnet to pick 5 fresh, A2-level Greek words with a STRONG
-//      intuition hook for each (etymology, cognates, sound-alikes, visuals).
+//   4. Call Groq Llama 3.3 70B (free tier) to pick 5 fresh, A2-level Greek
+//      words with a STRONG intuition hook for each (etymology, cognates,
+//      sound-alikes, visuals).
 //   5. Insert each new word into public.vocab.
 //   6. Record the picks in public.daily_vocab_picks for the dashboard card.
 //
 // Env vars:
-//   ANTHROPIC_API_KEY — required, existing key already in Vercel
+//   GROQ_API_KEY — required, already set in Vercel (originally for Whisper).
 //
-// Cost: ~$0.01-0.02 per daily run on Sonnet 4.6 (~$0.50/mo).
+// Cost: $0/mo on Groq free tier. Llama 3.3 70B: 30 RPM / 14,400 RPD free
+// quota — one daily call uses ~0.007% of daily budget. Structured JSON via
+// response_format. Quality is strong for vocabulary curation + memory hooks;
+// the only thing Sonnet was meaningfully better at on this task was occasional
+// wittier mnemonics — not worth the $/mo.
 
-const MODEL = 'claude-sonnet-4-6';
+const MODEL = 'llama-3.3-70b-versatile';
 const MAX_TOKENS = 3000;
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const SUPABASE_URL = 'https://bdfjddzwvudqictvuvtr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj';
 
@@ -130,9 +136,9 @@ async function fetchRecentWeaknesses(days = 7, limit = 30) {
   return flat.slice(0, limit);
 }
 
-async function callClaude(date, existing, mistakes, weaknesses) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('server_missing_anthropic_key');
+async function callGenerator(date, existing, mistakes, weaknesses) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('server_missing_groq_key');
 
   const payload = {
     date,
@@ -141,28 +147,35 @@ async function callClaude(date, existing, mistakes, weaknesses) {
     recent_weaknesses: weaknesses
   };
 
-  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+  // Groq uses the OpenAI chat-completions schema: system + user messages,
+  // model + max_tokens at top level. response_format: { type: 'json_object' }
+  // enforces clean JSON output so we never need to strip markdown fences.
+  const upstream = await fetch(GROQ_URL, {
     method: 'POST',
     headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      'authorization': `Bearer ${apiKey}`,
       'content-type': 'application/json',
     },
     body: JSON.stringify({
       model: MODEL,
       max_tokens: MAX_TOKENS,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: JSON.stringify(payload) }],
-    }),
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user',   content: JSON.stringify(payload) }
+      ]
+    })
   });
 
   if (!upstream.ok) {
     const detail = await upstream.text().catch(() => '');
-    throw new Error(`anthropic_upstream_error: ${upstream.status} ${detail.slice(0, 300)}`);
+    throw new Error(`groq_upstream_error: ${upstream.status} ${detail.slice(0, 300)}`);
   }
   const apiData = await upstream.json();
-  const textBlock = (apiData.content || []).find(c => c && c.type === 'text');
-  const raw = textBlock ? textBlock.text : '';
+  const raw = apiData.choices && apiData.choices[0] &&
+              apiData.choices[0].message && apiData.choices[0].message.content;
+  if (!raw) throw new Error('groq_empty_response');
   const parsed = JSON.parse(stripJsonFences(raw));
   if (!parsed || !Array.isArray(parsed.picks) || parsed.picks.length === 0) {
     throw new Error('schema_mismatch: picks missing or empty');
@@ -255,7 +268,7 @@ module.exports = async function handler(req, res) {
 
     // Generate
     const startedAt = Date.now();
-    const result = await callClaude(date, existing, mistakes, weaknesses);
+    const result = await callGenerator(date, existing, mistakes, weaknesses);
 
     // Insert each pick into vocab; collect ids
     const ids = [];
