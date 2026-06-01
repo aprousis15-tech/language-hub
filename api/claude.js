@@ -3,15 +3,19 @@
 // the API key never touches the browser. Called by the Sessions tab in
 // index.html via POST /api/claude with body { action, payload }.
 
-// Model split per action — verified via Anthropic docs at
-// https://platform.claude.com/docs/en/docs/about-claude/models/overview (2026-05-21):
-//   claude-opus-4-7   ($5/$25 per M)  Senior reasoning, planning, analysis.
-//   claude-sonnet-4-6 ($3/$15 per M)  Routine per-attempt grading.
-// Earlier outage at line 86 was unescaped backticks inside the system
-// prompt, not the model ID — that turned out to be valid all along.
-const MODEL_PLANNING = 'claude-opus-4-7';
-const MODEL_GRADING  = 'claude-sonnet-4-6';
+// Provider routing by action:
+// - generate_plan + analyze_session → Anthropic Opus 4.7. Strategic calls
+//   that run a few times a month; worth the quality.
+// - grade_speaking → Groq Llama 3.3 70B (free tier). Runs every speak
+//   attempt. Even on Sonnet this was ~$2-3/mo. Moving to Groq = $0.
+//   User accepted the quality trade-off explicitly.
+//
+// Both providers feed the same validator and produce the same response
+// shape, so the frontend never knows which one answered.
+const MODEL_ANTHROPIC = 'claude-opus-4-7';
+const MODEL_GROQ      = 'llama-3.3-70b-versatile';
 const MAX_TOKENS = 8192; // rule #4 floor
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 const PLAN_GEN_SYSTEM_PROMPT = `You orchestrate a Greek learning sprint for a user preparing for a Greece trip. Target capability: transactional Greek plus small-talk initiation.
 
@@ -223,51 +227,84 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    res.status(500).json({ error: 'server_missing_api_key', hint: 'Set ANTHROPIC_API_KEY in Vercel project env vars.' });
-    return;
-  }
-
   const systemPrompt =
     action === 'generate_plan'   ? PLAN_GEN_SYSTEM_PROMPT :
     action === 'grade_speaking'  ? GRADE_SPEAKING_SYSTEM_PROMPT :
     ANALYZE_SYSTEM_PROMPT;
 
-  // grade_speaking is the routine per-attempt call → Sonnet. Everything else
-  // is strategic (plan generation, session analysis) → Opus.
-  const model = action === 'grade_speaking' ? MODEL_GRADING : MODEL_PLANNING;
+  // Pick provider per action.
+  const useGroq = action === 'grade_speaking';
+  const apiKey = useGroq ? process.env.GROQ_API_KEY : process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    res.status(500).json({
+      error: 'server_missing_api_key',
+      provider: useGroq ? 'groq' : 'anthropic',
+      hint: useGroq
+        ? 'Set GROQ_API_KEY in Vercel env vars (already used by /api/transcribe).'
+        : 'Set ANTHROPIC_API_KEY in Vercel env vars.'
+    });
+    return;
+  }
 
   let upstream;
   try {
-    upstream = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: MAX_TOKENS,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: JSON.stringify(payload) }],
-      }),
-    });
+    if (useGroq) {
+      // Groq uses the OpenAI chat-completions schema. response_format
+      // enforces clean JSON output so we never need to strip markdown
+      // fences from Llama 3.3's reply.
+      upstream = await fetch(GROQ_URL, {
+        method: 'POST',
+        headers: {
+          'authorization': `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: MODEL_GROQ,
+          max_tokens: MAX_TOKENS,
+          temperature: 0.4,                       // grading wants stability
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: JSON.stringify(payload) }
+          ]
+        }),
+      });
+    } else {
+      upstream = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: MODEL_ANTHROPIC,
+          max_tokens: MAX_TOKENS,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: JSON.stringify(payload) }],
+        }),
+      });
+    }
   } catch (e) {
-    res.status(502).json({ error: 'fetch_failed', message: String(e && e.message || e) });
+    res.status(502).json({ error: 'fetch_failed', provider: useGroq ? 'groq' : 'anthropic', message: String(e && e.message || e) });
     return;
   }
 
   if (!upstream.ok) {
     const errText = await upstream.text().catch(() => '');
-    res.status(502).json({ error: 'upstream_error', status: upstream.status, detail: errText.slice(0, 500) });
+    res.status(502).json({ error: 'upstream_error', provider: useGroq ? 'groq' : 'anthropic', status: upstream.status, detail: errText.slice(0, 500) });
     return;
   }
 
   const apiData = await upstream.json();
-  const textBlock = (apiData.content || []).find(c => c && c.type === 'text');
-  const raw = textBlock ? textBlock.text : '';
+  let raw = '';
+  if (useGroq) {
+    raw = apiData.choices && apiData.choices[0] &&
+          apiData.choices[0].message && apiData.choices[0].message.content || '';
+  } else {
+    const textBlock = (apiData.content || []).find(c => c && c.type === 'text');
+    raw = textBlock ? textBlock.text : '';
+  }
 
   const cleaned = stripJsonFences(raw);
   let parsed;
