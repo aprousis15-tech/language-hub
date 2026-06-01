@@ -247,6 +247,56 @@
   .vocab-native { font-weight: 700; flex: 1; }
   .vocab-translation { color: #7a6a55; flex: 1; text-align: right; font-style: italic; }
 
+  /* ─── Today's 5 — daily AI-picked vocab card ───
+     Sits at the top of the Vocab tab. Same warm cream/burnt-orange palette
+     as the rest of the tab so it feels integrated, but elevated with a
+     gradient border + shadow to flag it as the daily highlight. */
+  .daily-vocab-card {
+    background: linear-gradient(180deg, #fffaf0 0%, #fff6e0 100%);
+    border: 1.5px solid #d4a55a;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 0 0 28px;
+    box-shadow: 0 2px 10px rgba(212, 165, 90, 0.18);
+  }
+  .daily-vocab-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .daily-vocab-header h3 { font-family: 'Playfair Display', serif; color: #6b4017; margin: 0; font-size: 1.15rem; }
+  .daily-vocab-meta { color: #8a6a45; font-size: 0.82rem; font-weight: 600; }
+  .daily-vocab-why {
+    margin: 10px 0 0; padding: 8px 12px; background: rgba(255,255,255,0.6);
+    border-left: 3px solid #d4a55a; border-radius: 0 6px 6px 0;
+    color: #4a3a1f; font-size: 0.88rem; font-style: italic; line-height: 1.4;
+  }
+  .daily-vocab-list { margin-top: 12px; }
+  .daily-vocab-loading, .daily-vocab-empty {
+    text-align: center; padding: 18px 0; color: #8a6a45; font-style: italic; font-size: 0.92rem;
+  }
+  .daily-vocab-item {
+    background: white; border: 1px solid #ecd8b5; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .daily-vocab-item:last-child { margin-bottom: 0; }
+  .daily-vocab-line1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .daily-vocab-greek {
+    font-family: 'Georgia', serif; color: #2a1f10; font-size: 1.15rem; font-weight: 700;
+  }
+  .daily-vocab-phonetic { color: #8a6a45; font-size: 0.82rem; font-style: italic; }
+  .daily-vocab-pos {
+    background: #d4a55a; color: white; padding: 1px 8px; border-radius: 10px;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .daily-vocab-topic {
+    background: rgba(212, 165, 90, 0.2); color: #6b4017; padding: 1px 8px; border-radius: 10px;
+    font-size: 0.72rem; font-weight: 600;
+  }
+  .daily-vocab-translation { color: #4a3a1f; font-size: 0.95rem; margin-top: 3px; }
+  .daily-vocab-intuition {
+    margin-top: 6px; padding: 8px 10px;
+    background: #fff8e8; border-left: 3px solid #b08d4a;
+    border-radius: 0 4px 4px 0; color: #3a2c14; font-size: 0.88rem; line-height: 1.45;
+  }
+  .daily-vocab-intuition::before { content: '💡 '; font-style: normal; }
+
   .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 40px; }
 
   .resource-card { background: white; border-radius: 12px; border: 1px solid #e0d5c5; padding: 20px; text-decoration: none; color: var(--dark); display: block; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
@@ -5720,6 +5770,21 @@
       <p>Add words and phrases as you learn them. They save to your browser and stay here between visits.</p>
     </div>
 
+    <!-- 📅 Today's 5 — auto-generated daily by Claude at 4am ET, fetched
+         from /api/vocab/today. Each pick has a 🔊 + intuition hook + topic
+         chip. Falls back gracefully to "no picks yet" if the cron hasn't
+         fired today. -->
+    <div class="daily-vocab-card" id="daily-vocab-card">
+      <div class="daily-vocab-header">
+        <h3 id="daily-vocab-title">📅 Today's 5 new words</h3>
+        <span class="daily-vocab-meta" id="daily-vocab-meta">loading…</span>
+      </div>
+      <div class="daily-vocab-why" id="daily-vocab-why" style="display:none;"></div>
+      <div class="daily-vocab-list" id="daily-vocab-list">
+        <div class="daily-vocab-loading">Loading today's picks…</div>
+      </div>
+    </div>
+
     <div class="vocab-add-form">
       <h3>+ Add a new entry</h3>
       <div class="form-row">
@@ -8563,7 +8628,86 @@
     renderVocab();
   }
 
+  // ── 📅 Today's 5 — daily AI-picked vocab card ──
+  // Cron at 4am ET runs /api/vocab/daily-run which generates 5 fresh words
+  // and stores them in public.daily_vocab_picks. Here we just read the
+  // most recent pick row and render it. Safe to call every tab open.
+  let gDailyVocabLoaded = false;
+  async function loadDailyVocab(force) {
+    if (gDailyVocabLoaded && !force) return;
+    const card = document.getElementById('daily-vocab-card');
+    if (!card) return;
+    const meta = document.getElementById('daily-vocab-meta');
+    const list = document.getElementById('daily-vocab-list');
+    const why  = document.getElementById('daily-vocab-why');
+    const title = document.getElementById('daily-vocab-title');
+    list.innerHTML = '<div class="daily-vocab-loading">Loading today\'s picks…</div>';
+    why.style.display = 'none';
+    try {
+      const r = await fetch('/api/vocab/today');
+      const data = await r.json();
+      if (!r.ok || !data.ok) throw new Error(data && data.error || 'request failed');
+      gDailyVocabLoaded = true;
+      const picks = Array.isArray(data.picks) ? data.picks : [];
+      if (!picks.length) {
+        list.innerHTML = '<div class="daily-vocab-empty">No picks generated yet — the cron runs at 4am ET. Check back tomorrow.</div>';
+        meta.textContent = '';
+        return;
+      }
+      // Header line — "today" vs "yesterday's set" if the cron hasn't fired yet today
+      if (data.is_today) {
+        title.textContent = '📅 Today\'s 5 new words';
+        meta.textContent = data.pick_date;
+      } else {
+        title.textContent = '📅 Most recent picks';
+        meta.textContent = data.pick_date + ' (today\'s set generates at 4am ET)';
+      }
+      // Why-picked note
+      if (data.why_picked) {
+        why.textContent = data.why_picked;
+        why.style.display = '';
+      } else {
+        why.style.display = 'none';
+      }
+      // Render each pick
+      list.innerHTML = '';
+      picks.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'daily-vocab-item';
+        const line1 = document.createElement('div');
+        line1.className = 'daily-vocab-line1';
+        // Greek + 🔊 + phonetic + part of speech + topic
+        line1.innerHTML =
+          '<span class="daily-vocab-greek">' + escHtml(p.word || '') + '</span>' +
+          (p.word ? ' ' + speakBtnHtml(p.word) : '') +
+          (p.phonetic ? '<span class="daily-vocab-phonetic">[' + escHtml(p.phonetic) + ']</span>' : '') +
+          (p.part_of_speech ? '<span class="daily-vocab-pos">' + escHtml(p.part_of_speech) + '</span>' : '') +
+          (p.topic ? '<span class="daily-vocab-topic">' + escHtml(p.topic) + '</span>' : '');
+        item.appendChild(line1);
+        if (p.translation) {
+          const tr = document.createElement('div');
+          tr.className = 'daily-vocab-translation';
+          tr.textContent = p.translation;
+          item.appendChild(tr);
+        }
+        if (p.intuition) {
+          const intu = document.createElement('div');
+          intu.className = 'daily-vocab-intuition';
+          intu.textContent = p.intuition;
+          item.appendChild(intu);
+        }
+        list.appendChild(item);
+      });
+    } catch (e) {
+      list.innerHTML = '<div class="daily-vocab-empty">Could not load picks: ' + escHtml(String(e && e.message || e)) + '</div>';
+      meta.textContent = '';
+    }
+  }
+
   async function renderVocab() {
+    // Lazy-load today's picks the first time the vocab tab is opened
+    loadDailyVocab(false);
+
     const search = (document.getElementById('vocab-search')?.value || '').toLowerCase();
     const container = document.getElementById('vocab-entries');
     const stats = document.getElementById('vocab-stats');

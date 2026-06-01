@@ -6,6 +6,8 @@
     { "src": "api/story.js", "use": "@vercel/node" },
     { "src": "api/coach/plan-today.js", "use": "@vercel/node" },
     { "src": "api/coach/run.js", "use": "@vercel/node" },
+    { "src": "api/vocab/daily-run.js", "use": "@vercel/node" },
+    { "src": "api/vocab/today.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "sw.js", "use": "@vercel/static" },
     { "src": "manifest.json", "use": "@vercel/static" },
@@ -17,6 +19,8 @@
     { "src": "/api/story", "dest": "/api/story.js" },
     { "src": "/api/coach/plan-today", "dest": "/api/coach/plan-today.js" },
     { "src": "/api/coach/run", "dest": "/api/coach/run.js" },
+    { "src": "/api/vocab/daily-run", "dest": "/api/vocab/daily-run.js" },
+    { "src": "/api/vocab/today",     "dest": "/api/vocab/today.js" },
     {
       "src": "/sw.js",
       "dest": "/sw.js",
@@ -39,6 +43,7 @@
     { "src": "/", "dest": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/coach/run", "schedule": "0 10 */2 * *" }
+    { "path": "/api/coach/run",       "schedule": "0 10 */2 * *" },
+    { "path": "/api/vocab/daily-run", "schedule": "0 9 * * *"    }
   ]
 }
