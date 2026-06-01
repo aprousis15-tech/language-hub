@@ -7,18 +7,24 @@
 //   1. Read recent vocab from Supabase to build a duplicate-avoidance list.
 //   2. Read recent mistakes from public.mistakes for weakness signal.
 //   3. Read recent speak_observations for spoken-pattern signal.
-//   4. Call Claude Sonnet to pick 5 fresh, A2-level Greek words with a STRONG
-//      intuition hook for each (etymology, cognates, sound-alikes, visuals).
+//   4. Call Groq Llama 3.3 70B (free tier) to pick 5 fresh, A2-level Greek
+//      words with a STRONG intuition hook for each (etymology, cognates,
+//      sound-alikes, visuals).
 //   5. Insert each new word into public.vocab.
 //   6. Record the picks in public.daily_vocab_picks for the dashboard card.
 //
 // Env vars:
-//   ANTHROPIC_API_KEY — required, existing key already in Vercel
+//   GROQ_API_KEY — required, already set in Vercel (originally for Whisper).
 //
-// Cost: ~$0.01-0.02 per daily run on Sonnet 4.6 (~$0.50/mo).
+// Cost: $0/mo on Groq free tier. Llama 3.3 70B: 30 RPM / 14,400 RPD free
+// quota — one daily call uses ~0.007% of daily budget. Structured JSON via
+// response_format. Quality is strong for vocabulary curation + memory hooks;
+// the only thing Sonnet was meaningfully better at on this task was occasional
+// wittier mnemonics — not worth the $/mo.
 
-const MODEL = 'claude-sonnet-4-6';
+const MODEL = 'llama-3.3-70b-versatile';
 const MAX_TOKENS = 3000;
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const SUPABASE_URL = 'https://bdfjddzwvudqictvuvtr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj';
 
@@ -27,27 +33,73 @@ const SYSTEM_PROMPT = `You are a Greek-language vocabulary curator picking 5 fre
 You will receive a JSON payload:
 {
   "date":              "YYYY-MM-DD",
-  "existing_words":    [ "word", ... ],     // Greek words already in their vocab — DO NOT duplicate
+  "existing_words":    [ "word", ... ],     // Greek words already in their vocab
   "recent_mistakes":   [ { drill_type, prompt, correct, picked } ],
   "recent_weaknesses": [ { type, description, expected, heard } ]
 }
 
-PICK CRITERIA (in priority order):
-1. NOT already in existing_words — strict deduplication.
-2. A2 level — common everyday words a learner would actually USE in Greece (food, travel, daily routine, family, health, weather, emotions, social phrases). Avoid literary, scientific, or super-rare words.
-3. Fill GAPS suggested by recent_mistakes / recent_weaknesses — if they keep missing a verb form or noun gender, pick a related word.
-4. VARIETY across the 5 picks — don't pick 5 nouns; mix verbs, nouns, adjectives, common phrases. Vary topics (not all "food").
+═══════════════════════════════════════════════════════════════════════
+🚫 ABSOLUTE RULE — DEDUPLICATION (this is your #1 priority)
+═══════════════════════════════════════════════════════════════════════
+Before picking ANY word, scan existing_words. If a word — or a phrase
+containing that word — already appears, DO NOT PICK IT. Picking a
+duplicate is a hard failure of the task.
 
-FOR EACH WORD provide the strongest possible memory hook. Hierarchy:
-  a) Etymology / English cognate (best)  — e.g., "βιβλίο" → "same root as English bibliography"
-  b) Sound-alike mnemonic                — e.g., "πόρτα" sounds like English "porter" — the door-keeper
-  c) Visual association
-  d) Connection to a word the learner already knows
-Pick whichever lands hardest. The hook should make the word stick after one read.
+Common traps to check:
+  - The learner has "θέλω" → don't pick θέλω, θέλει, θέλω καφέ, etc.
+  - The learner has "ευχαριστώ" → don't pick ευχαριστώ in any form.
+  - The learner has "καλημέρα" → don't pick καλημέρα.
 
-Respond with VALID JSON ONLY. No markdown fences, no prose outside the JSON. Schema:
+Before finalizing the JSON, MENTALLY VERIFY each of your 5 picks does
+not appear in existing_words. If one does, swap it.
+
+═══════════════════════════════════════════════════════════════════════
+SELECTION CRITERIA (after dedup)
+═══════════════════════════════════════════════════════════════════════
+1. A2 level — common everyday words the learner will actually USE in
+   Greece (food, travel, daily routine, family, health, weather,
+   emotions, social phrases). Avoid literary, scientific, or rare words.
+2. Fill GAPS suggested by recent_mistakes / recent_weaknesses — if they
+   keep missing aorist forms, pick a useful verb whose aorist is worth
+   knowing. If they confuse στον/στην, pick a noun where σε+article is
+   common.
+3. VARIETY across the 5 picks — mix verbs, nouns, adjectives, common
+   phrases. Vary topics (not all "food", not all "transport").
+
+═══════════════════════════════════════════════════════════════════════
+MEMORY HOOK QUALITY BAR (this is your #2 priority)
+═══════════════════════════════════════════════════════════════════════
+For each word, write a hook that makes the word stick after ONE read.
+Use the strongest of these techniques:
+
+✅ TRUE ETYMOLOGY / ENGLISH COGNATE (best — use when available)
+   - "βιβλίο" → "Same root as English BIBLIOGRAPHY. Greek bibli- = book."
+   - "θάλασσα" → "Survives in English 'thalassic'. The Greek sea goddess."
+   - "δημοκρατία" → "Literally δήμος + κρατία = people + power. Democracy."
+
+✅ VIVID VISUAL OR PERSONIFICATION MNEMONIC
+   - "ήρθα" (I arrived) → "Picture EARTHA Kitt arriving on stage: 'EARTHA came!'"
+   - "πόρτα" (door) → "The PORTer stands at the door."
+
+✅ SOUND-ALIKE TIED TO MEANING (not just any English word that sounds similar)
+   - "των" (of the) → "Sounds like 'TON' — it carries the weight of ALL plurals."
+
+❌ AVOID THESE — they are useless and weak:
+   - "X sounds like Y" with no semantic connection
+     BAD: "απλό sounds like 'appliance'" — no link between simple and appliance.
+   - "Greek prefix means 'again', root means 'leaving'" with no English handle
+     BAD: "αναχώρηση: ανα- (again) + χώρηση (leaving) and 'anchor' helps ships depart"
+          — anchor doesn't help ships depart, this is invented.
+   - Generic "remember this means X" with no mnemonic mechanism
+
+If you can't think of a strong hook, pick a DIFFERENT word with a
+better hook. Don't ship a weak hook.
+
+═══════════════════════════════════════════════════════════════════════
+OUTPUT — VALID JSON ONLY, no markdown fences, no prose outside JSON
+═══════════════════════════════════════════════════════════════════════
 {
-  "why_picked": "<2-3 sentences explaining why these 5 specifically, citing patterns from the mistakes data if relevant>",
+  "why_picked": "<2-3 specific sentences citing observed patterns from the mistakes data>",
   "picks": [
     {
       "word":          "<Greek word>",
@@ -55,7 +107,7 @@ Respond with VALID JSON ONLY. No markdown fences, no prose outside the JSON. Sch
       "phonetic":      "<simple latin-letter pronunciation, e.g. THEH-lo>",
       "part_of_speech":"verb | noun | adjective | adverb | phrase | preposition | pronoun",
       "topic":         "Restaurant | Transport | Greetings | Survival | Small Talk | Directions | Health | Family | Weather | Emotions | Time | Other",
-      "intuition":     "<the killer memory hook — 1-3 sentences, specific and vivid. NO generic 'this means X' filler>"
+      "intuition":     "<the killer memory hook — 1-3 sentences, vivid and specific. Must use a REAL connection (true etymology, vivid mental image, semantically-grounded sound-alike). No filler.>"
     }
   ]
 }
@@ -130,9 +182,9 @@ async function fetchRecentWeaknesses(days = 7, limit = 30) {
   return flat.slice(0, limit);
 }
 
-async function callClaude(date, existing, mistakes, weaknesses) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('server_missing_anthropic_key');
+async function callGenerator(date, existing, mistakes, weaknesses) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('server_missing_groq_key');
 
   const payload = {
     date,
@@ -141,28 +193,35 @@ async function callClaude(date, existing, mistakes, weaknesses) {
     recent_weaknesses: weaknesses
   };
 
-  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+  // Groq uses the OpenAI chat-completions schema: system + user messages,
+  // model + max_tokens at top level. response_format: { type: 'json_object' }
+  // enforces clean JSON output so we never need to strip markdown fences.
+  const upstream = await fetch(GROQ_URL, {
     method: 'POST',
     headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      'authorization': `Bearer ${apiKey}`,
       'content-type': 'application/json',
     },
     body: JSON.stringify({
       model: MODEL,
       max_tokens: MAX_TOKENS,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: JSON.stringify(payload) }],
-    }),
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user',   content: JSON.stringify(payload) }
+      ]
+    })
   });
 
   if (!upstream.ok) {
     const detail = await upstream.text().catch(() => '');
-    throw new Error(`anthropic_upstream_error: ${upstream.status} ${detail.slice(0, 300)}`);
+    throw new Error(`groq_upstream_error: ${upstream.status} ${detail.slice(0, 300)}`);
   }
   const apiData = await upstream.json();
-  const textBlock = (apiData.content || []).find(c => c && c.type === 'text');
-  const raw = textBlock ? textBlock.text : '';
+  const raw = apiData.choices && apiData.choices[0] &&
+              apiData.choices[0].message && apiData.choices[0].message.content;
+  if (!raw) throw new Error('groq_empty_response');
   const parsed = JSON.parse(stripJsonFences(raw));
   if (!parsed || !Array.isArray(parsed.picks) || parsed.picks.length === 0) {
     throw new Error('schema_mismatch: picks missing or empty');
@@ -255,7 +314,7 @@ module.exports = async function handler(req, res) {
 
     // Generate
     const startedAt = Date.now();
-    const result = await callClaude(date, existing, mistakes, weaknesses);
+    const result = await callGenerator(date, existing, mistakes, weaknesses);
 
     // Insert each pick into vocab; collect ids
     const ids = [];
