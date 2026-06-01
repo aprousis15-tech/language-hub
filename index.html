@@ -1470,6 +1470,33 @@
   }
   .story-meta-item { color: #6d1b5e; font-size: 0.9rem; }
   .story-meta-item strong { color: #4a0e3a; }
+  /* Type badge — distinct chip color per story type so the user notices
+     today's shape at a glance (dialogue vs narrative vs cultural, etc.). */
+  .story-type-badge {
+    background: #fce4ec; color: #4a0e3a;
+    padding: 2px 10px; border-radius: 12px;
+    font-size: 0.82rem; font-weight: 700;
+    border: 1px solid #ad1457;
+  }
+  .story-type-badge.dialogue   { background: #e3f2fd; color: #0d47a1; border-color: #1565c0; }
+  .story-type-badge.scenario   { background: #fff3e0; color: #bf360c; border-color: #e65100; }
+  .story-type-badge.anecdote   { background: #e8f5e9; color: #1b5e20; border-color: #2e7d32; }
+  .story-type-badge.reflection { background: #ede7f6; color: #311b92; border-color: #4527a0; }
+  .story-type-badge.cultural   { background: #fff8e1; color: #5d4037; border-color: #b08d4a; }
+  /* Dialogue speaker label — shows before the Greek line for dialogue type.
+     Two distinct colors so the back-and-forth is visually obvious. */
+  .story-sentence-speaker {
+    display: inline-block;
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    margin-right: 8px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 0.92rem;
+    vertical-align: 1px;
+  }
+  .story-sentence-speaker.spk-A { background: #e3f2fd; color: #0d47a1; }
+  .story-sentence-speaker.spk-B { background: #fff3e0; color: #bf360c; }
   .story-refresh-btn {
     background: white; color: #880e4f; border: 1.5px solid #ad1457; padding: 5px 12px;
     border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; margin-left: auto;
@@ -4768,8 +4795,9 @@
 
     <div class="story-meta">
       <span class="story-meta-item"><strong>Date:</strong> <span id="story-date">—</span></span>
-      <span class="story-meta-item"><strong>Level:</strong> <span id="story-level">A2</span></span>
+      <span class="story-meta-item"><strong>Level:</strong> <span id="story-level">B1</span></span>
       <span class="story-meta-item"><strong>Topic:</strong> <span id="story-topic">—</span></span>
+      <span class="story-meta-item story-type-badge" id="story-type-badge" style="display:none;"></span>
       <button class="story-mode-btn" id="story-mode-read" onclick="setStoryMode('read')" title="Read mode — Greek text + click-to-reveal English">📖 Read</button>
       <button class="story-mode-btn" id="story-mode-dictation" onclick="setStoryMode('dictation')" title="Dictation mode — hear the Greek and type what you heard">📝 Dictation</button>
       <button class="story-refresh-btn" onclick="refreshStory()" title="Generate a new story for today (replaces the cached one)">↺ New story</button>
@@ -7959,12 +7987,36 @@
     }
   }
 
+  // Type label + emoji for the badge. Maps the 6 generator types to a
+  // friendly display + a CSS class for color theming.
+  const STORY_TYPE_LABELS = {
+    narrative:  { emoji: '📖', label: 'Narrative',  cls: '' },
+    anecdote:   { emoji: '💬', label: 'Anecdote',   cls: 'anecdote' },
+    dialogue:   { emoji: '🎭', label: 'Dialogue',   cls: 'dialogue' },
+    scenario:   { emoji: '🎯', label: 'Scenario',   cls: 'scenario' },
+    reflection: { emoji: '💭', label: 'Reflection', cls: 'reflection' },
+    cultural:   { emoji: '🏛️', label: 'Cultural',   cls: 'cultural' }
+  };
+
   function renderStory(s) {
     // Meta strip
     const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
     setText('story-date', s.story_date || '');
-    setText('story-level', s.level || 'A2');
+    setText('story-level', s.level || 'B1');
     setText('story-topic', s.topic || '');
+
+    // Type badge — shows the day's story style (dialogue, anecdote, etc.)
+    const typeBadge = document.getElementById('story-type-badge');
+    if (typeBadge) {
+      const t = s.type && STORY_TYPE_LABELS[s.type];
+      if (t) {
+        typeBadge.textContent = t.emoji + ' ' + t.label;
+        typeBadge.className = 'story-meta-item story-type-badge ' + (t.cls || '');
+        typeBadge.style.display = '';
+      } else {
+        typeBadge.style.display = 'none';
+      }
+    }
 
     // Titles
     const tg = document.getElementById('story-title-greek');
@@ -7987,10 +8039,17 @@
         // Read-mode block (Greek line + reveal-English toggle)
         const greek = document.createElement('div');
         greek.className = 'story-sentence-greek';
+        // For dialogue type, prepend a colored speaker label (Α / Β) so the
+        // back-and-forth is visually obvious. Speaker field is missing on
+        // the opening setup line and on non-dialogue stories.
+        const speakerHtml = (line.speaker === 'Α' || line.speaker === 'Β')
+          ? '<span class="story-sentence-speaker spk-' + (line.speaker === 'Α' ? 'A' : 'B') + '">' +
+            line.speaker + '</span> '
+          : '';
         // Render text + inline 🔊 button so the user can hear native-voice Greek.
         // Tap-to-toggle-English target excludes the button (delegated handler
         // stops propagation), so the 🔊 doesn't accidentally reveal the English.
-        greek.innerHTML = escHtml(greekText) + ' ' + speakBtnHtml(greekText, { small: true });
+        greek.innerHTML = speakerHtml + escHtml(greekText) + ' ' + speakBtnHtml(greekText, { small: true });
         const english = document.createElement('div');
         english.className = 'story-sentence-english';
         english.id = 'story-sent-en-' + idx;

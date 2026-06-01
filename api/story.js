@@ -12,54 +12,88 @@
 // Supabase access goes through the public REST API with the publishable
 // anon key (same key the browser uses). The daily_stories table has a
 // permissive RLS policy. No service-role key needed.
+//
+// LEVEL: B1 (upgraded from A2 on 2026-06-01).
+// TYPES: rotate weekly through 6 styles so every day brings a different
+// shape of Greek (narrative, anecdote, dialogue, scenario, reflection,
+// cultural). Helps the learner adapt to varied input rather than only
+// flat-narrative prose.
 
-// Sonnet 4.6 — story generation is routine A2-level content work, not deep
-// reasoning. Verified ID per Anthropic docs (2026-05-21). The earlier outage
-// was unescaped backticks in api/claude.js's grading prompt, not this file.
-// ~5x cheaper than Opus; quality indistinguishable for this task.
 const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 4096;
 const SUPABASE_URL = 'https://bdfjddzwvudqictvuvtr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj';
 
-const STORY_SYSTEM_PROMPT = `You write daily Greek-learning short stories for an English-speaking adult learner preparing for a Greece trip. Target proficiency: A2 (intermediate-beginner). Read time: under 60 seconds.
+// Weekly type rotation. Day-of-week (UTC of noon-of-date) → type.
+//   Sun=narrative · Mon=anecdote · Tue=dialogue · Wed=scenario
+//   Thu=reflection · Fri=cultural · Sat=narrative
+// Same day-of-week always gives the same type, so the user can build
+// expectations ("Wednesday means a scenario prompt").
+const TYPE_ROTATION = ['narrative', 'anecdote', 'dialogue', 'scenario', 'reflection', 'cultural', 'narrative'];
+
+function pickTypeForDate(date) {
+  // date is YYYY-MM-DD. Anchor at noon UTC to avoid DST edge cases.
+  const d = new Date(date + 'T12:00:00Z');
+  return TYPE_ROTATION[d.getUTCDay()];
+}
+
+const STORY_SYSTEM_PROMPT = `You write daily Greek-learning short pieces for an English-speaking adult learner preparing for a Greece trip. Target proficiency: B1 (intermediate). Read time: 60-90 seconds.
 
 You will receive a JSON payload:
-{ "date": "YYYY-MM-DD", "level": "A2" }
+{ "date": "YYYY-MM-DD", "level": "B1", "type": "<one of: narrative | anecdote | dialogue | scenario | reflection | cultural>" }
 
-Generate a FRESH original story (not a famous tale, not a translation of a famous English story). Pick a relatable everyday topic: a coffee at a café, a walk through a neighborhood, ordering food at a taverna, missing a bus, meeting a neighbor, finding a small shop, getting directions, a quick phone call. Vary topics across dates so the learner doesn't see the same scene twice in a week — use the date input to seed variety.
+Generate a FRESH original piece matching the specified TYPE:
 
-Constraints:
-- EXACTLY 5 sentences.
-- Mostly PRESENT tense and SIMPLE PAST (aorist). Minimize subjunctive.
-- Each sentence 6-14 words.
-- A2 vocabulary only: common everyday words. No literary forms.
-- Clear narrative arc: setup → small event → resolution. Don't end mid-scene.
-- Use first-person ("I") or third-person ("Maria / a woman / the waiter") — pick one and stay consistent.
+📖 narrative  — Third-person mini-story with a clear arc (setup → event → resolution). Named character (Μαρία, Γιάννης, ο σερβιτόρος). Flash-fiction vignette.
+
+💬 anecdote   — First-person personal anecdote ("I", "we"). A small recent experience: a missed bus, a kind stranger, an unexpected meal, a misunderstanding. Conversational tone.
+
+🎭 dialogue   — Short 2-person exchange in a scene (taverna, taxi, hotel, market, phone call). 1 short opening sentence setting the scene (no speaker), then 5-7 lines of dialogue. Each dialogue line MUST have a speaker field "Α" or "Β" (Greek capital alpha/beta — two letters representing the two characters).
+
+🎯 scenario   — Second-person situational ("Είσαι στο καφέ. Η σερβιτόρα σε ρωτάει..."). Puts the learner inside the scene. Use second-person singular informal verb forms (-εις, -άς).
+
+💭 reflection — First-person musing on a topic: a memory of summer, what a Greek word means to me, a small life observation. Personal, slightly thoughtful tone.
+
+🏛️ cultural   — Short non-fiction piece about a Greek tradition, place, food, holiday, or saying. Informative tone. Examples: "Why Greeks eat lamb at Easter", "The story of Mastiha from Chios", "Greek table customs for a first-time visitor".
+
+B1 LEVEL CONSTRAINTS (all types):
+- 6-8 sentences (dialogue: 1 setup + 5-7 turns = 6-8 lines total).
+- Each sentence 8-18 words.
+- Use a VARIED mix of tenses: present, simple past (aorist), imperfect, future (θα), perfect (έχω + perfective). Subjunctive (να) is encouraged where natural.
+- Subordinate clauses (που, όταν, επειδή, αν, παρόλο που, ενώ) encouraged where they fit.
+- Some idiomatic expressions where natural ("να σου πω", "δεν πειράζει", "πάει καλά", "με τίποτα").
+- Vocabulary: B1-level common words (e.g., παρόλο, σχεδόν, ξαφνικά, χάρηκα, στενοχωρήθηκα, ψυχραιμία). Avoid literary or scientific terms.
+- Clear arc, ends naturally — don't trail off mid-thought.
 
 Vocabulary notes (5 entries):
-- Pull words FROM the story that an A2 learner might not know, OR words with notable grammar (gender markers, irregular plural/aorist, common phrase idioms).
-- Each note short and useful — ≤ 14 words.
+- Pull words FROM the piece. Prioritize B1-flagging items: idioms, irregular aorists, subjunctive uses, less-common everyday words, words with notable grammar.
+- Each note short and useful (≤ 18 words).
 
 Comprehension questions (3):
-- Test LITERAL reading comprehension. No inference, no opinion.
+- For narrative/anecdote/dialogue/scenario: LITERAL reading comprehension.
+- For reflection/cultural: mix — 2 literal + 1 "what is the main point" question.
 - Question text in English. Answer in Greek + English gloss.
 
 Respond with VALID JSON ONLY. No markdown fences. No prose outside the JSON. Schema:
 
 {
-  "title_greek": "<short Greek title — 2-5 words>",
-  "title_english": "<English gloss of title>",
-  "level": "A2",
-  "topic": "<one-word topic descriptor: 'cafe' | 'market' | 'bus' | 'phone' | 'directions' | 'meal' | 'shop' | 'neighbor' | 'walk' | 'beach' | ...>",
+  "title_greek":  "<short Greek title — 2-5 words>",
+  "title_english":"<English gloss of title>",
+  "level":        "B1",
+  "type":         "<matches the input type verbatim>",
+  "topic":        "<one-word topic descriptor: 'cafe' | 'market' | 'bus' | 'phone' | 'directions' | 'meal' | 'shop' | 'neighbor' | 'walk' | 'beach' | 'easter' | 'name-day' | 'family' | ...>",
   "sentences": [
-    { "greek": "<sentence in Greek>", "english": "<faithful English translation>" }
+    {
+      "greek":   "<sentence in Greek>",
+      "english": "<faithful English translation>",
+      "speaker": "<for dialogue type ONLY: 'Α' or 'Β'; for the opening setup line, omit or null; for all other types, omit or null>"
+    }
   ],
   "vocab_notes": [
-    { "greek": "<word as it appears in the story>", "english": "<meaning>", "note": "<short grammar/usage note>" }
+    { "greek": "<word as it appears>", "english": "<meaning>", "note": "<short grammar/usage note>" }
   ],
   "questions": [
-    { "q": "<English question>", "a_greek": "<one-sentence Greek answer>", "a_english": "<English gloss>", "hint": "<one key Greek word from the story>" }
+    { "q": "<English question>", "a_greek": "<one-sentence Greek answer>", "a_english": "<English gloss>", "hint": "<one key Greek word from the piece>" }
   ]
 }`;
 
@@ -126,7 +160,8 @@ async function deleteCachedStory(date) {
 async function insertStory(date, story) {
   const row = {
     story_date:    date,
-    level:         story.level || 'A2',
+    level:         story.level || 'B1',
+    type:          story.type || null,
     title_greek:   story.title_greek || null,
     title_english: story.title_english || null,
     topic:         story.topic || null,
@@ -147,7 +182,7 @@ async function insertStory(date, story) {
   return Array.isArray(rows) ? rows[0] : rows;
 }
 
-async function generateStoryViaClaude(date) {
+async function generateStoryViaClaude(date, type) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('server_missing_api_key');
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
@@ -161,7 +196,7 @@ async function generateStoryViaClaude(date) {
       model: MODEL,
       max_tokens: MAX_TOKENS,
       system: STORY_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: JSON.stringify({ date, level: 'A2' }) }],
+      messages: [{ role: 'user', content: JSON.stringify({ date, level: 'B1', type }) }],
     }),
   });
   if (!upstream.ok) {
@@ -174,12 +209,23 @@ async function generateStoryViaClaude(date) {
   const parsed = JSON.parse(stripJsonFences(raw));
   const schemaErr = validateStory(parsed);
   if (schemaErr) throw new Error(`schema_mismatch: ${schemaErr}`);
+  // Guarantee level + type are correct on the persisted row even if the
+  // model omitted or modified them.
+  parsed.level = 'B1';
+  parsed.type = type;
   return parsed;
 }
 
 module.exports = async function handler(req, res) {
   const date = todayET();
   const force = req.method === 'POST' || (req.url && req.url.includes('regenerate=1'));
+
+  // Allow explicit ?type=dialogue to override the rotation (useful for
+  // manual testing or "I want a dialogue today" requests).
+  const urlTypeMatch = (req.url || '').match(/[?&]type=([a-z]+)/i);
+  const overrideType = urlTypeMatch && TYPE_ROTATION.includes(urlTypeMatch[1].toLowerCase())
+    ? urlTypeMatch[1].toLowerCase() : null;
+  const type = overrideType || pickTypeForDate(date);
 
   try {
     if (!force) {
@@ -192,9 +238,9 @@ module.exports = async function handler(req, res) {
       await deleteCachedStory(date);
     }
 
-    const generated = await generateStoryViaClaude(date);
+    const generated = await generateStoryViaClaude(date, type);
     const inserted = await insertStory(date, generated);
-    res.status(200).json({ ok: true, story: inserted, cached: false });
+    res.status(200).json({ ok: true, story: inserted, cached: false, type });
   } catch (e) {
     res.status(500).json({ ok: false, error: String(e && e.message || e) });
   }
