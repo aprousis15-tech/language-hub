@@ -11832,6 +11832,34 @@
     { en: 'I want to learn this word.',             prompt: 'Θέλω να ___ αυτή τη λέξη.',           answer: 'μάθω',        options: ['μαθαίνω','μάθω'],         hint: '🎯 One specific word → perfective (μάθω). μαθαίνω/μάθω = stem change.' },
     { en: 'I always try to learn something new.',   prompt: 'Πάντα προσπαθώ να ___ κάτι νέο.',      answer: 'μαθαίνω',     options: ['μαθαίνω','μάθω'],         hint: '🔁 πάντα = habit → imperfective (μαθαίνω).' },
     { en: 'I usually drink coffee in the morning.', prompt: 'Μου αρέσει να ___ καφέ το πρωί.',     answer: 'πίνω',        options: ['πίνω','πιω'],             hint: '🔁 General preference / habit → imperfective (πίνω).' },
+  
+
+    // ─── EXPANSION: more variation in triggers, verbs, and patterns ───
+    // New trigger words: συνήθως, συχνά, μερικές φορές, ώσπου, ενώ, μετά
+    { en: 'I usually wake up at 7.',                  prompt: 'Συνήθως ___ στις 7.',                       answer: 'ξυπνάω',       options: ['ξυπνάω','ξυπνήσω'],            hint: '🔁 συνήθως (usually) = habit → imperfective (ξυπνάω).' },
+    { en: 'We often eat fish.',                       prompt: 'Συχνά ___ ψάρι.',                            answer: 'τρώμε',        options: ['τρώμε','φάμε'],                hint: '🔁 συχνά (often) = recurring habit → imperfective (τρώμε). 1pl form.' },
+    { en: 'Sometimes I cook in the evening.',         prompt: 'Μερικές φορές ___ το βράδυ.',                answer: 'μαγειρεύω',    options: ['μαγειρεύω','μαγειρέψω'],       hint: '🔁 μερικές φορές (sometimes) = recurring → imperfective.' },
+    { en: 'While I was eating, the phone rang.',      prompt: 'Ενώ ___, χτύπησε το τηλέφωνο.',              answer: 'έτρωγα',       options: ['έτρωγα','έφαγα'],              hint: '🔁 ενώ (while) describes the ongoing past action → imperfective past (έτρωγα = "I was eating"). Aorist έφαγα would be a completed event.' },
+    { en: 'After I finish, I will rest.',             prompt: 'Μετά που ___, θα ξεκουραστώ.',               answer: 'τελειώσω',     options: ['τελειώνω','τελειώσω'],         hint: '🎯 μετά που + future = single completed event → perfective (τελειώσω).' },
+    { en: 'Stay until I come back.',                  prompt: 'Μείνε ώσπου να ___.',                        answer: 'γυρίσω',       options: ['γυρίζω','γυρίσω'],             hint: '🎯 ώσπου να + single event = perfective (γυρίσω). γυρίζω/γυρίσω = return.' },
+
+    // New verb pairs in everyday contexts: παίρνω, ταξιδεύω, βρίσκω, δίνω, κάθομαι, λέω, ακούω, ξεκινώ
+    { en: 'I want to take a taxi.',                   prompt: 'Θέλω να ___ ταξί.',                          answer: 'πάρω',         options: ['παίρνω','πάρω'],               hint: '🎯 One specific taxi → perfective (πάρω). παίρνω/πάρω irregular pair.' },
+    { en: 'Every morning I take coffee on the way.',  prompt: 'Κάθε πρωί ___ καφέ στο δρόμο.',              answer: 'παίρνω',       options: ['παίρνω','πάρω'],               hint: '🔁 κάθε πρωί = daily habit → imperfective (παίρνω).' },
+    { en: 'Tomorrow we will travel to Athens.',       prompt: 'Αύριο θα ___ στην Αθήνα.',                   answer: 'ταξιδέψουμε',  options: ['ταξιδεύουμε','ταξιδέψουμε'],   hint: '🎯 αύριο + θα + one specific trip → perfective (ταξιδέψουμε). -εύω → -έψω.' },
+    { en: 'I love to travel in summer.',              prompt: 'Μου αρέσει να ___ το καλοκαίρι.',             answer: 'ταξιδεύω',     options: ['ταξιδεύω','ταξιδέψω'],         hint: '🔁 General preference → imperfective (ταξιδεύω). "Μου αρέσει να" + imperfective for habits/preferences.' },
+    { en: 'I want to find a good restaurant.',        prompt: 'Θέλω να ___ ένα καλό εστιατόριο.',            answer: 'βρω',          options: ['βρίσκω','βρω'],                hint: '🎯 One specific restaurant → perfective (βρω). βρίσκω/βρω = irregular stem change.' },
+    { en: 'Tomorrow I will give you the book.',       prompt: 'Αύριο θα σου ___ το βιβλίο.',                answer: 'δώσω',         options: ['δίνω','δώσω'],                 hint: '🎯 αύριο + θα + single act of giving → perfective (δώσω). δίνω/δώσω irregular.' },
+    { en: 'I want to sit at this table.',             prompt: 'Θέλω να ___ σε αυτό το τραπέζι.',            answer: 'καθίσω',       options: ['κάθομαι','καθίσω'],            hint: '🎯 One specific sit-down → perfective (καθίσω). κάθομαι/καθίσω = mediopassive verb.' },
+    { en: 'Tonight I want to tell you something.',    prompt: 'Απόψε θέλω να σου ___ κάτι.',                answer: 'πω',           options: ['λέω','πω'],                    hint: '🎯 One specific thing to say → perfective (πω). λέω/πω = irregular dual-stem.' },
+    { en: 'I usually listen to Greek music.',         prompt: 'Συνήθως ___ ελληνική μουσική.',              answer: 'ακούω',        options: ['ακούω','ακούσω'],              hint: '🔁 συνήθως = habit → imperfective (ακούω).' },
+    { en: 'I want to listen to this song.',           prompt: 'Θέλω να ___ αυτό το τραγούδι.',              answer: 'ακούσω',       options: ['ακούω','ακούσω'],              hint: '🎯 One specific song → perfective (ακούσω).' },
+    { en: 'I want to start a new project.',           prompt: 'Θέλω να ___ ένα νέο πρότζεκτ.',              answer: 'ξεκινήσω',     options: ['ξεκινώ','ξεκινήσω'],           hint: '🎯 One specific start → perfective (ξεκινήσω). ξεκινώ → ξεκινήσω.' },
+    { en: 'Every day I start work at 9.',             prompt: 'Κάθε μέρα ___ τη δουλειά στις 9.',           answer: 'ξεκινάω',      options: ['ξεκινάω','ξεκινήσω'],          hint: '🔁 κάθε μέρα = habit → imperfective (ξεκινάω). Note: ξεκινάω and ξεκινώ are dialect variants; both work.' },
+
+    // NEW PATTERN: positive imperative (single command) + perfective stem
+    { en: 'Give me a glass of water!',                prompt: '___ μου ένα ποτήρι νερό!',                   answer: 'Δώσε',         options: ['Δίνε','Δώσε'],                 hint: '🎯 Positive imperative for a single act → perfective stem (Δώσε). Δίνε would imply keep giving repeatedly.' },
+    { en: 'Bring the bill, please.',                  prompt: '___ τον λογαριασμό, παρακαλώ.',              answer: 'Φέρε',         options: ['Φέρνε','Φέρε'],                hint: '🎯 Imperative for a single bring → perfective (Φέρε). φέρνω → Φέρε for the one-time command.' }
   ];
 
   let gAspectDeck = [], gAspectIndex = 0, gAspectCorrect = 0, gAspectTotal = 0, gAspectAnswered = false;
