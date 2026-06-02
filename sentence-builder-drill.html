@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Greek Sentence Builder — construction + conjugation</title>
+<title>Greek Sentence Builder — construction + conjugation (3 tenses)</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -12,74 +12,79 @@
     --sand: #f4e9d8;
     --white: #fdfaf6;
     --dark: #1e2a35;
-    --tile: #e8dcc8;
     --greek-blue: #0d4f8b;
     --teal: #00695c;
+    --present: #0d4f8b;
+    --past: #8e24aa;
+    --future: #00897b;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: 'Lato', sans-serif;
-    background: var(--white);
-    color: var(--dark);
-    min-height: 100vh;
-    padding: 24px 16px 64px;
+    font-family: 'Lato', sans-serif; background: var(--white); color: var(--dark);
+    min-height: 100vh; padding: 24px 16px 64px;
   }
-  .wrap { max-width: 720px; margin: 0 auto; }
-  header.top { text-align: center; margin-bottom: 18px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header.top { text-align: center; margin-bottom: 14px; }
   header.top h1 {
-    font-family: 'Playfair Display', serif;
-    color: var(--greek-blue);
-    font-size: clamp(1.5rem, 4vw, 2.1rem);
-    margin-bottom: 6px;
+    font-family: 'Playfair Display', serif; color: var(--greek-blue);
+    font-size: clamp(1.5rem, 4vw, 2.1rem); margin-bottom: 6px;
   }
   header.top p { color: #4a6f8a; font-size: 0.95rem; }
 
-  .group-filter {
-    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-    margin-bottom: 14px;
+  .filters { margin-bottom: 12px; }
+  .filter-row {
+    display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 7px; align-items: center;
   }
+  .filter-row .lbl { font-size: 0.72rem; color: #9aa8b2; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 2px; }
   .group-btn {
-    padding: 7px 15px; border-radius: 99px; border: 1.5px solid #bbdefb;
-    background: white; color: var(--greek-blue); font-size: 0.84rem;
+    padding: 6px 13px; border-radius: 99px; border: 1.5px solid #bbdefb;
+    background: white; color: var(--greek-blue); font-size: 0.82rem;
     cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 600;
   }
   .group-btn:hover { background: #e3f2fd; }
   .group-btn.active { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
+  .group-btn.t-present.active { background: var(--present); border-color: var(--present); }
+  .group-btn.t-past.active { background: var(--past); border-color: var(--past); }
+  .group-btn.t-future.active { background: var(--future); border-color: var(--future); }
+
+  .hardmode {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem;
+    color: #b76e00; cursor: pointer; user-select: none; font-weight: 700;
+    border: 1.5px solid #ffd699; background: #fff8ec; border-radius: 99px; padding: 6px 13px;
+  }
+  .hardmode input { accent-color: #b76e00; cursor: pointer; }
 
   .stats {
     text-align: center; font-size: 0.88rem; color: #4a6f8a;
-    margin-bottom: 16px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+    margin-bottom: 14px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
   }
   .stats strong { color: #0d47a1; font-size: 1.05rem; }
   .stats .correct-stat strong { color: #2e7d32; }
   .stats .wrong-stat strong { color: #c62828; }
+  .stats .streak-stat strong { color: #b76e00; }
 
   .card {
-    max-width: 560px; margin: 0 auto; background: white;
-    border-radius: 14px; padding: 26px 22px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-    border: 1px solid #e1ecf4;
+    max-width: 580px; margin: 0 auto; background: white; border-radius: 14px;
+    padding: 24px 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); border: 1px solid #e1ecf4;
   }
-  .meta {
-    font-size: 0.74rem; color: #888; letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 10px; text-align: center;
+  .meta { text-align: center; margin-bottom: 10px; }
+  .pill {
+    display: inline-block; padding: 2px 11px; border-radius: 99px; font-weight: 700;
+    margin: 0 3px; font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase;
   }
-  .meta .pill {
-    display: inline-block; background: #e3f2fd; color: var(--greek-blue);
-    padding: 2px 10px; border-radius: 99px; font-weight: 700; margin: 0 3px;
-  }
-  .meta .pill.person { background: #e0f2f1; color: var(--teal); }
+  .pill.tense-present { background: #e3f0fb; color: var(--present); }
+  .pill.tense-past { background: #f3e5f5; color: var(--past); }
+  .pill.tense-future { background: #e0f2f1; color: var(--future); }
+  .pill.person { background: #eceff1; color: #546e7a; }
   .prompt-en {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem; color: var(--dark); text-align: center;
-    line-height: 1.25; margin-bottom: 4px;
+    font-family: 'Playfair Display', serif; font-size: 1.55rem; color: var(--dark);
+    text-align: center; line-height: 1.25; margin-bottom: 4px;
   }
   .prompt-hint {
-    font-size: 0.9rem; color: #8a9aa5; font-style: italic;
-    text-align: center; margin-bottom: 18px;
+    font-size: 0.88rem; color: #8a9aa5; font-style: italic; text-align: center; margin-bottom: 16px; min-height: 18px;
   }
+  .prompt-hint.hidden-hint { visibility: hidden; }
 
-  /* Answer construction line */
   .build-line {
     min-height: 56px; border: 2px dashed #cfe0ee; border-radius: 10px;
     padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
@@ -91,23 +96,23 @@
 
   .bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 6px; }
   .chip {
-    font-family: 'Georgia', serif; font-size: 1.15rem; color: var(--teal);
+    font-family: 'Georgia', serif; font-size: 1.12rem; color: var(--teal);
     background: white; border: 2px solid #bbdefb; border-radius: 99px;
-    padding: 8px 16px; cursor: pointer; user-select: none;
-    transition: transform 0.08s, background 0.12s;
+    padding: 8px 15px; cursor: pointer; user-select: none; transition: transform 0.08s, background 0.12s;
   }
   .chip:hover { background: #e3f2fd; }
   .chip:active { transform: scale(0.94); }
   .chip.placed { background: #0d4f8b; color: white; border-color: #0d4f8b; }
   .chip.verb { border-color: #00695c; }
   .chip.verb.placed { background: #00695c; border-color: #00695c; }
-  .chip.used { opacity: 0.25; pointer-events: none; }
+  .chip.particle { border-color: #b8a4d8; color: #6a4c93; }
+  .chip.particle.placed { background: #6a4c93; border-color: #6a4c93; color: white; }
+  .chip.used { opacity: 0.22; pointer-events: none; }
 
   .actions { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
   .btn {
-    padding: 10px 22px; border-radius: 99px;
-    font-family: 'Lato', sans-serif; font-weight: 700;
-    font-size: 0.9rem; cursor: pointer; border: 1.5px solid var(--greek-blue);
+    padding: 10px 22px; border-radius: 99px; font-family: 'Lato', sans-serif;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 1.5px solid var(--greek-blue);
   }
   .btn-primary { background: var(--greek-blue); color: white; }
   .btn-primary:hover { background: #0a3d6e; }
@@ -115,29 +120,50 @@
   .btn-secondary:hover { background: #e3f2fd; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .feedback {
-    margin-top: 16px; padding: 14px 16px; border-radius: 10px;
-    font-size: 0.95rem; text-align: center; display: none;
-  }
+  .feedback { margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; text-align: center; display: none; }
   .feedback.show { display: block; }
   .feedback.ok { background: #e8f5e9; color: #2e7d32; }
   .feedback.no { background: #fff3e0; color: #b76e00; }
   .feedback .answer-gr {
-    font-family: 'Playfair Display', serif; font-size: 1.5rem;
-    color: var(--teal); display: block; margin: 4px 0 6px;
+    font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--teal); display: block; margin: 4px 0 6px;
   }
   .feedback .breakdown { font-size: 0.86rem; color: #5a6f6c; line-height: 1.5; }
   .feedback .breakdown b { color: var(--teal); }
-  .feedback .note {
-    font-size: 0.82rem; color: #6a7a85; margin-top: 8px;
-    border-top: 1px solid rgba(0,0,0,0.06); padding-top: 8px; font-style: italic;
-  }
+  .feedback .note { font-size: 0.82rem; color: #6a7a85; margin-top: 8px; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 8px; font-style: italic; }
 
-  .conj-strip {
-    margin-top: 14px; font-size: 0.82rem; color: #5a6f6c; text-align: center;
-    background: #f4f9fc; border-radius: 8px; padding: 10px 12px;
+  /* ── Conjugation breakdown dropdown ── */
+  .conj-box { max-width: 580px; margin: 14px auto 0; }
+  .conj-toggle {
+    width: 100%; text-align: left; background: #f4f9fc; border: 1.5px solid #d8e8f2;
+    border-radius: 10px; padding: 12px 16px; cursor: pointer; font-family: 'Lato', sans-serif;
+    font-weight: 700; color: var(--greek-blue); font-size: 0.92rem; display: flex;
+    justify-content: space-between; align-items: center;
   }
-  .conj-strip b { color: var(--greek-blue); }
+  .conj-toggle:hover { background: #e9f3fa; }
+  .conj-toggle .chev { transition: transform 0.2s; font-size: 0.8rem; }
+  .conj-toggle.open .chev { transform: rotate(180deg); }
+  .conj-body { display: none; border: 1.5px solid #d8e8f2; border-top: none; border-radius: 0 0 10px 10px; padding: 16px; background: white; }
+  .conj-body.open { display: block; }
+
+  .conj-verb-head { text-align: center; margin-bottom: 6px; }
+  .conj-verb-head .inf { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--teal); }
+  .conj-verb-head .grp { font-size: 0.78rem; color: #9aa8b2; }
+  .conj-tip {
+    background: #fff8ec; border: 1px solid #ffe2b0; border-radius: 8px;
+    padding: 10px 12px; font-size: 0.85rem; color: #8a6d3b; line-height: 1.5; margin: 10px 0;
+  }
+  .conj-tip b { color: #b76e00; }
+  table.conj-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  table.conj-table th, table.conj-table td { padding: 7px 8px; text-align: left; border-bottom: 1px solid #eef3f7; }
+  table.conj-table th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: #9aa8b2; font-weight: 700; }
+  table.conj-table th.h-present { color: var(--present); }
+  table.conj-table th.h-past { color: var(--past); }
+  table.conj-table th.h-future { color: var(--future); }
+  table.conj-table td.pron { color: #90a4ae; font-style: italic; white-space: nowrap; }
+  table.conj-table td.form { font-family: 'Georgia', serif; color: var(--dark); }
+  table.conj-table td.cur { background: #fff3c4; font-weight: 700; color: #6a4c00; border-radius: 6px; outline: 2px solid #ffd54f; }
+  .conj-legend { font-size: 0.74rem; color: #9aa8b2; margin-top: 10px; text-align: center; }
+
   .footer-tip { text-align: center; font-size: 0.8rem; color: #9aa8b2; margin-top: 22px; }
 </style>
 </head>
@@ -145,15 +171,22 @@
 <div class="wrap">
   <header class="top">
     <h1>🧱 Sentence Builder</h1>
-    <p>Build the Greek sentence — focus on conjugating the verb to the right person. Tap the words in order.</p>
+    <p>Build the Greek sentence across <b>3 tenses</b>. Watch the chips — some are the right verb in the <em>wrong</em> tense or person.</p>
   </header>
 
-  <div class="group-filter" id="group-filter"></div>
+  <div class="filters">
+    <div class="filter-row" id="tense-filter"></div>
+    <div class="filter-row" id="person-filter"></div>
+    <div class="filter-row">
+      <label class="hardmode"><input type="checkbox" id="hardmode-cb" onchange="toggleHard()"> 🔥 Hard mode (hide hints + extra traps)</label>
+    </div>
+  </div>
 
   <div class="stats">
     <span>Done: <strong id="stat-total">0</strong></span>
     <span class="correct-stat">✓ <strong id="stat-correct">0</strong></span>
     <span class="wrong-stat">✗ <strong id="stat-wrong">0</strong></span>
+    <span class="streak-stat">🔥 streak <strong id="stat-streak">0</strong></span>
   </div>
 
   <div class="card">
@@ -174,294 +207,392 @@
     </div>
 
     <div class="feedback" id="feedback"></div>
-    <div class="conj-strip" id="conj-strip"></div>
   </div>
 
-  <p class="footer-tip">Tip: the subject pronoun (εγώ, εσύ…) is usually dropped in Greek — the verb ending already shows who. The pill above tells you which person to conjugate for.</p>
+  <!-- Full conjugation breakdown — always available to study, auto-opens on a wrong answer -->
+  <div class="conj-box">
+    <button class="conj-toggle" id="conj-toggle" onclick="toggleConj()">
+      <span>📖 Full conjugation of this verb — all tenses</span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="conj-body" id="conj-body"></div>
+  </div>
+
+  <p class="footer-tip">Tip: the subject pronoun (εγώ, εσύ…) is dropped — the ending shows who. <b>θα</b> = future marker. Open the breakdown above any time to see the whole pattern.</p>
 </div>
 
 <script>
 /* ──────────────────────────────────────────────────────────────────────────
-   SENTENCE BUILDER — present-tense construction across all 6 persons.
-   Each item: English prompt → Greek sentence built from `chips` (in order).
-   `verb` marks which chip is the conjugated verb (highlighted teal).
-   `person` is the grammatical person being practised (the teacher's
-   "I do / you do / he-she-it does" focus). `conj` is the full 6-form table
-   for that verb, shown after answering so the whole paradigm is reinforced.
-   Self-contained, offline, no login — tap-to-build so it works on a phone
-   without a Greek keyboard.
+   SENTENCE BUILDER v2 — construction + conjugation across THREE tenses.
+
+   VERBS holds, for each verb, the full 6-person paradigm in present / past
+   (aorist) / future. Future forms are stored WITHOUT θα (θα is a separate
+   particle, shown as a chip and prefixed in the table). `tip` is an intuitive
+   memory hook focused on the perfective stem-change — the thing that trips
+   learners up. ITEMS are sentences tagged with verb + tense + person, plus
+   distractor chips that include the same verb in the WRONG tense/person, so
+   the learner must lock in BOTH. The breakdown dropdown renders the full
+   paradigm and auto-opens on a wrong answer to reinforce the correct cell.
+   Self-contained, offline, phone-friendly (tap to build).
    ────────────────────────────────────────────────────────────────────────── */
 
-const PRONOUNS = ['εγώ (I)','εσύ (you)','αυτός/ή (he/she)','εμείς (we)','εσείς (you pl)','αυτοί/ές (they)'];
+const PRONOUNS = ['εγώ','εσύ','αυτός/ή/ό','εμείς','εσείς','αυτοί/ές/ά'];
+const PRON_EN  = ['I','you','he/she/it','we','you (pl)','they'];
+const TENSES = ['present','past','future'];
+const TENSE_LABEL = { present:'Present', past:'Past · Aorist', future:'Future (θα)' };
+const TENSE_EN = { present:'I do', past:'I did', future:'I will do' };
 
-// conj tables keyed by infinitive — parallel to PRONOUNS order
-const CONJ = {
-  'πίνω':     ['πίνω','πίνεις','πίνει','πίνουμε','πίνετε','πίνουν'],
-  'τρώω':     ['τρώω','τρως','τρώει','τρώμε','τρώτε','τρώνε'],
-  'μένω':     ['μένω','μένεις','μένει','μένουμε','μένετε','μένουν'],
-  'δουλεύω':  ['δουλεύω','δουλεύεις','δουλεύει','δουλεύουμε','δουλεύετε','δουλεύουν'],
-  'μιλάω':    ['μιλάω','μιλάς','μιλάει','μιλάμε','μιλάτε','μιλάνε'],
-  'θέλω':     ['θέλω','θέλεις','θέλει','θέλουμε','θέλετε','θέλουν'],
-  'έχω':      ['έχω','έχεις','έχει','έχουμε','έχετε','έχουν'],
-  'πάω':      ['πάω','πας','πάει','πάμε','πάτε','πάνε'],
-  'διαβάζω':  ['διαβάζω','διαβάζεις','διαβάζει','διαβάζουμε','διαβάζετε','διαβάζουν'],
-  'αγαπάω':   ['αγαπάω','αγαπάς','αγαπάει','αγαπάμε','αγαπάτε','αγαπάνε'],
-  'ξέρω':     ['ξέρω','ξέρεις','ξέρει','ξέρουμε','ξέρετε','ξέρουν'],
-  'κάνω':     ['κάνω','κάνεις','κάνει','κάνουμε','κάνετε','κάνουν'],
-  'βλέπω':    ['βλέπω','βλέπεις','βλέπει','βλέπουμε','βλέπετε','βλέπουν'],
-  'μαθαίνω':  ['μαθαίνω','μαθαίνεις','μαθαίνει','μαθαίνουμε','μαθαίνετε','μαθαίνουν'],
-  'αγοράζω':  ['αγοράζω','αγοράζεις','αγοράζει','αγοράζουμε','αγοράζετε','αγοράζουν'],
-  'καταλαβαίνω':['καταλαβαίνω','καταλαβαίνεις','καταλαβαίνει','καταλαβαίνουμε','καταλαβαίνετε','καταλαβαίνουν'],
+const VERBS = {
+  'πίνω': { en:'to drink', group:'-ω',
+    tip:"Present keeps the <b>πίν-</b> stem. Past & future jump to a shorter stem: <b>ήπι-</b> (ήπια = I drank) and <b>πι-</b> (θα πιω = I'll drink). The ν disappears.",
+    present:['πίνω','πίνεις','πίνει','πίνουμε','πίνετε','πίνουν'],
+    past:['ήπια','ήπιες','ήπιε','ήπιαμε','ήπιατε','ήπιαν'],
+    future:['πιω','πιεις','πιει','πιούμε','πιείτε','πιουν'] },
+  'τρώω': { en:'to eat', group:'irregular',
+    tip:"Fully irregular — memorise the 3 anchors: now <b>τρώω</b>, ate <b>έφαγα</b> (φαγ-), will eat <b>θα φάω</b> (φα-).",
+    present:['τρώω','τρως','τρώει','τρώμε','τρώτε','τρώνε'],
+    past:['έφαγα','έφαγες','έφαγε','φάγαμε','φάγατε','έφαγαν'],
+    future:['φάω','φας','φάει','φάμε','φάτε','φάνε'] },
+  'πάω': { en:'to go', group:'irregular (friendly)',
+    tip:"Go is irregular but kind: the <b>future is just θα + the present</b> (θα πάω). Only the past changes stem: <b>πήγα</b>.",
+    present:['πάω','πας','πάει','πάμε','πάτε','πάνε'],
+    past:['πήγα','πήγες','πήγε','πήγαμε','πήγατε','πήγαν'],
+    future:['πάω','πας','πάει','πάμε','πάτε','πάνε'] },
+  'βλέπω': { en:'to see', group:'-ω',
+    tip:"See flips its stem: present <b>βλέπ-</b> → past <b>είδα</b> (saw) → future <b>θα δω</b> (will see). Think 'δ' for what's coming.",
+    present:['βλέπω','βλέπεις','βλέπει','βλέπουμε','βλέπετε','βλέπουν'],
+    past:['είδα','είδες','είδε','είδαμε','είδατε','είδαν'],
+    future:['δω','δεις','δει','δούμε','δείτε','δουν'] },
+  'λέω': { en:'to say', group:'irregular',
+    tip:"Say: <b>λέω</b> → said <b>είπα</b> → will say <b>θα πω</b>. Past & future share the 'π' stem (είπ-/π-).",
+    present:['λέω','λες','λέει','λέμε','λέτε','λένε'],
+    past:['είπα','είπες','είπε','είπαμε','είπατε','είπαν'],
+    future:['πω','πεις','πει','πούμε','πείτε','πουν'] },
+  'κάνω': { en:'to do / make', group:'-ω',
+    tip:"Easy one: <b>κάν-</b> stays everywhere. Past just adds the augment: <b>έκανα</b>. Future = <b>θα κάνω</b>.",
+    present:['κάνω','κάνεις','κάνει','κάνουμε','κάνετε','κάνουν'],
+    past:['έκανα','έκανες','έκανε','κάναμε','κάνατε','έκαναν'],
+    future:['κάνω','κάνεις','κάνει','κάνουμε','κάνετε','κάνουν'] },
+  'έχω': { en:'to have', group:'-ω',
+    tip:"Have has no past-simple — use <b>είχα</b> for 'had' (had = was-having). Future = <b>θα έχω</b>.",
+    present:['έχω','έχεις','έχει','έχουμε','έχετε','έχουν'],
+    past:['είχα','είχες','είχε','είχαμε','είχατε','είχαν'],
+    future:['έχω','έχεις','έχει','έχουμε','έχετε','έχουν'] },
+  'θέλω': { en:'to want', group:'-ω',
+    tip:"Want: now <b>θέλω</b>, 'wanted/was wanting' <b>ήθελα</b>. Future stays <b>θα θέλω</b>.",
+    present:['θέλω','θέλεις','θέλει','θέλουμε','θέλετε','θέλουν'],
+    past:['ήθελα','ήθελες','ήθελε','θέλαμε','θέλατε','ήθελαν'],
+    future:['θέλω','θέλεις','θέλει','θέλουμε','θέλετε','θέλουν'] },
+  'μιλάω': { en:'to speak', group:'-άω',
+    tip:"-άω verbs build past & future with <b>-ησ-</b>: μιλάω → <b>μίλησα</b> → θα <b>μιλήσω</b>.",
+    present:['μιλάω','μιλάς','μιλάει','μιλάμε','μιλάτε','μιλάνε'],
+    past:['μίλησα','μίλησες','μίλησε','μιλήσαμε','μιλήσατε','μίλησαν'],
+    future:['μιλήσω','μιλήσεις','μιλήσει','μιλήσουμε','μιλήσετε','μιλήσουν'] },
+  'αγοράζω': { en:'to buy', group:'-άζω',
+    tip:"-άζω verbs swap <b>ζ → σ</b> in past & future: αγοράζω → <b>αγόρασα</b> → θα <b>αγοράσω</b>.",
+    present:['αγοράζω','αγοράζεις','αγοράζει','αγοράζουμε','αγοράζετε','αγοράζουν'],
+    past:['αγόρασα','αγόρασες','αγόρασε','αγοράσαμε','αγοράσατε','αγόρασαν'],
+    future:['αγοράσω','αγοράσεις','αγοράσει','αγοράσουμε','αγοράσετε','αγοράσουν'] },
+  'διαβάζω': { en:'to read / study', group:'-άζω',
+    tip:"Same -άζω pattern (ζ → σ): διαβάζω → <b>διάβασα</b> → θα <b>διαβάσω</b>.",
+    present:['διαβάζω','διαβάζεις','διαβάζει','διαβάζουμε','διαβάζετε','διαβάζουν'],
+    past:['διάβασα','διάβασες','διάβασε','διαβάσαμε','διαβάσατε','διάβασαν'],
+    future:['διαβάσω','διαβάσεις','διαβάσει','διαβάσουμε','διαβάσετε','διαβάσουν'] },
+  'μένω': { en:'to stay / live', group:'-ω',
+    tip:"Stay: μένω → <b>έμεινα</b> → θα <b>μείνω</b>. The stem gains an 'ι' (μειν-).",
+    present:['μένω','μένεις','μένει','μένουμε','μένετε','μένουν'],
+    past:['έμεινα','έμεινες','έμεινε','μείναμε','μείνατε','έμειναν'],
+    future:['μείνω','μείνεις','μείνει','μείνουμε','μείνετε','μείνουν'] },
+  'γράφω': { en:'to write', group:'-ω (φ/β/π)',
+    tip:"-φω verbs make <b>ψ</b> in past & future: γράφω → <b>έγραψα</b> → θα <b>γράψω</b> (φ → ψ).",
+    present:['γράφω','γράφεις','γράφει','γράφουμε','γράφετε','γράφουν'],
+    past:['έγραψα','έγραψες','έγραψε','γράψαμε','γράψατε','έγραψαν'],
+    future:['γράψω','γράψεις','γράψει','γράψουμε','γράψετε','γράψουν'] },
+  'μαθαίνω': { en:'to learn', group:'-αίνω',
+    tip:"-αίνω verbs shorten: μαθαίνω → <b>έμαθα</b> → θα <b>μάθω</b> (the -αιν- drops out).",
+    present:['μαθαίνω','μαθαίνεις','μαθαίνει','μαθαίνουμε','μαθαίνετε','μαθαίνουν'],
+    past:['έμαθα','έμαθες','έμαθε','μάθαμε','μάθατε','έμαθαν'],
+    future:['μάθω','μάθεις','μάθει','μάθουμε','μάθετε','μάθουν'] },
+  'δουλεύω': { en:'to work', group:'-εύω',
+    tip:"-εύω verbs make <b>ψ</b> in past & future: δουλεύω → <b>δούλεψα</b> → θα <b>δουλέψω</b> (ευ → εψ).",
+    present:['δουλεύω','δουλεύεις','δουλεύει','δουλεύουμε','δουλεύετε','δουλεύουν'],
+    past:['δούλεψα','δούλεψες','δούλεψε','δουλέψαμε','δουλέψατε','δούλεψαν'],
+    future:['δουλέψω','δουλέψεις','δουλέψει','δουλέψουμε','δουλέψετε','δουλέψουν'] },
 };
 
 // pIdx: 0=εγώ 1=εσύ 2=αυτός 3=εμείς 4=εσείς 5=αυτοί
+// chips = exact ordered tokens. extra = distractors (wrong tense/person forms + a wrong word).
 const ITEMS = [
-  // ── I (εγώ) ──
-  { en:'I drink coffee.', gr:'Πίνω καφέ.', chips:['Πίνω','καφέ'], verb:'πίνω', pIdx:0,
-    extra:['πίνεις','τσάι'], note:"Subject 'I' is dropped — Πίνω already means 'I drink'." },
-  { en:'I live in Athens.', gr:'Μένω στην Αθήνα.', chips:['Μένω','στην','Αθήνα'], verb:'μένω', pIdx:0,
-    extra:['μένει','στον'], note:"Αθήνα is feminine → στην." },
-  { en:'I want a water.', gr:'Θέλω ένα νερό.', chips:['Θέλω','ένα','νερό'], verb:'θέλω', pIdx:0,
-    extra:['θέλεις','μία'], note:"νερό is neuter → ένα." },
-  { en:'I speak a little Greek.', gr:'Μιλάω λίγα ελληνικά.', chips:['Μιλάω','λίγα','ελληνικά'], verb:'μιλάω', pIdx:0,
-    extra:['μιλάς','πολλά'], note:"μιλάω is an -άω verb: μιλάω, μιλάς, μιλάει…" },
+  // ── PRESENT ──
+  { en:'I drink coffee.', gr:'Πίνω καφέ.', verb:'πίνω', tense:'present', pIdx:0,
+    chips:['Πίνω','καφέ'], extra:['ήπια','θα','τσάι'], note:"Present: the πίν- stem, no θα." },
+  { en:'You read a book.', gr:'Διαβάζεις ένα βιβλίο.', verb:'διαβάζω', tense:'present', pIdx:1,
+    chips:['Διαβάζεις','ένα','βιβλίο'], extra:['διάβασες','διαβάζω','μία'], note:"βιβλίο is neuter → ένα." },
+  { en:'She works at home.', gr:'Δουλεύει στο σπίτι.', verb:'δουλεύω', tense:'present', pIdx:2,
+    chips:['Δουλεύει','στο','σπίτι'], extra:['δούλεψε','θα','στην'], note:"σπίτι is neuter → στο." },
+  { en:'We are learning Greek.', gr:'Μαθαίνουμε ελληνικά.', verb:'μαθαίνω', tense:'present', pIdx:3,
+    chips:['Μαθαίνουμε','ελληνικά'], extra:['μάθαμε','μαθαίνετε','ισπανικά'], note:"Greek present = 'learn' AND 'am learning'." },
+  { en:'They speak fast.', gr:'Μιλάνε γρήγορα.', verb:'μιλάω', tense:'present', pIdx:5,
+    chips:['Μιλάνε','γρήγορα'], extra:['μίλησαν','μιλάμε','σιγά'], note:"-άω 'they' → μιλάνε (or μιλούν)." },
+  { en:'You (pl) buy bread.', gr:'Αγοράζετε ψωμί.', verb:'αγοράζω', tense:'present', pIdx:4,
+    chips:['Αγοράζετε','ψωμί'], extra:['αγοράσατε','αγοράζουμε','γάλα'], note:"-ετε is the 'you (pl)' ending." },
 
-  // ── you (εσύ) ──
-  { en:'You eat a lot.', gr:'Τρως πολύ.', chips:['Τρως','πολύ'], verb:'τρώω', pIdx:1,
-    extra:['τρώω','λίγο'], note:"εσύ form of τρώω drops the vowel → τρως." },
-  { en:'You work at home.', gr:'Δουλεύεις στο σπίτι.', chips:['Δουλεύεις','στο','σπίτι'], verb:'δουλεύω', pIdx:1,
-    extra:['δουλεύω','στην'], note:"σπίτι is neuter → στο." },
-  { en:'Do you want coffee?', gr:'Θέλεις καφέ;', chips:['Θέλεις','καφέ'], verb:'θέλω', pIdx:1,
-    extra:['θέλω','τσάι'], note:"Greek question mark is ; — word order stays the same." },
-  { en:'You know the answer.', gr:'Ξέρεις την απάντηση.', chips:['Ξέρεις','την','απάντηση'], verb:'ξέρω', pIdx:1,
-    extra:['ξέρω','τον'], note:"απάντηση is feminine accusative → την." },
+  // ── PAST (AORIST) ──
+  { en:'I drank coffee.', gr:'Ήπια καφέ.', verb:'πίνω', tense:'past', pIdx:0,
+    chips:['Ήπια','καφέ'], extra:['πίνω','θα','τσάι'], note:"Past of πίνω is irregular: stem → ήπι-." },
+  { en:'I ate everything.', gr:'Έφαγα τα πάντα.', verb:'τρώω', tense:'past', pIdx:0,
+    chips:['Έφαγα','τα','πάντα'], extra:['τρώω','θα','το'], note:"ate = έφαγα (φαγ- stem)." },
+  { en:'You went to work.', gr:'Πήγες στη δουλειά.', verb:'πάω', tense:'past', pIdx:1,
+    chips:['Πήγες','στη','δουλειά'], extra:['πας','θα','στον'], note:"went = πήγα-forms. δουλειά is feminine → στη(ν)." },
+  { en:'He saw the sea.', gr:'Είδε τη θάλασσα.', verb:'βλέπω', tense:'past', pIdx:2,
+    chips:['Είδε','τη','θάλασσα'], extra:['βλέπει','θα','τον'], note:"saw = είδε (stem changes completely)." },
+  { en:'She said the truth.', gr:'Είπε την αλήθεια.', verb:'λέω', tense:'past', pIdx:2,
+    chips:['Είπε','την','αλήθεια'], extra:['λέει','θα','τον'], note:"said = είπε. αλήθεια is feminine acc → την." },
+  { en:'We stayed home.', gr:'Μείναμε σπίτι.', verb:'μένω', tense:'past', pIdx:3,
+    chips:['Μείναμε','σπίτι'], extra:['μένουμε','θα','έξω'], note:"stayed = έμεινα-forms → μείναμε." },
+  { en:'We bought a car.', gr:'Αγοράσαμε ένα αυτοκίνητο.', verb:'αγοράζω', tense:'past', pIdx:3,
+    chips:['Αγοράσαμε','ένα','αυτοκίνητο'], extra:['αγοράζουμε','θα','μία'], note:"ζ → σ in the past: αγοράσαμε." },
+  { en:'They wrote a letter.', gr:'Έγραψαν ένα γράμμα.', verb:'γράφω', tense:'past', pIdx:5,
+    chips:['Έγραψαν','ένα','γράμμα'], extra:['γράφουν','θα','μία'], note:"φ → ψ in the past: έγραψαν." },
+  { en:'You (pl) read the book.', gr:'Διαβάσατε το βιβλίο.', verb:'διαβάζω', tense:'past', pIdx:4,
+    chips:['Διαβάσατε','το','βιβλίο'], extra:['διαβάζετε','θα','τη'], note:"ζ → σ: διαβάσατε." },
+  { en:'I learned a new word.', gr:'Έμαθα μια καινούρια λέξη.', verb:'μαθαίνω', tense:'past', pIdx:0,
+    chips:['Έμαθα','μια','καινούρια','λέξη'], extra:['μαθαίνω','θα','ένα'], note:"-αιν- drops: έμαθα." },
+  { en:'She spoke with the teacher.', gr:'Μίλησε με τον δάσκαλο.', verb:'μιλάω', tense:'past', pIdx:2,
+    chips:['Μίλησε','με','τον','δάσκαλο'], extra:['μιλάει','θα','τη'], note:"-άω → past -ησ-: μίλησε." },
+  { en:'We did nothing.', gr:'Δεν κάναμε τίποτα.', verb:'κάνω', tense:'past', pIdx:3,
+    chips:['Δεν','κάναμε','τίποτα'], extra:['κάνουμε','θα','κάτι'], note:"δεν = not. did = κάναμε." },
 
-  // ── he / she (αυτός/ή) ──
-  { en:'She speaks fast.', gr:'Μιλάει γρήγορα.', chips:['Μιλάει','γρήγορα'], verb:'μιλάω', pIdx:2,
-    extra:['μιλάς','σιγά'], note:"3rd person of -άω → μιλάει (or μιλά)." },
-  { en:'He reads a book.', gr:'Διαβάζει ένα βιβλίο.', chips:['Διαβάζει','ένα','βιβλίο'], verb:'διαβάζω', pIdx:2,
-    extra:['διαβάζω','μία'], note:"βιβλίο is neuter → ένα." },
-  { en:'She has a car.', gr:'Έχει ένα αυτοκίνητο.', chips:['Έχει','ένα','αυτοκίνητο'], verb:'έχω', pIdx:2,
-    extra:['έχεις','μία'], note:"αυτοκίνητο is neuter → ένα." },
-  { en:'He goes to work.', gr:'Πάει στη δουλειά.', chips:['Πάει','στη','δουλειά'], verb:'πάω', pIdx:2,
-    extra:['πάω','στον'], note:"δουλειά is feminine → στη(ν)." },
-
-  // ── we (εμείς) ──
-  { en:'We drink wine.', gr:'Πίνουμε κρασί.', chips:['Πίνουμε','κρασί'], verb:'πίνω', pIdx:3,
-    extra:['πίνετε','νερό'], note:"-ουμε is the 'we' ending for -ω verbs." },
-  { en:'We live in Greece.', gr:'Μένουμε στην Ελλάδα.', chips:['Μένουμε','στην','Ελλάδα'], verb:'μένω', pIdx:3,
-    extra:['μένετε','στον'], note:"Ελλάδα is feminine → στην." },
-  { en:'We are learning Greek.', gr:'Μαθαίνουμε ελληνικά.', chips:['Μαθαίνουμε','ελληνικά'], verb:'μαθαίνω', pIdx:3,
-    extra:['μαθαίνετε','ισπανικά'], note:"Greek present covers both 'learn' and 'are learning'." },
-  { en:'We want to eat.', gr:'Θέλουμε να φάμε.', chips:['Θέλουμε','να','φάμε'], verb:'θέλω', pIdx:3,
-    extra:['θέλετε','τρώμε'], note:"θέλω + να + subjunctive = 'want to …'." },
-
-  // ── you plural (εσείς) ──
-  { en:'You (pl) speak Greek well.', gr:'Μιλάτε καλά ελληνικά.', chips:['Μιλάτε','καλά','ελληνικά'], verb:'μιλάω', pIdx:4,
-    extra:['μιλάμε','κακά'], note:"-άτε is the 'you (pl)/formal' ending for -άω verbs." },
-  { en:'Do you (pl) have time?', gr:'Έχετε χρόνο;', chips:['Έχετε','χρόνο'], verb:'έχω', pIdx:4,
-    extra:['έχουμε','ώρα'], note:"Use εσείς-forms for the polite singular 'you' too." },
-  { en:'You (pl) buy bread.', gr:'Αγοράζετε ψωμί.', chips:['Αγοράζετε','ψωμί'], verb:'αγοράζω', pIdx:4,
-    extra:['αγοράζουμε','γάλα'], note:"-ετε is the 'you (pl)' ending for -ω verbs." },
-
-  // ── they (αυτοί/ές) ──
-  { en:'They eat together.', gr:'Τρώνε μαζί.', chips:['Τρώνε','μαζί'], verb:'τρώω', pIdx:5,
-    extra:['τρώμε','χώρια'], note:"3rd-plural of τρώω → τρώνε." },
-  { en:'They speak Italian.', gr:'Μιλάνε ιταλικά.', chips:['Μιλάνε','ιταλικά'], verb:'μιλάω', pIdx:5,
-    extra:['μιλάμε','ελληνικά'], note:"-άνε (or -ούν) is 'they' for -άω verbs." },
-  { en:'They want water.', gr:'Θέλουν νερό.', chips:['Θέλουν','νερό'], verb:'θέλω', pIdx:5,
-    extra:['θέλουμε','κρασί'], note:"-ουν is the 'they' ending for -ω verbs." },
-  { en:'They understand everything.', gr:'Καταλαβαίνουν τα πάντα.', chips:['Καταλαβαίνουν','τα','πάντα'], verb:'καταλαβαίνω', pIdx:5,
-    extra:['καταλαβαίνουμε','το'], note:"τα πάντα = 'everything' (fixed phrase)." },
+  // ── FUTURE (θα) ──
+  { en:'I will drink water.', gr:'Θα πιω νερό.', verb:'πίνω', tense:'future', pIdx:0,
+    chips:['Θα','πιω','νερό'], extra:['πίνω','ήπια','κρασί'], note:"future stem = πι-: θα πιω." },
+  { en:'You will eat later.', gr:'Θα φας αργότερα.', verb:'τρώω', tense:'future', pIdx:1,
+    chips:['Θα','φας','αργότερα'], extra:['τρως','έφαγες','τώρα'], note:"will eat = θα φας (φα- stem)." },
+  { en:'He will go to Greece.', gr:'Θα πάει στην Ελλάδα.', verb:'πάω', tense:'future', pIdx:2,
+    chips:['Θα','πάει','στην','Ελλάδα'], extra:['πήγε','πάμε','στον'], note:"πάω future = θα + present form." },
+  { en:'She will see a film.', gr:'Θα δει μια ταινία.', verb:'βλέπω', tense:'future', pIdx:2,
+    chips:['Θα','δει','μια','ταινία'], extra:['βλέπει','είδε','ένα'], note:"will see = θα δω/δει ('δ' stem)." },
+  { en:'We will buy bread.', gr:'Θα αγοράσουμε ψωμί.', verb:'αγοράζω', tense:'future', pIdx:3,
+    chips:['Θα','αγοράσουμε','ψωμί'], extra:['αγοράζουμε','αγοράσαμε','γάλα'], note:"ζ → σ: θα αγοράσουμε." },
+  { en:'They will learn fast.', gr:'Θα μάθουν γρήγορα.', verb:'μαθαίνω', tense:'future', pIdx:5,
+    chips:['Θα','μάθουν','γρήγορα'], extra:['μαθαίνουν','έμαθαν','σιγά'], note:"-αιν- drops: θα μάθουν." },
+  { en:'You will say the truth.', gr:'Θα πεις την αλήθεια.', verb:'λέω', tense:'future', pIdx:1,
+    chips:['Θα','πεις','την','αλήθεια'], extra:['λες','είπες','τον'], note:"will say = θα πω/πεις ('π' stem)." },
+  { en:'We will stay here.', gr:'Θα μείνουμε εδώ.', verb:'μένω', tense:'future', pIdx:3,
+    chips:['Θα','μείνουμε','εδώ'], extra:['μένουμε','μείναμε','εκεί'], note:"future stem μειν-: θα μείνουμε." },
+  { en:'You (pl) will read the lesson.', gr:'Θα διαβάσετε το μάθημα.', verb:'διαβάζω', tense:'future', pIdx:4,
+    chips:['Θα','διαβάσετε','το','μάθημα'], extra:['διαβάζετε','διαβάσατε','τη'], note:"ζ → σ: θα διαβάσετε." },
+  { en:'He will work tomorrow.', gr:'Θα δουλέψει αύριο.', verb:'δουλεύω', tense:'future', pIdx:2,
+    chips:['Θα','δουλέψει','αύριο'], extra:['δουλεύει','δούλεψε','χθες'], note:"ευ → εψ: θα δουλέψει." },
+  { en:'I will do it.', gr:'Θα το κάνω.', verb:'κάνω', tense:'future', pIdx:0,
+    chips:['Θα','το','κάνω'], extra:['κάνω','έκανα','τη'], note:"weak pronoun 'το' sits before the verb: θα το κάνω." },
+  { en:'I will write to you.', gr:'Θα σου γράψω.', verb:'γράφω', tense:'future', pIdx:0,
+    chips:['Θα','σου','γράψω'], extra:['γράφω','έγραψα','σε'], note:"'σου' (to you) sits before the verb. φ → ψ: γράψω." },
 ];
 
 let pool = ITEMS.slice();
-let filter = 'all';
-let current = null;
-let placed = [];      // array of {text, bankIdx}
-let answered = false;
-let stats = { total:0, correct:0, wrong:0 };
+let tenseFilter = 'all', personFilter = 'all', hard = false;
+let current = null, placed = [], answered = false;
+let stats = { total:0, correct:0, wrong:0, streak:0 };
 
 function norm(s){
   return String(s).trim().toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/ς/g,'σ').replace(/[.;,!]/g,'').replace(/\s+/g,' ');
 }
+function conjForm(verb, tense, pIdx){
+  const f = VERBS[verb][tense][pIdx];
+  return tense==='future' ? 'θα '+f : f;
+}
+function bareForm(it){ return VERBS[it.verb][it.tense][it.pIdx]; }
 
-const FILTERS = [
+const TENSE_FILTERS = [
+  { key:'all', label:'All tenses', cls:'' },
+  { key:'present', label:'Present', cls:'t-present' },
+  { key:'past', label:'Past', cls:'t-past' },
+  { key:'future', label:'Future', cls:'t-future' },
+];
+const PERSON_FILTERS = [
   { key:'all', label:'All persons' },
-  { key:'0', label:'εγώ (I)' },
-  { key:'1', label:'εσύ (you)' },
-  { key:'2', label:'αυτός/ή (he/she)' },
-  { key:'3', label:'εμείς (we)' },
-  { key:'4', label:'εσείς (you pl)' },
-  { key:'5', label:'αυτοί/ές (they)' },
+  { key:'0', label:'εγώ (I)' }, { key:'1', label:'εσύ (you)' }, { key:'2', label:'αυτός/ή (he/she)' },
+  { key:'3', label:'εμείς (we)' }, { key:'4', label:'εσείς (you pl)' }, { key:'5', label:'αυτοί/ές (they)' },
 ];
 
 function buildFilters(){
-  const wrap = document.getElementById('group-filter');
-  wrap.innerHTML = '';
-  FILTERS.forEach(f=>{
+  const tf = document.getElementById('tense-filter');
+  tf.innerHTML = '<span class="lbl">Tense</span>';
+  TENSE_FILTERS.forEach(f=>{
     const b = document.createElement('button');
-    b.className = 'group-btn' + (f.key===filter?' active':'');
+    b.className = 'group-btn '+f.cls + (f.key===tenseFilter?' active':'');
     b.textContent = f.label;
-    b.onclick = ()=>{ filter = f.key; buildFilters(); rebuildPool(); nextCard(); };
-    wrap.appendChild(b);
+    b.onclick = ()=>{ tenseFilter=f.key; buildFilters(); rebuildPool(); nextCard(); };
+    tf.appendChild(b);
+  });
+  const pf = document.getElementById('person-filter');
+  pf.innerHTML = '<span class="lbl">Person</span>';
+  PERSON_FILTERS.forEach(f=>{
+    const b = document.createElement('button');
+    b.className = 'group-btn' + (f.key===personFilter?' active':'');
+    b.textContent = f.label;
+    b.onclick = ()=>{ personFilter=f.key; buildFilters(); rebuildPool(); nextCard(); };
+    pf.appendChild(b);
   });
 }
-
 function rebuildPool(){
-  pool = filter==='all' ? ITEMS.slice() : ITEMS.filter(i=>String(i.pIdx)===filter);
+  pool = ITEMS.filter(i=>
+    (tenseFilter==='all' || i.tense===tenseFilter) &&
+    (personFilter==='all' || String(i.pIdx)===personFilter)
+  );
+  if(pool.length===0) pool = ITEMS.slice(); // safety
 }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-function shuffle(a){
-  // index-seeded Fisher–Yates (no Math.random needed at module load, but fine at runtime)
-  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
+function toggleHard(){ hard = document.getElementById('hardmode-cb').checked; nextCard(); }
 
 function nextCard(){
-  answered = false;
-  placed = [];
+  answered = false; placed = [];
   if(pool.length===0) rebuildPool();
   current = pool[Math.floor(Math.random()*pool.length)];
+
   document.getElementById('feedback').className = 'feedback';
-  document.getElementById('conj-strip').innerHTML = '';
   document.getElementById('btn-next').style.display = 'none';
   document.getElementById('btn-check').style.display = '';
   document.getElementById('btn-reveal').style.display = '';
   document.getElementById('btn-clear').style.display = '';
 
-  // meta pills
   document.getElementById('meta').innerHTML =
-    '<span class="pill">Present tense</span>' +
-    '<span class="pill person">'+PRONOUNS[current.pIdx]+'</span>';
+    '<span class="pill tense-'+current.tense+'">'+TENSE_LABEL[current.tense]+'</span>' +
+    '<span class="pill person">'+PRONOUNS[current.pIdx]+' · '+PRON_EN[current.pIdx]+'</span>';
   document.getElementById('prompt-en').textContent = current.en;
-  document.getElementById('prompt-hint').textContent = 'verb: ' + current.verb + ' · ' + enGloss(current.verb);
+  const hint = document.getElementById('prompt-hint');
+  hint.textContent = 'verb: ' + current.verb + ' — ' + VERBS[current.verb].en;
+  hint.className = 'prompt-hint' + (hard ? ' hidden-hint' : '');
 
-  // bank = correct chips + distractors, shuffled
-  const bankWords = shuffle(current.chips.concat(current.extra||[]));
+  // bank: correct chips + distractors; hard mode keeps all distractors, normal trims one
+  let extras = (current.extra||[]).slice();
+  if(!hard && extras.length>2) extras = shuffle(extras).slice(0,2);
+  const bankWords = shuffle(current.chips.concat(extras));
   const bank = document.getElementById('bank');
   bank.innerHTML = '';
-  bankWords.forEach((w,idx)=>{
+  bankWords.forEach((w)=>{
     const c = document.createElement('div');
-    c.className = 'chip' + (isVerbForm(w)?' verb':'');
+    c.className = 'chip' + (isParticle(w)?' particle':'') + (isVerbForm(w)?' verb':'');
     c.textContent = w;
-    c.dataset.idx = idx;
     c.onclick = ()=>placeChip(c, w);
     bank.appendChild(c);
   });
   renderLine();
+  renderConj(); // refresh breakdown for the new verb (keeps open/closed state)
 }
 
+function isParticle(w){ return norm(w)==='θα'; }
 function isVerbForm(w){
-  const t = CONJ[current.verb] || [];
-  return t.map(norm).includes(norm(w));
-}
-
-function enGloss(inf){
-  const g = {
-    'πίνω':'to drink','τρώω':'to eat','μένω':'to live/stay','δουλεύω':'to work',
-    'μιλάω':'to speak','θέλω':'to want','έχω':'to have','πάω':'to go','διαβάζω':'to read',
-    'αγαπάω':'to love','ξέρω':'to know','κάνω':'to do/make','βλέπω':'to see',
-    'μαθαίνω':'to learn','αγοράζω':'to buy','καταλαβαίνω':'to understand'
-  };
-  return g[inf]||'';
+  const t = VERBS[current.verb];
+  return ['present','past','future'].some(tn => t[tn].map(norm).includes(norm(w)));
 }
 
 function placeChip(el, w){
-  if(answered) return;
-  if(el.classList.contains('used')) return;
+  if(answered || el.classList.contains('used')) return;
   el.classList.add('used');
   placed.push({ text:w, el:el });
   renderLine();
 }
-
 function renderLine(){
   const line = document.getElementById('build-line');
   line.className = 'build-line';
-  if(placed.length===0){
-    line.innerHTML = '<span class="placeholder">Tap words below to build the sentence…</span>';
-    return;
-  }
+  if(placed.length===0){ line.innerHTML = '<span class="placeholder">Tap words below to build the sentence…</span>'; return; }
   line.innerHTML = '';
   placed.forEach((p,i)=>{
     const c = document.createElement('div');
-    c.className = 'chip placed' + (isVerbForm(p.text)?' verb':'');
+    c.className = 'chip placed' + (isParticle(p.text)?' particle':'') + (isVerbForm(p.text)?' verb':'');
     c.textContent = p.text;
     c.onclick = ()=>{ if(answered) return; p.el.classList.remove('used'); placed.splice(i,1); renderLine(); };
     line.appendChild(c);
   });
 }
-
 function clearLine(){
   if(answered) return;
   placed.forEach(p=>p.el.classList.remove('used'));
-  placed = [];
-  renderLine();
+  placed = []; renderLine();
 }
 
 function checkAnswer(){
   if(answered || placed.length===0) return;
   const built = placed.map(p=>p.text).join(' ');
-  const ok = norm(built) === norm(current.gr);
-  finish(ok);
+  finish(norm(built) === norm(current.gr));
 }
-
-function reveal(){
-  if(answered) return;
-  finish(null); // null = revealed (counts as wrong for honesty)
-}
+function reveal(){ if(!answered) finish(null); }
 
 function finish(ok){
   answered = true;
   stats.total++;
-  if(ok===true) stats.correct++; else stats.wrong++;
+  if(ok===true){ stats.correct++; stats.streak++; }
+  else { stats.wrong++; stats.streak=0; }
   updateStats();
 
-  const line = document.getElementById('build-line');
-  line.className = 'build-line ' + (ok===true ? 'correct' : 'wrong');
+  document.getElementById('build-line').className = 'build-line ' + (ok===true ? 'correct' : 'wrong');
 
   const fb = document.getElementById('feedback');
   fb.className = 'feedback show ' + (ok===true ? 'ok' : 'no');
   const head = ok===true ? '✓ Σωστά! (Correct)' : (ok===null ? 'Revealed' : '✗ Όχι ακριβώς');
-  const bd = breakdown(current);
   fb.innerHTML =
     '<div>'+head+'</div>' +
     '<span class="answer-gr">'+current.gr+'</span>' +
-    '<div class="breakdown">'+bd+'</div>' +
+    '<div class="breakdown">The <b>'+TENSE_LABEL[current.tense]+'</b>, <b>'+PRONOUNS[current.pIdx]+
+      '</b> form of <b>'+current.verb+'</b> is <b>'+conjForm(current.verb,current.tense,current.pIdx)+
+      '</b>. The ending carries the subject — no pronoun needed.</div>' +
     (current.note ? '<div class="note">💡 '+current.note+'</div>' : '');
-
-  // full conjugation paradigm for reinforcement
-  const t = CONJ[current.verb];
-  if(t){
-    const cells = t.map((f,i)=>{
-      const me = i===current.pIdx;
-      return (me?'<b>':'')+PRONOUNS[i].split(' ')[0]+' '+f+(me?'</b>':'');
-    }).join(' · ');
-    document.getElementById('conj-strip').innerHTML =
-      '<b>'+current.verb+'</b> ('+enGloss(current.verb)+'): '+cells;
-  }
 
   document.getElementById('btn-check').style.display = 'none';
   document.getElementById('btn-reveal').style.display = 'none';
   document.getElementById('btn-clear').style.display = 'none';
   document.getElementById('btn-next').style.display = '';
-}
 
-function breakdown(it){
-  // simple word-by-word gloss using the verb as anchor
-  const v = it.chips.find(c=>isVerbForm(c));
-  return 'The verb <b>'+v+'</b> is the '+PRONOUNS[it.pIdx]+' form of <b>'+it.verb+'</b> — the ending carries the subject, so no pronoun is needed.';
+  // On a miss, auto-open the breakdown so the correct cell is right there
+  if(ok!==true){ openConj(true); }
+  renderConj();
 }
 
 function updateStats(){
   document.getElementById('stat-total').textContent = stats.total;
   document.getElementById('stat-correct').textContent = stats.correct;
   document.getElementById('stat-wrong').textContent = stats.wrong;
+  document.getElementById('stat-streak').textContent = stats.streak;
 }
 
-// keyboard: Enter = check then next
+/* ── Conjugation breakdown dropdown ── */
+let conjOpen = false;
+function toggleConj(){ conjOpen = !conjOpen; applyConjOpen(); }
+function openConj(v){ conjOpen = v; applyConjOpen(); }
+function applyConjOpen(){
+  document.getElementById('conj-toggle').classList.toggle('open', conjOpen);
+  document.getElementById('conj-body').classList.toggle('open', conjOpen);
+}
+function renderConj(){
+  if(!current) return;
+  const v = VERBS[current.verb];
+  let html = '<div class="conj-verb-head"><span class="inf">'+current.verb+'</span> '+
+             '<span class="grp">— '+v.en+' · '+v.group+' group</span></div>';
+  html += '<div class="conj-tip">🧠 '+v.tip+'</div>';
+  html += '<table class="conj-table"><tr>'+
+          '<th></th><th class="h-present">Present<br><span style="font-weight:400">'+TENSE_EN.present+'</span></th>'+
+          '<th class="h-past">Past · Aorist<br><span style="font-weight:400">'+TENSE_EN.past+'</span></th>'+
+          '<th class="h-future">Future (θα)<br><span style="font-weight:400">'+TENSE_EN.future+'</span></th></tr>';
+  for(let p=0;p<6;p++){
+    html += '<tr><td class="pron">'+PRONOUNS[p]+'</td>';
+    TENSES.forEach(tn=>{
+      const isCur = (current.tense===tn && current.pIdx===p);
+      html += '<td class="form'+(isCur?' cur':'')+'">'+conjForm(current.verb,tn,p)+'</td>';
+    });
+    html += '</tr>';
+  }
+  html += '</table>';
+  html += '<div class="conj-legend">Highlighted = the form this sentence needs. '+
+          'Notice how the <b>stem</b> shifts between present and past/future — that’s the part to memorise.</div>';
+  document.getElementById('conj-body').innerHTML = html;
+  applyConjOpen();
+}
+
 document.addEventListener('keydown', e=>{
   if(e.key==='Enter'){ if(answered) nextCard(); else checkAnswer(); }
 });
