@@ -460,8 +460,10 @@ function nextCard(){
   document.getElementById('btn-reveal').style.display = '';
   document.getElementById('btn-clear').style.display = '';
 
+  // Tense is intentionally NOT shown here — infer it from the English prompt and
+  // pick the right Greek forms yourself. Only the person is hinted. (The tense is
+  // revealed in the feedback AFTER you answer, for learning.)
   document.getElementById('meta').innerHTML =
-    '<span class="pill tense-'+current.tense+'">'+TENSE_LABEL[current.tense]+'</span>' +
     '<span class="pill person">'+PRONOUNS[current.pIdx]+' · '+PRON_EN[current.pIdx]+'</span>';
   document.getElementById('prompt-en').textContent = current.en;
   const hint = document.getElementById('prompt-hint');
@@ -581,13 +583,16 @@ function renderConj(){
   for(let p=0;p<6;p++){
     html += '<tr><td class="pron">'+PRONOUNS[p]+'</td>';
     TENSES.forEach(tn=>{
-      const isCur = (current.tense===tn && current.pIdx===p);
+      // Only highlight the target cell AFTER answering — otherwise it would give
+      // away the tense (and the answer) during the exercise.
+      const isCur = answered && (current.tense===tn && current.pIdx===p);
       html += '<td class="form'+(isCur?' cur':'')+'">'+conjForm(current.verb,tn,p)+'</td>';
     });
     html += '</tr>';
   }
   html += '</table>';
-  html += '<div class="conj-legend">Highlighted = the form this sentence needs. '+
+  html += '<div class="conj-legend">'+
+          (answered ? 'Highlighted = the form this sentence needed. ' : '') +
           'Notice how the <b>stem</b> shifts between present and past/future — that’s the part to memorise.</div>';
   document.getElementById('conj-body').innerHTML = html;
   applyConjOpen();
