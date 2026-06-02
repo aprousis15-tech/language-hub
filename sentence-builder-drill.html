@@ -164,6 +164,18 @@
   table.conj-table td.cur { background: #fff3c4; font-weight: 700; color: #6a4c00; border-radius: 6px; outline: 2px solid #ffd54f; }
   .conj-legend { font-size: 0.74rem; color: #9aa8b2; margin-top: 10px; text-align: center; }
 
+  /* Text-to-speech */
+  .speak-btn {
+    border: none; background: #e0f2f1; color: var(--teal); cursor: pointer;
+    border-radius: 99px; font-size: 0.95rem; padding: 3px 10px; vertical-align: middle;
+    line-height: 1; margin-left: 4px;
+  }
+  .speak-btn:hover { background: #b2dfdb; }
+  .speak-btn:active { transform: scale(0.92); }
+  table.conj-table td.speakable { cursor: pointer; }
+  table.conj-table td.speakable:hover { background: #e0f2f1; border-radius: 6px; }
+  table.conj-table td.speakable.cur:hover { background: #ffe9a8; }
+
   .footer-tip { text-align: center; font-size: 0.8rem; color: #9aa8b2; margin-top: 22px; }
 </style>
 </head>
@@ -406,6 +418,26 @@ function conjForm(verb, tense, pIdx){
 }
 function bareForm(it){ return VERBS[it.verb][it.tense][it.pIdx]; }
 
+/* ── Text-to-speech (built-in browser voice, Greek el-GR, offline, free) ── */
+function warmVoices(){
+  if(!('speechSynthesis' in window)) return;
+  try { window.speechSynthesis.getVoices(); } catch(e){}
+}
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged = warmVoices; }
+function speakGreek(text){
+  if(!('speechSynthesis' in window) || !text) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text));
+    u.lang = 'el-GR';
+    u.rate = 0.88;          // a touch slower — easier to catch the endings
+    const voices = window.speechSynthesis.getVoices() || [];
+    const gr = voices.find(v => /el([-_]?GR)?/i.test(v.lang) || /greek|ελλ/i.test(v.name));
+    if(gr) u.voice = gr;
+    window.speechSynthesis.speak(u);
+  } catch(e){}
+}
+
 const TENSE_FILTERS = [
   { key:'all', label:'All tenses', cls:'' },
   { key:'present', label:'Present', cls:'t-present' },
@@ -539,7 +571,8 @@ function finish(ok){
   const head = ok===true ? '✓ Σωστά! (Correct)' : (ok===null ? 'Revealed' : '✗ Όχι ακριβώς');
   fb.innerHTML =
     '<div>'+head+'</div>' +
-    '<span class="answer-gr">'+current.gr+'</span>' +
+    '<span class="answer-gr">'+current.gr+
+      ' <button class="speak-btn" title="Hear it" onclick="speakGreek(\''+current.gr+'\')">🔊</button></span>' +
     '<div class="breakdown">The <b>'+TENSE_LABEL[current.tense]+'</b>, <b>'+PRONOUNS[current.pIdx]+
       '</b> form of <b>'+current.verb+'</b> is <b>'+conjForm(current.verb,current.tense,current.pIdx)+
       '</b>. The ending carries the subject — no pronoun needed.</div>' +
@@ -586,13 +619,16 @@ function renderConj(){
       // Only highlight the target cell AFTER answering — otherwise it would give
       // away the tense (and the answer) during the exercise.
       const isCur = answered && (current.tense===tn && current.pIdx===p);
-      html += '<td class="form'+(isCur?' cur':'')+'">'+conjForm(current.verb,tn,p)+'</td>';
+      const form = conjForm(current.verb,tn,p);
+      html += '<td class="form speakable'+(isCur?' cur':'')+'" title="Tap to hear" '+
+              'onclick="speakGreek(\''+form+'\')">'+form+'</td>';
     });
     html += '</tr>';
   }
   html += '</table>';
   html += '<div class="conj-legend">'+
           (answered ? 'Highlighted = the form this sentence needed. ' : '') +
+          '🔊 Tap any form to hear it. ' +
           'Notice how the <b>stem</b> shifts between present and past/future — that’s the part to memorise.</div>';
   document.getElementById('conj-body').innerHTML = html;
   applyConjOpen();
