@@ -104,6 +104,13 @@
   .feedback.no { background: #fff3e0; color: #b76e00; }
   .feedback .breakdown { font-size: 0.86rem; color: #5a6f6c; line-height: 1.6; margin-top: 6px; }
   .feedback .breakdown b { color: var(--teal); }
+  .speak-btn {
+    border: none; background: #e0f2f1; color: var(--teal); cursor: pointer;
+    border-radius: 99px; font-size: 0.95rem; padding: 3px 10px; vertical-align: middle;
+    line-height: 1; margin-left: 6px;
+  }
+  .speak-btn:hover { background: #b2dfdb; }
+  .speak-btn:active { transform: scale(0.92); }
   .footer-tip { text-align: center; font-size: 0.8rem; color: #9aa8b2; margin-top: 22px; }
 </style>
 </head>
@@ -204,6 +211,23 @@ let selArt = null, selAdj = null;
 let answered = false;
 let stats = { total:0, correct:0, wrong:0 };
 
+/* ── Text-to-speech (built-in browser voice, Greek el-GR, offline, free) ── */
+function warmVoices(){ if('speechSynthesis' in window){ try { window.speechSynthesis.getVoices(); } catch(e){} } }
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged = warmVoices; }
+function speakGreek(text){
+  if(!('speechSynthesis' in window) || !text) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text));
+    u.lang = 'el-GR';
+    u.rate = 0.88;
+    const voices = window.speechSynthesis.getVoices() || [];
+    const gr = voices.find(v => /el([-_]?GR)?/i.test(v.lang) || /greek|ελλ/i.test(v.name));
+    if(gr) u.voice = gr;
+    window.speechSynthesis.speak(u);
+  } catch(e){}
+}
+
 function nextCard(){
   answered = false; selArt = null; selAdj = null;
   current = ITEMS[Math.floor(Math.random()*ITEMS.length)];
@@ -303,7 +327,8 @@ function checkAnswer(){
   const fb = document.getElementById('feedback');
   fb.className = 'feedback show ' + (allOk?'ok':'no');
   fb.innerHTML =
-    '<div>'+(allOk?'✓ Σωστά! (Correct)':'✗ Όχι ακριβώς')+'</div>' +
+    '<div>'+(allOk?'✓ Σωστά! (Correct)':'✗ Όχι ακριβώς')+
+      ' <button class="speak-btn" title="Hear it" onclick="speakGreek(\''+correctPhrase+'\')">🔊</button></div>' +
     '<div class="breakdown">'+
       '<b>'+current.noun+'</b> is <b>'+GENDER_NAME[current.g]+'</b> → article <b>'+ART[current.g]+'</b>, '+
       'adjective <b>'+correctAdj+'</b>.<br>'+
