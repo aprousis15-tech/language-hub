@@ -2342,6 +2342,33 @@
   .grammar-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #4527a0; margin-bottom: 6px; }
   .grammar-header p { font-size: 0.85rem; color: #6a5a80; }
   .grammar-mode-bar { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; justify-content: center; }
+  /* ── Start Here: pinned tutor-priority drills + collapse for the rest ── */
+  .grammar-starthere {
+    max-width: 760px; margin: 0 auto 20px; padding: 16px 16px 12px;
+    background: linear-gradient(135deg, #fffdf7 0%, #fff6e3 100%);
+    border: 2px solid #ffd699; border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(191,125,0,0.08);
+  }
+  .starthere-label {
+    text-align: center; font-size: 0.74rem; font-weight: 700; color: #b76e00;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .starthere-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .grammar-mode-btn.sh-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 11px 18px; border-radius: 14px; border: 1.5px solid #c5b9e8;
+    font-weight: 700; font-size: 0.92rem; line-height: 1.2; min-width: 150px;
+  }
+  .grammar-mode-btn.sh-btn .sh-sub {
+    font-size: 0.68rem; font-weight: 400; color: #8a7fb0; letter-spacing: 0.01em;
+  }
+  .grammar-mode-btn.sh-btn.active .sh-sub { color: #d1c4e9; }
+  .grammar-showall-toggle {
+    display: block; margin: 14px auto 0; background: none; border: none;
+    color: #b76e00; font-family: 'Lato', sans-serif; font-weight: 700;
+    font-size: 0.82rem; cursor: pointer; opacity: 0.85; padding: 4px 8px;
+  }
+  .grammar-showall-toggle:hover { opacity: 1; text-decoration: underline; }
   /* Conjugation Drill subpanel — iframe wrapper for the standalone drill page. */
   .conjdrill-frame-wrap { max-width: 760px; margin: 0 auto; }
   .conjdrill-frame {
@@ -3679,9 +3706,21 @@
       <a class="review-link" onclick="switchLang('review')">📊 See your mistakes &amp; weak spots →</a>
     </div>
 
-    <div class="grammar-mode-bar">
+    <!-- Start Here: the tutor's priority drills, pinned + highlighted. The full
+         catalogue below is collapsed by default (toggleAllDrills) to cut clutter. -->
+    <div class="grammar-starthere">
+      <div class="starthere-label">🎯 Start Here — your tutor's priorities</div>
+      <div class="starthere-btns">
+        <button class="grammar-mode-btn sh-btn active" id="sh-sentbuild" onclick="setGrammarMode('sentbuild',this)">🧱 Sentence Builder<span class="sh-sub">construction + conjugation · 3 tenses</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-gendagree" onclick="setGrammarMode('gendagree',this)">⚖️ Gender Agreement<span class="sh-sub">articles + nouns · καλός καιρός</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-conjdrill" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill<span class="sh-sub">type the 6 forms</span></button>
+      </div>
+      <button class="grammar-showall-toggle" id="grammar-showall-toggle" onclick="toggleAllDrills()">▸ Show all drills (everything else)</button>
+    </div>
+
+    <div class="grammar-mode-bar grammar-allbar" id="grammar-allbar" style="display:none;">
       <div class="grammar-mode-group-label">▸ 🔥 Verbs</div>
-      <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill (type 6 forms)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('sentbuild',this)">🧱 Sentence Builder (construction + conjugation)</button>
@@ -8950,7 +8989,14 @@
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
-    if (lang === 'grammar') { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
+    if (lang === 'grammar') {
+      // Default to the tutor-priority drill (Sentence Builder) instead of Type A,
+      // so the most relevant drill is what you land on. setGrammarMode handles
+      // panel show/hide, the rule disclosure, and lazy iframe init.
+      const shBtn = document.getElementById('sh-sentbuild');
+      if (shBtn) setGrammarMode('sentbuild', shBtn);
+      else { initTypeADrill(); updateDrillRuleDisclosure('typea'); }
+    }
     if (lang === 'practice') { initPracticeDrill(); }
     if (lang === 'speak') { initSpeakDrill(); }
     if (lang === 'story') { initStory(); }
@@ -10695,6 +10741,16 @@
     body.style.display = open ? '' : 'none';
     chev.classList.toggle('open', open);
     if (txt) txt.textContent = open ? '📚 Hide the rule' : '📚 Show the rule';
+  }
+
+  // Collapse/expand the full drill catalogue. The Start Here row stays pinned;
+  // this just toggles the big grouped mode bar so the default view is uncluttered.
+  function toggleAllDrills() {
+    const bar = document.getElementById('grammar-allbar');
+    const tog = document.getElementById('grammar-showall-toggle');
+    const isHidden = window.getComputedStyle(bar).display === 'none';
+    if (isHidden) { bar.style.display = 'flex'; tog.innerHTML = '▾ Hide all drills'; }
+    else { bar.style.display = 'none'; tog.innerHTML = '▸ Show all drills (everything else)'; }
   }
 
   function setGrammarMode(mode, btn) {
