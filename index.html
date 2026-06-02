@@ -3684,6 +3684,7 @@
       <button class="grammar-mode-btn active" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill (type 6 forms)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('sentbuild',this)">🧱 Sentence Builder (construction + conjugation)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('pres2aor',this)">🔄 Present → Aorist</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('vgroup',this)">🗂️ Verb Group Classifier</button>
@@ -3710,6 +3711,7 @@
       <div class="grammar-mode-group-label">▸ 🎨 Adjectives</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adj',this)">🎨 Adjective Agreement</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('adjdrill',this)">🎨 Adj Forms (SRS)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('gendagree',this)">⚖️ Gender Agreement (καλός καιρός)</button>
       <button class="grammar-mode-btn grammar-mode-random" onclick="setRandomGrammarMode('adj')" title="Pick a random adjective drill">🎲 Random adjective</button>
 
       <div class="grammar-mode-group-label">▸ ⚡ Adverbs</div>
@@ -3944,6 +3946,21 @@
       </div>
     </div>
 
+    <!-- Sentence Builder — iframe wrapper around the standalone /sentence-builder-drill.html.
+         Same lazy-iframe pattern as the conjugation drill. Tap-to-build present-tense
+         sentences across all 6 persons — targets the tutor's "sentence construction +
+         conjugation" focus. src set lazily on first open (see initSentBuildFrame). -->
+    <div id="grammar-sentbuild" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="sentbuild-frame" class="conjdrill-frame"
+                title="Greek Sentence Builder — construction + conjugation"
+                loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="sentence-builder-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
     <!-- Preposition Drill — iframe wrapper around the standalone /prepositions-drill.html.
          Same pattern as the conjugation-drill iframe above: the standalone page is the
          single source of truth, this subpanel just embeds it. src is set lazily on first
@@ -3957,6 +3974,21 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="prepositions-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gender Agreement — iframe wrapper around the standalone /gender-agreement-drill.html.
+         Same lazy-iframe pattern. Pick article + adjective ending to agree with the noun's
+         gender (καλός καιρός) — targets the tutor's "articles + nouns gender matching"
+         focus. src set lazily on first open (see initGendAgreeFrame). -->
+    <div id="grammar-gendagree" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="gendagree-frame" class="conjdrill-frame"
+                title="Greek Gender Agreement — article + adjective + noun"
+                loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="gender-agreement-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -10685,6 +10717,8 @@
     document.getElementById('grammar-aspect').style.display = mode === 'aspect' ? '' : 'none';
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
+    document.getElementById('grammar-sentbuild').style.display = mode === 'sentbuild' ? '' : 'none';
+    document.getElementById('grammar-gendagree').style.display = mode === 'gendagree' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
@@ -10714,6 +10748,8 @@
     if (mode === 'aspect') initAspectDrill();
     if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'conjdrill') initConjDrillFrame();
+    if (mode === 'sentbuild') initSentBuildFrame();
+    if (mode === 'gendagree') initGendAgreeFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'convprep') initConvPrepFrame();
     if (mode === 'subjfirst') initSubjFirstDrill();
@@ -12139,6 +12175,24 @@
   function initConjDrillFrame() {
     const f = document.getElementById('conjdrill-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'conjugation-drill.html');
+  }
+
+  // ── Sentence Builder (subpanel) ──
+  // Lazy-iframe wrapper around /sentence-builder-drill.html. Tap-to-build
+  // present-tense sentences across all 6 persons (tutor focus: construction +
+  // conjugation). src set on first open so it's free until visited.
+  function initSentBuildFrame() {
+    const f = document.getElementById('sentbuild-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'sentence-builder-drill.html');
+  }
+
+  // ── Gender Agreement (subpanel) ──
+  // Lazy-iframe wrapper around /gender-agreement-drill.html. Pick article +
+  // adjective ending to agree with the noun's gender (tutor focus: καλός καιρός).
+  // src set on first open so it's free until visited.
+  function initGendAgreeFrame() {
+    const f = document.getElementById('gendagree-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'gender-agreement-drill.html');
   }
 
   // ── Preposition Drill (subpanel) ──

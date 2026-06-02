@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Gender Agreement — article + adjective + noun</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #1a5f7a;
+    --sky: #2e86ab;
+    --sand: #f4e9d8;
+    --white: #fdfaf6;
+    --dark: #1e2a35;
+    --greek-blue: #0d4f8b;
+    --teal: #00695c;
+    --masc: #1565c0;
+    --fem: #c2185b;
+    --neut: #00897b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Lato', sans-serif; background: var(--white); color: var(--dark);
+    min-height: 100vh; padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header.top { text-align: center; margin-bottom: 16px; }
+  header.top h1 {
+    font-family: 'Playfair Display', serif; color: var(--greek-blue);
+    font-size: clamp(1.5rem, 4vw, 2.1rem); margin-bottom: 6px;
+  }
+  header.top p { color: #4a6f8a; font-size: 0.95rem; }
+
+  .rule-box {
+    max-width: 560px; margin: 0 auto 16px; background: #f4f9fc;
+    border: 1px solid #d8e8f2; border-radius: 10px; padding: 12px 14px;
+    font-size: 0.85rem; color: #4a6f8a; text-align: center; line-height: 1.7;
+  }
+  .rule-box .m { color: var(--masc); font-weight: 700; }
+  .rule-box .f { color: var(--fem); font-weight: 700; }
+  .rule-box .n { color: var(--neut); font-weight: 700; }
+
+  .stats {
+    text-align: center; font-size: 0.88rem; color: #4a6f8a;
+    margin-bottom: 16px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
+  }
+  .stats strong { color: #0d47a1; font-size: 1.05rem; }
+  .stats .correct-stat strong { color: #2e7d32; }
+  .stats .wrong-stat strong { color: #c62828; }
+
+  .card {
+    max-width: 560px; margin: 0 auto; background: white; border-radius: 14px;
+    padding: 26px 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border: 1px solid #e1ecf4; text-align: center;
+  }
+  .prompt-en {
+    font-family: 'Playfair Display', serif; font-size: 1.55rem;
+    color: var(--dark); margin-bottom: 6px;
+  }
+  .noun-hint { font-size: 0.92rem; color: #8a9aa5; margin-bottom: 4px; }
+  .gender-tag {
+    display: inline-block; padding: 3px 12px; border-radius: 99px;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; margin-bottom: 18px;
+  }
+  .gender-tag.m { background: #e3f0fb; color: var(--masc); }
+  .gender-tag.f { background: #fce4ec; color: var(--fem); }
+  .gender-tag.n { background: #e0f2f1; color: var(--neut); }
+
+  .slot-label { font-size: 0.74rem; color: #9aa8b2; text-transform: uppercase; letter-spacing: 0.1em; margin: 14px 0 6px; }
+  .choices { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .choice {
+    font-family: 'Georgia', serif; font-size: 1.25rem; color: var(--teal);
+    background: white; border: 2px solid #bbdefb; border-radius: 10px;
+    padding: 10px 20px; cursor: pointer; user-select: none; min-width: 64px;
+    transition: transform 0.08s;
+  }
+  .choice:hover { background: #e3f2fd; }
+  .choice:active { transform: scale(0.95); }
+  .choice.selected { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
+  .choice.correct { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+  .choice.wrong { background: #ffebee; border-color: #c62828; color: #c62828; }
+  .choice:disabled, .choice.locked { pointer-events: none; }
+
+  .preview-phrase {
+    font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--teal);
+    margin: 22px 0 6px; min-height: 40px; font-weight: 600;
+  }
+  .preview-phrase .ph { color: #cdd8e0; }
+
+  .actions { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 22px; border-radius: 99px; font-family: 'Lato', sans-serif;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 1.5px solid var(--greek-blue);
+  }
+  .btn-primary { background: var(--greek-blue); color: white; }
+  .btn-primary:hover { background: #0a3d6e; }
+  .btn-secondary { background: white; color: var(--greek-blue); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .feedback { margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 0.95rem; display: none; }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #e8f5e9; color: #2e7d32; }
+  .feedback.no { background: #fff3e0; color: #b76e00; }
+  .feedback .breakdown { font-size: 0.86rem; color: #5a6f6c; line-height: 1.6; margin-top: 6px; }
+  .feedback .breakdown b { color: var(--teal); }
+  .footer-tip { text-align: center; font-size: 0.8rem; color: #9aa8b2; margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>⚖️ Gender Agreement</h1>
+    <p>Pick the article and the adjective ending that agree with the noun's gender.</p>
+  </header>
+
+  <div class="rule-box">
+    The adjective and article copy the noun's gender:<br>
+    <span class="m">ο καλός καιρός</span> (m, -ος) · <span class="f">η καλή μέρα</span> (f, -η) · <span class="n">το καλό παιδί</span> (n, -ο)
+  </div>
+
+  <div class="stats">
+    <span>Done: <strong id="stat-total">0</strong></span>
+    <span class="correct-stat">✓ <strong id="stat-correct">0</strong></span>
+    <span class="wrong-stat">✗ <strong id="stat-wrong">0</strong></span>
+  </div>
+
+  <div class="card">
+    <div class="prompt-en" id="prompt-en">…</div>
+    <div class="noun-hint" id="noun-hint"></div>
+    <div class="gender-tag" id="gender-tag"></div>
+
+    <div class="slot-label">1 · Article</div>
+    <div class="choices" id="art-choices"></div>
+
+    <div class="slot-label">2 · Adjective (right ending)</div>
+    <div class="choices" id="adj-choices"></div>
+
+    <div class="preview-phrase" id="preview"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-check" onclick="checkAnswer()">Check</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextCard()" style="display:none;">Next →</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <p class="footer-tip">Tip: learn each noun <em>with its article</em> — ο/η/το is part of the word. Once you know the gender, the adjective ending follows automatically.</p>
+</div>
+
+<script>
+/* ──────────────────────────────────────────────────────────────────────────
+   GENDER AGREEMENT — article + adjective + noun, all matching the noun's
+   gender (the teacher's "καλός καιρός" focus). The learner taps the correct
+   article (ο/η/το) and the correct adjective ending. Nominative singular only,
+   to keep it accessible. Self-contained, offline, phone-friendly.
+
+   Adjective forms follow the regular -ος/-η/-ο paradigm. `adjStem` + the gender
+   ending builds the right form; distractor endings are the other two genders.
+   ────────────────────────────────────────────────────────────────────────── */
+
+// article by gender (nominative singular)
+const ART = { m:'ο', f:'η', n:'το' };
+const ART_CHOICES = ['ο','η','το'];
+
+// Each item carries the THREE explicit adjective forms (m/f/n) — written out
+// rather than generated from a stem, so accents and the -α vs -η feminine are
+// always correct (ωραίος/ωραία/ωραίο, παλιός/παλιά/παλιό — NOT *ωραίη/*παλιη).
+// adj.m is also the lemma shown in the hint. correct form = adj[item.g].
+const ENDINGS = { m:'ος', f:'η', n:'ο' }; // regular pattern, for the rule box only
+
+const ITEMS = [
+  { en:'the good weather',    adj:{m:'καλός',     f:'καλή',     n:'καλό'},      noun:'καιρός',     g:'m', adjEn:'good',     nounEn:'weather' },
+  { en:'the good day',        adj:{m:'καλός',     f:'καλή',     n:'καλό'},      noun:'μέρα',       g:'f', adjEn:'good',     nounEn:'day' },
+  { en:'the good child',      adj:{m:'καλός',     f:'καλή',     n:'καλό'},      noun:'παιδί',      g:'n', adjEn:'good',     nounEn:'child' },
+  { en:'the big house',       adj:{m:'μεγάλος',   f:'μεγάλη',   n:'μεγάλο'},    noun:'σπίτι',      g:'n', adjEn:'big',      nounEn:'house' },
+  { en:'the big city',        adj:{m:'μεγάλος',   f:'μεγάλη',   n:'μεγάλο'},    noun:'πόλη',       g:'f', adjEn:'big',      nounEn:'city' },
+  { en:'the small dog',       adj:{m:'μικρός',    f:'μικρή',    n:'μικρό'},     noun:'σκύλος',     g:'m', adjEn:'small',    nounEn:'dog' },
+  { en:'the small table',     adj:{m:'μικρός',    f:'μικρή',    n:'μικρό'},     noun:'τραπέζι',    g:'n', adjEn:'small',    nounEn:'table' },
+  { en:'the beautiful sea',   adj:{m:'ωραίος',    f:'ωραία',    n:'ωραίο'},     noun:'θάλασσα',    g:'f', adjEn:'beautiful',nounEn:'sea' },
+  { en:'the handsome man',    adj:{m:'ωραίος',    f:'ωραία',    n:'ωραίο'},     noun:'άντρας',     g:'m', adjEn:'handsome', nounEn:'man' },
+  { en:'the new car',         adj:{m:'καινούριος',f:'καινούρια',n:'καινούριο'}, noun:'αυτοκίνητο', g:'n', adjEn:'new',      nounEn:'car' },
+  { en:'the new book',        adj:{m:'καινούριος',f:'καινούρια',n:'καινούριο'}, noun:'βιβλίο',     g:'n', adjEn:'new',      nounEn:'book' },
+  { en:'the old friend (m)',  adj:{m:'παλιός',    f:'παλιά',    n:'παλιό'},     noun:'φίλος',      g:'m', adjEn:'old',      nounEn:'friend' },
+  { en:'the old friend (f)',  adj:{m:'παλιός',    f:'παλιά',    n:'παλιό'},     noun:'φίλη',       g:'f', adjEn:'old',      nounEn:'friend' },
+  { en:'the cold water',      adj:{m:'κρύος',     f:'κρύα',     n:'κρύο'},      noun:'νερό',       g:'n', adjEn:'cold',     nounEn:'water' },
+  { en:'the hot coffee',      adj:{m:'ζεστός',    f:'ζεστή',    n:'ζεστό'},     noun:'καφές',      g:'m', adjEn:'hot',      nounEn:'coffee' },
+  { en:'the white wine',      adj:{m:'άσπρος',    f:'άσπρη',    n:'άσπρο'},     noun:'κρασί',      g:'n', adjEn:'white',    nounEn:'wine' },
+  { en:'the red car',         adj:{m:'κόκκινος',  f:'κόκκινη',  n:'κόκκινο'},   noun:'αυτοκίνητο', g:'n', adjEn:'red',      nounEn:'car' },
+  { en:'the good woman',      adj:{m:'καλός',     f:'καλή',     n:'καλό'},      noun:'γυναίκα',    g:'f', adjEn:'good',     nounEn:'woman' },
+  { en:'the tall man',        adj:{m:'ψηλός',     f:'ψηλή',     n:'ψηλό'},      noun:'άντρας',     g:'m', adjEn:'tall',     nounEn:'man' },
+  { en:'the tall woman',      adj:{m:'ψηλός',     f:'ψηλή',     n:'ψηλό'},      noun:'γυναίκα',    g:'f', adjEn:'tall',     nounEn:'woman' },
+  { en:'the difficult lesson',adj:{m:'δύσκολος',  f:'δύσκολη',  n:'δύσκολο'},   noun:'μάθημα',     g:'n', adjEn:'difficult',nounEn:'lesson' },
+  { en:'the easy question',   adj:{m:'εύκολος',   f:'εύκολη',   n:'εύκολο'},    noun:'ερώτηση',    g:'f', adjEn:'easy',     nounEn:'question' },
+  { en:'the warm sun',        adj:{m:'ζεστός',    f:'ζεστή',    n:'ζεστό'},     noun:'ήλιος',      g:'m', adjEn:'warm',     nounEn:'sun' },
+  { en:'the good food',       adj:{m:'καλός',     f:'καλή',     n:'καλό'},      noun:'φαγητό',     g:'n', adjEn:'good',     nounEn:'food' },
+];
+
+const GENDER_NAME = { m:'masculine', f:'feminine', n:'neuter' };
+
+let current = null;
+let selArt = null, selAdj = null;
+let answered = false;
+let stats = { total:0, correct:0, wrong:0 };
+
+function nextCard(){
+  answered = false; selArt = null; selAdj = null;
+  current = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+
+  document.getElementById('prompt-en').textContent = current.en;
+  document.getElementById('noun-hint').innerHTML =
+    'noun: <b>'+current.noun+'</b> — '+current.nounEn+' · adjective: <b>'+current.adj.m+'</b> — '+current.adjEn;
+  const gt = document.getElementById('gender-tag');
+  gt.className = 'gender-tag ' + current.g;
+  gt.textContent = GENDER_NAME[current.g];
+
+  // article choices
+  const ac = document.getElementById('art-choices');
+  ac.innerHTML = '';
+  ART_CHOICES.forEach(a=>{
+    const b = document.createElement('button');
+    b.className = 'choice'; b.textContent = a;
+    b.onclick = ()=>selectArt(b, a);
+    ac.appendChild(b);
+  });
+
+  // adjective form choices (the 3 genders, shuffled)
+  const forms = shuffle(['m','f','n'].map(g=>({ g, text: current.adj[g] })));
+  const dc = document.getElementById('adj-choices');
+  dc.innerHTML = '';
+  forms.forEach(f=>{
+    const b = document.createElement('button');
+    b.className = 'choice'; b.textContent = f.text;
+    b.dataset.g = f.g;
+    b.onclick = ()=>selectAdj(b, f.g);
+    dc.appendChild(b);
+  });
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('btn-check').style.display = '';
+  document.getElementById('btn-check').disabled = true;
+  document.getElementById('btn-next').style.display = 'none';
+  renderPreview();
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function selectArt(btn, a){
+  if(answered) return;
+  selArt = a;
+  document.querySelectorAll('#art-choices .choice').forEach(c=>c.classList.remove('selected'));
+  btn.classList.add('selected');
+  renderPreview(); maybeEnableCheck();
+}
+function selectAdj(btn, g){
+  if(answered) return;
+  selAdj = g;
+  document.querySelectorAll('#adj-choices .choice').forEach(c=>c.classList.remove('selected'));
+  btn.classList.add('selected');
+  renderPreview(); maybeEnableCheck();
+}
+function maybeEnableCheck(){
+  document.getElementById('btn-check').disabled = !(selArt && selAdj);
+}
+function renderPreview(){
+  const art = selArt || '___';
+  const adj = selAdj ? current.adj[selAdj] : '___';
+  const a = selArt ? art : '<span class="ph">'+art+'</span>';
+  const dj = selAdj ? adj : '<span class="ph">'+adj+'</span>';
+  document.getElementById('preview').innerHTML = a+' '+dj+' '+current.noun;
+}
+
+function checkAnswer(){
+  if(answered || !selArt || !selAdj) return;
+  answered = true;
+  const artOk = selArt === ART[current.g];
+  const adjOk = selAdj === current.g;
+  const allOk = artOk && adjOk;
+
+  stats.total++; if(allOk) stats.correct++; else stats.wrong++;
+  updateStats();
+
+  // mark choices
+  document.querySelectorAll('#art-choices .choice').forEach(c=>{
+    c.classList.add('locked');
+    if(c.textContent===ART[current.g]) c.classList.add('correct');
+    else if(c.textContent===selArt) c.classList.add('wrong');
+  });
+  document.querySelectorAll('#adj-choices .choice').forEach(c=>{
+    c.classList.add('locked');
+    if(c.dataset.g===current.g) c.classList.add('correct');
+    else if(c.dataset.g===selAdj) c.classList.add('wrong');
+  });
+
+  const correctAdj = current.adj[current.g];
+  const correctPhrase = ART[current.g]+' '+correctAdj+' '+current.noun;
+  document.getElementById('preview').innerHTML = correctPhrase;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (allOk?'ok':'no');
+  fb.innerHTML =
+    '<div>'+(allOk?'✓ Σωστά! (Correct)':'✗ Όχι ακριβώς')+'</div>' +
+    '<div class="breakdown">'+
+      '<b>'+current.noun+'</b> is <b>'+GENDER_NAME[current.g]+'</b> → article <b>'+ART[current.g]+'</b>, '+
+      'adjective <b>'+correctAdj+'</b>.<br>'+
+      'All three pieces share the same gender: <b>'+correctPhrase+'</b>.'+
+    '</div>';
+
+  document.getElementById('btn-check').style.display = 'none';
+  document.getElementById('btn-next').style.display = '';
+}
+
+function updateStats(){
+  document.getElementById('stat-total').textContent = stats.total;
+  document.getElementById('stat-correct').textContent = stats.correct;
+  document.getElementById('stat-wrong').textContent = stats.wrong;
+}
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter'){ if(answered) nextCard(); else if(selArt&&selAdj) checkAnswer(); }
+});
+
+nextCard();
+</script>
+</body>
+</html>
