@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Roots & Word-Building Drill</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --white:#fdfaf6; --dark:#1e2a35; --greek-blue:#0d4f8b; --teal:#00695c; --root:#2e7d32; --prefix:#6a4c93; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Lato',sans-serif;background:var(--white);color:var(--dark);min-height:100vh;padding:22px 14px 64px;}
+  .wrap{max-width:680px;margin:0 auto;}
+  header.top{text-align:center;margin-bottom:14px;}
+  header.top h1{font-family:'Playfair Display',serif;color:var(--greek-blue);font-size:clamp(1.4rem,4vw,2rem);margin-bottom:5px;}
+  header.top p{color:#4a6f8a;font-size:0.92rem;}
+
+  .mode-toggle{display:flex;justify-content:center;gap:8px;margin:12px 0;}
+  .mode-btn{padding:8px 18px;border-radius:99px;border:1.5px solid var(--greek-blue);background:white;color:var(--greek-blue);font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Lato',sans-serif;}
+  .mode-btn.active{background:var(--greek-blue);color:white;}
+
+  .speak-btn{border:none;background:#e0f2f1;color:var(--teal);cursor:pointer;border-radius:99px;font-size:0.85rem;padding:2px 8px;margin-left:4px;vertical-align:middle;line-height:1;}
+  .speak-btn:hover{background:#b2dfdb;}
+
+  /* Reference */
+  .ref-section-title{font-family:'Playfair Display',serif;font-size:1.15rem;margin:18px 0 8px;display:flex;align-items:center;gap:8px;}
+  .ref-section-title.pre{color:var(--prefix);} .ref-section-title.rt{color:var(--root);}
+  .ref-list{display:flex;flex-direction:column;gap:8px;}
+  .ref-card{background:white;border:1px solid #e1ecf4;border-radius:11px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+  .ref-card .piece{font-family:'Georgia',serif;font-size:1.25rem;font-weight:700;}
+  .ref-card.pre .piece{color:var(--prefix);} .ref-card.rt .piece{color:var(--root);}
+  .ref-card .meaning{font-weight:700;color:var(--dark);margin-left:6px;}
+  .ref-card .cog{font-size:0.8rem;color:#9aa8b2;font-style:italic;margin-left:6px;}
+  .ref-card .ex{font-size:0.86rem;color:#5a6f6c;margin-top:5px;line-height:1.6;}
+  .ref-card .ex b{color:var(--teal);}
+
+  /* Decode quiz */
+  .qopts-toggle{display:flex;justify-content:center;margin-bottom:12px;}
+  .partswitch{display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;color:#6a4c93;cursor:pointer;user-select:none;font-weight:700;border:1.5px solid #d6c9ec;background:#f3eefa;border-radius:99px;padding:6px 13px;}
+  .partswitch input{accent-color:#6a4c93;cursor:pointer;}
+  .stats{text-align:center;font-size:0.86rem;color:#4a6f8a;margin-bottom:12px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
+  .stats strong{color:#0d47a1;} .stats .correct strong{color:#2e7d32;} .stats .streak strong{color:#b76e00;}
+
+  .qcard{background:white;border:1px solid #e1ecf4;border-radius:16px;padding:26px 20px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.05);}
+  .qword{font-family:'Playfair Display',serif;font-size:2.1rem;color:var(--teal);}
+  .qbuild{margin:14px 0 6px;font-size:1rem;color:#5a6f6c;min-height:24px;}
+  .qbuild .pre{color:var(--prefix);font-weight:700;} .qbuild .rt{color:var(--root);font-weight:700;}
+  .qbuild .plus{color:#b0bec5;margin:0 6px;}
+  .qbuild.hidden{visibility:hidden;}
+  .qask{font-size:0.95rem;color:#8a9aa5;font-style:italic;margin-bottom:14px;}
+  .opts{display:flex;flex-direction:column;gap:8px;max-width:360px;margin:0 auto;}
+  .opt{padding:11px 16px;border:2px solid #bbdefb;border-radius:10px;background:white;color:var(--dark);font-size:1rem;cursor:pointer;font-family:'Lato',sans-serif;}
+  .opt:hover{background:#e3f2fd;} .opt.correct{background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;font-weight:700;}
+  .opt.wrong{background:#ffebee;border-color:#c62828;color:#c62828;}
+  .opt.locked{pointer-events:none;}
+  .reveal{margin-top:16px;padding:14px;border-radius:10px;background:#fff8ec;border:1px solid #ffe2b0;font-size:0.9rem;color:#8a6d3b;display:none;text-align:left;line-height:1.6;}
+  .reveal.show{display:block;}
+  .reveal .lit{font-family:'Georgia',serif;}
+  .reveal b{color:#b76e00;}
+  .actions{display:flex;gap:8px;justify-content:center;margin-top:16px;}
+  .btn{padding:10px 22px;border-radius:99px;font-weight:700;font-size:0.9rem;cursor:pointer;border:1.5px solid var(--greek-blue);font-family:'Lato',sans-serif;}
+  .btn-primary{background:var(--greek-blue);color:white;} .btn-primary:hover{background:#0a3d6e;}
+  .footer-tip{text-align:center;font-size:0.78rem;color:#9aa8b2;margin-top:22px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🌱 Roots & Word-Building</h1>
+    <p>Greek words are built from <b>prefix + root</b>. Learn the pieces, and you can <em>decode the meaning of words you've never seen</em>.</p>
+  </header>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="mode-ref" onclick="setMode('ref')">🧩 Learn the pieces</button>
+    <button class="mode-btn" id="mode-decode" onclick="setMode('decode')">🎯 Decode words</button>
+  </div>
+
+  <!-- Reference -->
+  <div id="ref-view">
+    <div class="ref-section-title pre">🔹 Prefixes <span style="font-size:0.8rem;color:#9aa8b2;font-weight:400;">— direction & relationship</span></div>
+    <div class="ref-list" id="prefix-list"></div>
+    <div class="ref-section-title rt">🌿 Roots <span style="font-size:0.8rem;color:#9aa8b2;font-weight:400;">— the core meaning</span></div>
+    <div class="ref-list" id="root-list"></div>
+  </div>
+
+  <!-- Decode -->
+  <div id="decode-view" style="display:none;">
+    <div class="qopts-toggle">
+      <label class="partswitch"><input type="checkbox" id="parts-cb" checked onchange="render()"> 🧩 Show the parts (turn off to test yourself)</label>
+    </div>
+    <div class="stats">
+      <span>Done: <strong id="s-total">0</strong></span>
+      <span class="correct">✓ <strong id="s-correct">0</strong></span>
+      <span class="streak">🔥 <strong id="s-streak">0</strong></span>
+    </div>
+    <div class="qcard">
+      <div class="qword" id="q-word">…<button class="speak-btn" title="Hear" onclick="speakCurrent()">🔊</button></div>
+      <div class="qbuild" id="q-build"></div>
+      <div class="qask">What does it mean? Piece it together…</div>
+      <div class="opts" id="q-opts"></div>
+      <div class="reveal" id="q-reveal"></div>
+      <div class="actions"><button class="btn btn-primary" id="q-next" onclick="nextCard()" style="display:none;">Next →</button></div>
+    </div>
+  </div>
+
+  <p class="footer-tip">The trick: a prefix tells you the <em>direction</em>, the root tells you the <em>core idea</em>. περι (around) + γράφω (write) → you "write around" something = <b>describe</b>.</p>
+</div>
+
+<script>
+/* Greek word-building: prefixes + roots → compound meanings. Grounded in the
+   Language Transfer "Complete Greek" lessons (περι-, επι-, κατα-, υπο-, δια-…)
+   plus standard Greek etymology. Self-contained, offline, with el-GR TTS. */
+
+const PREFIXES = [
+  {piece:'περι-', m:'around', cog:'perimeter, periscope', ex:['<b>περι</b>μένω → wait (around-stay)','<b>περι</b>γράφω → describe','<b>περι</b>έχω → contain']},
+  {piece:'επι-', m:'on / upon', cog:'epicenter, epidermis', ex:['<b>επι</b>μένω → insist (on-stay)','<b>επι</b>στρέφω → return','<b>επι</b>λέγω → select']},
+  {piece:'κατα-', m:'down', cog:'catastrophe, catalogue', ex:['<b>κατ</b>εβαίνω → go down','<b>κατα</b>πίνω → swallow','<b>κατα</b>λαβαίνω → understand']},
+  {piece:'υπο-', m:'under / below', cog:'hypodermic, hypothesis', ex:['<b>υπο</b>γράφω → sign (under-write)','<b>υπο</b>μονή → patience','<b>υπ</b>άρχω → exist']},
+  {piece:'δια-', m:'through / across', cog:'diameter, dialogue', ex:['<b>δια</b>γράφω → delete (write-through)','<b>δια</b>λέγω → choose']},
+  {piece:'προ-', m:'before / forward', cog:'prologue, program', ex:['<b>πρό</b>γραμμα → program (pre-writing)','<b>προ</b>σπαθώ → try']},
+  {piece:'παρα-', m:'beside / by', cog:'parallel, paradigm', ex:['<b>παρα</b>μένω → remain','<b>παρά</b>δειγμα → example','<b>παρα</b>καλώ → please/plead']},
+  {piece:'από-', m:'from / away', cog:'apostle, apology', ex:['<b>από</b> → from','<b>απο</b>λογία → apology']},
+  {piece:'αυτο-', m:'self', cog:'automatic, autograph', ex:['<b>αυτο</b>κίνητο → car (self-moving)']},
+  {piece:'τηλε-', m:'far / distant', cog:'telephone, telescope', ex:['<b>τηλέ</b>φωνο → phone (far-sound)']},
+];
+
+const ROOTS = [
+  {piece:'γράφ-', m:'write', cog:'graph, scribe, -graphy', ex:['γράφω → write','υπογράφω → sign','περιγράφω → describe','πρόγραμμα → program']},
+  {piece:'μέν- / μον-', m:'stay / remain', cog:'remain, mansion', ex:['μένω → stay','περιμένω → wait','επιμένω → insist','υπομονή → patience']},
+  {piece:'στρέφ- / στροφ-', m:'turn', cog:'-strophe, catastrophe', ex:['στρέφω → turn','επιστρέφω → return','καταστροφή → catastrophe']},
+  {piece:'λεγ- / λεξ-', m:'say / pick', cog:'lexicon, dialect, -logy', ex:['λέω → say','επιλέγω / διαλέγω → choose','λέξη → word']},
+  {piece:'βαίν- / βασ-', m:'go / step', cog:'basis, acrobat', ex:['κατεβαίνω → go down','ανεβαίνω → go up']},
+  {piece:'έχ-', m:'have / hold', cog:'—', ex:['έχω → have','περιέχω → contain','προσέχω → take care']},
+  {piece:'αρχ-', m:'begin / rule', cog:'monarch, archaic, architect', ex:['αρχίζω → start','αρχή → beginning','υπάρχω → exist']},
+  {piece:'φερ- / φορ-', m:'carry / bring', cog:'metaphor, transfer', ex:['φέρνω → bring','καταφέρνω → manage']},
+  {piece:'κινητ-', m:'move', cog:'kinetic, cinema', ex:['αυτοκίνητο → car','κινητό → mobile phone']},
+  {piece:'φων-', m:'sound / voice', cog:'phone, symphony', ex:['τηλέφωνο → phone','φωνή → voice']},
+  {piece:'φοβ-', m:'fear', cog:'-phobia', ex:['φόβος → fear','αγοραφοβία → agoraphobia']},
+  {piece:'αγορ-', m:'market', cog:'agora', ex:['αγορά → market','αγοράζω → buy']},
+];
+
+const DECODE = [
+  {word:'περιμένω', pre:'περι', preM:'around', root:'μένω', rootM:'stay', literal:'around-stay', mean:'to wait', cog:'περι- like perimeter', opts:['to wait','to insist','to remain','to contain']},
+  {word:'επιμένω', pre:'επι', preM:'on', root:'μένω', rootM:'stay', literal:'on-stay (stay on it)', mean:'to insist', cog:'επι- like epicenter', opts:['to insist','to wait','to return','to remain']},
+  {word:'παραμένω', pre:'παρα', preM:'beside', root:'μένω', rootM:'stay', literal:'beside-stay', mean:'to remain', cog:'παρα- like parallel', opts:['to remain','to insist','to wait','to leave']},
+  {word:'υπομονή', pre:'υπο', preM:'under', root:'μονή', rootM:'a staying', literal:'under-staying', mean:'patience', cog:'staying under pressure', opts:['patience','insistence','fear','return']},
+  {word:'περιγράφω', pre:'περι', preM:'around', root:'γράφω', rootM:'write', literal:'around-write', mean:'to describe', cog:'peri- + scribe = describe', opts:['to describe','to sign','to delete','to contain']},
+  {word:'υπογράφω', pre:'υπο', preM:'under', root:'γράφω', rootM:'write', literal:'under-write', mean:'to sign', cog:'underwrite / subscribe', opts:['to sign','to describe','to delete','to copy']},
+  {word:'διαγράφω', pre:'δια', preM:'through', root:'γράφω', rootM:'write', literal:'write-through (cross out)', mean:'to delete', cog:'δια- like diameter', opts:['to delete','to describe','to sign','to draw']},
+  {word:'περιέχω', pre:'περι', preM:'around', root:'έχω', rootM:'have', literal:'around-have', mean:'to contain', cog:'hold around it', opts:['to contain','to take care','to exist','to wait']},
+  {word:'προσέχω', pre:'προς', preM:'towards', root:'έχω', rootM:'have/hold', literal:'hold towards', mean:'to pay attention / take care', cog:'keep your hold toward it', opts:['to pay attention / take care','to contain','to try','to return']},
+  {word:'κατεβαίνω', pre:'κατα', preM:'down', root:'βαίνω', rootM:'go/step', literal:'down-go', mean:'to go down / get off', cog:'κατα- like catastrophe; βασ- = basis (a step)', opts:['to go down / get off','to go up','to understand','to manage']},
+  {word:'καταλαβαίνω', pre:'κατα', preM:'down', root:'λαμβάνω', rootM:'take/grasp', literal:'take down → grasp', mean:'to understand', cog:'grasp it', opts:['to understand','to go down','to swallow','to manage']},
+  {word:'καταπίνω', pre:'κατα', preM:'down', root:'πίνω', rootM:'drink', literal:'drink down', mean:'to swallow', cog:'drink it down', opts:['to swallow','to understand','to pour','to get off']},
+  {word:'καταφέρνω', pre:'κατα', preM:'down', root:'φέρνω', rootM:'bring/carry', literal:'bring it off', mean:'to manage / pull off', cog:'φορ- like metaphor/transfer', opts:['to manage / pull off','to bring','to carry','to lose']},
+  {word:'επιστρέφω', pre:'επι', preM:'on/back', root:'στρέφω', rootM:'turn', literal:'turn back', mean:'to return / come back', cog:'-strophe = a turn', opts:['to return / come back','to insist','to twist','to leave']},
+  {word:'καταστροφή', pre:'κατα', preM:'down', root:'στροφή', rootM:'turning', literal:'a downturn', mean:'catastrophe / disaster', cog:'literally catastrophe', opts:['catastrophe / disaster','a return','a beginning','a U-turn']},
+  {word:'επιλέγω', pre:'επι', preM:'on', root:'λέγω', rootM:'pick/say', literal:'pick out', mean:'to select / choose', cog:'-lect, e-LECT', opts:['to select / choose','to say','to delete','to describe']},
+  {word:'διαλέγω', pre:'δια', preM:'through', root:'λέγω', rootM:'pick', literal:'pick through', mean:'to choose', cog:'δια-λεξ → dialect', opts:['to choose','to tell','to read','to translate']},
+  {word:'υπάρχω', pre:'υπ', preM:'under', root:'αρχ-', rootM:'begin', literal:'under-begin (be there at the base)', mean:'to exist / there is', cog:'αρχ- like archaic', opts:['to exist / there is','to start','to count','to rule']},
+  {word:'αρχίζω', pre:'', preM:'', root:'αρχ-', rootM:'beginning', literal:'from αρχή = beginning', mean:'to start / begin', cog:'arch-, archaic', opts:['to start / begin','to exist','to end','to rule']},
+  {word:'αυτοκίνητο', pre:'αυτο', preM:'self', root:'κίνητο', rootM:'moving', literal:'self-moving', mean:'car / automobile', cog:'auto + kinetic', opts:['car / automobile','motorbike','engine','robot']},
+  {word:'τηλέφωνο', pre:'τηλε', preM:'far', root:'φωνή', rootM:'sound', literal:'far-sound', mean:'telephone', cog:'tele + phone', opts:['telephone','television','microphone','radio']},
+  {word:'αγοραφοβία', pre:'αγορά', preM:'marketplace', root:'φόβος', rootM:'fear', literal:'fear of the marketplace / open spaces', mean:'agoraphobia', cog:'agora + -phobia', opts:['agoraphobia','fear of heights','a crowded market','claustrophobia']},
+  {word:'παράδειγμα', pre:'παρα', preM:'beside', root:'δειγμα', rootM:'a showing', literal:'shown beside', mean:'example', cog:'paradigm', opts:['example','diagram','program','panorama']},
+  {word:'πρόγραμμα', pre:'προ', preM:'before', root:'γράμμα', rootM:'writing', literal:'pre-writing', mean:'program / schedule', cog:'program', opts:['program / schedule','diagram','paragraph','message']},
+];
+
+let mode='ref', current=null, deck=[], pos=0, answered=false;
+let stats={total:0,correct:0,streak:0};
+
+/* TTS */
+function warmVoices(){ if('speechSynthesis' in window){ try{window.speechSynthesis.getVoices();}catch(e){} } }
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged=warmVoices; }
+function speakGreek(t){ if(!('speechSynthesis' in window)||!t)return;
+  try{ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(String(t)); u.lang='el-GR'; u.rate=0.9;
+    const v=(window.speechSynthesis.getVoices()||[]).find(x=>/el([-_]?GR)?/i.test(x.lang)||/greek|ελλ/i.test(x.name)); if(v)u.voice=v;
+    window.speechSynthesis.speak(u);}catch(e){} }
+function speakCurrent(){ if(current) speakGreek(current.word); }
+
+function setMode(m){ mode=m;
+  document.getElementById('mode-ref').classList.toggle('active',m==='ref');
+  document.getElementById('mode-decode').classList.toggle('active',m==='decode');
+  document.getElementById('ref-view').style.display=m==='ref'?'':'none';
+  document.getElementById('decode-view').style.display=m==='decode'?'':'none';
+  if(m==='decode'){ startDeck(); }
+}
+
+function buildRef(){
+  const esc=s=>s.replace(/'/g,"\\'");
+  const pl=document.getElementById('prefix-list'); pl.innerHTML='';
+  PREFIXES.forEach(p=>{ const d=document.createElement('div'); d.className='ref-card pre';
+    d.innerHTML='<span class="piece">'+p.piece+'</span><span class="meaning">'+p.m+'</span><span class="cog">'+p.cog+'</span>'+
+      '<div class="ex">'+p.ex.join(' · ')+'</div>'; pl.appendChild(d); });
+  const rl=document.getElementById('root-list'); rl.innerHTML='';
+  ROOTS.forEach(r=>{ const d=document.createElement('div'); d.className='ref-card rt';
+    d.innerHTML='<span class="piece">'+r.piece+'</span><span class="meaning">'+r.m+'</span><span class="cog">'+r.cog+'</span>'+
+      '<div class="ex">'+r.ex.join(' · ')+'</div>'; rl.appendChild(d); });
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function startDeck(){ deck=shuffle(DECODE.slice()); pos=0; stats={total:0,correct:0,streak:0}; updateStats(); render(); }
+
+function render(){
+  answered=false;
+  current=deck[pos];
+  document.getElementById('q-word').innerHTML=current.word+'<button class="speak-btn" title="Hear" onclick="speakCurrent()">🔊</button>';
+  const showParts=document.getElementById('parts-cb').checked;
+  const build=document.getElementById('q-build');
+  if(current.pre){
+    build.innerHTML='<span class="pre">'+current.pre+'-</span> <span style="font-size:0.8rem;color:#9aa8b2">('+current.preM+')</span>'+
+      '<span class="plus">+</span><span class="rt">'+current.root+'</span> <span style="font-size:0.8rem;color:#9aa8b2">('+current.rootM+')</span>';
+  } else {
+    build.innerHTML='<span class="rt">'+current.root+'</span> <span style="font-size:0.8rem;color:#9aa8b2">('+current.rootM+')</span>';
+  }
+  build.className='qbuild'+(showParts?'':' hidden');
+  const opts=shuffle(current.opts.slice());
+  const host=document.getElementById('q-opts'); host.innerHTML='';
+  opts.forEach(o=>{ const b=document.createElement('button'); b.className='opt'; b.textContent=o; b.onclick=()=>answer(o,b); host.appendChild(b); });
+  document.getElementById('q-reveal').className='reveal';
+  document.getElementById('q-reveal').innerHTML='';
+  document.getElementById('q-next').style.display='none';
+}
+
+function answer(picked, btn){
+  if(answered) return; answered=true;
+  const ok=picked===current.mean;
+  stats.total++; if(ok){stats.correct++;stats.streak++;} else stats.streak=0; updateStats();
+  document.querySelectorAll('#q-opts .opt').forEach(b=>{ b.classList.add('locked');
+    if(b.textContent===current.mean) b.classList.add('correct');
+    else if(b===btn) b.classList.add('wrong'); });
+  document.getElementById('q-build').className='qbuild'; // always reveal parts after answering
+  const r=document.getElementById('q-reveal'); r.className='reveal show';
+  r.innerHTML='<div class="lit"><b>'+current.word+'</b> = '+(current.pre?current.pre+'- ('+current.preM+') + '+current.root+' ('+current.rootM+')':current.root+' ('+current.rootM+')')+'</div>'+
+    '<div style="margin-top:4px;">Literally <b>"'+current.literal+'"</b> → <b>'+current.mean+'</b></div>'+
+    '<div style="margin-top:4px;font-style:italic;">💡 '+current.cog+'</div>';
+  speakGreek(current.word);
+  document.getElementById('q-next').style.display='';
+}
+function nextCard(){ pos=(pos+1)%deck.length; if(pos===0) deck=shuffle(deck); render(); }
+function updateStats(){ document.getElementById('s-total').textContent=stats.total;
+  document.getElementById('s-correct').textContent=stats.correct; document.getElementById('s-streak').textContent=stats.streak; }
+
+document.addEventListener('keydown',e=>{ if(mode==='decode'&&e.key==='Enter'&&answered) nextCard(); });
+
+buildRef();
+</script>
+</body>
+</html>
