@@ -3731,6 +3731,7 @@
         <button class="grammar-mode-btn sh-btn" id="sh-gendagree" onclick="setGrammarMode('gendagree',this)">⚖️ Gender Agreement<span class="sh-sub">articles + nouns · καλός καιρός</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-conjdrill" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill<span class="sh-sub">type the 6 forms</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-pronouns" onclick="setGrammarMode('pronouns',this)">🧍 Object Pronouns<span class="sh-sub">μου/σου/του · before the verb</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-rootsdrill" onclick="setGrammarMode('rootsdrill',this)">🌱 Roots &amp; Word-Building<span class="sh-sub">decode meaning from prefix + root</span></button>
       </div>
       <button class="grammar-showall-toggle" id="grammar-showall-toggle" onclick="toggleAllDrills()">▸ Show all drills (everything else)</button>
     </div>
@@ -4030,6 +4031,19 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="prepositions-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roots & Word-Building — iframe wrapper around the standalone /roots-drill.html.
+         Same lazy-iframe pattern. Teaches Greek prefixes + roots and drills decoding
+         word meaning from the pieces (περι + γράφω → describe). A Start-Here priority. -->
+    <div id="grammar-rootsdrill" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="rootsdrill-frame" class="conjdrill-frame"
+                title="Greek Roots &amp; Word-Building Drill" loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="roots-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -10825,6 +10839,7 @@
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
     document.getElementById('grammar-sentbuild').style.display = mode === 'sentbuild' ? '' : 'none';
+    document.getElementById('grammar-rootsdrill').style.display = mode === 'rootsdrill' ? '' : 'none';
     document.getElementById('grammar-gendagree').style.display = mode === 'gendagree' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
@@ -10856,6 +10871,7 @@
     if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'conjdrill') initConjDrillFrame();
     if (mode === 'sentbuild') initSentBuildFrame();
+    if (mode === 'rootsdrill') initRootsDrillFrame();
     if (mode === 'gendagree') initGendAgreeFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'convprep') initConvPrepFrame();
@@ -12299,6 +12315,13 @@
   function initSentBuildFrame() {
     const f = document.getElementById('sentbuild-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'sentence-builder-drill.html');
+  }
+
+  // ── Roots & Word-Building (subpanel) ──
+  // Lazy-iframe wrapper around /roots-drill.html. Prefix + root → meaning.
+  function initRootsDrillFrame() {
+    const f = document.getElementById('rootsdrill-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'roots-drill.html');
   }
 
   // ── Gender Agreement (subpanel) ──
