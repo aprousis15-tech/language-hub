@@ -1212,6 +1212,7 @@
 
   /* ── REVIEW (Mistakes & Patterns) ── */
   .lang-tab.active-review { color: #6d4c41; border-bottom-color: #6d4c41; background: white; font-weight: 700; }
+  .lang-tab.active-ltvocab { color: #00695c; border-bottom-color: #00695c; background: white; font-weight: 700; }
   .review-header { text-align: center; margin-bottom: 22px; }
   .review-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #6d4c41; margin-bottom: 6px; }
   .review-header p { font-size: 0.85rem; color: #7a5e50; }
@@ -2781,6 +2782,21 @@
   <button class="lang-tab" onclick="switchLang('notes')">📝 Notes</button>
   <button class="lang-tab" onclick="switchLang('sessions')">🎯 Sessions</button>
   <button class="lang-tab" onclick="switchLang('review')">🔍 Review</button>
+  <button class="lang-tab" onclick="switchLang('ltvocab')">📒 LT Vocab</button>
+</div>
+
+<!-- LANGUAGE TRANSFER VOCAB PANEL — lazy iframe around /lt-vocab.html.
+     All vocabulary from Complete Greek lessons 1–48, browsable by lesson +
+     flashcards + Greek TTS. Same lazy-iframe pattern as the grammar drills:
+     src is set on first open so it's free until visited. -->
+<div class="lang-panel" id="panel-ltvocab">
+  <div class="container">
+    <div class="conjdrill-frame-wrap" style="max-width:820px;margin:0 auto;">
+      <iframe id="ltvocab-frame" class="conjdrill-frame" style="height:780px;"
+              title="Greek Vocab — Language Transfer Lessons 1–48" loading="lazy"></iframe>
+      <div class="conjdrill-frame-link"><a href="lt-vocab.html" target="_blank" rel="noopener">↗ Open full-screen</a></div>
+    </div>
+  </div>
 </div>
 
 <!-- GREEK PANEL -->
@@ -8955,12 +8971,13 @@
 
   function switchLang(lang) {
     document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-story','active-coach','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review'));
+    document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active-greek','active-spanish','active-vocab','active-dad','active-alphabet','active-grammar','active-practice','active-speak','active-story','active-coach','active-rules','active-foundations','active-translate','active-notes','active-sessions','active-review','active-ltvocab'));
     const panelEl = document.getElementById('panel-' + lang);
     if (panelEl) panelEl.classList.add('active');
-    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, story:8, coach:9, rules:10, foundations:11, translate:12, notes:13, sessions:14, review:15};
+    const map = {greek:0, spanish:1, vocab:2, dad:3, alphabet:4, grammar:5, practice:6, speak:7, story:8, coach:9, rules:10, foundations:11, translate:12, notes:13, sessions:14, review:15, ltvocab:16};
     const tabs = document.querySelectorAll('.lang-tab');
     if (map[lang] !== undefined) tabs[map[lang]].classList.add('active-' + lang);
+    if (lang === 'ltvocab') initLtVocabFrame();
     if (lang === 'vocab') renderVocab();
     if (lang === 'dad') { initDadTopics(); renderSessionNotes(); }
     if (lang === 'alphabet') { buildAlphaTable(); }
@@ -12197,6 +12214,14 @@
     showAspectCard();
   }
   function gAspectShuffle() { initAspectDrill(); }
+
+  // ── Language Transfer Vocab (tab) ──
+  // Lazy-iframe wrapper around /lt-vocab.html (all vocab from lessons 1–48).
+  // src set on first open so the page-load cost is zero until visited.
+  function initLtVocabFrame() {
+    const f = document.getElementById('ltvocab-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'lt-vocab.html');
+  }
 
   // ── Conjugation Drill (subpanel) ──
   // The drill itself lives in /conjugation-drill.html as a standalone page; this

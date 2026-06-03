@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Vocab — Language Transfer Lessons 1–48</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --white:#fdfaf6; --dark:#1e2a35; --greek-blue:#0d4f8b; --teal:#00695c; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Lato',sans-serif;background:var(--white);color:var(--dark);min-height:100vh;padding:22px 14px 64px;}
+  .wrap{max-width:780px;margin:0 auto;}
+  header.top{text-align:center;margin-bottom:14px;}
+  header.top h1{font-family:'Playfair Display',serif;color:var(--greek-blue);font-size:clamp(1.4rem,4vw,2rem);margin-bottom:5px;}
+  header.top p{color:#4a6f8a;font-size:0.92rem;}
+
+  .mode-toggle{display:flex;justify-content:center;gap:8px;margin:12px 0;}
+  .mode-btn{padding:8px 20px;border-radius:99px;border:1.5px solid var(--greek-blue);background:white;color:var(--greek-blue);font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Lato',sans-serif;}
+  .mode-btn.active{background:var(--greek-blue);color:white;}
+
+  .filters{display:flex;flex-direction:column;gap:7px;align-items:center;margin-bottom:12px;}
+  .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;}
+  .chip-row .lbl{font-size:0.7rem;color:#9aa8b2;text-transform:uppercase;letter-spacing:0.08em;}
+  .fchip{padding:5px 12px;border-radius:99px;border:1.5px solid #bbdefb;background:white;color:var(--greek-blue);font-size:0.8rem;cursor:pointer;font-weight:600;}
+  .fchip:hover{background:#e3f2fd;}
+  .fchip.active{background:var(--greek-blue);color:white;border-color:var(--greek-blue);}
+  .fchip.pos.active{background:var(--teal);border-color:var(--teal);}
+  #search{padding:8px 14px;border:1.5px solid #bbdefb;border-radius:99px;font-size:0.9rem;width:240px;max-width:80vw;font-family:'Lato',sans-serif;}
+  #search:focus{outline:none;border-color:var(--greek-blue);}
+  .count{text-align:center;font-size:0.84rem;color:#4a6f8a;margin-bottom:12px;}
+  .count strong{color:#0d47a1;}
+
+  /* Browse */
+  .vlist{display:flex;flex-direction:column;gap:8px;}
+  .vrow{display:flex;align-items:flex-start;gap:12px;background:white;border:1px solid #e1ecf4;border-radius:11px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+  .vrow .lbadge{flex:0 0 auto;font-size:0.66rem;font-weight:700;color:#90a4ae;background:#eef3f7;border-radius:6px;padding:3px 7px;margin-top:2px;letter-spacing:0.04em;}
+  .vrow .vmain{flex:1 1 auto;min-width:0;}
+  .vrow .vgr{font-family:'Georgia',serif;font-size:1.25rem;color:var(--teal);cursor:pointer;}
+  .vrow .vgr:hover{text-decoration:underline;}
+  .vrow .vtr{font-size:0.8rem;color:#9aa8b2;font-style:italic;margin-left:6px;}
+  .vrow .ven{font-size:0.95rem;color:var(--dark);margin-top:2px;}
+  .vrow .vnote{font-size:0.78rem;color:#7a8a95;margin-top:2px;}
+  .postag{flex:0 0 auto;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-radius:6px;padding:3px 7px;margin-top:2px;}
+  .postag.verb{background:#e0f2f1;color:#00695c;} .postag.noun{background:#e3f0fb;color:#1565c0;}
+  .postag.adj{background:#fce4ec;color:#c2185b;} .postag.adv{background:#fff3e0;color:#b76e00;}
+  .postag.pron,.postag.prep,.postag.conj,.postag.particle,.postag.num,.postag.expression{background:#ede7f6;color:#5e35b1;}
+  .speak-btn{border:none;background:#e0f2f1;color:var(--teal);cursor:pointer;border-radius:99px;font-size:0.9rem;padding:2px 9px;margin-left:4px;vertical-align:middle;line-height:1;}
+  .speak-btn:hover{background:#b2dfdb;}
+
+  /* Flashcards */
+  .fc-wrap{max-width:460px;margin:0 auto;}
+  .fc-controls{display:flex;justify-content:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+  .fc-card{background:white;border:1px solid #e1ecf4;border-radius:16px;padding:34px 22px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.05);min-height:210px;display:flex;flex-direction:column;justify-content:center;}
+  .fc-lbadge{font-size:0.68rem;color:#90a4ae;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+  .fc-front{font-family:'Playfair Display',serif;font-size:2.1rem;color:var(--teal);}
+  .fc-front.en{color:var(--dark);font-size:1.7rem;}
+  .fc-tr{font-size:0.95rem;color:#9aa8b2;font-style:italic;margin-top:6px;}
+  .fc-back{margin-top:16px;padding-top:14px;border-top:1px solid #eef3f7;display:none;}
+  .fc-back.show{display:block;}
+  .fc-back .ans{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dark);}
+  .fc-back .ans.gr{color:var(--teal);}
+  .fc-back .note{font-size:0.84rem;color:#7a8a95;margin-top:8px;font-style:italic;}
+  .actions{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+  .btn{padding:10px 20px;border-radius:99px;font-weight:700;font-size:0.88rem;cursor:pointer;border:1.5px solid var(--greek-blue);font-family:'Lato',sans-serif;}
+  .btn-primary{background:var(--greek-blue);color:white;} .btn-primary:hover{background:#0a3d6e;}
+  .btn-secondary{background:white;color:var(--greek-blue);} .btn-secondary:hover{background:#e3f2fd;}
+  .fc-stats{text-align:center;font-size:0.84rem;color:#4a6f8a;margin-top:14px;}
+  .footer-tip{text-align:center;font-size:0.78rem;color:#9aa8b2;margin-top:22px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>📒 Greek Vocab — Lessons 1–48</h1>
+    <p>Every word from Language Transfer <em>Complete Greek</em> tracks 1–48, by lesson. Tap any Greek word to hear it.</p>
+  </header>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="mode-browse" onclick="setMode('browse')">📖 Browse</button>
+    <button class="mode-btn" id="mode-cards" onclick="setMode('cards')">🃏 Flashcards</button>
+  </div>
+
+  <div class="filters">
+    <div class="chip-row" id="lesson-filter"></div>
+    <div class="chip-row" id="pos-filter"></div>
+    <div class="chip-row" id="search-row"><input id="search" type="text" placeholder="🔍 search Greek or English…" oninput="render()"></div>
+    <div class="chip-row" id="cards-extra" style="display:none;">
+      <span class="lbl">Show</span>
+      <button class="fchip active" id="dir-gr" onclick="setDir('gr')">Greek first</button>
+      <button class="fchip" id="dir-en" onclick="setDir('en')">English first</button>
+      <button class="fchip" onclick="shuffleDeck()">🔀 Shuffle</button>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <div id="browse-view"><div class="vlist" id="vlist"></div></div>
+
+  <div id="cards-view" style="display:none;">
+    <div class="fc-wrap">
+      <div class="fc-card" id="fc-card">
+        <div class="fc-lbadge" id="fc-lbadge"></div>
+        <div class="fc-front" id="fc-front">…</div>
+        <div class="fc-tr" id="fc-tr"></div>
+        <div class="fc-back" id="fc-back"></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="speakCurrent()">🔊 Hear</button>
+        <button class="btn btn-primary" id="fc-reveal" onclick="revealCard()">Reveal</button>
+        <button class="btn btn-secondary" id="fc-next" onclick="nextCard()" style="display:none;">Next →</button>
+      </div>
+      <div class="fc-stats" id="fc-stats"></div>
+    </div>
+  </div>
+
+  <p class="footer-tip">Greek voice quality depends on your device. iPhone: Settings → Accessibility → Spoken Content → Voices → Greek (download the enhanced voice).</p>
+</div>
+
+<script>
+/* Vocabulary distilled from the Language Transfer "Complete Greek" transcript,
+   tracks 1–48. One entry per dictionary lemma, tagged to the lesson where it's
+   first taught. closed = perfective/closed verb form. Self-contained, offline. */
+const VOCAB = [{"lesson":2,"greek":"δεν","translit":"dhen","en":"not / don't","pos":"particle","note":"negation, before the verb"},{"lesson":2,"greek":"περι-","translit":"peri","en":"around / near (prefix)","pos":"particle","note":"word-building element"},{"lesson":2,"greek":"με","translit":"me","en":"me (object)","pos":"pron","note":"before the verb"},{"lesson":2,"greek":"μένω","translit":"méno","en":"I stay / I'm staying","pos":"verb","note":"closed: μείνω"},{"lesson":2,"greek":"περιμένω","translit":"periméno","en":"I wait","pos":"verb","note":"lit. 'around-stay'; no closed form"},{"lesson":3,"greek":"γιατί","translit":"yatí","en":"why / because","pos":"adv","note":"για + τι"},{"lesson":3,"greek":"πού","translit":"pu","en":"where","pos":"adv","note":"question word"},{"lesson":3,"greek":"επι-","translit":"epi","en":"on (prefix)","pos":"particle","note":"word-building element"},{"lesson":3,"greek":"για","translit":"ya","en":"for / because of","pos":"prep","note":""},{"lesson":3,"greek":"τι","translit":"ti","en":"what","pos":"pron","note":""},{"lesson":3,"greek":"επιμένω","translit":"epiméno","en":"I insist","pos":"verb","note":"lit. 'on-stay'"},{"lesson":4,"greek":"καλά","translit":"kalá","en":"well / fine","pos":"adv","note":""},{"lesson":4,"greek":"τώρα","translit":"tóra","en":"now","pos":"adv","note":""},{"lesson":4,"greek":"τι κάνεις","translit":"ti kánis","en":"what are you doing? / how are you?","pos":"expression","note":"common greeting"},{"lesson":4,"greek":"εγώ","translit":"eghó","en":"I (emphatic)","pos":"pron","note":"usually dropped"},{"lesson":4,"greek":"κάνω","translit":"káno","en":"I do / I make","pos":"verb","note":""},{"lesson":4,"greek":"ξέρω","translit":"kséro","en":"I know","pos":"verb","note":"no closed form"},{"lesson":5,"greek":"αλάτι","translit":"aláti","en":"salt","pos":"noun","note":"neuter"},{"lesson":5,"greek":"νερό","translit":"neró","en":"water","pos":"noun","note":"neuter"},{"lesson":5,"greek":"να","translit":"na","en":"to (verb-linking particle)","pos":"particle","note":"connects two verbs"},{"lesson":5,"greek":"θέλω","translit":"thélo","en":"I want","pos":"verb","note":""},{"lesson":6,"greek":"εδώ","translit":"edhó","en":"here","pos":"adv","note":""},{"lesson":6,"greek":"σε","translit":"se","en":"you (object)","pos":"pron","note":"before the verb"},{"lesson":7,"greek":"κινητό","translit":"kinitó","en":"mobile phone","pos":"noun","note":"neuter; from 'kinetic'"},{"lesson":7,"greek":"το","translit":"to","en":"the / it (neuter)","pos":"pron","note":"neuter article + object pronoun 'it'"},{"lesson":8,"greek":"όχι","translit":"óchi","en":"no","pos":"adv","note":""},{"lesson":8,"greek":"αυτοκίνητο","translit":"aftokínito","en":"car","pos":"noun","note":"neuter; pl. αυτοκίνητα; 'auto-mobile'"},{"lesson":8,"greek":"βιβλίο","translit":"vivlío","en":"book","pos":"noun","note":"neuter; source of 'Bible'"},{"lesson":8,"greek":"κλίμα","translit":"klíma","en":"climate","pos":"noun","note":"neuter"},{"lesson":8,"greek":"πρόβλημα","translit":"próvlima","en":"problem","pos":"noun","note":"neuter; pl. προβλήματα"},{"lesson":8,"greek":"πρόγραμμα","translit":"próghrama","en":"program","pos":"noun","note":"neuter"},{"lesson":8,"greek":"σύστημα","translit":"sístima","en":"system","pos":"noun","note":"neuter"},{"lesson":8,"greek":"είναι","translit":"íne","en":"he/she/it is; they are","pos":"verb","note":"'to be', same form sg & pl"},{"lesson":8,"greek":"έχω","translit":"ékho","en":"I have","pos":"verb","note":"no closed form"},{"lesson":9,"greek":"πάθος","translit":"páthos","en":"passion","pos":"noun","note":"neuter"},{"lesson":9,"greek":"προς","translit":"pros","en":"towards","pos":"prep","note":""},{"lesson":9,"greek":"περιέχω","translit":"periékho","en":"I contain","pos":"verb","note":"περι- + έχω"},{"lesson":9,"greek":"προσέχω","translit":"prosékho","en":"I look after / take care","pos":"verb","note":"προς- + έχω"},{"lesson":9,"greek":"προσπαθώ","translit":"prospathó","en":"I try","pos":"verb","note":"accent on ending"},{"lesson":10,"greek":"εσύ","translit":"esí","en":"you (emphatic)","pos":"pron","note":""},{"lesson":10,"greek":"μπορώ","translit":"boró","en":"I can / I'm able","pos":"verb","note":"μπορεί = maybe"},{"lesson":11,"greek":"και","translit":"ke","en":"and / also","pos":"conj","note":"και εγώ = me too"},{"lesson":11,"greek":"βλέπω","translit":"vlépo","en":"I see","pos":"verb","note":"closed: δω"},{"lesson":12,"greek":"αυτός","translit":"aftós","en":"this (masc) / he","pos":"pron","note":"fem αυτή, neut αυτό"},{"lesson":13,"greek":"άντρας","translit":"ándras","en":"man","pos":"noun","note":"masculine; also άνδρας"},{"lesson":13,"greek":"δρόμος","translit":"dhrómos","en":"road / street","pos":"noun","note":"masculine; pl. δρόμοι"},{"lesson":13,"greek":"καφές","translit":"kafés","en":"coffee","pos":"noun","note":"masculine"},{"lesson":13,"greek":"ποταμός","translit":"potamós","en":"river","pos":"noun","note":"masculine"},{"lesson":13,"greek":"ψυχή","translit":"psichí","en":"soul","pos":"noun","note":"feminine"},{"lesson":13,"greek":"ο","translit":"o","en":"the (masculine)","pos":"particle","note":"masc. definite article"},{"lesson":13,"greek":"από","translit":"apó","en":"from","pos":"prep","note":""},{"lesson":14,"greek":"μεγάλος","translit":"meghálos","en":"big","pos":"adj","note":"fem μεγάλη, neut μεγάλο"},{"lesson":14,"greek":"κόσμος","translit":"kózmos","en":"world","pos":"noun","note":"masculine"},{"lesson":14,"greek":"πόλη","translit":"póli","en":"city","pos":"noun","note":"feminine; pl. πόλεις"},{"lesson":14,"greek":"η","translit":"i","en":"the (feminine)","pos":"particle","note":"fem. definite article"},{"lesson":14,"greek":"αυτή","translit":"aftí","en":"this (fem) / she","pos":"pron","note":""},{"lesson":15,"greek":"στο","translit":"sto","en":"in the / at the (neut)","pos":"prep","note":"σε + το"},{"lesson":15,"greek":"είμαι","translit":"íme","en":"I am","pos":"verb","note":"irregular 'to be'"},{"lesson":15,"greek":"είσαι","translit":"íse","en":"you are","pos":"verb","note":""},{"lesson":16,"greek":"καλός","translit":"kalós","en":"good","pos":"adj","note":"fem καλή, neut καλό"},{"lesson":16,"greek":"εκεί","translit":"ekí","en":"there","pos":"adv","note":""},{"lesson":16,"greek":"μετά","translit":"metá","en":"after / later / beyond","pos":"adv","note":""},{"lesson":16,"greek":"σήμερα","translit":"símera","en":"today","pos":"adv","note":""},{"lesson":16,"greek":"καλημέρα","translit":"kaliméra","en":"good morning","pos":"expression","note":"καλή + μέρα"},{"lesson":16,"greek":"μέρα","translit":"méra","en":"day","pos":"noun","note":"feminine; pl. μέρες"},{"lesson":16,"greek":"σπίτι","translit":"spíti","en":"house / home","pos":"noun","note":"neuter; pl. σπίτια"},{"lesson":17,"greek":"άρωμα","translit":"ároma","en":"aroma / perfume","pos":"noun","note":"neuter"},{"lesson":17,"greek":"παράδειγμα","translit":"parádhighma","en":"example","pos":"noun","note":"neuter; για παράδειγμα = for example"},{"lesson":17,"greek":"πράγμα","translit":"prághma","en":"thing","pos":"noun","note":"neuter"},{"lesson":17,"greek":"κάτι","translit":"káti","en":"something","pos":"pron","note":""},{"lesson":18,"greek":"λαός","translit":"laós","en":"the people","pos":"noun","note":"masculine"},{"lesson":18,"greek":"ναι","translit":"ne","en":"yes","pos":"particle","note":""},{"lesson":18,"greek":"νικάω","translit":"nikáo","en":"I win / defeat","pos":"verb","note":""},{"lesson":19,"greek":"κάτω","translit":"káto","en":"down / under / below","pos":"adv","note":""},{"lesson":19,"greek":"καταστροφή","translit":"katastrofí","en":"catastrophe / downturn","pos":"noun","note":"feminine"},{"lesson":19,"greek":"τρένο","translit":"tréno","en":"train","pos":"noun","note":"neuter"},{"lesson":19,"greek":"εμείς","translit":"emís","en":"we (emphatic)","pos":"pron","note":""},{"lesson":19,"greek":"καταλαβαίνω","translit":"katalavéno","en":"I understand","pos":"verb","note":"closed: καταλάβω"},{"lesson":19,"greek":"καταπίνω","translit":"katapíno","en":"I swallow","pos":"verb","note":"lit. drink-down"},{"lesson":19,"greek":"καταφέρνω","translit":"kataférno","en":"I manage (to)","pos":"verb","note":"closed: καταφέρω"},{"lesson":19,"greek":"κατεβαίνω","translit":"katevéno","en":"I go down / get off","pos":"verb","note":"closed: κατέβω"},{"lesson":19,"greek":"πίνω","translit":"píno","en":"I drink","pos":"verb","note":"closed: πιω"},{"lesson":19,"greek":"φέρνω","translit":"férno","en":"I bring","pos":"verb","note":"closed: φέρω"},{"lesson":20,"greek":"αύριο","translit":"ávrio","en":"tomorrow","pos":"adv","note":""},{"lesson":20,"greek":"στροφή","translit":"strofí","en":"turn / turning","pos":"noun","note":"feminine"},{"lesson":20,"greek":"φίλη","translit":"fíli","en":"friend (female)","pos":"noun","note":"feminine; pl. φίλες"},{"lesson":20,"greek":"φίλος","translit":"fílos","en":"friend (male)","pos":"noun","note":"masculine; pl. φίλοι"},{"lesson":20,"greek":"μου","translit":"mu","en":"my / to me","pos":"pron","note":"possessive / indirect object"},{"lesson":20,"greek":"σου","translit":"su","en":"your / to you","pos":"pron","note":"possessive / indirect object"},{"lesson":20,"greek":"επιστρέφω","translit":"epistréfo","en":"I return / come back","pos":"verb","note":"closed: επιστρέψω"},{"lesson":20,"greek":"στρέφω","translit":"stréfo","en":"I turn","pos":"verb","note":""},{"lesson":21,"greek":"αίμα","translit":"éma","en":"blood","pos":"noun","note":"neuter"},{"lesson":21,"greek":"αρχή","translit":"archí","en":"beginning / start","pos":"noun","note":"feminine"},{"lesson":21,"greek":"μάθημα","translit":"máthima","en":"lesson / class","pos":"noun","note":"neuter; pl. μαθήματα"},{"lesson":21,"greek":"παιδί","translit":"pedhí","en":"child","pos":"noun","note":"neuter; pl. παιδιά"},{"lesson":21,"greek":"υπομονή","translit":"ipomoní","en":"patience","pos":"noun","note":"feminine; lit. below-stay"},{"lesson":21,"greek":"ένα","translit":"éna","en":"a / one (neut)","pos":"num","note":"masc ένας, fem μία"},{"lesson":21,"greek":"αρχίζω","translit":"archízo","en":"I start","pos":"verb","note":"closed: αρχίσω"},{"lesson":21,"greek":"μαθαίνω","translit":"mathéno","en":"I learn","pos":"verb","note":"closed: μάθω"},{"lesson":21,"greek":"υπάρχω","translit":"ipárcho","en":"I exist","pos":"verb","note":"υπάρχει = there is"},{"lesson":22,"greek":"άτομο","translit":"átomo","en":"person (atom)","pos":"noun","note":"neuter"},{"lesson":22,"greek":"βράδυ","translit":"vrádhi","en":"evening","pos":"noun","note":"neuter; καλό βράδυ = good evening"},{"lesson":22,"greek":"νους","translit":"nus","en":"mind","pos":"noun","note":"masculine"},{"lesson":22,"greek":"εκείνος","translit":"ekínos","en":"that one / he","pos":"pron","note":"fem εκείνη, neut εκείνο"},{"lesson":22,"greek":"μας","translit":"mas","en":"us / to us","pos":"pron","note":"never changes"},{"lesson":22,"greek":"τον","translit":"ton","en":"him / it (masc)","pos":"pron","note":"direct object"},{"lesson":22,"greek":"καλώ","translit":"kaló","en":"I call / invite","pos":"verb","note":"accent on ending"},{"lesson":22,"greek":"παρακαλώ","translit":"parakaló","en":"please / you're welcome","pos":"verb","note":"lit. I plead"},{"lesson":22,"greek":"παραμένω","translit":"paraméno","en":"I remain","pos":"verb","note":""},{"lesson":23,"greek":"πώς","translit":"pos","en":"how","pos":"adv","note":"πώς είσαι; = how are you?"},{"lesson":23,"greek":"Ευρώπη","translit":"evrópi","en":"Europe","pos":"noun","note":"feminine"},{"lesson":23,"greek":"χαρά","translit":"khará","en":"joy / happiness","pos":"noun","note":"feminine; μία χαρά = great"},{"lesson":23,"greek":"μία","translit":"mía","en":"a / one (fem)","pos":"num","note":""},{"lesson":23,"greek":"θα","translit":"tha","en":"will (future particle)","pos":"particle","note":"from θέλει να"},{"lesson":23,"greek":"ευχαριστώ","translit":"efkharistó","en":"thank you / I thank","pos":"verb","note":""},{"lesson":24,"greek":"γράφω","translit":"ghráfo","en":"I write","pos":"verb","note":"closed: γράψω"},{"lesson":24,"greek":"υπογράφω","translit":"ipoghráfo","en":"I sign","pos":"verb","note":"lit. under-write; closed: υπογράψω"},{"lesson":25,"greek":"δύο","translit":"dhío","en":"two","pos":"num","note":""},{"lesson":26,"greek":"λίγο","translit":"lígho","en":"a little","pos":"adv","note":"σε λίγο = in a bit"},{"lesson":27,"greek":"τηλέφωνο","translit":"tiléfono","en":"phone","pos":"noun","note":"neuter; παίρνω τηλέφωνο = to call"},{"lesson":27,"greek":"παίρνω","translit":"pérno","en":"I take","pos":"verb","note":"closed: πάρω"},{"lesson":28,"greek":"ακόμα","translit":"akóma","en":"still / yet","pos":"adv","note":"also ακόμη"},{"lesson":28,"greek":"γενικά","translit":"yeniká","en":"generally","pos":"adv","note":""},{"lesson":28,"greek":"αλλά","translit":"alá","en":"but","pos":"conj","note":""},{"lesson":28,"greek":"ώρα","translit":"óra","en":"hour / time","pos":"noun","note":"feminine"},{"lesson":28,"greek":"πέντε","translit":"pénde","en":"five","pos":"num","note":""},{"lesson":28,"greek":"μπορεί","translit":"borí","en":"maybe / it can","pos":"verb","note":"3sg of μπορώ"},{"lesson":29,"greek":"απόψε","translit":"apópse","en":"tonight","pos":"adv","note":""},{"lesson":29,"greek":"πιο","translit":"pyo","en":"more","pos":"adv","note":"comparative"},{"lesson":29,"greek":"συχνά","translit":"sikhná","en":"often","pos":"adv","note":"πιο συχνά = more often"},{"lesson":29,"greek":"αν","translit":"an","en":"if","pos":"conj","note":""},{"lesson":29,"greek":"μαγειρεύω","translit":"mayirévo","en":"I cook","pos":"verb","note":"closed: μαγειρέψω"},{"lesson":29,"greek":"ταξιδεύω","translit":"taksidhévo","en":"I travel","pos":"verb","note":"closed: ταξιδέψω"},{"lesson":30,"greek":"δουλειά","translit":"dhuliá","en":"work / job","pos":"noun","note":"feminine"},{"lesson":30,"greek":"ταξίδι","translit":"taksídhi","en":"journey / trip","pos":"noun","note":"neuter; καλό ταξίδι = bon voyage"},{"lesson":30,"greek":"φυτό","translit":"fitó","en":"plant","pos":"noun","note":"neuter"},{"lesson":30,"greek":"ψάρι","translit":"psári","en":"fish","pos":"noun","note":"neuter"},{"lesson":30,"greek":"δουλεύω","translit":"dhulévo","en":"I work / it works","pos":"verb","note":"closed: δουλέψω"},{"lesson":30,"greek":"φυτεύω","translit":"fitévo","en":"I plant","pos":"verb","note":"closed: φυτέψω"},{"lesson":30,"greek":"ψαρεύω","translit":"psarévo","en":"I fish","pos":"verb","note":"closed: ψαρέψω"},{"lesson":31,"greek":"σύντομα","translit":"síndoma","en":"soon","pos":"adv","note":""},{"lesson":31,"greek":"αγορά","translit":"aghorá","en":"market","pos":"noun","note":"feminine"},{"lesson":31,"greek":"φόβος","translit":"fóvos","en":"fear","pos":"noun","note":"masculine"},{"lesson":31,"greek":"τα","translit":"ta","en":"the (neut pl) / them","pos":"pron","note":""},{"lesson":31,"greek":"αγοράζω","translit":"aghorázo","en":"I buy","pos":"verb","note":"closed: αγοράσω"},{"lesson":32,"greek":"άλλος","translit":"álos","en":"other / another","pos":"adj","note":"fem άλλη, neut άλλο"},{"lesson":32,"greek":"αλλάζω","translit":"alázo","en":"I change","pos":"verb","note":"closed: αλλάξω"},{"lesson":32,"greek":"νομίζω","translit":"nomízo","en":"I think / believe","pos":"verb","note":"closed: νομίσω"},{"lesson":32,"greek":"παίζω","translit":"pézo","en":"I play","pos":"verb","note":"closed: παίξω"},{"lesson":33,"greek":"κρύο","translit":"krío","en":"cold","pos":"adj","note":"κάνει κρύο = it's cold"},{"lesson":33,"greek":"τέλειος","translit":"télios","en":"perfect","pos":"adj","note":"neut τέλειο; τέλεια = great!"},{"lesson":33,"greek":"πότε","translit":"póte","en":"when (question)","pos":"adv","note":""},{"lesson":33,"greek":"κρυώνω","translit":"krióno","en":"I get cold","pos":"verb","note":"closed: κρυώσω"},{"lesson":33,"greek":"τελειώνω","translit":"telióno","en":"I finish","pos":"verb","note":"closed: τελειώσω"},{"lesson":33,"greek":"φτάνω","translit":"ftáno","en":"I arrive","pos":"verb","note":"closed: φτάσω; φτάνει = enough"},{"lesson":34,"greek":"οι","translit":"i","en":"the (plural)","pos":"particle","note":"masc/fem plural article"},{"lesson":34,"greek":"αυτές","translit":"aftés","en":"they / these (feminine)","pos":"pron","note":"pl. of αυτή"},{"lesson":34,"greek":"εκείνες","translit":"ekínes","en":"those (feminine)","pos":"pron","note":""},{"lesson":35,"greek":"αυτοί","translit":"aftí","en":"they (masc/mixed)","pos":"pron","note":"pl. of αυτός"},{"lesson":35,"greek":"εκείνοι","translit":"ekíni","en":"those (masculine)","pos":"pron","note":""},{"lesson":36,"greek":"μαγαζί","translit":"maghazí","en":"shop","pos":"noun","note":"neuter; pl. μαγαζιά"},{"lesson":36,"greek":"την","translit":"tin","en":"her / it (fem)","pos":"pron","note":"direct object"},{"lesson":36,"greek":"κλείνω","translit":"klíno","en":"I close","pos":"verb","note":"closed: κλείσω"},{"lesson":36,"greek":"ξεχνάω","translit":"ksekhnáo","en":"I forget","pos":"verb","note":"closed: ξεχάσω"},{"lesson":36,"greek":"χάνω","translit":"kháno","en":"I lose","pos":"verb","note":"closed: χάσω"},{"lesson":37,"greek":"ταινία","translit":"tenía","en":"movie / film","pos":"noun","note":"feminine; pl. ταινίες"},{"lesson":37,"greek":"υπάρχει","translit":"ipárchi","en":"there is","pos":"verb","note":"pl. υπάρχουν = there are"},{"lesson":38,"greek":"ας","translit":"as","en":"let's","pos":"particle","note":"ας φάμε = let's eat"},{"lesson":38,"greek":"έλα","translit":"éla","en":"come! (imperative)","pos":"verb","note":""},{"lesson":38,"greek":"τρώω","translit":"tróo","en":"I eat","pos":"verb","note":"closed: φάω; irreg. τρως/τρώμε/τρώνε"},{"lesson":39,"greek":"λέω","translit":"léo","en":"I say / tell","pos":"verb","note":"closed: πω; irreg. λες/λέμε/λένε"},{"lesson":40,"greek":"ήδη","translit":"ídhi","en":"already","pos":"adv","note":""},{"lesson":40,"greek":"όταν","translit":"ótan","en":"when (non-question)","pos":"conj","note":"close in meaning to 'if'"},{"lesson":40,"greek":"δίνω","translit":"dhíno","en":"I give","pos":"verb","note":"closed: δώσω"},{"lesson":41,"greek":"νωρίς","translit":"norís","en":"early","pos":"adv","note":""},{"lesson":41,"greek":"διαγράφω","translit":"dhiaghráfo","en":"I delete","pos":"verb","note":"lit. through-write; closed: διαγράψω"},{"lesson":41,"greek":"περιγράφω","translit":"perighráfo","en":"I describe","pos":"verb","note":"lit. around-write; closed: περιγράψω"},{"lesson":41,"greek":"πρέπει","translit":"prépi","en":"must / have to / it's necessary","pos":"verb","note":"impersonal, never conjugates; + να"},{"lesson":42,"greek":"λέξη","translit":"léksi","en":"word","pos":"noun","note":"feminine; pl. λέξεις"},{"lesson":42,"greek":"τις","translit":"tis","en":"them (feminine, direct)","pos":"pron","note":"pl. of την"},{"lesson":42,"greek":"διαλέγω","translit":"dhialégho","en":"I choose","pos":"verb","note":"closed: διαλέξω"},{"lesson":42,"greek":"επιλέγω","translit":"epilégho","en":"I choose / select","pos":"verb","note":"closed: επιλέξω"},{"lesson":43,"greek":"μα","translit":"ma","en":"but","pos":"conj","note":""},{"lesson":43,"greek":"λες και","translit":"les ke","en":"as if / as though","pos":"expression","note":""},{"lesson":43,"greek":"τα λέμε","translit":"ta léme","en":"see you / talk soon","pos":"expression","note":"colloquial"},{"lesson":43,"greek":"μήνυμα","translit":"mínima","en":"message","pos":"noun","note":"neuter; pl. μηνύματα"},{"lesson":43,"greek":"φάντασμα","translit":"fántasma","en":"ghost","pos":"noun","note":"neuter"},{"lesson":43,"greek":"ψέμα","translit":"pséma","en":"lie","pos":"noun","note":"neuter; pl. ψέματα; ψέματα λες = you're lying"},{"lesson":43,"greek":"του","translit":"tu","en":"to him / for him","pos":"pron","note":"indirect object; pl. τους"},{"lesson":43,"greek":"αφήνω","translit":"afíno","en":"I leave (something/someone)","pos":"verb","note":"closed: αφήσω; source of ας"},{"lesson":44,"greek":"πολλά","translit":"polá","en":"many / a lot","pos":"adj","note":"agrees: masc πολλοί, neut πολλά"},{"lesson":44,"greek":"της","translit":"tis","en":"to her / for her","pos":"pron","note":"indirect object"},{"lesson":44,"greek":"τους","translit":"tus","en":"them / to them","pos":"pron","note":"masc/fem/neut 'to them'"},{"lesson":45,"greek":"γρήγορα","translit":"ghríghora","en":"quickly","pos":"adv","note":""},{"lesson":45,"greek":"επειδή","translit":"epidhí","en":"because","pos":"conj","note":""},{"lesson":45,"greek":"στέλνω","translit":"stélno","en":"I send","pos":"verb","note":"closed: στείλω (drops ν, e→i)"},{"lesson":46,"greek":"τότε","translit":"tóte","en":"then (in time)","pos":"adv","note":"μέχρι τότε = by then"},{"lesson":46,"greek":"για να","translit":"ya na","en":"so that / in order to","pos":"conj","note":""},{"lesson":46,"greek":"μέχρι","translit":"mékhri","en":"until / by","pos":"prep","note":""},{"lesson":46,"greek":"βάζω","translit":"vázo","en":"I put","pos":"verb","note":"closed: βάλω"},{"lesson":47,"greek":"εβδομάδα","translit":"evdhomádha","en":"week","pos":"noun","note":"feminine; pl. εβδομάδες"},{"lesson":47,"greek":"έτος","translit":"étos","en":"year (formal)","pos":"noun","note":"neuter; pl. τα έτη"},{"lesson":47,"greek":"χρονιά","translit":"khroniá","en":"year (in set phrases)","pos":"noun","note":"feminine; καλή χρονιά"},{"lesson":47,"greek":"χρόνος","translit":"khrónos","en":"year / time","pos":"noun","note":"masculine; pl. τα χρόνια (neut)"},{"lesson":47,"greek":"εφτά","translit":"eftá","en":"seven","pos":"num","note":""},{"lesson":47,"greek":"οχτώ","translit":"okhtó","en":"eight","pos":"num","note":"also οκτώ"},{"lesson":48,"greek":"εδώ και","translit":"edhó ke","en":"for (a period of time)","pos":"expression","note":"lit. 'here and' + time"},{"lesson":48,"greek":"ήχος","translit":"íkhos","en":"sound","pos":"noun","note":"masculine"},{"lesson":48,"greek":"μήλο","translit":"mílo","en":"apple","pos":"noun","note":"neuter"},{"lesson":48,"greek":"σχολείο","translit":"skholío","en":"school","pos":"noun","note":"neuter"},{"lesson":48,"greek":"χαρακτήρας","translit":"kharaktíras","en":"character","pos":"noun","note":"masculine"},{"lesson":48,"greek":"χρώμα","translit":"khróma","en":"colour","pos":"noun","note":"neuter; pl. χρώματα"},{"lesson":48,"greek":"χώμα","translit":"khóma","en":"ground / soil","pos":"noun","note":"neuter"},{"lesson":48,"greek":"χορεύω","translit":"khorévo","en":"I dance","pos":"verb","note":"closed: χορέψω"}];
+
+const POS_LABEL = { verb:'verb', noun:'noun', adj:'adj', adv:'adv', pron:'pron', prep:'prep', conj:'conj', particle:'part', num:'num', expression:'phrase' };
+const LESSON_RANGES = [
+  {key:'all', label:'All', test:()=>true},
+  {key:'1-8', label:'1–8', test:l=>l<=8},
+  {key:'9-16', label:'9–16', test:l=>l>=9&&l<=16},
+  {key:'17-24', label:'17–24', test:l=>l>=17&&l<=24},
+  {key:'25-32', label:'25–32', test:l=>l>=25&&l<=32},
+  {key:'33-40', label:'33–40', test:l=>l>=33&&l<=40},
+  {key:'41-48', label:'41–48', test:l=>l>=41&&l<=48},
+];
+const POS_GROUPS = [
+  {key:'all', label:'All'},
+  {key:'verb', label:'Verbs'},
+  {key:'noun', label:'Nouns'},
+  {key:'adj', label:'Adjectives'},
+  {key:'adv', label:'Adverbs'},
+  {key:'other', label:'Other'},
+];
+const OTHER = new Set(['pron','prep','conj','particle','num','expression']);
+
+let mode='browse', lessonFilter='all', posFilter='all', dir='gr';
+let deck=[], deckPos=0, revealed=false, fcStats={seen:0};
+
+/* ── TTS ── */
+function warmVoices(){ if('speechSynthesis' in window){ try{window.speechSynthesis.getVoices();}catch(e){} } }
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged=warmVoices; }
+function speakGreek(t){
+  if(!('speechSynthesis' in window)||!t) return;
+  try{ window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(t)); u.lang='el-GR'; u.rate=0.9;
+    const v=(window.speechSynthesis.getVoices()||[]).find(x=>/el([-_]?GR)?/i.test(x.lang)||/greek|ελλ/i.test(x.name));
+    if(v) u.voice=v; window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function buildFilters(){
+  const lf=document.getElementById('lesson-filter');
+  lf.innerHTML='<span class="lbl">Lesson</span>';
+  LESSON_RANGES.forEach(r=>{ const b=document.createElement('button');
+    b.className='fchip'+(r.key===lessonFilter?' active':''); b.textContent=r.label;
+    b.onclick=()=>{lessonFilter=r.key;buildFilters();onFilterChange();}; lf.appendChild(b); });
+  const pf=document.getElementById('pos-filter');
+  pf.innerHTML='<span class="lbl">Type</span>';
+  POS_GROUPS.forEach(g=>{ const b=document.createElement('button');
+    b.className='fchip pos'+(g.key===posFilter?' active':''); b.textContent=g.label;
+    b.onclick=()=>{posFilter=g.key;buildFilters();onFilterChange();}; pf.appendChild(b); });
+}
+
+function matchPos(p){ if(posFilter==='all')return true; if(posFilter==='other')return OTHER.has(p); return p===posFilter; }
+function currentList(){
+  const range=LESSON_RANGES.find(r=>r.key===lessonFilter);
+  const q=(document.getElementById('search').value||'').trim().toLowerCase();
+  return VOCAB.filter(v=> range.test(v.lesson) && matchPos(v.pos) &&
+    (!q || v.greek.toLowerCase().includes(q) || v.en.toLowerCase().includes(q) || (v.translit||'').toLowerCase().includes(q)));
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('mode-browse').classList.toggle('active',m==='browse');
+  document.getElementById('mode-cards').classList.toggle('active',m==='cards');
+  document.getElementById('browse-view').style.display=m==='browse'?'':'none';
+  document.getElementById('cards-view').style.display=m==='cards'?'':'none';
+  document.getElementById('cards-extra').style.display=m==='cards'?'':'none';
+  document.getElementById('search-row').style.display=m==='browse'?'':'none';
+  if(m==='cards') startDeck(); else render();
+}
+function onFilterChange(){ if(mode==='browse') render(); else startDeck(); }
+function setDir(d){ dir=d; document.getElementById('dir-gr').classList.toggle('active',d==='gr'); document.getElementById('dir-en').classList.toggle('active',d==='en'); showCard(); }
+
+function render(){
+  const list=currentList();
+  document.getElementById('count').innerHTML='<strong>'+list.length+'</strong> words';
+  const host=document.getElementById('vlist'); host.innerHTML='';
+  list.forEach(v=>{
+    const row=document.createElement('div'); row.className='vrow';
+    row.innerHTML=
+      '<span class="lbadge">L'+v.lesson+'</span>'+
+      '<div class="vmain">'+
+        '<span class="vgr" onclick="speakGreek(\''+v.greek.replace(/'/g,"\\'")+'\')">'+v.greek+'</span>'+
+        '<span class="vtr">'+(v.translit?'['+v.translit+']':'')+'</span>'+
+        '<button class="speak-btn" title="Hear" onclick="speakGreek(\''+v.greek.replace(/'/g,"\\'")+'\')">🔊</button>'+
+        '<div class="ven">'+v.en+'</div>'+
+        (v.note?'<div class="vnote">'+v.note+'</div>':'')+
+      '</div>'+
+      '<span class="postag '+v.pos+'">'+(POS_LABEL[v.pos]||v.pos)+'</span>';
+    host.appendChild(row);
+  });
+}
+
+/* ── Flashcards ── */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function startDeck(){ deck=shuffle(currentList().slice()); deckPos=0; fcStats={seen:0}; showCard(); }
+function shuffleDeck(){ startDeck(); }
+function showCard(){
+  revealed=false;
+  const c=deck[deckPos];
+  document.getElementById('count').innerHTML='<strong>'+deck.length+'</strong> cards in this set';
+  const front=document.getElementById('fc-front'), tr=document.getElementById('fc-tr'), back=document.getElementById('fc-back');
+  if(!c){ document.getElementById('fc-lbadge').textContent=''; front.textContent='No cards — widen the filter.'; front.className='fc-front en'; tr.textContent=''; back.className='fc-back'; return; }
+  document.getElementById('fc-lbadge').textContent='Lesson '+c.lesson+' · '+(POS_LABEL[c.pos]||c.pos);
+  if(dir==='gr'){ front.textContent=c.greek; front.className='fc-front'; tr.textContent=c.translit?'['+c.translit+']':''; }
+  else { front.textContent=c.en; front.className='fc-front en'; tr.textContent=''; }
+  back.className='fc-back'; back.innerHTML='';
+  document.getElementById('fc-reveal').style.display=''; document.getElementById('fc-next').style.display='none';
+  document.getElementById('fc-stats').textContent=(deckPos+1)+' / '+deck.length;
+}
+function revealCard(){
+  const c=deck[deckPos]; if(!c) return; revealed=true;
+  const back=document.getElementById('fc-back');
+  back.className='fc-back show';
+  back.innerHTML = (dir==='gr'
+      ? '<div class="ans">'+c.en+'</div>'
+      : '<div class="ans gr">'+c.greek+'</div>'+(c.translit?'<div class="fc-tr">['+c.translit+']</div>':''))
+    + (c.note?'<div class="note">'+c.note+'</div>':'');
+  document.getElementById('fc-reveal').style.display='none';
+  document.getElementById('fc-next').style.display='';
+  if(dir==='en') speakGreek(c.greek);
+}
+function nextCard(){ deckPos=(deckPos+1)%Math.max(deck.length,1); fcStats.seen++; showCard(); }
+function speakCurrent(){ const c=deck[deckPos]; if(c) speakGreek(c.greek); }
+
+document.addEventListener('keydown',e=>{ if(mode!=='cards')return;
+  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(revealed) nextCard(); else revealCard(); }
+});
+
+buildFilters();
+render();
+</script>
+</body>
+</html>
