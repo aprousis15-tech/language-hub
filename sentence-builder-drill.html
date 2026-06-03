@@ -47,13 +47,6 @@
   .group-btn.t-past.active { background: var(--past); border-color: var(--past); }
   .group-btn.t-future.active { background: var(--future); border-color: var(--future); }
 
-  .hardmode {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem;
-    color: #b76e00; cursor: pointer; user-select: none; font-weight: 700;
-    border: 1.5px solid #ffd699; background: #fff8ec; border-radius: 99px; padding: 6px 13px;
-  }
-  .hardmode input { accent-color: #b76e00; cursor: pointer; }
-
   .stats {
     text-align: center; font-size: 0.88rem; color: #4a6f8a;
     margin-bottom: 14px; display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
@@ -487,62 +480,10 @@ const VERBS = {
 };
 
 // pIdx: 0=εγώ 1=εσύ 2=αυτός 3=εμείς 4=εσείς 5=αυτοί
-// level: 'normal' | 'hard' | 'max'.  skills: ['gender','pronoun'] (tense is implied, always).
+// level: 'max' | 'extra'.  skills: ['gender','pronoun'] (tense is implied, always).
 // chips = exact ordered tokens. extra = distractors: same verb in the WRONG tense/person,
 // wrong-gender adjective endings, wrong pronoun CASE (τον vs του), and stray θα.
 const ITEMS = [
-  // ════════════ NORMAL — tense + person, often one extra skill ════════════
-  { en:'I drink coffee every morning.', gr:'Πίνω καφέ κάθε πρωί.', verb:'πίνω', tense:'present', pIdx:0, level:'normal', skills:[],
-    chips:['Πίνω','καφέ','κάθε','πρωί'], extra:['ήπια','θα','τσάι'], note:"Present keeps the πίν- stem; no θα for 'I drink'." },
-  { en:'You read a good book.', gr:'Διαβάζεις ένα καλό βιβλίο.', verb:'διαβάζω', tense:'present', pIdx:1, level:'normal', skills:['gender'],
-    chips:['Διαβάζεις','ένα','καλό','βιβλίο'], extra:['διάβασες','καλή','καλός'], note:"βιβλίο is neuter → ένα, and the adjective takes -ο: καλό (not καλή/καλός)." },
-  { en:'She works at home today.', gr:'Δουλεύει σπίτι σήμερα.', verb:'δουλεύω', tense:'present', pIdx:2, level:'normal', skills:[],
-    chips:['Δουλεύει','σπίτι','σήμερα'], extra:['δούλεψε','θα','χθες'], note:"3rd-singular -ει. 'works' and 'is working' are both δουλεύει." },
-  { en:'We ate at a nice restaurant.', gr:'Φάγαμε σε ένα ωραίο εστιατόριο.', verb:'τρώω', tense:'past', pIdx:3, level:'normal', skills:['gender'],
-    chips:['Φάγαμε','σε','ένα','ωραίο','εστιατόριο'], extra:['τρώμε','ωραία','θα'], note:"ate(we) = φάγαμε (no ε-; the long -αμε ending stands alone). εστιατόριο neuter → ωραίο." },
-  { en:'They will buy a new car.', gr:'Θα αγοράσουν ένα καινούριο αυτοκίνητο.', verb:'αγοράζω', tense:'future', pIdx:5, level:'normal', skills:['gender'],
-    chips:['Θα','αγοράσουν','ένα','καινούριο','αυτοκίνητο'], extra:['αγοράζουν','καινούρια','αγόρασαν'], note:"αυτοκίνητο neuter → καινούριο. Future: θα + αγοράσουν." },
-  { en:'I saw her yesterday.', gr:'Την είδα χθες.', verb:'βλέπω', tense:'past', pIdx:0, level:'normal', skills:['pronoun'],
-    chips:['Την','είδα','χθες'], extra:['της','τον','βλέπω'], note:"'her' (direct object) = την, and it sits BEFORE the verb: Την είδα." },
-  { en:'I will write to you tomorrow.', gr:'Θα σου γράψω αύριο.', verb:'γράφω', tense:'future', pIdx:0, level:'normal', skills:['pronoun'],
-    chips:['Θα','σου','γράψω','αύριο'], extra:['σε','γράφω','έγραψα'], note:"'to you' (indirect) = σου, sitting between θα and the verb: Θα σου γράψω." },
-  { en:'He drinks cold water.', gr:'Πίνει κρύο νερό.', verb:'πίνω', tense:'present', pIdx:2, level:'normal', skills:['gender'],
-    chips:['Πίνει','κρύο','νερό'], extra:['ήπιε','κρύα','θα'], note:"νερό is neuter → κρύο (vowel-stem adj: fem would be κρύα, but here it's neuter)." },
-  { en:'We are learning a difficult lesson.', gr:'Μαθαίνουμε ένα δύσκολο μάθημα.', verb:'μαθαίνω', tense:'present', pIdx:3, level:'normal', skills:['gender'],
-    chips:['Μαθαίνουμε','ένα','δύσκολο','μάθημα'], extra:['μάθαμε','δύσκολη','θα'], note:"μάθημα (neuter -μα) → δύσκολο." },
-  { en:'You love her.', gr:'Την αγαπάς.', verb:'αγαπάω', tense:'present', pIdx:1, level:'normal', skills:['pronoun'],
-    chips:['Την','αγαπάς'], extra:['της','τον','αγαπάει'], note:"'her' (direct object) = την, before the verb. (της would be 'to her'.)" },
-  { en:'I went to the sea.', gr:'Πήγα στη θάλασσα.', verb:'πάω', tense:'past', pIdx:0, level:'normal', skills:[],
-    chips:['Πήγα','στη','θάλασσα'], extra:['πάω','θα','στον'], note:"went = πήγα. θάλασσα is feminine → στη(ν)." },
-  { en:'They will eat together.', gr:'Θα φάνε μαζί.', verb:'τρώω', tense:'future', pIdx:5, level:'normal', skills:[],
-    chips:['Θα','φάνε','μαζί'], extra:['τρώνε','έφαγαν','χώρια'], note:"will eat (they) = θα φάνε (φα- stem)." },
-
-  // ════════════ HARD — tense + gender agreement + object pronoun together ════════════
-  { en:'I bought her a beautiful red dress.', gr:'Της αγόρασα ένα ωραίο κόκκινο φόρεμα.', verb:'αγοράζω', tense:'past', pIdx:0, level:'hard', skills:['gender','pronoun'],
-    chips:['Της','αγόρασα','ένα','ωραίο','κόκκινο','φόρεμα'], extra:['την','αγοράζω','ωραία','κόκκινη'], note:"'for her' = της (indirect, before the verb). φόρεμα is neuter → BOTH adjectives take -ο: ωραίο κόκκινο." },
-  { en:'She will tell us the truth.', gr:'Θα μας πει την αλήθεια.', verb:'λέω', tense:'future', pIdx:2, level:'hard', skills:['gender','pronoun'],
-    chips:['Θα','μας','πει','την','αλήθεια'], extra:['τον','λέει','είπε'], note:"'to us' = μας, between θα and the verb. αλήθεια feminine accusative → την." },
-  { en:'We will give them the new books.', gr:'Θα τους δώσουμε τα καινούρια βιβλία.', verb:'δίνω', tense:'future', pIdx:3, level:'hard', skills:['gender','pronoun'],
-    chips:['Θα','τους','δώσουμε','τα','καινούρια','βιβλία'], extra:['τις','δίνουμε','καινούριες','το'], note:"'to them' = τους. Neuter plural: τα καινούρια βιβλία — the adjective is -α (καινούρια), NOT -ες." },
-  { en:'He read me an old letter.', gr:'Μου διάβασε ένα παλιό γράμμα.', verb:'διαβάζω', tense:'past', pIdx:2, level:'hard', skills:['gender','pronoun'],
-    chips:['Μου','διάβασε','ένα','παλιό','γράμμα'], extra:['με','διαβάζει','παλιά','τη'], note:"'to me' = μου (NOT με, which is the DIRECT object 'me'). γράμμα neuter → παλιό." },
-  { en:'I will buy you a hot coffee.', gr:'Θα σου αγοράσω έναν ζεστό καφέ.', verb:'αγοράζω', tense:'future', pIdx:0, level:'hard', skills:['gender','pronoun'],
-    chips:['Θα','σου','αγοράσω','έναν','ζεστό','καφέ'], extra:['σε','ζεστός','ζεστή','αγοράζω'], note:"MASCULINE accusative: ο ζεστός καφές → έναν ζεστό καφέ — the adjective AND noun both drop the -ς." },
-  { en:'She doesn’t love him anymore.', gr:'Δεν τον αγαπάει πια.', verb:'αγαπάω', tense:'present', pIdx:2, level:'hard', skills:['pronoun'],
-    chips:['Δεν','τον','αγαπάει','πια'], extra:['του','την','αγάπησε'], note:"Negation δεν + 'him' (direct) τον, both stacked before the verb: Δεν τον αγαπάει." },
-  { en:'We told her a difficult truth.', gr:'Της είπαμε μια δύσκολη αλήθεια.', verb:'λέω', tense:'past', pIdx:3, level:'hard', skills:['gender','pronoun'],
-    chips:['Της','είπαμε','μια','δύσκολη','αλήθεια'], extra:['την','λέμε','δύσκολο','δύσκολος'], note:"'to her' = της. αλήθεια feminine → μια δύσκολη (adj -η)." },
-  { en:'You will learn the new words.', gr:'Θα μάθεις τις καινούριες λέξεις.', verb:'μαθαίνω', tense:'future', pIdx:1, level:'hard', skills:['gender'],
-    chips:['Θα','μάθεις','τις','καινούριες','λέξεις'], extra:['μαθαίνεις','καινούρια','τους'], note:"Feminine plural: οι λέξεις → τις καινούριες λέξεις (adjective -ες)." },
-  { en:'I gave you the small table.', gr:'Σου έδωσα το μικρό τραπέζι.', verb:'δίνω', tense:'past', pIdx:0, level:'hard', skills:['gender','pronoun'],
-    chips:['Σου','έδωσα','το','μικρό','τραπέζι'], extra:['σε','δίνω','μικρή','μικρός'], note:"gave = έδωσα (ε- drops in δώσαμε). 'to you' = σου. τραπέζι neuter → μικρό." },
-  { en:'He will write her a long letter.', gr:'Θα της γράψει ένα μεγάλο γράμμα.', verb:'γράφω', tense:'future', pIdx:2, level:'hard', skills:['gender','pronoun'],
-    chips:['Θα','της','γράψει','ένα','μεγάλο','γράμμα'], extra:['την','γράφει','μεγάλη','μεγάλος'], note:"'to her' = της. γράμμα neuter → μεγάλο." },
-  { en:'They saw the beautiful woman.', gr:'Είδαν την ωραία γυναίκα.', verb:'βλέπω', tense:'past', pIdx:5, level:'hard', skills:['gender'],
-    chips:['Είδαν','την','ωραία','γυναίκα'], extra:['βλέπουν','ωραίο','τον'], note:"γυναίκα feminine accusative → την ωραία (vowel-stem adj: fem -α)." },
-  { en:'We will do it tomorrow.', gr:'Θα το κάνουμε αύριο.', verb:'κάνω', tense:'future', pIdx:3, level:'hard', skills:['pronoun'],
-    chips:['Θα','το','κάνουμε','αύριο'], extra:['κάνουμε','κάναμε','τη'], note:"'it' (neuter direct object) = το, before the verb: Θα το κάνουμε." },
-
   // ════════════ MAX — two-clause, negation, time adverbs, all skills at once ════════════
   { en:'I bought the red car that she wanted.', gr:'Αγόρασα το κόκκινο αυτοκίνητο που ήθελε.', verb:'αγοράζω', tense:'past', pIdx:0, level:'max', skills:['gender'],
     chips:['Αγόρασα','το','κόκκινο','αυτοκίνητο','που','ήθελε'], extra:['αγοράζω','κόκκινη','θέλει','θα'], note:"Two clauses: main Αγόρασα + relative που ήθελε ('that she wanted'). κόκκινο agrees with neuter αυτοκίνητο." },
@@ -780,8 +721,6 @@ const LEVEL_FILTERS = [
 ];
 // showHints = show verb hint + skill chips; trim = cut distractors down to 2 (gentler).
 const LEVEL_CFG = {
-  normal: { showHints:true,  trim:true  },
-  hard:   { showHints:true,  trim:false },
   max:    { showHints:false, trim:false },
   extra:  { showHints:false, trim:false },
 };
@@ -885,8 +824,8 @@ function nextCard(){
   document.getElementById('btn-clear').style.display = '';
 
   // Tense is intentionally NOT shown here — infer it from the English prompt and
-  // pick the right Greek forms yourself. Person is hinted, and (Normal/Hard only)
-  // small chips flag which extra skills this sentence tests. Max hides all of it.
+  // pick the right Greek forms yourself. Only the person is hinted; the verb hint
+  // and skill chips stay hidden at this tier so you carry the whole sentence.
   const cfg = LEVEL_CFG[level];
   let skillHtml = '';
   if(cfg.showHints && current.skills && current.skills.length){
@@ -899,7 +838,7 @@ function nextCard(){
   hint.textContent = 'verb: ' + current.verb + ' — ' + VERBS[current.verb].en;
   hint.className = 'prompt-hint' + (cfg.showHints ? '' : ' hidden-hint');
 
-  // bank: correct chips + distractors; only Normal trims down (gentler), Hard/Max keep all traps
+  // bank: correct chips + distractors; at this tier we keep ALL the traps (no trim)
   let extras = (current.extra||[]).slice();
   if(cfg.trim && extras.length>2) extras = shuffle(extras).slice(0,2);
   const bankWords = shuffle(current.chips.concat(extras));
