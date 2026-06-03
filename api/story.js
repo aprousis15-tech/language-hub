@@ -37,6 +37,14 @@ function pickTypeForDate(date) {
   return TYPE_ROTATION[d.getUTCDay()];
 }
 
+// The full set of distinct styles, for on-demand "another story" requests
+// where we deliberately want variety rather than the day's fixed rotation.
+const ALL_TYPES = ['narrative', 'anecdote', 'dialogue', 'scenario', 'reflection', 'cultural'];
+function pickRandomType(avoid) {
+  const pool = avoid ? ALL_TYPES.filter(t => t !== avoid) : ALL_TYPES;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 const STORY_SYSTEM_PROMPT = `You write daily Greek-learning short pieces for an English-speaking adult learner preparing for a Greece trip. Target proficiency: B1 (intermediate). Read time: 60-90 seconds.
 
 You will receive a JSON payload:
@@ -219,15 +227,29 @@ async function generateStoryViaClaude(date, type) {
 module.exports = async function handler(req, res) {
   const date = todayET();
   const force = req.method === 'POST' || (req.url && req.url.includes('regenerate=1'));
+  // "fresh" = an extra on-demand story the user pulled via the "🔀 Another
+  // story" button. We generate it but DON'T touch the daily cache, so the
+  // learner can read as many fresh stories as they like without losing (or
+  // having to regenerate) today's canonical story. No DB schema change needed.
+  const fresh = !!(req.url && /[?&]fresh=1/.test(req.url));
 
   // Allow explicit ?type=dialogue to override the rotation (useful for
   // manual testing or "I want a dialogue today" requests).
   const urlTypeMatch = (req.url || '').match(/[?&]type=([a-z]+)/i);
-  const overrideType = urlTypeMatch && TYPE_ROTATION.includes(urlTypeMatch[1].toLowerCase())
+  const overrideType = urlTypeMatch && ALL_TYPES.includes(urlTypeMatch[1].toLowerCase())
     ? urlTypeMatch[1].toLowerCase() : null;
-  const type = overrideType || pickTypeForDate(date);
 
   try {
+    // Fresh path: random style (avoid repeating today's rotation type so it
+    // feels different), generate, return ephemeral — never cached.
+    if (fresh) {
+      const type = overrideType || pickRandomType(pickTypeForDate(date));
+      const generated = await generateStoryViaClaude(date, type);
+      res.status(200).json({ ok: true, story: { ...generated, story_date: date }, cached: false, fresh: true, type });
+      return;
+    }
+
+    const type = overrideType || pickTypeForDate(date);
     if (!force) {
       const cached = await readCachedStory(date);
       if (cached) {

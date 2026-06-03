@@ -4892,7 +4892,7 @@
   <div class="container">
     <div class="story-header">
       <h2>📖 Daily Greek Story</h2>
-      <p>A fresh 5-sentence story every day at A2 level. Read the Greek first, peek at the English when stuck. Vocabulary notes below the story.</p>
+      <p>A fresh story every day at B1 level — and you’re never stuck with just one. Tap <strong>🔀 Another story</strong> for a brand-new AI story in a different style, or <strong>📚 Library</strong> to flip through hand-written stories anytime. Read the Greek first, peek at the English when stuck. Vocabulary notes below.</p>
     </div>
 
     <div class="story-meta">
@@ -4902,7 +4902,10 @@
       <span class="story-meta-item story-type-badge" id="story-type-badge" style="display:none;"></span>
       <button class="story-mode-btn" id="story-mode-read" onclick="setStoryMode('read')" title="Read mode — Greek text + click-to-reveal English">📖 Read</button>
       <button class="story-mode-btn" id="story-mode-dictation" onclick="setStoryMode('dictation')" title="Dictation mode — hear the Greek and type what you heard">📝 Dictation</button>
-      <button class="story-refresh-btn" onclick="refreshStory()" title="Generate a new story for today (replaces the cached one)">↺ New story</button>
+      <button class="story-refresh-btn" onclick="anotherStory()" title="Pull a brand-new AI story right now (a different style each time — doesn't touch today's story)">🔀 Another story</button>
+      <button class="story-refresh-btn" id="story-library-btn" onclick="cycleLibrary()" title="Flip through the built-in library of hand-written stories (works offline)">📚 Library</button>
+      <button class="story-refresh-btn" onclick="backToToday()" title="Back to today's daily story" id="story-today-btn" style="display:none;">📅 Today’s story</button>
+      <button class="story-refresh-btn" onclick="refreshStory()" title="Regenerate today's cached story (replaces it)">↺ Replace today</button>
     </div>
 
     <div id="story-loading" class="story-loading">⏳ Loading today's story…</div>
@@ -8132,6 +8135,295 @@
     reflection: { emoji: '💭', label: 'Reflection', cls: 'reflection' },
     cultural:   { emoji: '🏛️', label: 'Cultural',   cls: 'cultural' }
   };
+
+  // ── Built-in story library — hand-written B1 stories, always available
+  // (no API, works offline). Shaped exactly like an /api/story row so it
+  // flows through the same renderStory() path. Grown over time. ──
+  const STORY_LIBRARY = [
+    { type:'narrative', topic:'beach', title_greek:'Ο χαμένος σκύλος', title_english:'The Lost Dog',
+      sentences:[
+        { greek:'Η Μαρία περπατούσε στην παραλία όταν είδε έναν μικρό σκύλο μόνο του.', english:'Maria was walking on the beach when she saw a small dog all alone.' },
+        { greek:'Ο σκύλος φαινόταν φοβισμένος και πεινασμένος.', english:'The dog seemed scared and hungry.' },
+        { greek:'Η Μαρία του έδωσε λίγο νερό και ένα κομμάτι ψωμί.', english:'Maria gave it a little water and a piece of bread.' },
+        { greek:'Μετά από λίγο, ο σκύλος άρχισε να την εμπιστεύεται.', english:'After a while, the dog began to trust her.' },
+        { greek:'Πήρε τον σκύλο στο σπίτι της και έβαλε μια αγγελία στο ίντερνετ.', english:'She took the dog to her house and posted a notice on the internet.' },
+        { greek:'Την επόμενη μέρα, ένα ευτυχισμένο παιδί ήρθε να πάρει τον φίλο του.', english:'The next day, a happy child came to take his friend.' }
+      ],
+      vocab_notes:[
+        { greek:'φοβισμένος', english:'scared', note:'Adjective from φοβάμαι (to be afraid).' },
+        { greek:'πεινασμένος', english:'hungry', note:'From πεινάω (to be hungry).' },
+        { greek:'εμπιστεύομαι', english:'to trust', note:'Deponent verb (passive form, active meaning).' },
+        { greek:'αγγελία', english:'notice / ad', note:'Feminine; βάζω αγγελία = to post an ad.' },
+        { greek:'επόμενη', english:'next', note:'την επόμενη μέρα = the next day.' }
+      ],
+      questions:[
+        { q:'Where did Maria find the dog?', a_greek:'Στην παραλία.', a_english:'On the beach.', hint:'παραλία' },
+        { q:'What did she give the dog?', a_greek:'Νερό και ψωμί.', a_english:'Water and bread.', hint:'ψωμί' },
+        { q:'Who came to take the dog?', a_greek:'Ένα παιδί.', a_english:'A child.', hint:'παιδί' }
+      ] },
+    { type:'anecdote', topic:'bus', title_greek:'Μια απρόσμενη βοήθεια', title_english:'An Unexpected Help',
+      sentences:[
+        { greek:'Χθες έχασα το λεωφορείο και άρχισα να αγχώνομαι.', english:'Yesterday I missed the bus and started to get stressed.' },
+        { greek:'Είχα ένα σημαντικό ραντεβού και δεν ήξερα τι να κάνω.', english:'I had an important appointment and didn’t know what to do.' },
+        { greek:'Ξαφνικά, μια ηλικιωμένη κυρία μου πρότεινε να με πάει με το αυτοκίνητό της.', english:'Suddenly, an elderly lady offered to take me in her car.' },
+        { greek:'Στην αρχή δίστασα, αλλά μου φάνηκε ειλικρινής.', english:'At first I hesitated, but she seemed sincere to me.' },
+        { greek:'Φτάσαμε στην ώρα μας και την ευχαρίστησα πολλές φορές.', english:'We arrived on time and I thanked her many times.' },
+        { greek:'Κατάλαβα ότι η καλοσύνη υπάρχει ακόμα παντού.', english:'I realized that kindness still exists everywhere.' }
+      ],
+      vocab_notes:[
+        { greek:'αγχώνομαι', english:'to get stressed', note:'Deponent; από το άγχος (stress).' },
+        { greek:'ραντεβού', english:'appointment', note:'Neuter, indeclinable (from French).' },
+        { greek:'δίστασα', english:'I hesitated', note:'From διστάζω → δίστασα (aorist).' },
+        { greek:'ειλικρινής', english:'sincere', note:'Adjective in -ης, same for masc/fem.' },
+        { greek:'καλοσύνη', english:'kindness', note:'Feminine; from καλός.' }
+      ],
+      questions:[
+        { q:'Why did the narrator get stressed?', a_greek:'Έχασε το λεωφορείο.', a_english:'They missed the bus.', hint:'λεωφορείο' },
+        { q:'Who helped them?', a_greek:'Μια ηλικιωμένη κυρία.', a_english:'An elderly lady.', hint:'κυρία' },
+        { q:'Did they arrive on time?', a_greek:'Ναι, έφτασαν στην ώρα τους.', a_english:'Yes, they arrived on time.', hint:'ώρα' }
+      ] },
+    { type:'dialogue', topic:'shop', title_greek:'Στο φαρμακείο', title_english:'At the Pharmacy',
+      sentences:[
+        { greek:'Ο Νίκος μπαίνει στο φαρμακείο με πονόλαιμο.', english:'Nikos walks into the pharmacy with a sore throat.' },
+        { greek:'Καλημέρα, έχω πονόλαιμο εδώ και δύο μέρες.', english:'Good morning, I’ve had a sore throat for two days.', speaker:'Α' },
+        { greek:'Έχετε και πυρετό ή μόνο πονόλαιμο;', english:'Do you also have a fever, or just a sore throat?', speaker:'Β' },
+        { greek:'Όχι πυρετό, αλλά με πονάει πολύ όταν καταπίνω.', english:'No fever, but it hurts a lot when I swallow.', speaker:'Α' },
+        { greek:'Σας προτείνω αυτές τις παστίλιες και ζεστό τσάι με μέλι.', english:'I suggest these lozenges and hot tea with honey.', speaker:'Β' },
+        { greek:'Ωραία. Πόσο κάνουν όλα μαζί;', english:'Great. How much is it all together?', speaker:'Α' },
+        { greek:'Πέντε ευρώ. Περαστικά σας!', english:'Five euros. Get well soon!', speaker:'Β' }
+      ],
+      vocab_notes:[
+        { greek:'πονόλαιμος', english:'sore throat', note:'πόνος (pain) + λαιμός (throat).' },
+        { greek:'πυρετός', english:'fever', note:'Masculine; έχω πυρετό = I have a fever.' },
+        { greek:'καταπίνω', english:'to swallow', note:'κατά + πίνω; aorist κατάπια.' },
+        { greek:'παστίλιες', english:'lozenges', note:'Feminine plural.' },
+        { greek:'Περαστικά', english:'get well soon', note:'Fixed wish; lit. “may it pass”.' }
+      ],
+      questions:[
+        { q:'How long has Nikos had a sore throat?', a_greek:'Δύο μέρες.', a_english:'Two days.', hint:'μέρες' },
+        { q:'Does he have a fever?', a_greek:'Όχι, δεν έχει πυρετό.', a_english:'No, he doesn’t have a fever.', hint:'πυρετός' },
+        { q:'What does the pharmacist suggest?', a_greek:'Παστίλιες και τσάι με μέλι.', a_english:'Lozenges and tea with honey.', hint:'μέλι' }
+      ] },
+    { type:'scenario', topic:'directions', title_greek:'Στον σταθμό του τρένου', title_english:'At the Train Station',
+      sentences:[
+        { greek:'Είσαι στον σταθμό και ψάχνεις το τρένο για τη Θεσσαλονίκη.', english:'You’re at the station looking for the train to Thessaloniki.' },
+        { greek:'Κοιτάς τον πίνακα, αλλά δεν βρίσκεις την πλατφόρμα σου.', english:'You look at the board, but you can’t find your platform.' },
+        { greek:'Πλησιάζεις έναν υπάλληλο και τον ρωτάς ευγενικά.', english:'You approach an employee and ask him politely.' },
+        { greek:'Σου λέει ότι το τρένο σου φεύγει από την πλατφόρμα επτά.', english:'He tells you your train leaves from platform seven.' },
+        { greek:'Έχεις μόνο πέντε λεπτά, οπότε τρέχεις γρήγορα.', english:'You have only five minutes, so you run fast.' },
+        { greek:'Προλαβαίνεις το τρένο την τελευταία στιγμή και ανασαίνεις με ανακούφιση.', english:'You catch the train at the last moment and breathe with relief.' }
+      ],
+      vocab_notes:[
+        { greek:'σταθμός', english:'station', note:'Masculine; στον σταθμό = at the station.' },
+        { greek:'πίνακας', english:'board', note:'Masculine; also “painting / table (of data)”.' },
+        { greek:'πλησιάζω', english:'to approach', note:'πλησιάζω κάποιον = approach someone.' },
+        { greek:'προλαβαίνω', english:'to make it in time', note:'προλαβαίνω το τρένο = catch the train.' },
+        { greek:'ανακούφιση', english:'relief', note:'Feminine; με ανακούφιση = with relief.' }
+      ],
+      questions:[
+        { q:'Where are you going?', a_greek:'Στη Θεσσαλονίκη.', a_english:'To Thessaloniki.', hint:'Θεσσαλονίκη' },
+        { q:'From which platform does the train leave?', a_greek:'Από την πλατφόρμα επτά.', a_english:'From platform seven.', hint:'επτά' },
+        { q:'Did you catch the train?', a_greek:'Ναι, την τελευταία στιγμή.', a_english:'Yes, at the last moment.', hint:'στιγμή' }
+      ] },
+    { type:'reflection', topic:'family', title_greek:'Η μυρωδιά του καφέ', title_english:'The Smell of Coffee',
+      sentences:[
+        { greek:'Κάθε πρωί, η μυρωδιά του φρέσκου καφέ μου θυμίζει την παιδική μου ηλικία.', english:'Every morning, the smell of fresh coffee reminds me of my childhood.' },
+        { greek:'Η γιαγιά μου έφτιαχνε καφέ σε ένα μικρό μπρίκι.', english:'My grandmother used to make coffee in a small briki.' },
+        { greek:'Θυμάμαι τον ήχο και τη ζεστασιά της κουζίνας της.', english:'I remember the sound and the warmth of her kitchen.' },
+        { greek:'Τότε δεν καταλάβαινα πόσο πολύτιμες ήταν εκείνες οι στιγμές.', english:'Back then I didn’t realize how precious those moments were.' },
+        { greek:'Τώρα, κάθε φλιτζάνι καφέ είναι σαν ένα μικρό ταξίδι στο παρελθόν.', english:'Now, every cup of coffee is like a small trip to the past.' },
+        { greek:'Ίσως γι’ αυτό αγαπώ τόσο πολύ αυτή τη συνήθεια.', english:'Maybe that’s why I love this habit so much.' }
+      ],
+      vocab_notes:[
+        { greek:'μυρωδιά', english:'smell', note:'Feminine; μυρίζω = to smell.' },
+        { greek:'μπρίκι', english:'coffee pot', note:'Neuter; the pot for Greek coffee.' },
+        { greek:'ζεστασιά', english:'warmth', note:'Feminine; from ζεστός (warm).' },
+        { greek:'πολύτιμος', english:'precious', note:'πολύ + τιμή (value).' },
+        { greek:'συνήθεια', english:'habit', note:'Feminine; από συνήθεια = out of habit.' }
+      ],
+      questions:[
+        { q:'What does the smell of coffee remind the narrator of?', a_greek:'Την παιδική του ηλικία.', a_english:'Their childhood.', hint:'παιδική' },
+        { q:'How did the grandmother make coffee?', a_greek:'Σε ένα μπρίκι.', a_english:'In a briki.', hint:'μπρίκι' },
+        { q:'What is the main idea?', a_greek:'Ο καφές φέρνει αναμνήσεις.', a_english:'Coffee brings back memories.', hint:'παρελθόν' }
+      ] },
+    { type:'cultural', topic:'name-day', title_greek:'Το έθιμο της Πρωτοχρονιάς', title_english:'The New Year Custom',
+      sentences:[
+        { greek:'Στην Ελλάδα, την Πρωτοχρονιά οι οικογένειες κόβουν τη βασιλόπιτα.', english:'In Greece, on New Year’s the families cut the vasilopita.' },
+        { greek:'Μέσα στην πίτα κρύβουν ένα νόμισμα για καλή τύχη.', english:'Inside the pie they hide a coin for good luck.' },
+        { greek:'Όποιος βρει το νόμισμα, λένε ότι θα έχει τυχερή χρονιά.', english:'Whoever finds the coin, they say, will have a lucky year.' },
+        { greek:'Η πίτα πήρε το όνομά της από τον Άγιο Βασίλη.', english:'The pie took its name from Saint Basil.' },
+        { greek:'Κάθε κομμάτι αφιερώνεται σε κάποιον: το σπίτι, τους φτωχούς, την οικογένεια.', english:'Each piece is dedicated to someone: the house, the poor, the family.' },
+        { greek:'Είναι ένα έθιμο που ενώνει τους ανθρώπους γύρω από το τραπέζι.', english:'It’s a custom that unites people around the table.' }
+      ],
+      vocab_notes:[
+        { greek:'έθιμο', english:'custom', note:'Neuter; τα έθιμα = the customs.' },
+        { greek:'βασιλόπιτα', english:'New Year’s cake', note:'Feminine; named after Άγιος Βασίλης.' },
+        { greek:'νόμισμα', english:'coin', note:'Neuter (-μα); also “currency”.' },
+        { greek:'τύχη', english:'luck', note:'Feminine; καλή τύχη = good luck.' },
+        { greek:'αφιερώνεται', english:'is dedicated', note:'Passive of αφιερώνω.' }
+      ],
+      questions:[
+        { q:'What do families cut on New Year’s?', a_greek:'Τη βασιλόπιτα.', a_english:'The vasilopita.', hint:'βασιλόπιτα' },
+        { q:'What is hidden inside?', a_greek:'Ένα νόμισμα.', a_english:'A coin.', hint:'νόμισμα' },
+        { q:'What is the main point?', a_greek:'Ένα έθιμο που ενώνει τους ανθρώπους.', a_english:'A custom that unites people.', hint:'έθιμο' }
+      ] },
+    { type:'narrative', topic:'work', title_greek:'Η πρώτη μέρα στη δουλειά', title_english:'The First Day at Work',
+      sentences:[
+        { greek:'Ο Γιάννης ξύπνησε νωρίς για την πρώτη μέρα στη νέα του δουλειά.', english:'Giannis woke up early for the first day at his new job.' },
+        { greek:'Ήταν αγχωμένος, αλλά και πολύ ενθουσιασμένος.', english:'He was anxious, but also very excited.' },
+        { greek:'Όταν έφτασε στο γραφείο, οι συνάδελφοι τον υποδέχτηκαν θερμά.', english:'When he arrived at the office, the colleagues welcomed him warmly.' },
+        { greek:'Στην αρχή μπερδεύτηκε με τα νέα προγράμματα του υπολογιστή.', english:'At first he got confused with the new computer programs.' },
+        { greek:'Όμως μια συνάδελφος του εξήγησε υπομονετικά τα πάντα.', english:'But a (female) colleague explained everything to him patiently.' },
+        { greek:'Στο τέλος της μέρας, ένιωσε ότι είχε κάνει τη σωστή επιλογή.', english:'At the end of the day, he felt he had made the right choice.' }
+      ],
+      vocab_notes:[
+        { greek:'ενθουσιασμένος', english:'excited', note:'From ενθουσιασμός (enthusiasm).' },
+        { greek:'συνάδελφος', english:'colleague', note:'Same word for masc/fem; article shows gender.' },
+        { greek:'υποδέχτηκαν', english:'they welcomed', note:'From υποδέχομαι (deponent).' },
+        { greek:'μπερδεύτηκε', english:'got confused', note:'From μπερδεύομαι.' },
+        { greek:'υπομονετικά', english:'patiently', note:'Adverb from υπομονή (patience).' }
+      ],
+      questions:[
+        { q:'Why did Giannis wake up early?', a_greek:'Για την πρώτη μέρα στη δουλειά.', a_english:'For the first day at work.', hint:'δουλειά' },
+        { q:'How did the colleagues treat him?', a_greek:'Τον υποδέχτηκαν θερμά.', a_english:'They welcomed him warmly.', hint:'θερμά' },
+        { q:'How did he feel at the end?', a_greek:'Ότι έκανε τη σωστή επιλογή.', a_english:'That he made the right choice.', hint:'επιλογή' }
+      ] },
+    { type:'anecdote', topic:'market', title_greek:'Το χαμένο πορτοφόλι', title_english:'The Lost Wallet',
+      sentences:[
+        { greek:'Την περασμένη βδομάδα έχασα το πορτοφόλι μου στην αγορά.', english:'Last week I lost my wallet at the market.' },
+        { greek:'Μέσα είχα τα χρήματά μου και όλες τις κάρτες μου.', english:'Inside I had my money and all my cards.' },
+        { greek:'Ένιωσα απελπισμένος και γύρισα πίσω να το ψάξω.', english:'I felt desperate and went back to look for it.' },
+        { greek:'Ένας νεαρός πωλητής το είχε βρει και το κρατούσε.', english:'A young vendor had found it and was keeping it.' },
+        { greek:'Δεν έλειπε τίποτα, ούτε ένα ευρώ.', english:'Nothing was missing, not even one euro.' },
+        { greek:'Του πρόσφερα μια αμοιβή, αλλά εκείνος αρνήθηκε ευγενικά.', english:'I offered him a reward, but he politely refused.' }
+      ],
+      vocab_notes:[
+        { greek:'πορτοφόλι', english:'wallet', note:'Neuter.' },
+        { greek:'απελπισμένος', english:'desperate', note:'From απελπισία (despair).' },
+        { greek:'πωλητής', english:'vendor / seller', note:'Masculine; fem πωλήτρια.' },
+        { greek:'αμοιβή', english:'reward', note:'Feminine; also “pay / fee”.' },
+        { greek:'αρνήθηκε', english:'he refused', note:'From αρνούμαι (deponent).' }
+      ],
+      questions:[
+        { q:'What did the narrator lose?', a_greek:'Το πορτοφόλι του.', a_english:'Their wallet.', hint:'πορτοφόλι' },
+        { q:'Who found it?', a_greek:'Ένας νεαρός πωλητής.', a_english:'A young vendor.', hint:'πωλητής' },
+        { q:'Did the vendor accept the reward?', a_greek:'Όχι, αρνήθηκε.', a_english:'No, he refused.', hint:'αμοιβή' }
+      ] },
+    { type:'scenario', topic:'meal', title_greek:'Στο εστιατόριο', title_english:'At the Restaurant',
+      sentences:[
+        { greek:'Κάθεσαι σε ένα παραδοσιακό εστιατόριο δίπλα στη θάλασσα.', english:'You sit in a traditional restaurant by the sea.' },
+        { greek:'Ο σερβιτόρος σου φέρνει τον κατάλογο και σε ρωτάει τι θες να πιεις.', english:'The waiter brings you the menu and asks what you want to drink.' },
+        { greek:'Διαλέγεις φρέσκο ψάρι και μια σαλάτα με ντόπια προϊόντα.', english:'You choose fresh fish and a salad with local products.' },
+        { greek:'Ενώ περιμένεις, απολαμβάνεις τη θέα και τον ήχο των κυμάτων.', english:'While you wait, you enjoy the view and the sound of the waves.' },
+        { greek:'Το φαγητό είναι νόστιμο και η εξυπηρέτηση άψογη.', english:'The food is delicious and the service impeccable.' },
+        { greek:'Στο τέλος, ζητάς τον λογαριασμό και αφήνεις ένα γενναιόδωρο φιλοδώρημα.', english:'In the end, you ask for the bill and leave a generous tip.' }
+      ],
+      vocab_notes:[
+        { greek:'κατάλογος', english:'menu', note:'Masculine; also “list / catalogue”.' },
+        { greek:'απολαμβάνω', english:'to enjoy', note:'απολαμβάνω τη θέα = enjoy the view.' },
+        { greek:'κύματα', english:'waves', note:'Neuter; sing. το κύμα.' },
+        { greek:'εξυπηρέτηση', english:'service', note:'Feminine; from εξυπηρετώ (to serve).' },
+        { greek:'φιλοδώρημα', english:'tip', note:'Neuter; lit. “friendly gift”.' }
+      ],
+      questions:[
+        { q:'Where is the restaurant?', a_greek:'Δίπλα στη θάλασσα.', a_english:'By the sea.', hint:'θάλασσα' },
+        { q:'What do you order?', a_greek:'Φρέσκο ψάρι και σαλάτα.', a_english:'Fresh fish and a salad.', hint:'ψάρι' },
+        { q:'What do you leave at the end?', a_greek:'Ένα γενναιόδωρο φιλοδώρημα.', a_english:'A generous tip.', hint:'φιλοδώρημα' }
+      ] },
+    { type:'cultural', topic:'easter', title_greek:'Το πανηγύρι του χωριού', title_english:'The Village Festival',
+      sentences:[
+        { greek:'Το καλοκαίρι, κάθε ελληνικό χωριό οργανώνει το δικό του πανηγύρι.', english:'In summer, every Greek village organizes its own festival.' },
+        { greek:'Οι κάτοικοι γιορτάζουν τον άγιο της εκκλησίας με μουσική και χορό.', english:'The residents celebrate the church’s saint with music and dance.' },
+        { greek:'Στην πλατεία στήνουν μεγάλα τραπέζια με φαγητό και κρασί.', english:'In the square they set up big tables with food and wine.' },
+        { greek:'Οι μουσικοί παίζουν παραδοσιακά τραγούδια μέχρι το πρωί.', english:'The musicians play traditional songs until morning.' },
+        { greek:'Μικροί και μεγάλοι πιάνονται χέρι-χέρι και χορεύουν.', english:'Young and old hold hands and dance.' },
+        { greek:'Το πανηγύρι κρατάει ζωντανές τις παραδόσεις του τόπου.', english:'The festival keeps the traditions of the place alive.' }
+      ],
+      vocab_notes:[
+        { greek:'πανηγύρι', english:'festival', note:'Neuter; a village saint’s-day fair.' },
+        { greek:'κάτοικοι', english:'residents', note:'Masculine plural; sing. ο κάτοικος.' },
+        { greek:'στήνουν', english:'they set up', note:'From στήνω (to set up / pitch).' },
+        { greek:'μουσικοί', english:'musicians', note:'Plural; sing. ο μουσικός.' },
+        { greek:'παραδόσεις', english:'traditions', note:'Feminine plural; sing. η παράδοση.' }
+      ],
+      questions:[
+        { q:'When do villages organize festivals?', a_greek:'Το καλοκαίρι.', a_english:'In summer.', hint:'καλοκαίρι' },
+        { q:'What do the musicians play?', a_greek:'Παραδοσιακά τραγούδια.', a_english:'Traditional songs.', hint:'τραγούδια' },
+        { q:'What is the main point?', a_greek:'Το πανηγύρι κρατάει ζωντανές τις παραδόσεις.', a_english:'The festival keeps traditions alive.', hint:'παραδόσεις' }
+      ] }
+  ];
+  let gLibIdx = -1;
+
+  // 🔀 Another story — pull a fresh AI story (different style) without
+  // disturbing today's cached daily story. Falls back to the library if
+  // the API is unreachable (offline / no key), so the button always does
+  // something useful.
+  async function anotherStory() {
+    if (gStoryLoading) return;
+    gStoryLoading = true;
+    const loading = document.getElementById('story-loading');
+    const content = document.getElementById('story-content');
+    const errBox = document.getElementById('story-error');
+    if (loading) { loading.textContent = '🔀 Writing a fresh story…'; loading.style.display = ''; }
+    if (content) content.style.display = 'none';
+    if (errBox) errBox.style.display = 'none';
+    try {
+      const r = await fetch('/api/story?fresh=1');
+      const data = await r.json();
+      if (!r.ok || !data.ok || !data.story) throw new Error(data && data.error ? data.error : 'unknown error');
+      renderStory(data.story);
+      if (loading) loading.style.display = 'none';
+      if (content) content.style.display = '';
+      setStoryMode('read');
+      const todayBtn = document.getElementById('story-today-btn');
+      if (todayBtn) todayBtn.style.display = '';
+    } catch (e) {
+      // Graceful fallback — show a library story instead of an error.
+      gStoryLoading = false;
+      if (loading) loading.style.display = 'none';
+      cycleLibrary();
+    } finally {
+      gStoryLoading = false;
+      if (loading) loading.textContent = '⏳ Loading today’s story…';
+    }
+  }
+
+  // 📚 Library — flip to the next built-in story (cycles, works offline).
+  function cycleLibrary() {
+    if (!STORY_LIBRARY.length) return;
+    gLibIdx = (gLibIdx + 1) % STORY_LIBRARY.length;
+    const s = STORY_LIBRARY[gLibIdx];
+    const view = Object.assign({}, s, {
+      level: 'B1',
+      story_date: 'Library · ' + (gLibIdx + 1) + '/' + STORY_LIBRARY.length
+    });
+    const loading = document.getElementById('story-loading');
+    const content = document.getElementById('story-content');
+    const errBox = document.getElementById('story-error');
+    if (loading) loading.style.display = 'none';
+    if (errBox) errBox.style.display = 'none';
+    renderStory(view);
+    if (content) content.style.display = '';
+    setStoryMode('read');
+    const todayBtn = document.getElementById('story-today-btn');
+    if (todayBtn) todayBtn.style.display = '';
+  }
+
+  // 📅 Back to today's canonical daily story.
+  function backToToday() {
+    const todayBtn = document.getElementById('story-today-btn');
+    if (todayBtn) todayBtn.style.display = 'none';
+    if (gStoryData) {
+      renderStory(gStoryData);
+      const content = document.getElementById('story-content');
+      const loading = document.getElementById('story-loading');
+      if (loading) loading.style.display = 'none';
+      if (content) content.style.display = '';
+      setStoryMode('read');
+    } else {
+      loadStory(false);
+    }
+  }
 
   function renderStory(s) {
     // Meta strip
