@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Key Lexis Vocab — Lexis Placement Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --white:#fdfaf6; --dark:#1e2a35; --greek-blue:#0d4f8b; --teal:#00695c; --plum:#6a1b9a; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Lato',sans-serif;background:var(--white);color:var(--dark);min-height:100vh;padding:22px 14px 64px;}
+  .wrap{max-width:780px;margin:0 auto;}
+  header.top{text-align:center;margin-bottom:14px;}
+  header.top h1{font-family:'Playfair Display',serif;color:var(--plum);font-size:clamp(1.4rem,4vw,2rem);margin-bottom:5px;}
+  header.top p{color:#7a5a8a;font-size:0.92rem;}
+
+  .mode-toggle{display:flex;justify-content:center;gap:8px;margin:12px 0;}
+  .mode-btn{padding:8px 20px;border-radius:99px;border:1.5px solid var(--plum);background:white;color:var(--plum);font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Lato',sans-serif;}
+  .mode-btn.active{background:var(--plum);color:white;}
+
+  .filters{display:flex;flex-direction:column;gap:7px;align-items:center;margin-bottom:12px;}
+  .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;}
+  .chip-row .lbl{font-size:0.7rem;color:#9aa8b2;text-transform:uppercase;letter-spacing:0.08em;}
+  .fchip{padding:5px 12px;border-radius:99px;border:1.5px solid #e1bee7;background:white;color:var(--plum);font-size:0.8rem;cursor:pointer;font-weight:600;}
+  .fchip:hover{background:#f3e5f5;}
+  .fchip.active{background:var(--plum);color:white;border-color:var(--plum);}
+  .fchip.pos.active{background:var(--teal);border-color:var(--teal);}
+  #search{padding:8px 14px;border:1.5px solid #e1bee7;border-radius:99px;font-size:0.9rem;width:240px;max-width:80vw;font-family:'Lato',sans-serif;}
+  #search:focus{outline:none;border-color:var(--plum);}
+  .count{text-align:center;font-size:0.84rem;color:#7a5a8a;margin-bottom:12px;}
+  .count strong{color:var(--plum);}
+
+  /* Browse */
+  .vlist{display:flex;flex-direction:column;gap:8px;}
+  .vrow{display:flex;align-items:flex-start;gap:12px;background:white;border:1px solid #efe1f4;border-radius:11px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+  .vrow .lbadge{flex:0 0 auto;font-size:0.66rem;font-weight:700;color:#9c6db5;background:#f6eefa;border-radius:6px;padding:3px 7px;margin-top:2px;letter-spacing:0.04em;}
+  .vrow .vmain{flex:1 1 auto;min-width:0;}
+  .vrow .vgr{font-family:'Georgia',serif;font-size:1.25rem;color:var(--teal);cursor:pointer;}
+  .vrow .vgr:hover{text-decoration:underline;}
+  .vrow .vtr{font-size:0.8rem;color:#9aa8b2;font-style:italic;margin-left:6px;}
+  .vrow .ven{font-size:0.95rem;color:var(--dark);margin-top:2px;}
+  .vrow .vnote{font-size:0.78rem;color:#7a8a95;margin-top:2px;}
+  .postag{flex:0 0 auto;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-radius:6px;padding:3px 7px;margin-top:2px;}
+  .postag.verb{background:#e0f2f1;color:#00695c;} .postag.noun{background:#e3f0fb;color:#1565c0;}
+  .postag.adj{background:#fce4ec;color:#c2185b;} .postag.adv{background:#fff3e0;color:#b76e00;}
+  .postag.pron,.postag.prep,.postag.conj,.postag.particle,.postag.num,.postag.expression{background:#ede7f6;color:#5e35b1;}
+  .speak-btn{border:none;background:#e0f2f1;color:var(--teal);cursor:pointer;border-radius:99px;font-size:0.9rem;padding:2px 9px;margin-left:4px;vertical-align:middle;line-height:1;}
+  .speak-btn:hover{background:#b2dfdb;}
+
+  /* Flashcards */
+  .fc-wrap{max-width:460px;margin:0 auto;}
+  .fc-controls{display:flex;justify-content:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+  .fc-card{background:white;border:1px solid #efe1f4;border-radius:16px;padding:34px 22px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.05);min-height:210px;display:flex;flex-direction:column;justify-content:center;}
+  .fc-lbadge{font-size:0.68rem;color:#9c6db5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+  .fc-front{font-family:'Playfair Display',serif;font-size:2.1rem;color:var(--teal);}
+  .fc-front.en{color:var(--dark);font-size:1.7rem;}
+  .fc-tr{font-size:0.95rem;color:#9aa8b2;font-style:italic;margin-top:6px;}
+  .fc-back{margin-top:16px;padding-top:14px;border-top:1px solid #f3eef7;display:none;}
+  .fc-back.show{display:block;}
+  .fc-back .ans{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dark);}
+  .fc-back .ans.gr{color:var(--teal);}
+  .fc-back .note{font-size:0.84rem;color:#7a8a95;margin-top:8px;font-style:italic;}
+  .actions{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+  .btn{padding:10px 20px;border-radius:99px;font-weight:700;font-size:0.88rem;cursor:pointer;border:1.5px solid var(--plum);font-family:'Lato',sans-serif;}
+  .btn-primary{background:var(--plum);color:white;} .btn-primary:hover{background:#4a116e;}
+  .btn-secondary{background:white;color:var(--plum);} .btn-secondary:hover{background:#f3e5f5;}
+  .fc-stats{text-align:center;font-size:0.84rem;color:#7a5a8a;margin-top:14px;}
+  .footer-tip{text-align:center;font-size:0.78rem;color:#9aa8b2;margin-top:22px;}
+  /* Test map */
+  .map-toggle{width:100%;max-width:560px;margin:6px auto 0;display:flex;justify-content:space-between;align-items:center;background:#faf4fc;border:1.5px solid #ecd9f3;border-radius:10px;padding:11px 15px;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;color:var(--plum);font-size:0.9rem;}
+  .map-toggle:hover{background:#f3e5f5;}
+  .map-toggle .chev{transition:transform 0.2s;font-size:0.8rem;}
+  .map-toggle.open .chev{transform:rotate(180deg);}
+  .map-body{max-width:560px;margin:0 auto;display:none;background:white;border:1.5px solid #ecd9f3;border-top:none;border-radius:0 0 10px 10px;padding:14px 16px;font-size:0.86rem;line-height:1.55;color:#43525c;}
+  .map-body.open{display:block;}
+  .map-body .map-big{background:#fff8ec;border:1px solid #ffe2b0;border-radius:8px;padding:10px 12px;color:#8a6d3b;margin-bottom:12px;}
+  .map-body .phase{margin-bottom:11px;}
+  .map-body .phase h4{font-family:'Playfair Display',serif;color:var(--teal);font-size:0.98rem;margin-bottom:2px;}
+  .map-body b{color:var(--plum);}
+  .map-body .map-foot{font-size:0.8rem;color:#7a8a95;font-style:italic;border-top:1px solid #f3eef7;padding-top:8px;margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🔑 Key Lexis Vocab</h1>
+    <p>Every word from the Lexis placement test, Parts Α–ΣΤ. Tap any Greek word to hear it.</p>
+  </header>
+
+  <button class="map-toggle" id="map-toggle" onclick="toggleMap()">
+    <span>🗺️ What's in each part of the test</span><span class="chev" id="map-chev">▾</span>
+  </button>
+  <div class="map-body" id="map-body">
+    <div class="map-big">The Lexis short placement test runs from absolute beginner up to advanced. Filter by part below to study at your level — <b>Α–Γ</b> are foundation, <b>Δ–ΣΤ</b> climb into opinion essays, idioms and abstract collocations.</div>
+    <div class="phase"><h4>Part Α · Basic questions</h4>
+      Greeting/intro Qs: <b>Πώς σε λένε;</b> · <b>Από πού είσαι;</b> · <b>Πόσων χρονών είσαι;</b> · free-time, drinks, plans for tomorrow.</div>
+    <div class="phase"><h4>Part Β · Articles, nouns &amp; everyday verbs</h4>
+      Fill the right form: family nouns (φίλος, μητέρα, γιατρός) · adjective endings (ανοιχτός, φτηνός, καινούριος) · present &amp; past verbs (μένω, σηκώνομαι, φτάνω, αγοράζω).</div>
+    <div class="phase"><h4>Part Γ · Connectors &amp; structure</h4>
+      "Supply what's missing": relatives (όπου), comparatives (πιο ψηλός), causes &amp; purposes (για να, επειδή) and the everyday vocab around them (λεωφορείο, μισθός, ταινία).</div>
+    <div class="phase"><h4>Part Δ · Short opinion answers</h4>
+      Why you learn Greek · whether foreign languages matter — <b>λόγος, χρήσιμος, ξένη γλώσσα, εποχή</b>.</div>
+    <div class="phase"><h4>Part Ε · Advanced transforms</h4>
+      Answer without negation · turn phrases into clauses · turn verbs into nouns · health/migration argument vocab (υγεία, μετανάστευση, απασχόληση, οξύνω).</div>
+    <div class="phase"><h4>Part ΣΤ · Word-formation, idioms &amp; collocations</h4>
+      ⭐ Make a verb from an adjective (ταχύς→επιταχύνω) · idioms (<b>χώνω τη μύτη μου</b>, <b>τρώω ψωμί κι αλάτι</b>) · abstract pairings across law, society, politics, education, work, ecology, art.</div>
+    <div class="map-foot">Tip: switch to 🃏 Flashcards and set "English first" to test recall before your placement test.</div>
+  </div>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="mode-browse" onclick="setMode('browse')">📖 Browse</button>
+    <button class="mode-btn" id="mode-cards" onclick="setMode('cards')">🃏 Flashcards</button>
+  </div>
+
+  <div class="filters">
+    <div class="chip-row" id="part-filter"></div>
+    <div class="chip-row" id="pos-filter"></div>
+    <div class="chip-row" id="search-row"><input id="search" type="text" placeholder="🔍 search Greek or English…" oninput="render()"></div>
+    <div class="chip-row" id="cards-extra" style="display:none;">
+      <span class="lbl">Show</span>
+      <button class="fchip active" id="dir-gr" onclick="setDir('gr')">Greek first</button>
+      <button class="fchip" id="dir-en" onclick="setDir('en')">English first</button>
+      <button class="fchip" onclick="shuffleDeck()">🔀 Shuffle</button>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <div id="browse-view"><div class="vlist" id="vlist"></div></div>
+
+  <div id="cards-view" style="display:none;">
+    <div class="fc-wrap">
+      <div class="fc-card" id="fc-card">
+        <div class="fc-lbadge" id="fc-lbadge"></div>
+        <div class="fc-front" id="fc-front">…</div>
+        <div class="fc-tr" id="fc-tr"></div>
+        <div class="fc-back" id="fc-back"></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="speakCurrent()">🔊 Hear</button>
+        <button class="btn btn-primary" id="fc-reveal" onclick="revealCard()">Reveal</button>
+        <button class="btn btn-secondary" id="fc-next" onclick="nextCard()" style="display:none;">Next →</button>
+      </div>
+      <div class="fc-stats" id="fc-stats"></div>
+    </div>
+  </div>
+
+  <p class="footer-tip">Source: lexis.edu.gr short placement test. Greek voice quality depends on your device. iPhone: Settings → Accessibility → Spoken Content → Voices → Greek (download the enhanced voice).</p>
+</div>
+
+<script>
+/* Key lexis distilled from the Lexis (lexis.edu.gr) short placement test.
+   One entry per dictionary lemma, tagged to the test part (Α–ΣΤ) where it appears.
+   Function words the learner already drills elsewhere are kept light; the focus is
+   content vocabulary, set phrases and the advanced collocations of Parts Ε–ΣΤ.
+   Self-contained, offline. */
+const VOCAB = [
+  /* ───────── ΜΕΡΟΣ Α — basic questions ───────── */
+  {"part":"Α","greek":"με λένε","translit":"me léne","en":"my name is (lit. they call me)","pos":"expression","note":"Πώς σε λένε; = what's your name?"},
+  {"part":"Α","greek":"από","translit":"apó","en":"from","pos":"prep","note":"Από πού είσαι; = where are you from?"},
+  {"part":"Α","greek":"πού","translit":"pu","en":"where","pos":"adv","note":"question word"},
+  {"part":"Α","greek":"μένω","translit":"méno","en":"I live / stay","pos":"verb","note":"Πού μένεις; = where do you live?"},
+  {"part":"Α","greek":"πόσων χρονών","translit":"póson khronón","en":"how old","pos":"expression","note":"Πόσων χρονών είσαι; = how old are you?"},
+  {"part":"Α","greek":"πίνω","translit":"píno","en":"I drink","pos":"verb","note":"closed: πιω"},
+  {"part":"Α","greek":"κρασί","translit":"krasí","en":"wine","pos":"noun","note":"neuter"},
+  {"part":"Α","greek":"πότε","translit":"póte","en":"when","pos":"adv","note":"question word"},
+  {"part":"Α","greek":"μάθημα","translit":"máthima","en":"lesson / class","pos":"noun","note":"neuter; pl. μαθήματα"},
+  {"part":"Α","greek":"ελληνικά","translit":"eliniká","en":"Greek (the language)","pos":"noun","note":"neuter plural"},
+  {"part":"Α","greek":"αύριο","translit":"ávrio","en":"tomorrow","pos":"adv","note":"Τι θα κάνεις αύριο;"},
+  {"part":"Α","greek":"μου αρέσει","translit":"mu arési","en":"I like (lit. it pleases me)","pos":"expression","note":"σου αρέσει = you like"},
+  {"part":"Α","greek":"ελεύθερος χρόνος","translit":"eléftheros khrónos","en":"free time","pos":"expression","note":"ελεύθερος = free, χρόνος = time"},
+  {"part":"Α","greek":"έρχομαι","translit":"érkhome","en":"I come","pos":"verb","note":"closed: έρθω; Έρχεσαι συχνά;"},
+  {"part":"Α","greek":"συχνά","translit":"sikhná","en":"often","pos":"adv","note":""},
+  {"part":"Α","greek":"Ελλάδα","translit":"Eládha","en":"Greece","pos":"noun","note":"feminine"},
+  {"part":"Α","greek":"γιατί","translit":"yatí","en":"why / because","pos":"adv","note":"για + τι"},
+
+  /* ───────── ΜΕΡΟΣ Β — articles, nouns, verbs ───────── */
+  {"part":"Β","greek":"φίλος","translit":"fílos","en":"friend (male)","pos":"noun","note":"masculine; pl. φίλοι"},
+  {"part":"Β","greek":"καταλαβαίνω","translit":"katalavéno","en":"I understand","pos":"verb","note":"closed: καταλάβω"},
+  {"part":"Β","greek":"μητέρα","translit":"mitéra","en":"mother","pos":"noun","note":"feminine"},
+  {"part":"Β","greek":"μιλάω","translit":"miláo","en":"I speak / talk","pos":"verb","note":"μιλάει στο τηλέφωνο = is on the phone"},
+  {"part":"Β","greek":"τηλέφωνο","translit":"tiléfono","en":"telephone","pos":"noun","note":"neuter"},
+  {"part":"Β","greek":"παιδί","translit":"pedhí","en":"child","pos":"noun","note":"neuter; pl. παιδιά"},
+  {"part":"Β","greek":"πηγαίνω","translit":"piyéno","en":"I go","pos":"verb","note":"also πάω; δεν πηγαίνουν στο σχολείο"},
+  {"part":"Β","greek":"σχολείο","translit":"skholío","en":"school","pos":"noun","note":"neuter"},
+  {"part":"Β","greek":"περιμένω","translit":"periméno","en":"I wait / expect","pos":"verb","note":"Περιμένουμε ακόμα = we're still waiting"},
+  {"part":"Β","greek":"γιατρός","translit":"yatrós","en":"doctor","pos":"noun","note":"masc/fem; pl. γιατροί"},
+  {"part":"Β","greek":"αδερφός","translit":"adherfós","en":"brother","pos":"noun","note":"masculine; also αδελφός"},
+  {"part":"Β","greek":"αδερφή","translit":"adherfí","en":"sister","pos":"noun","note":"feminine; also αδελφή"},
+  {"part":"Β","greek":"κατάστημα","translit":"katástima","en":"shop / store","pos":"noun","note":"neuter"},
+  {"part":"Β","greek":"ανοιχτός","translit":"anikhtós","en":"open","pos":"adj","note":"fem ανοιχτή, neut ανοιχτό"},
+  {"part":"Β","greek":"απόγευμα","translit":"apóyevma","en":"afternoon","pos":"noun","note":"neuter; το απόγευμα = in the afternoon"},
+  {"part":"Β","greek":"καθρέφτης","translit":"kathréftis","en":"mirror","pos":"noun","note":"masculine"},
+  {"part":"Β","greek":"κοστίζω","translit":"kostízo","en":"I cost","pos":"verb","note":"κοστίζει = it costs"},
+  {"part":"Β","greek":"φτηνός","translit":"ftinós","en":"cheap","pos":"adj","note":"fem φτηνή, neut φτηνό"},
+  {"part":"Β","greek":"μικρός","translit":"mikrós","en":"small","pos":"adj","note":"fem μικρή, neut μικρό"},
+  {"part":"Β","greek":"ωραίος","translit":"oréos","en":"nice / beautiful","pos":"adj","note":"fem ωραία, neut ωραίο"},
+  {"part":"Β","greek":"καλός","translit":"kalós","en":"good","pos":"adj","note":"fem καλή, neut καλό; Καλό ταξίδι!"},
+  {"part":"Β","greek":"μαύρος","translit":"mávros","en":"black","pos":"adj","note":"fem μαύρη, neut μαύρο"},
+  {"part":"Β","greek":"μακρύς","translit":"makrís","en":"long","pos":"adj","note":"fem μακριά, neut μακρύ"},
+  {"part":"Β","greek":"καινούριος","translit":"kenúrios","en":"new","pos":"adj","note":"fem καινούρια, neut καινούριο"},
+  {"part":"Β","greek":"μαθητής","translit":"mathitís","en":"pupil / student","pos":"noun","note":"masculine; fem μαθήτρια"},
+  {"part":"Β","greek":"ταξίδι","translit":"taksídhi","en":"trip / journey","pos":"noun","note":"neuter; Καλό ταξίδι! = bon voyage"},
+  {"part":"Β","greek":"ζω","translit":"zo","en":"I live","pos":"verb","note":"contracted verb"},
+  {"part":"Β","greek":"οικογένεια","translit":"ikoyénia","en":"family","pos":"noun","note":"feminine"},
+  {"part":"Β","greek":"Αθήνα","translit":"Athína","en":"Athens","pos":"noun","note":"feminine"},
+  {"part":"Β","greek":"σηκώνομαι","translit":"sikónome","en":"I get up / wake up","pos":"verb","note":"reflexive; τι ώρα σηκώνεσαι;"},
+  {"part":"Β","greek":"πρωί","translit":"proí","en":"morning","pos":"noun","note":"neuter; κάθε πρωί = every morning"},
+  {"part":"Β","greek":"πλοίο","translit":"plío","en":"ship / boat","pos":"noun","note":"neuter"},
+  {"part":"Β","greek":"φτάνω","translit":"ftáno","en":"I arrive","pos":"verb","note":"closed: φτάσω"},
+  {"part":"Β","greek":"λιμάνι","translit":"limáni","en":"harbour / port","pos":"noun","note":"neuter"},
+  {"part":"Β","greek":"Πειραιάς","translit":"Pireás","en":"Piraeus","pos":"noun","note":"masculine; του Πειραιά"},
+  {"part":"Β","greek":"αγοράζω","translit":"aghorázo","en":"I buy","pos":"verb","note":"closed: αγοράσω"},
+  {"part":"Β","greek":"αυτοκίνητο","translit":"aftokínito","en":"car","pos":"noun","note":"neuter"},
+  {"part":"Β","greek":"διαβάζω","translit":"dhiavázo","en":"I read","pos":"verb","note":"closed: διαβάσω"},
+  {"part":"Β","greek":"χθες","translit":"khthes","en":"yesterday","pos":"adv","note":"also χτες"},
+  {"part":"Β","greek":"εφημερίδα","translit":"efimerídha","en":"newspaper","pos":"noun","note":"feminine"},
+  {"part":"Β","greek":"ενδιαφέρων","translit":"endhiaféron","en":"interesting","pos":"adj","note":"ένα ενδιαφέρον άρθρο"},
+  {"part":"Β","greek":"άρθρο","translit":"árthro","en":"article","pos":"noun","note":"neuter; also grammatical 'article'"},
+  {"part":"Β","greek":"φοιτητής","translit":"fititís","en":"(university) student","pos":"noun","note":"masculine; fem φοιτήτρια"},
+  {"part":"Β","greek":"φορά","translit":"forá","en":"time / occasion","pos":"noun","note":"δυο φορές = twice"},
+  {"part":"Β","greek":"εβδομάδα","translit":"evdhomádha","en":"week","pos":"noun","note":"feminine; την εβδομάδα = per week"},
+  {"part":"Β","greek":"σινεμά","translit":"sinemá","en":"cinema","pos":"noun","note":"neuter, indeclinable"},
+  {"part":"Β","greek":"πάω","translit":"páo","en":"I go","pos":"verb","note":"closed: πάω; past πήγα"},
+  {"part":"Β","greek":"κοιμάμαι","translit":"kimáme","en":"I sleep","pos":"verb","note":"deponent; δεν κοιμήθηκα = I didn't sleep"},
+  {"part":"Β","greek":"νύχτα","translit":"níkhta","en":"night","pos":"noun","note":"feminine; όλη τη νύχτα = all night"},
+  {"part":"Β","greek":"ακούω","translit":"akúo","en":"I hear / listen","pos":"verb","note":"closed: ακούσω; δε σε άκουσα"},
+
+  /* ───────── ΜΕΡΟΣ Γ — connectors & structure ───────── */
+  {"part":"Γ","greek":"σπίτι","translit":"spíti","en":"house / home","pos":"noun","note":"neuter"},
+  {"part":"Γ","greek":"όπου","translit":"ópu","en":"where (relative)","pos":"adv","note":"το σπίτι όπου μένει = the house where he lives"},
+  {"part":"Γ","greek":"ρωτάω","translit":"rotáo","en":"I ask","pos":"verb","note":"closed: ρωτήσω; με ρώτησε = he asked me"},
+  {"part":"Γ","greek":"μαζί","translit":"mazí","en":"together / with","pos":"adv","note":"μαζί του = with him"},
+  {"part":"Γ","greek":"ψηλός","translit":"psilós","en":"tall","pos":"adj","note":"πιο ψηλός από = taller than"},
+  {"part":"Γ","greek":"λεωφορείο","translit":"leoforío","en":"bus","pos":"noun","note":"neuter"},
+  {"part":"Γ","greek":"στάση","translit":"stási","en":"stop (bus) / stance","pos":"noun","note":"feminine; κάνει στάση = it stops"},
+  {"part":"Γ","greek":"μπροστά","translit":"brostá","en":"in front (of)","pos":"adv","note":"μπροστά από = in front of"},
+  {"part":"Γ","greek":"αναπτήρας","translit":"anaptíras","en":"lighter","pos":"noun","note":"masculine"},
+  {"part":"Γ","greek":"βρίσκω","translit":"vrísko","en":"I find","pos":"verb","note":"closed: βρω"},
+  {"part":"Γ","greek":"πουθενά","translit":"puthená","en":"nowhere / anywhere","pos":"adv","note":"δεν το βρίσκω πουθενά"},
+  {"part":"Γ","greek":"τουρίστας","translit":"turístas","en":"tourist","pos":"noun","note":"masculine; ως τουρίστας = as a tourist"},
+  {"part":"Γ","greek":"μαθαίνω","translit":"mathéno","en":"I learn","pos":"verb","note":"closed: μάθω"},
+  {"part":"Γ","greek":"γυρίζω","translit":"yirízo","en":"I return / turn","pos":"verb","note":"closed: γυρίσω; γύρισε στο σπίτι"},
+  {"part":"Γ","greek":"άντρας","translit":"ándras","en":"man / husband","pos":"noun","note":"masculine; also άνδρας"},
+  {"part":"Γ","greek":"φεύγω","translit":"févgho","en":"I leave / go away","pos":"verb","note":"closed: φύγω; είχε φύγει = had left"},
+  {"part":"Γ","greek":"ήδη","translit":"ídhi","en":"already","pos":"adv","note":""},
+  {"part":"Γ","greek":"πονοκέφαλος","translit":"ponokéfalos","en":"headache","pos":"noun","note":"masculine; πόνος + κεφάλι"},
+  {"part":"Γ","greek":"μισθός","translit":"misthós","en":"salary / wage","pos":"noun","note":"masculine"},
+  {"part":"Γ","greek":"χαμηλός","translit":"khamilós","en":"low","pos":"adj","note":"opposite of ψηλός"},
+  {"part":"Γ","greek":"αλλάζω","translit":"alázo","en":"I change","pos":"verb","note":"closed: αλλάξω; ν' αλλάξω δουλειά"},
+  {"part":"Γ","greek":"δουλειά","translit":"dhuliá","en":"work / job","pos":"noun","note":"feminine"},
+  {"part":"Γ","greek":"ενδιαφέρομαι","translit":"endhiaférome","en":"I am interested (in)","pos":"verb","note":"ενδιαφέρομαι για = interested in"},
+  {"part":"Γ","greek":"ιστορία","translit":"istoría","en":"history / story","pos":"noun","note":"feminine"},
+  {"part":"Γ","greek":"ταινία","translit":"tenía","en":"film / movie","pos":"noun","note":"feminine"},
+  {"part":"Γ","greek":"διάρκεια","translit":"dhiárkia","en":"duration / length","pos":"noun","note":"feminine; έχει μικρή διάρκεια"},
+  {"part":"Γ","greek":"κρατάω","translit":"kratáo","en":"I last / hold / keep","pos":"verb","note":"κρατάει 75 λεπτά = it lasts 75 min"},
+  {"part":"Γ","greek":"λεπτό","translit":"leptó","en":"minute","pos":"noun","note":"neuter"},
+  {"part":"Γ","greek":"αποχαιρετώ","translit":"apokheretó","en":"I say goodbye (to)","pos":"verb","note":"closed: αποχαιρετήσω"},
+  {"part":"Γ","greek":"χώρος","translit":"khóros","en":"space / area","pos":"noun","note":"masculine; στους χώρους = on the premises"},
+  {"part":"Γ","greek":"νοσοκομείο","translit":"nosokomío","en":"hospital","pos":"noun","note":"neuter"},
+  {"part":"Γ","greek":"απαγορεύεται","translit":"apaghorévete","en":"it is forbidden","pos":"verb","note":"from απαγορεύω; + κάπνισμα"},
+  {"part":"Γ","greek":"αυστηρά","translit":"afstirá","en":"strictly","pos":"adv","note":"αυστηρός = strict"},
+  {"part":"Γ","greek":"κάπνισμα","translit":"kápnizma","en":"smoking","pos":"noun","note":"neuter"},
+  {"part":"Γ","greek":"συνεχίζω","translit":"sinekhízo","en":"I continue","pos":"verb","note":"closed: συνεχίσω"},
+  {"part":"Γ","greek":"φοβάμαι","translit":"fováme","en":"I am afraid","pos":"verb","note":"deponent; φοβάμαι μήπως = afraid that"},
+  {"part":"Γ","greek":"μήπως","translit":"mípos","en":"in case / perhaps","pos":"conj","note":"softens a question or worry"},
+
+  /* ───────── ΜΕΡΟΣ Δ — opinion answers ───────── */
+  {"part":"Δ","greek":"λόγος","translit":"lóghos","en":"reason / speech","pos":"noun","note":"masculine; για ποιους λόγους = for what reasons"},
+  {"part":"Δ","greek":"χρήσιμος","translit":"khrísimos","en":"useful","pos":"adj","note":"fem χρήσιμη, neut χρήσιμο"},
+  {"part":"Δ","greek":"εποχή","translit":"epokhí","en":"era / season","pos":"noun","note":"feminine; στην εποχή μας = in our time"},
+  {"part":"Δ","greek":"ξένος","translit":"ksénos","en":"foreign / stranger","pos":"adj","note":"ξένες γλώσσες = foreign languages"},
+  {"part":"Δ","greek":"γλώσσα","translit":"glóssa","en":"language / tongue","pos":"noun","note":"feminine"},
+  {"part":"Δ","greek":"πιστεύω","translit":"pistévo","en":"I believe / think","pos":"verb","note":"closed: πιστέψω"},
+
+  /* ───────── ΜΕΡΟΣ Ε — advanced transforms ───────── */
+  {"part":"Ε","greek":"συμφωνώ","translit":"simfonó","en":"I agree","pos":"verb","note":"συμφωνώ με = agree with"},
+  {"part":"Ε","greek":"άποψη","translit":"ápopsi","en":"opinion / view","pos":"noun","note":"feminine; pl. απόψεις"},
+  {"part":"Ε","greek":"απορρίπτω","translit":"aporípto","en":"I reject / turn down","pos":"verb","note":"closed: απορρίψω"},
+  {"part":"Ε","greek":"πρόταση","translit":"prótasi","en":"proposal / sentence","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"λύση","translit":"lísi","en":"solution","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"μειονέκτημα","translit":"mionéktima","en":"disadvantage / drawback","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"αντίθετο","translit":"andítheto","en":"opposite","pos":"noun","note":"το αντίθετο = the opposite"},
+  {"part":"Ε","greek":"ικανοποιώ","translit":"ikanopió","en":"I satisfy","pos":"verb","note":"closed: ικανοποιήσω"},
+  {"part":"Ε","greek":"αποτέλεσμα","translit":"apotélezma","en":"result / outcome","pos":"noun","note":"neuter; pl. αποτελέσματα"},
+  {"part":"Ε","greek":"καιρός","translit":"kerós","en":"weather / time","pos":"noun","note":"masculine"},
+  {"part":"Ε","greek":"Σαββατοκύριακο","translit":"savatokíriako","en":"weekend","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"ερασιτέχνης","translit":"erasitékhnis","en":"amateur","pos":"noun","note":"opposite of επαγγελματίας"},
+  {"part":"Ε","greek":"μουσικός","translit":"musikós","en":"musician / musical","pos":"noun","note":"masc/fem"},
+  {"part":"Ε","greek":"μοιάζω","translit":"miázo","en":"I resemble / look like","pos":"verb","note":"μοιάζουν μεταξύ τους = they look alike"},
+  {"part":"Ε","greek":"αδέλφια","translit":"adhélfia","en":"siblings","pos":"noun","note":"neuter plural of αδέλφι"},
+  {"part":"Ε","greek":"μεταξύ","translit":"metaksí","en":"between / among","pos":"prep","note":"μεταξύ τους = among themselves"},
+  {"part":"Ε","greek":"ηλιοθεραπεία","translit":"iliotherapía","en":"sunbathing","pos":"noun","note":"feminine; ήλιος + θεραπεία"},
+  {"part":"Ε","greek":"ωφελώ","translit":"ofeló","en":"I benefit / do good","pos":"verb","note":"ωφελεί; = is it beneficial?"},
+  {"part":"Ε","greek":"τελευταίος","translit":"teleftéos","en":"last / recent","pos":"adj","note":"τα τελευταία χρόνια = in recent years"},
+  {"part":"Ε","greek":"ανεπανόρθωτα","translit":"anepanórthota","en":"irreparably","pos":"adv","note":"βλάπτει ανεπανόρθωτα"},
+  {"part":"Ε","greek":"δέρμα","translit":"dhérma","en":"skin","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"περίπτωση","translit":"períptosi","en":"case / instance","pos":"noun","note":"feminine; σε περίπτωση = in case of"},
+  {"part":"Ε","greek":"απόρριψη","translit":"apóripsi","en":"rejection","pos":"noun","note":"feminine; noun of απορρίπτω"},
+  {"part":"Ε","greek":"εναλλακτικός","translit":"enalaktikós","en":"alternative","pos":"adj","note":"εναλλακτική πρόταση"},
+  {"part":"Ε","greek":"εξαιτίας","translit":"eksetías","en":"because of / due to","pos":"prep","note":"+ genitive"},
+  {"part":"Ε","greek":"μείωση","translit":"míosi","en":"reduction / decrease","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"τιμή","translit":"timí","en":"price / honour","pos":"noun","note":"feminine; μείωση των τιμών"},
+  {"part":"Ε","greek":"αυξάνω","translit":"afksáno","en":"I increase","pos":"verb","note":"αυξήθηκε = increased"},
+  {"part":"Ε","greek":"κίνηση","translit":"kínisi","en":"movement / traffic","pos":"noun","note":"feminine; κίνηση στην αγορά = market activity"},
+  {"part":"Ε","greek":"αγορά","translit":"aghorá","en":"market / purchase","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"παρά","translit":"pará","en":"despite / contrary to","pos":"prep","note":"παρά τις προσπάθειες = despite the efforts"},
+  {"part":"Ε","greek":"επίμονος","translit":"epímonos","en":"persistent / insistent","pos":"adj","note":"επίμονες προσπάθειες"},
+  {"part":"Ε","greek":"προσπάθεια","translit":"prospáthia","en":"effort / attempt","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"κατορθώνω","translit":"katorthóno","en":"I manage / achieve","pos":"verb","note":"closed: κατορθώσω"},
+  {"part":"Ε","greek":"χάρη σε","translit":"khári se","en":"thanks to","pos":"expression","note":"+ accusative"},
+  {"part":"Ε","greek":"άριστος","translit":"áristos","en":"excellent / top","pos":"adj","note":"άριστη κατάρτιση"},
+  {"part":"Ε","greek":"επιστημονικός","translit":"epistimonikós","en":"scientific","pos":"adj","note":"επιστήμη = science"},
+  {"part":"Ε","greek":"κατάρτιση","translit":"katártisi","en":"training / qualification","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"αντιμετωπίζω","translit":"andimetopízo","en":"I face / deal with","pos":"verb","note":"closed: αντιμετωπίσω"},
+  {"part":"Ε","greek":"επιπλοκή","translit":"epiplokí","en":"complication","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"εξυπηρέτηση","translit":"eksipirétisi","en":"service / assistance","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"κοινό","translit":"kinó","en":"the public / audience","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"ταχυδρομείο","translit":"takhidhromío","en":"post office","pos":"noun","note":"neuter; pl. ταχυδρομεία"},
+  {"part":"Ε","greek":"παρέμβαση","translit":"parémvasi","en":"intervention","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"υπουργός","translit":"ipurghós","en":"minister","pos":"noun","note":"masc/fem; υπουργός Εξωτερικών = foreign minister"},
+  {"part":"Ε","greek":"υπόθεση","translit":"ipóthesi","en":"case / affair / matter","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"προχωρώ","translit":"prokhoró","en":"I proceed / advance","pos":"verb","note":"closed: προχωρήσω"},
+  {"part":"Ε","greek":"ανακοίνωση","translit":"anakínosi","en":"announcement","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"τελικός","translit":"telikós","en":"final","pos":"adj","note":"τελικά αποτελέσματα = final results"},
+  {"part":"Ε","greek":"εκλογές","translit":"ekloyés","en":"elections","pos":"noun","note":"feminine plural"},
+  {"part":"Ε","greek":"κόμμα","translit":"kóma","en":"(political) party / comma","pos":"noun","note":"neuter; pl. κόμματα"},
+  {"part":"Ε","greek":"δήλωση","translit":"dhílosi","en":"statement / declaration","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"νέοι","translit":"néi","en":"young people","pos":"noun","note":"masc plural of νέος"},
+  {"part":"Ε","greek":"στρέφομαι","translit":"stréfome","en":"I turn (towards)","pos":"verb","note":"στρέφομαι προς = turn to"},
+  {"part":"Ε","greek":"κινηματογράφος","translit":"kinimatoghráfos","en":"cinema (the art/industry)","pos":"noun","note":"masculine"},
+  {"part":"Ε","greek":"προσκαλώ","translit":"proskaló","en":"I invite","pos":"verb","note":"closed: προσκαλέσω"},
+  {"part":"Ε","greek":"ομόλογος","translit":"omóloghos","en":"counterpart","pos":"noun","note":"ο Τούρκος ομόλογός του"},
+  {"part":"Ε","greek":"επισκέπτομαι","translit":"episképtome","en":"I visit","pos":"verb","note":"deponent; closed: επισκεφτώ"},
+  {"part":"Ε","greek":"χώρα","translit":"khóra","en":"country","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"μέσα μαζικής ενημέρωσης","translit":"mésa mazikís enimérosis","en":"mass media","pos":"expression","note":"abbr. ΜΜΕ"},
+  {"part":"Ε","greek":"σέβομαι","translit":"sévome","en":"I respect","pos":"verb","note":"deponent"},
+  {"part":"Ε","greek":"ανθρώπινος","translit":"anthrópinos","en":"human","pos":"adj","note":"ανθρώπινη προσωπικότητα"},
+  {"part":"Ε","greek":"προσωπικότητα","translit":"prosopikótita","en":"personality","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"απουσιάζω","translit":"apusiázo","en":"I am absent / missing","pos":"verb","note":"απουσιάζει το ενδιαφέρον"},
+  {"part":"Ε","greek":"ενδιαφέρον","translit":"endhiaféron","en":"interest","pos":"noun","note":"neuter (the noun)"},
+  {"part":"Ε","greek":"πλευρά","translit":"plevrá","en":"side","pos":"noun","note":"feminine; από την πλευρά = on the part of"},
+  {"part":"Ε","greek":"πολιτεία","translit":"politía","en":"the state","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"μέτρο","translit":"métro","en":"measure / metre","pos":"noun","note":"neuter; pl. μέτρα; λαμβάνω μέτρα = take measures"},
+  {"part":"Ε","greek":"αποφεύγω","translit":"apofévgho","en":"I avoid","pos":"verb","note":"closed: αποφύγω"},
+  {"part":"Ε","greek":"οξύνομαι","translit":"oksínome","en":"to worsen / sharpen (intr.)","pos":"verb","note":"να οξυνθεί το πρόβλημα"},
+  {"part":"Ε","greek":"πρόβλημα","translit":"próvlima","en":"problem","pos":"noun","note":"neuter; pl. προβλήματα"},
+  {"part":"Ε","greek":"χρησιμοποιώ","translit":"khrisimopió","en":"I use","pos":"verb","note":"closed: χρησιμοποιήσω"},
+  {"part":"Ε","greek":"μηχανή","translit":"mikhaní","en":"machine / engine","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"εκμηδενίζω","translit":"ekmidhenízo","en":"I eliminate / nullify","pos":"verb","note":"μηδέν = zero"},
+  {"part":"Ε","greek":"κίνδυνος","translit":"kíndhinos","en":"danger / risk","pos":"noun","note":"masculine"},
+  {"part":"Ε","greek":"ατύχημα","translit":"atíkhima","en":"accident","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"αφορμή","translit":"aformí","en":"pretext / occasion / cause","pos":"noun","note":"feminine; δίνω αφορμή = give cause"},
+  {"part":"Ε","greek":"σχόλιο","translit":"skhólio","en":"comment / remark","pos":"noun","note":"neuter; pl. σχόλια"},
+  {"part":"Ε","greek":"εις βάρος","translit":"is város","en":"at the expense of","pos":"expression","note":"+ genitive"},
+  {"part":"Ε","greek":"κρατάω τον λόγο μου","translit":"kratáo ton lógho mu","en":"I keep my word","pos":"expression","note":"idiom"},
+  {"part":"Ε","greek":"φανερώνω","translit":"faneróno","en":"I reveal / disclose","pos":"verb","note":"closed: φανερώσω"},
+  {"part":"Ε","greek":"μυστικό","translit":"mistikó","en":"secret","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"παίρνω το μέρος","translit":"pérno to méros","en":"I take the side (of)","pos":"expression","note":"παίρνω το μέρος μου = side with me"},
+  {"part":"Ε","greek":"διαμάχη","translit":"dhiamákhi","en":"dispute / conflict","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"υποστηρίζω","translit":"ipostirízo","en":"I support / back","pos":"verb","note":"closed: υποστηρίξω"},
+  {"part":"Ε","greek":"κατανόηση","translit":"katanóisi","en":"understanding","pos":"noun","note":"feminine; δείχνω κατανόηση"},
+  {"part":"Ε","greek":"συμπεριφορά","translit":"simperiforá","en":"behaviour / conduct","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"εφαρμογή","translit":"efarmoyí","en":"application / implementation","pos":"noun","note":"feminine; also 'app'"},
+  {"part":"Ε","greek":"σχέδιο","translit":"skhédhio","en":"plan / design","pos":"noun","note":"neuter"},
+  {"part":"Ε","greek":"γνώση","translit":"ghnósi","en":"knowledge","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"αρμόδιος","translit":"armódhios","en":"competent / in charge","pos":"adj","note":"οι αρμόδιοι = those responsible"},
+  {"part":"Ε","greek":"υγεία","translit":"iyía","en":"health","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"σημαντικός","translit":"simandikós","en":"important","pos":"adj","note":""},
+  {"part":"Ε","greek":"συστηματικός","translit":"sistimatikós","en":"systematic / regular","pos":"adj","note":"συστηματική άσκηση"},
+  {"part":"Ε","greek":"άσκηση","translit":"áskisi","en":"exercise","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"μετανάστευση","translit":"metanástefsi","en":"migration / immigration","pos":"noun","note":"feminine"},
+  {"part":"Ε","greek":"οξύνω","translit":"oksíno","en":"I sharpen / aggravate","pos":"verb","note":"οξύνει το πρόβλημα = worsens the problem"},
+  {"part":"Ε","greek":"απασχόληση","translit":"apaskhólisi","en":"employment / occupation","pos":"noun","note":"feminine"},
+
+  /* ───────── ΜΕΡΟΣ ΣΤ — word-formation, idioms, collocations ───────── */
+  {"part":"ΣΤ","greek":"ταχύς","translit":"takhís","en":"fast / swift","pos":"adj","note":"→ verb επιταχύνω = speed up"},
+  {"part":"ΣΤ","greek":"επιταχύνω","translit":"epitakhíno","en":"I speed up / accelerate","pos":"verb","note":"from ταχύς; επιταχύνω το βήμα"},
+  {"part":"ΣΤ","greek":"βήμα","translit":"víma","en":"step / pace","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"βαθύς","translit":"vathís","en":"deep","pos":"adj","note":"→ verb εμβαθύνω"},
+  {"part":"ΣΤ","greek":"εμβαθύνω","translit":"emvathíno","en":"I go deeply into","pos":"verb","note":"from βαθύς; εμβαθύνω σε"},
+  {"part":"ΣΤ","greek":"συγγραφέας","translit":"singhraféas","en":"author / writer","pos":"noun","note":"masc/fem"},
+  {"part":"ΣΤ","greek":"αξία","translit":"aksía","en":"value / worth","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"ελεύθερος","translit":"eléftheros","en":"free","pos":"adj","note":"→ verb ελευθερώνω = to free"},
+  {"part":"ΣΤ","greek":"ελευθερώνω","translit":"eleftheróno","en":"I free / release","pos":"verb","note":"also απελευθερώνω"},
+  {"part":"ΣΤ","greek":"αεροπειρατής","translit":"aeropirátis","en":"hijacker","pos":"noun","note":"masculine; pl. αεροπειρατές"},
+  {"part":"ΣΤ","greek":"όμηρος","translit":"ómiros","en":"hostage","pos":"noun","note":"masculine; pl. όμηροι"},
+  {"part":"ΣΤ","greek":"πολύωρος","translit":"políoros","en":"lasting many hours / lengthy","pos":"adj","note":"πολύωρες διαπραγματεύσεις"},
+  {"part":"ΣΤ","greek":"διαπραγμάτευση","translit":"dhiapraghmátefsi","en":"negotiation","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"εύκολος","translit":"éfkolos","en":"easy","pos":"adj","note":"→ verb διευκολύνω = facilitate"},
+  {"part":"ΣΤ","greek":"διευκολύνω","translit":"dhiefkolíno","en":"I facilitate / make easier","pos":"verb","note":"from εύκολος"},
+  {"part":"ΣΤ","greek":"λειτουργία","translit":"lituryía","en":"operation / function","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"γραμμή","translit":"ghramí","en":"line","pos":"noun","note":"feminine; γραμμές του μετρό"},
+  {"part":"ΣΤ","greek":"μετρό","translit":"metró","en":"metro / underground","pos":"noun","note":"neuter, indeclinable"},
+  {"part":"ΣΤ","greek":"κάτοικος","translit":"kátikos","en":"resident / inhabitant","pos":"noun","note":"masc/fem; pl. κάτοικοι"},
+  {"part":"ΣΤ","greek":"απλός","translit":"aplós","en":"simple","pos":"adj","note":"→ verb απλοποιώ = simplify"},
+  {"part":"ΣΤ","greek":"απλοποιώ","translit":"aplopió","en":"I simplify","pos":"verb","note":"also απλουστεύω"},
+  {"part":"ΣΤ","greek":"διαδικασία","translit":"dhiadhikasía","en":"procedure / process","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"χορήγηση","translit":"khoríyisi","en":"granting / provision","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"επίδομα","translit":"epídhoma","en":"allowance / benefit","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"χώνω τη μύτη μου","translit":"khóno ti míti mu","en":"to stick my nose in / be nosy","pos":"expression","note":"idiom; χώνω = stuff/poke"},
+  {"part":"ΣΤ","greek":"διευθυντής","translit":"dhiefthindís","en":"manager / director","pos":"noun","note":"masculine; fem διευθύντρια"},
+  {"part":"ΣΤ","greek":"εταιρεία","translit":"etería","en":"company / firm","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"γυρίζω σελίδα","translit":"yirízo selídha","en":"to turn the page / make a fresh start","pos":"expression","note":"idiom; σελίδα = page"},
+  {"part":"ΣΤ","greek":"τρώω ψωμί κι αλάτι","translit":"tróo psomí ki aláti","en":"to be longtime close friends","pos":"expression","note":"idiom, lit. eaten bread and salt together"},
+  {"part":"ΣΤ","greek":"ξέφρενος","translit":"kséfrenos","en":"frantic / wild / unbridled","pos":"adj","note":"ξέφρενος ρυθμός = frantic pace"},
+  {"part":"ΣΤ","greek":"αβέβαιος","translit":"avéveos","en":"uncertain","pos":"adj","note":"αβέβαιο μέλλον = uncertain future"},
+  {"part":"ΣΤ","greek":"μακροπρόθεσμος","translit":"makropróthezmos","en":"long-term","pos":"adj","note":"opposite βραχυπρόθεσμος"},
+  {"part":"ΣΤ","greek":"ανυπέρβλητος","translit":"anipérvlitos","en":"insurmountable","pos":"adj","note":"ανυπέρβλητο πρόβλημα"},
+  {"part":"ΣΤ","greek":"γενεσιουργός","translit":"yenesiurghós","en":"root / generative (cause)","pos":"adj","note":"γενεσιουργός αιτία = root cause"},
+  {"part":"ΣΤ","greek":"αθέμιτος","translit":"athémitos","en":"unfair / illicit","pos":"adj","note":"αθέμιτος ανταγωνισμός = unfair competition"},
+  {"part":"ΣΤ","greek":"πειστικός","translit":"pistikós","en":"convincing / persuasive","pos":"adj","note":"πειστικό επιχείρημα"},
+  {"part":"ΣΤ","greek":"άκαρπος","translit":"ákarpos","en":"fruitless / unsuccessful","pos":"adj","note":"άκαρπη προσπάθεια"},
+  {"part":"ΣΤ","greek":"ζωτικός","translit":"zotikós","en":"vital","pos":"adj","note":"ζωτική ανάγκη = vital need"},
+  {"part":"ΣΤ","greek":"αιτία","translit":"etía","en":"cause / reason","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"ανάγκη","translit":"anángi","en":"need / necessity","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"όφελος","translit":"ófelos","en":"benefit / gain","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"επιχείρημα","translit":"epikhírima","en":"argument","pos":"noun","note":"neuter; pl. επιχειρήματα"},
+  {"part":"ΣΤ","greek":"ρυθμός","translit":"rithmós","en":"rhythm / pace / rate","pos":"noun","note":"masculine"},
+  {"part":"ΣΤ","greek":"μέλλον","translit":"mélon","en":"future","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"ανταγωνισμός","translit":"andaghonizmós","en":"competition / rivalry","pos":"noun","note":"masculine"},
+  {"part":"ΣΤ","greek":"δικαίωμα","translit":"dhikéoma","en":"right (entitlement)","pos":"noun","note":"neuter; pl. δικαιώματα"},
+  {"part":"ΣΤ","greek":"ευκαιρία","translit":"efkería","en":"opportunity / chance","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"νόμος","translit":"nómos","en":"law","pos":"noun","note":"masculine; pl. νόμοι"},
+  {"part":"ΣΤ","greek":"προσαρμογή","translit":"prosarmoyí","en":"adaptation / adjustment","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"πίστη","translit":"písti","en":"faith / credit","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"σχέση","translit":"skhési","en":"relationship / relation","pos":"noun","note":"feminine; pl. σχέσεις"},
+  {"part":"ΣΤ","greek":"χρέος","translit":"khréos","en":"debt / duty","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"αξιοποιείται","translit":"aksiopiíte","en":"is utilised / made the most of","pos":"verb","note":"η ευκαιρία αξιοποιείται"},
+  {"part":"ΣΤ","greek":"εξαγγέλλονται","translit":"eksangélonde","en":"are announced / proclaimed","pos":"verb","note":"τα μέτρα εξαγγέλλονται"},
+  {"part":"ΣΤ","greek":"συσφίγγονται","translit":"sisfíngonde","en":"are tightened / strengthened","pos":"verb","note":"οι σχέσεις συσφίγγονται"},
+  {"part":"ΣΤ","greek":"καλύπτεται","translit":"kalíptete","en":"is covered / met","pos":"verb","note":"η ανάγκη καλύπτεται"},
+  {"part":"ΣΤ","greek":"εξοφλείται","translit":"eksoflíte","en":"is paid off / settled","pos":"verb","note":"το χρέος εξοφλείται"},
+  {"part":"ΣΤ","greek":"αναθεωρείται","translit":"anatheoríte","en":"is revised / reconsidered","pos":"verb","note":"η άποψη αναθεωρείται"},
+  {"part":"ΣΤ","greek":"περιπλέκεται","translit":"periplékete","en":"is complicated / entangled","pos":"verb","note":"το πρόβλημα περιπλέκεται"},
+  {"part":"ΣΤ","greek":"θεσπίζονται","translit":"thespízonde","en":"are enacted / legislated","pos":"verb","note":"οι νόμοι θεσπίζονται"},
+  {"part":"ΣΤ","greek":"καταπατείται","translit":"katapatíte","en":"is violated / infringed","pos":"verb","note":"το δικαίωμα καταπατείται"},
+  {"part":"ΣΤ","greek":"προεκλογική εκστρατεία","translit":"proekloyikí ekstratía","en":"pre-election campaign","pos":"expression","note":"domain: πολιτική (politics)"},
+  {"part":"ΣΤ","greek":"ποινικό αδίκημα","translit":"pinikó adhíkima","en":"criminal offence","pos":"expression","note":"domain: δίκαιο (law)"},
+  {"part":"ΣΤ","greek":"υποκριτικό ταλέντο","translit":"ipokritikó talénto","en":"acting talent","pos":"expression","note":"domain: τέχνη (art)"},
+  {"part":"ΣΤ","greek":"κύμα μετανάστευσης","translit":"kíma metanástefsis","en":"wave of migration","pos":"expression","note":"domain: κοινωνία (society)"},
+  {"part":"ΣΤ","greek":"επιλεγμένο μάθημα","translit":"epileghméno máthima","en":"elective / optional course","pos":"expression","note":"domain: εκπαίδευση (education)"},
+  {"part":"ΣΤ","greek":"εναλλακτικές πηγές ενέργειας","translit":"enalaktikés piyés enéryias","en":"alternative energy sources","pos":"expression","note":"domain: οικολογία (ecology)"},
+  {"part":"ΣΤ","greek":"συστατική επιστολή","translit":"sistatikí epistolí","en":"letter of recommendation","pos":"expression","note":"domain: εργασία (work)"},
+  {"part":"ΣΤ","greek":"δάνειο","translit":"dhánio","en":"loan","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"ποινή","translit":"piní","en":"penalty / sentence","pos":"noun","note":"feminine; domain: δίκαιο (law)"},
+  {"part":"ΣΤ","greek":"αδίκημα","translit":"adhíkima","en":"offence / wrongdoing","pos":"noun","note":"neuter"},
+  {"part":"ΣΤ","greek":"εκστρατεία","translit":"ekstratía","en":"campaign","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"επιστολή","translit":"epistolí","en":"letter (formal)","pos":"noun","note":"feminine"},
+  {"part":"ΣΤ","greek":"δίκαιο","translit":"dhíkeo","en":"law (the field) / justice","pos":"noun","note":"neuter; domain label"},
+  {"part":"ΣΤ","greek":"κοινωνία","translit":"kinonía","en":"society","pos":"noun","note":"feminine; domain label"},
+  {"part":"ΣΤ","greek":"πολιτική","translit":"politikí","en":"politics / policy","pos":"noun","note":"feminine; domain label"},
+  {"part":"ΣΤ","greek":"εκπαίδευση","translit":"ekpédhefsi","en":"education","pos":"noun","note":"feminine; domain label"},
+  {"part":"ΣΤ","greek":"εργασία","translit":"erghasía","en":"work / labour","pos":"noun","note":"feminine; domain label"},
+  {"part":"ΣΤ","greek":"οικολογία","translit":"ikoloyía","en":"ecology","pos":"noun","note":"feminine; domain label"},
+  {"part":"ΣΤ","greek":"τέχνη","translit":"tékhni","en":"art","pos":"noun","note":"feminine; domain label"}
+];
+
+const POS_LABEL = { verb:'verb', noun:'noun', adj:'adj', adv:'adv', pron:'pron', prep:'prep', conj:'conj', particle:'part', num:'num', expression:'phrase' };
+const PART_RANGES = [
+  {key:'all', label:'All', test:()=>true},
+  {key:'Α', label:"Α", test:p=>p==='Α'},
+  {key:'Β', label:"Β", test:p=>p==='Β'},
+  {key:'Γ', label:"Γ", test:p=>p==='Γ'},
+  {key:'Δ', label:"Δ", test:p=>p==='Δ'},
+  {key:'Ε', label:"Ε", test:p=>p==='Ε'},
+  {key:'ΣΤ', label:"ΣΤ", test:p=>p==='ΣΤ'},
+];
+const POS_GROUPS = [
+  {key:'all', label:'All'},
+  {key:'verb', label:'Verbs'},
+  {key:'noun', label:'Nouns'},
+  {key:'adj', label:'Adjectives'},
+  {key:'adv', label:'Adverbs'},
+  {key:'expression', label:'Phrases'},
+  {key:'other', label:'Other'},
+];
+const OTHER = new Set(['pron','prep','conj','particle','num']);
+
+let mode='browse', partFilter='all', posFilter='all', dir='gr';
+let deck=[], deckPos=0, revealed=false, fcStats={seen:0};
+
+/* ── TTS ── */
+function warmVoices(){ if('speechSynthesis' in window){ try{window.speechSynthesis.getVoices();}catch(e){} } }
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged=warmVoices; }
+function speakGreek(t){
+  if(!('speechSynthesis' in window)||!t) return;
+  try{ window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(t)); u.lang='el-GR'; u.rate=0.9;
+    const v=(window.speechSynthesis.getVoices()||[]).find(x=>/el([-_]?GR)?/i.test(x.lang)||/greek|ελλ/i.test(x.name));
+    if(v) u.voice=v; window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function buildFilters(){
+  const lf=document.getElementById('part-filter');
+  lf.innerHTML='<span class="lbl">Part</span>';
+  PART_RANGES.forEach(r=>{ const b=document.createElement('button');
+    b.className='fchip'+(r.key===partFilter?' active':''); b.textContent=r.label;
+    b.onclick=()=>{partFilter=r.key;buildFilters();onFilterChange();}; lf.appendChild(b); });
+  const pf=document.getElementById('pos-filter');
+  pf.innerHTML='<span class="lbl">Type</span>';
+  POS_GROUPS.forEach(g=>{ const b=document.createElement('button');
+    b.className='fchip pos'+(g.key===posFilter?' active':''); b.textContent=g.label;
+    b.onclick=()=>{posFilter=g.key;buildFilters();onFilterChange();}; pf.appendChild(b); });
+}
+
+function matchPos(p){ if(posFilter==='all')return true; if(posFilter==='other')return OTHER.has(p); return p===posFilter; }
+function currentList(){
+  const range=PART_RANGES.find(r=>r.key===partFilter);
+  const q=(document.getElementById('search').value||'').trim().toLowerCase();
+  return VOCAB.filter(v=> range.test(v.part) && matchPos(v.pos) &&
+    (!q || v.greek.toLowerCase().includes(q) || v.en.toLowerCase().includes(q) || (v.translit||'').toLowerCase().includes(q)));
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('mode-browse').classList.toggle('active',m==='browse');
+  document.getElementById('mode-cards').classList.toggle('active',m==='cards');
+  document.getElementById('browse-view').style.display=m==='browse'?'':'none';
+  document.getElementById('cards-view').style.display=m==='cards'?'':'none';
+  document.getElementById('cards-extra').style.display=m==='cards'?'':'none';
+  document.getElementById('search-row').style.display=m==='browse'?'':'none';
+  if(m==='cards') startDeck(); else render();
+}
+function onFilterChange(){ if(mode==='browse') render(); else startDeck(); }
+function setDir(d){ dir=d; document.getElementById('dir-gr').classList.toggle('active',d==='gr'); document.getElementById('dir-en').classList.toggle('active',d==='en'); showCard(); }
+
+function render(){
+  const list=currentList();
+  document.getElementById('count').innerHTML='<strong>'+list.length+'</strong> words';
+  const host=document.getElementById('vlist'); host.innerHTML='';
+  list.forEach(v=>{
+    const row=document.createElement('div'); row.className='vrow';
+    row.innerHTML=
+      '<span class="lbadge">'+v.part+'</span>'+
+      '<div class="vmain">'+
+        '<span class="vgr" onclick="speakGreek(\''+v.greek.replace(/'/g,"\\'")+'\')">'+v.greek+'</span>'+
+        '<span class="vtr">'+(v.translit?'['+v.translit+']':'')+'</span>'+
+        '<button class="speak-btn" title="Hear" onclick="speakGreek(\''+v.greek.replace(/'/g,"\\'")+'\')">🔊</button>'+
+        '<div class="ven">'+v.en+'</div>'+
+        (v.note?'<div class="vnote">'+v.note+'</div>':'')+
+      '</div>'+
+      '<span class="postag '+v.pos+'">'+(POS_LABEL[v.pos]||v.pos)+'</span>';
+    host.appendChild(row);
+  });
+}
+
+/* ── Flashcards ── */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function startDeck(){ deck=shuffle(currentList().slice()); deckPos=0; fcStats={seen:0}; showCard(); }
+function shuffleDeck(){ startDeck(); }
+function showCard(){
+  revealed=false;
+  const c=deck[deckPos];
+  document.getElementById('count').innerHTML='<strong>'+deck.length+'</strong> cards in this set';
+  const front=document.getElementById('fc-front'), tr=document.getElementById('fc-tr'), back=document.getElementById('fc-back');
+  if(!c){ document.getElementById('fc-lbadge').textContent=''; front.textContent='No cards — widen the filter.'; front.className='fc-front en'; tr.textContent=''; back.className='fc-back'; return; }
+  document.getElementById('fc-lbadge').textContent='Part '+c.part+' · '+(POS_LABEL[c.pos]||c.pos);
+  if(dir==='gr'){ front.textContent=c.greek; front.className='fc-front'; tr.textContent=c.translit?'['+c.translit+']':''; }
+  else { front.textContent=c.en; front.className='fc-front en'; tr.textContent=''; }
+  back.className='fc-back'; back.innerHTML='';
+  document.getElementById('fc-reveal').style.display=''; document.getElementById('fc-next').style.display='none';
+  document.getElementById('fc-stats').textContent=(deckPos+1)+' / '+deck.length;
+}
+function revealCard(){
+  const c=deck[deckPos]; if(!c) return; revealed=true;
+  const back=document.getElementById('fc-back');
+  back.className='fc-back show';
+  back.innerHTML = (dir==='gr'
+      ? '<div class="ans">'+c.en+'</div>'
+      : '<div class="ans gr">'+c.greek+'</div>'+(c.translit?'<div class="fc-tr">['+c.translit+']</div>':''))
+    + (c.note?'<div class="note">'+c.note+'</div>':'');
+  document.getElementById('fc-reveal').style.display='none';
+  document.getElementById('fc-next').style.display='';
+  if(dir==='en') speakGreek(c.greek);
+}
+function nextCard(){ deckPos=(deckPos+1)%Math.max(deck.length,1); fcStats.seen++; showCard(); }
+function speakCurrent(){ const c=deck[deckPos]; if(c) speakGreek(c.greek); }
+
+document.addEventListener('keydown',e=>{ if(mode!=='cards')return;
+  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(revealed) nextCard(); else revealCard(); }
+});
+
+let mapOpen=false;
+function toggleMap(){ mapOpen=!mapOpen;
+  document.getElementById('map-toggle').classList.toggle('open',mapOpen);
+  document.getElementById('map-body').classList.toggle('open',mapOpen);
+}
+
+buildFilters();
+render();
+</script>
+</body>
+</html>

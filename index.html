@@ -3732,6 +3732,7 @@
         <button class="grammar-mode-btn sh-btn" id="sh-conjdrill" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill<span class="sh-sub">type the 6 forms</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-pronouns" onclick="setGrammarMode('pronouns',this)">🧍 Object Pronouns<span class="sh-sub">μου/σου/του · before the verb</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-rootsdrill" onclick="setGrammarMode('rootsdrill',this)">🌱 Roots &amp; Word-Building<span class="sh-sub">decode meaning from prefix + root</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-keylexis" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab<span class="sh-sub">every word from the Lexis placement test</span></button>
       </div>
       <button class="grammar-showall-toggle" id="grammar-showall-toggle" onclick="toggleAllDrills()">▸ Show all drills (everything else)</button>
     </div>
@@ -3780,6 +3781,9 @@
 
       <div class="grammar-mode-group-label">▸ ❗ Imperatives</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('impdrill',this)">❗ Imperative Drill (SRS)</button>
+
+      <div class="grammar-mode-group-label">▸ 📒 Vocab</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab (Lexis placement test)</button>
 
       <div class="grammar-mode-group-label">▸ 💬 Conversation</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('convprep',this)">💬 Conversation Prep (pre-session study)</button>
@@ -4044,6 +4048,20 @@
                 title="Greek Roots &amp; Word-Building Drill" loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="roots-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Lexis Vocab — iframe wrapper around the standalone /key-lexis-vocab.html.
+         Same lazy-iframe pattern. Every content word from the Lexis (lexis.edu.gr)
+         short placement test, grouped by test part Α–ΣΤ, with flashcards + Greek TTS.
+         src set lazily on first open (see initKeyLexisFrame). -->
+    <div id="grammar-keylexis" style="display:none;">
+      <div class="conjdrill-frame-wrap" style="max-width:820px;">
+        <iframe id="keylexis-frame" class="conjdrill-frame" style="height:780px;"
+                title="Key Lexis Vocab — Lexis placement test words" loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="key-lexis-vocab.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -11132,6 +11150,7 @@
     document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
     document.getElementById('grammar-sentbuild').style.display = mode === 'sentbuild' ? '' : 'none';
     document.getElementById('grammar-rootsdrill').style.display = mode === 'rootsdrill' ? '' : 'none';
+    document.getElementById('grammar-keylexis').style.display = mode === 'keylexis' ? '' : 'none';
     document.getElementById('grammar-gendagree').style.display = mode === 'gendagree' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
@@ -11164,6 +11183,7 @@
     if (mode === 'conjdrill') initConjDrillFrame();
     if (mode === 'sentbuild') initSentBuildFrame();
     if (mode === 'rootsdrill') initRootsDrillFrame();
+    if (mode === 'keylexis') initKeyLexisFrame();
     if (mode === 'gendagree') initGendAgreeFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'convprep') initConvPrepFrame();
@@ -12614,6 +12634,15 @@
   function initRootsDrillFrame() {
     const f = document.getElementById('rootsdrill-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'roots-drill.html');
+  }
+
+  // ── Key Lexis Vocab (subpanel) ──
+  // Lazy-iframe wrapper around /key-lexis-vocab.html — every content word from the
+  // Lexis short placement test, grouped by part Α–ΣΤ with flashcards + Greek TTS.
+  // src set on first open so it's free until visited.
+  function initKeyLexisFrame() {
+    const f = document.getElementById('keylexis-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'key-lexis-vocab.html');
   }
 
   // ── Gender Agreement (subpanel) ──
