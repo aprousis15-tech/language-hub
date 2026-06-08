@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Workout — vocab that sticks (with grammar)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --white:#fdfaf6; --dark:#1e2a35; --teal:#00695c; --burnt:#c0560f; --amber:#ef8a17; --green:#2e7d32; --red:#c62828; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Lato',sans-serif;background:var(--white);color:var(--dark);min-height:100vh;padding:20px 14px 60px;}
+  .wrap{max-width:640px;margin:0 auto;}
+  header.top{text-align:center;margin-bottom:12px;}
+  header.top h1{font-family:'Playfair Display',serif;color:var(--burnt);font-size:clamp(1.4rem,4.5vw,2rem);margin-bottom:4px;}
+  header.top p{color:#9a6a3a;font-size:0.9rem;}
+
+  /* Method explainer */
+  .why{max-width:560px;margin:8px auto 0;}
+  .why-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;background:#fff5ea;border:1.5px solid #ffd9ad;border-radius:10px;padding:10px 14px;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;color:var(--burnt);font-size:0.88rem;}
+  .why-toggle:hover{background:#ffedd6;}
+  .why-toggle .chev{transition:transform 0.2s;font-size:0.8rem;}
+  .why-toggle.open .chev{transform:rotate(180deg);}
+  .why-body{display:none;background:white;border:1.5px solid #ffd9ad;border-top:none;border-radius:0 0 10px 10px;padding:12px 15px;font-size:0.85rem;line-height:1.5;color:#4a525a;}
+  .why-body.open{display:block;}
+  .why-body ol{margin:6px 0 4px 18px;} .why-body li{margin-bottom:5px;}
+  .why-body b{color:var(--burnt);}
+  .why-body .sci{font-size:0.78rem;color:#7a8a95;font-style:italic;border-top:1px solid #f1e7da;padding-top:8px;margin-top:8px;}
+
+  /* Filter chips */
+  .filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;margin:14px 0 6px;}
+  .filters .lbl{font-size:0.7rem;color:#9aa8b2;text-transform:uppercase;letter-spacing:0.08em;}
+  .fchip{padding:5px 13px;border-radius:99px;border:1.5px solid #ffd0a6;background:white;color:var(--burnt);font-size:0.8rem;cursor:pointer;font-weight:600;}
+  .fchip:hover{background:#fff1e3;}
+  .fchip.active{background:var(--burnt);color:white;border-color:var(--burnt);}
+  .sessbar{text-align:center;font-size:0.8rem;color:#9a6a3a;margin-bottom:12px;}
+  .sessbar strong{color:var(--burnt);}
+  .progress-wrap{max-width:420px;margin:0 auto 14px;height:7px;background:#f1e3d4;border-radius:99px;overflow:hidden;}
+  .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--burnt));transition:width 0.3s;}
+
+  /* Card */
+  .card{max-width:480px;margin:0 auto;background:white;border:1px solid #f0e2d2;border-radius:18px;box-shadow:0 6px 22px rgba(0,0,0,0.06);overflow:hidden;}
+  .stage-rail{display:flex;background:#fbf2e7;border-bottom:1px solid #f0e2d2;}
+  .stage-pip{flex:1;text-align:center;font-size:0.66rem;font-weight:700;color:#c3a684;padding:8px 2px;letter-spacing:0.02em;}
+  .stage-pip.active{color:var(--burnt);background:#fff;box-shadow:inset 0 -3px 0 var(--amber);}
+  .stage-pip.done{color:var(--green);}
+  .card-body{padding:24px 22px 26px;text-align:center;min-height:230px;display:flex;flex-direction:column;justify-content:center;}
+  .pos-badge{display:inline-block;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;border-radius:6px;padding:3px 9px;margin:0 auto 10px;}
+  .pos-noun{background:#e3f0fb;color:#1565c0;} .pos-verb{background:#e0f2f1;color:#00695c;}
+  .pos-adj{background:#fce4ec;color:#c2185b;} .pos-phrase{background:#ede7f6;color:#5e35b1;}
+  .stage-h{font-size:0.74rem;font-weight:700;color:#b0763f;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;}
+  .gr-big{font-family:'Playfair Display',serif;font-size:2.3rem;color:var(--teal);line-height:1.1;cursor:pointer;}
+  .gr-big:hover{opacity:0.8;}
+  .tr{font-size:0.95rem;color:#9aa8b2;font-style:italic;margin-top:6px;}
+  .en{font-size:1.15rem;color:var(--dark);margin-top:10px;font-weight:700;}
+  .hook{font-size:0.9rem;color:#5e1a87;background:#f7eefb;border-radius:10px;padding:9px 12px;margin:14px auto 0;max-width:380px;text-align:left;}
+  .build{font-size:0.92rem;color:#1d6b54;background:#e6f5f0;border-radius:10px;padding:9px 12px;margin:10px auto 0;max-width:380px;}
+  .build b{color:#0c5f47;}
+  .speak-inline{border:none;background:#e0f2f1;color:var(--teal);cursor:pointer;border-radius:99px;font-size:0.95rem;padding:3px 11px;margin-left:6px;vertical-align:middle;}
+  .speak-inline:hover{background:#b2dfdb;}
+
+  /* Gym (multiple choice) */
+  .gym-q{font-size:1.12rem;color:var(--dark);margin-bottom:4px;line-height:1.4;}
+  .gym-q .blank{color:var(--burnt);font-weight:700;}
+  .gym-hint{font-size:0.82rem;color:#9aa8b2;margin-bottom:16px;}
+  .opts{display:flex;flex-direction:column;gap:9px;max-width:340px;margin:0 auto;width:100%;}
+  .opt{padding:12px 16px;border:1.6px solid #e3d4c2;border-radius:12px;background:white;font-size:1.1rem;font-family:'Georgia',serif;color:var(--teal);cursor:pointer;transition:all 0.12s;}
+  .opt:hover{border-color:var(--amber);background:#fff8ef;}
+  .opt.correct{border-color:var(--green);background:#e7f6e8;color:var(--green);font-weight:700;}
+  .opt.wrong{border-color:var(--red);background:#fdeaea;color:var(--red);}
+  .opt:disabled{cursor:default;}
+  .why-line{font-size:0.9rem;color:#4a525a;background:#f6f1ea;border-radius:10px;padding:10px 13px;margin:14px auto 0;max-width:380px;text-align:left;display:none;}
+  .why-line.show{display:block;}
+  .why-line b{color:var(--burnt);}
+
+  /* Sentence stage */
+  .sent-en{font-size:1.12rem;color:var(--dark);margin-bottom:6px;}
+  .sent-gr{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--teal);margin-top:12px;line-height:1.3;display:none;cursor:pointer;}
+  .sent-gr.show{display:block;}
+  .sent-tip{font-size:0.8rem;color:#9aa8b2;margin-top:10px;display:none;}
+  .sent-tip.show{display:block;}
+
+  /* Recall stage */
+  .recall-en{font-size:1.4rem;color:var(--dark);font-weight:700;}
+  .recall-ans{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--teal);margin-top:14px;display:none;}
+  .recall-ans.show{display:block;}
+  .recall-prompt{font-size:0.85rem;color:#9aa8b2;margin-top:10px;}
+
+  /* Buttons */
+  .actions{display:flex;gap:9px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+  .btn{padding:11px 22px;border-radius:99px;font-weight:700;font-size:0.9rem;cursor:pointer;border:1.6px solid var(--burnt);font-family:'Lato',sans-serif;}
+  .btn-primary{background:var(--burnt);color:white;} .btn-primary:hover{background:#9c4109;}
+  .btn-ghost{background:white;color:var(--burnt);} .btn-ghost:hover{background:#fff1e3;}
+  .rate-row{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+  .rate{padding:10px 18px;border-radius:12px;font-weight:700;font-size:0.86rem;cursor:pointer;border:1.6px solid;font-family:'Lato',sans-serif;min-width:92px;}
+  .rate small{display:block;font-weight:400;font-size:0.7rem;opacity:0.8;margin-top:1px;}
+  .rate-again{border-color:var(--red);color:var(--red);background:white;} .rate-again:hover{background:#fdeaea;}
+  .rate-good{border-color:var(--green);color:var(--green);background:white;} .rate-good:hover{background:#e7f6e8;}
+  .rate-easy{border-color:#1565c0;color:#1565c0;background:white;} .rate-easy:hover{background:#e3f0fb;}
+
+  /* Done screen */
+  .done{max-width:460px;margin:10px auto;background:white;border:1px solid #f0e2d2;border-radius:18px;padding:32px 24px;text-align:center;box-shadow:0 6px 22px rgba(0,0,0,0.06);}
+  .done h2{font-family:'Playfair Display',serif;color:var(--burnt);font-size:1.5rem;margin-bottom:8px;}
+  .done p{color:#5a6670;font-size:0.95rem;margin-bottom:6px;}
+  .done .stat{font-size:0.9rem;color:#7a8a95;margin:14px 0;}
+  .footer-tip{text-align:center;font-size:0.77rem;color:#9aa8b2;margin-top:22px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🏋️ Word Workout</h1>
+    <p>Vocab that sticks — every word trained through the grammar.</p>
+  </header>
+
+  <div class="why">
+    <button class="why-toggle" id="why-toggle" onclick="toggleWhy()">
+      <span>🧠 Why this works (the 4-step method)</span><span class="chev" id="why-chev">▾</span>
+    </button>
+    <div class="why-body" id="why-body">
+      Each word is trained through four stages — the order is deliberate, built on how memory actually forms:
+      <ol>
+        <li><b>🧠 Encode</b> — meet the word with a <b>memory hook</b> (its English cousin) + its grammar "build block" (gender / perfective form / agreement forms). Linking new to known = deeper encoding.</li>
+        <li><b>⚙️ Grammar gym</b> — you <b>produce</b> the right form (pick the article, conjugate, make it agree). Generating beats recognising.</li>
+        <li><b>🧱 Sentence</b> — see it <b>alive in a real sentence</b>. Context is what makes a word usable, not just known.</li>
+        <li><b>🎯 Recall</b> — retrieve the Greek from English, then <b>rate yourself</b> so it comes back at the right time (spaced repetition).</li>
+      </ol>
+      <div class="sci">Built on four findings from memory research: elaborative encoding, the generation effect, contextual learning, and spaced retrieval. Targets your tutor's two priorities — conjugation + sentence-building, and article/noun gender agreement.</div>
+    </div>
+  </div>
+
+  <div class="filters" id="filters">
+    <span class="lbl">Focus</span>
+    <button class="fchip active" data-pos="all" onclick="setPos('all',this)">All</button>
+    <button class="fchip" data-pos="noun" onclick="setPos('noun',this)">📦 Nouns</button>
+    <button class="fchip" data-pos="verb" onclick="setPos('verb',this)">🔥 Verbs</button>
+    <button class="fchip" data-pos="adj" onclick="setPos('adj',this)">🎨 Adjectives</button>
+    <button class="fchip" data-pos="phrase" onclick="setPos('phrase',this)">💬 Phrases</button>
+  </div>
+  <div class="sessbar" id="sessbar"></div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <div id="card-host"></div>
+
+  <p class="footer-tip">Progress + review timing are saved on this device. Tap any Greek word or sentence to hear it. iPhone: Settings → Accessibility → Spoken Content → Voices → Greek for the best voice.</p>
+</div>
+
+<script>
+/* ───────────────────────── DATA ─────────────────────────
+   Curated high-value words from across the Lexis test, each with a full
+   grammar "workout": encode (hook + build block), a produce-the-form gym
+   question, a model sentence, and a recall prompt. POS: noun|verb|adj|phrase.
+   Greek is hand-checked. */
+const WORDS = [
+  /* ── NOUNS — article / gender agreement (tutor priority) ── */
+  {gr:'καιρός',tr:'kerós',en:'weather / time',pos:'noun',
+    hook:'KAIROS = the opportune moment → the day\'s weather.',
+    build:'<b>ο</b> καιρός · masculine · pl. οι καιροί',
+    gym:{q:'___ καιρός είναι ωραίος σήμερα.',hint:'Which nominative article? (the weather is…)',opts:['Ο','Η','Το'],a:'Ο',why:'καιρός is <b>masculine</b> → nominative article <b>ο</b> (capitalised at the start).'},
+    sent:{gr:'Ο καιρός σήμερα είναι πολύ ωραίος.',en:'The weather today is very nice.'}},
+  {gr:'δουλειά',tr:'dhuliá',en:'work / job',pos:'noun',
+    hook:'A DULL daily labour = a job.',
+    build:'<b>η</b> δουλειά · feminine · acc. <b>τη(ν)</b> δουλειά',
+    gym:{q:'Πάω ___ δουλειά.',hint:'σε + the article (I go TO work)',opts:['στον','στη','στο'],a:'στη',why:'δουλειά is <b>feminine</b> → σε + τη = <b>στη</b> (the ν often drops before δ).'},
+    sent:{gr:'Η δουλειά μου είναι δύσκολη αλλά ωραία.',en:'My job is hard but nice.'}},
+  {gr:'παιδί',tr:'pedhí',en:'child',pos:'noun',
+    hook:'A PEDiatrician treats a child.',
+    build:'<b>το</b> παιδί · neuter · pl. τα παιδιά',
+    gym:{q:'___ παιδί κοιμάται.',hint:'Which nominative article? (the child sleeps)',opts:['Ο','Η','Το'],a:'Το',why:'παιδί is <b>neuter</b> → nominative article <b>το</b>.'},
+    sent:{gr:'Το παιδί παίζει στο πάρκο.',en:'The child is playing in the park.'}},
+  {gr:'πρόβλημα',tr:'próvlima',en:'problem',pos:'noun',
+    hook:'PROBLEM — and like every -μα word, it\'s neuter.',
+    build:'<b>το</b> πρόβλημα · neuter · pl. τα προβλήματα',
+    gym:{q:'Plural: δύο ___',hint:'-μα nouns make their plural in…',opts:['προβλήματα','προβλήμες','πρόβλημοι'],a:'προβλήματα',why:'Neuter -μα nouns pluralise in <b>-ματα</b>: πρόβλημα → προβλήματα.'},
+    sent:{gr:'Έχουμε ένα μεγάλο πρόβλημα.',en:'We have a big problem.'}},
+  {gr:'φίλος',tr:'fílos',en:'friend (male)',pos:'noun',
+    hook:'PHILO- = loving (philosophy) → a loved one = friend.',
+    build:'<b>ο</b> φίλος · masculine · acc. <b>τον</b> φίλο',
+    gym:{q:'Βλέπω ___ φίλο μου.',hint:'Object form (I see MY friend)',opts:['ο','τον','του'],a:'τον',why:'Direct object, masculine singular → <b>τον</b> (note the ν before φ).'},
+    sent:{gr:'Βλέπω τον φίλο μου κάθε Σάββατο.',en:'I see my friend every Saturday.'}},
+  {gr:'αγορά',tr:'aghorá',en:'market',pos:'noun',
+    hook:'The ancient AGORA (marketplace); agoraphobia.',
+    build:'<b>η</b> αγορά · feminine · acc. <b>την</b> αγορά',
+    gym:{q:'Πάω ___ αγορά.',hint:'σε + the article (to the market)',opts:['στον','στην','στο'],a:'στην',why:'αγορά is <b>feminine</b> → σε + την = <b>στην</b>.'},
+    sent:{gr:'Πάω στην αγορά για ψώνια.',en:'I go to the market for shopping.'}},
+  {gr:'εφημερίδα',tr:'efimerídha',en:'newspaper',pos:'noun',
+    hook:'EPHEMERAL daily news.',
+    build:'<b>η</b> εφημερίδα · feminine · acc. <b>την</b> εφημερίδα',
+    gym:{q:'Διαβάζω ___ εφημερίδα.',hint:'Object form (I read THE newspaper)',opts:['ο','την','το'],a:'την',why:'Direct object, feminine singular → <b>την</b>.'},
+    sent:{gr:'Διαβάζω την εφημερίδα κάθε πρωί.',en:'I read the newspaper every morning.'}},
+  {gr:'πρόοδος',tr:'próodhos',en:'progress',pos:'noun',
+    hook:'pro + odos (road) → moving forward on the road = progress.',
+    build:'<b>η</b> πρόοδος · feminine (a rare fem. in -ος!)',
+    gym:{q:'___ πρόοδος είναι σημαντική.',hint:'Careful — it LOOKS masculine but isn\'t',opts:['Ο','Η','Το'],a:'Η',why:'πρόοδος ends in -ος but is one of the <b>feminine</b> exceptions → <b>η</b> πρόοδος.'},
+    sent:{gr:'Κάνω πρόοδο κάθε εβδομάδα.',en:'I make progress every week.'}},
+  {gr:'γλώσσα',tr:'glóssa',en:'language / tongue',pos:'noun',
+    hook:'A GLOSSARY explains words; the tongue.',
+    build:'<b>η</b> γλώσσα · feminine · pl. οι γλώσσες',
+    gym:{q:'Η ελληνική ___ είναι δύσκολη.',hint:'Which noun fits "the Greek ___ is hard"?',opts:['γλώσσα','γλώσσο','γλώσσος'],a:'γλώσσα',why:'γλώσσα is feminine and agrees with ελληνική (fem.) → <b>γλώσσα</b>.'},
+    sent:{gr:'Μαθαίνω την ελληνική γλώσσα.',en:'I am learning the Greek language.'}},
+  {gr:'αποτέλεσμα',tr:'apotélezma',en:'result',pos:'noun',
+    hook:'TELOS = end → the thing at the END = the result.',
+    build:'<b>το</b> αποτέλεσμα · neuter · pl. τα αποτελέσματα',
+    gym:{q:'___ αποτέλεσμα ήταν καλό.',hint:'Which nominative article?',opts:['Ο','Η','Το'],a:'Το',why:'-μα ending → <b>neuter</b> → article <b>το</b>.'},
+    sent:{gr:'Το αποτέλεσμα ήταν πολύ καλό.',en:'The result was very good.'}},
+
+  /* ── VERBS — conjugation + perfective/future (tutor priority) ── */
+  {gr:'αγοράζω',tr:'aghorázo',en:'I buy',pos:'verb',
+    hook:'I buy in the AGORA (marketplace).',
+    build:'present <b>αγοράζω</b> · perfective <b>αγοράσω</b> · future θα αγοράσω',
+    gym:{q:'"We buy" — εμείς ___',hint:'1st person plural, present',opts:['αγοράζω','αγοράζουμε','αγοράζουν'],a:'αγοράζουμε',why:'1st person plural present takes <b>-ουμε</b>: αγοράζ<b>ουμε</b>.'},
+    sent:{gr:'Θα αγοράσω ένα καινούριο αυτοκίνητο.',en:'I will buy a new car.'}},
+  {gr:'μαθαίνω',tr:'mathéno',en:'I learn',pos:'verb',
+    hook:'Same MATHE- root as máthima (lesson).',
+    build:'present <b>μαθαίνω</b> · perfective <b>μάθω</b> · θέλω να μάθω',
+    gym:{q:'Θέλω να ___ ελληνικά.',hint:'After θέλω να you need the perfective',opts:['μαθαίνω','μάθω','έμαθα'],a:'μάθω',why:'θέλω <b>να</b> triggers the <b>perfective</b> stem → να <b>μάθω</b>.'},
+    sent:{gr:'Θέλω να μάθω ελληνικά καλά.',en:'I want to learn Greek well.'}},
+  {gr:'φτάνω',tr:'ftáno',en:'I arrive',pos:'verb',
+    hook:'I FASTen onto land = arrive; "φτάνει!" = enough.',
+    build:'present <b>φτάνω</b> · perfective <b>φτάσω</b> · 3sg φτάνει',
+    gym:{q:'"The train arrives" — Το τρένο ___',hint:'3rd person singular, present',opts:['φτάνω','φτάνεις','φτάνει'],a:'φτάνει',why:'3rd person singular present ends in <b>-ει</b>: φτάν<b>ει</b>.'},
+    sent:{gr:'Το τρένο φτάνει στις πέντε.',en:'The train arrives at five.'}},
+  {gr:'καταλαβαίνω',tr:'katalavéno',en:'I understand',pos:'verb',
+    hook:'I take it down into the LAB and grasp it.',
+    build:'present <b>καταλαβαίνω</b> · perfective <b>καταλάβω</b>',
+    gym:{q:'"You (sing.) understand" — εσύ ___',hint:'2nd person singular, present',opts:['καταλαβαίνω','καταλαβαίνεις','καταλαβαίνει'],a:'καταλαβαίνεις',why:'2nd person singular present takes <b>-εις</b>: καταλαβαίν<b>εις</b>.'},
+    sent:{gr:'Δεν καταλαβαίνω αυτή τη λέξη.',en:"I don't understand this word."}},
+  {gr:'μπορώ',tr:'boró',en:'I can / I\'m able',pos:'verb',
+    hook:'μπορεί = maybe; μπ = "b".',
+    build:'an -ώ verb: <b>μπορώ, μπορείς, μπορεί</b> · pl. μπορούμε',
+    gym:{q:'"We can" — εμείς ___',hint:'-ώ verbs: 1st person plural',opts:['μπορούμε','μπορώμε','μποράμε'],a:'μπορούμε',why:'Stressed -ώ verbs take <b>-ούμε</b> for "we": μπορ<b>ούμε</b>.'},
+    sent:{gr:'Μπορώ να σε βοηθήσω;',en:'Can I help you?'}},
+  {gr:'δουλεύω',tr:'dhulévo',en:'I work / it works',pos:'verb',
+    hook:'Related to δούλος (toil) → I work.',
+    build:'present <b>δουλεύω</b> · perfective <b>δουλέψω</b> (-εύω → -έψω)',
+    gym:{q:'"They work" — αυτοί ___',hint:'3rd person plural, present',opts:['δουλεύουμε','δουλεύετε','δουλεύουν'],a:'δουλεύουν',why:'3rd person plural present takes <b>-ουν</b>: δουλεύ<b>ουν</b>.'},
+    sent:{gr:'Δουλεύω κάθε μέρα από τις εννιά.',en:'I work every day from nine.'}},
+  {gr:'αλλάζω',tr:'alázo',en:'I change',pos:'verb',
+    hook:'ALter / ALias — make it something else.',
+    build:'present <b>αλλάζω</b> · perfective <b>αλλάξω</b> (-ζω → -ξω)',
+    gym:{q:'Θέλω να ___ δουλειά.',hint:'After να, use the perfective',opts:['αλλάζω','αλλάξω','άλλαξα'],a:'αλλάξω',why:'να + perfective; -ζω verbs form it in <b>-ξω</b> → να <b>αλλάξω</b>.'},
+    sent:{gr:'Θέλω να αλλάξω δουλειά φέτος.',en:'I want to change jobs this year.'}},
+  {gr:'γυρίζω',tr:'yirízo',en:'I return / turn',pos:'verb',
+    hook:'A GYROscope turns; a GYRO spins.',
+    build:'present <b>γυρίζω</b> · perfective <b>γυρίσω</b> · θα γυρίσω',
+    gym:{q:'"I will return" — ___ αύριο.',hint:'θα + perfective = future',opts:['γυρίζω','θα γυρίζω','θα γυρίσω'],a:'θα γυρίσω',why:'Future = <b>θα + perfective</b> → θα <b>γυρίσω</b> (one specific return).'},
+    sent:{gr:'Θα γυρίσω σπίτι αργά απόψε.',en:'I will return home late tonight.'}},
+  {gr:'προχωρώ',tr:'prokhoró',en:'I proceed / advance',pos:'verb',
+    hook:'PRO (forward) + chóros (move) → move forward.',
+    build:'an -ώ verb · perfective <b>προχωρήσω</b>',
+    gym:{q:'Πρέπει να ___.',hint:'"We must proceed" — να + perfective, "we"',opts:['προχωρούμε','προχωρήσουμε','προχωράμε'],a:'προχωρήσουμε',why:'πρέπει να + perfective; "we" form → να <b>προχωρήσουμε</b>.'},
+    sent:{gr:'Πρέπει να προχωρήσουμε με το σχέδιο.',en:'We must proceed with the plan.'}},
+  {gr:'χρησιμοποιώ',tr:'khrisimopió',en:'I use',pos:'verb',
+    hook:'From chrísimos (useful) → "make-use-of".',
+    build:'an -ώ verb · perfective <b>χρησιμοποιήσω</b>',
+    gym:{q:'"You (sing.) use" — εσύ ___',hint:'-ώ (-οιώ) verb, 2nd person singular',opts:['χρησιμοποιείς','χρησιμοποιείτε','χρησιμοποιούν'],a:'χρησιμοποιείς',why:'Stressed -ώ verbs take <b>-είς</b> for "you (sing.)": χρησιμοποι<b>είς</b>.'},
+    sent:{gr:'Χρησιμοποιώ το τηλέφωνο για όλα.',en:'I use the phone for everything.'}},
+
+  /* ── ADJECTIVES — gender agreement (tutor priority) ── */
+  {gr:'καλός',tr:'kalós',en:'good',pos:'adj',
+    hook:'CALLIgraphy = good/beautiful writing.',
+    build:'<b>καλός</b> (m) · <b>καλή</b> (f) · <b>καλό</b> (n)',
+    gym:{q:'___ μέρα! (μέρα = day, feminine)',hint:'Make the adjective agree',opts:['καλός','καλή','καλό'],a:'καλή',why:'μέρα is <b>feminine</b> → <b>καλή</b> (καλή μέρα = good day).'},
+    sent:{gr:'Είναι μια πολύ καλή ιδέα.',en:"It's a very good idea."}},
+  {gr:'μεγάλος',tr:'meghálos',en:'big / large',pos:'adj',
+    hook:'MEGA = big.',
+    build:'<b>μεγάλος</b> (m) · <b>μεγάλη</b> (f) · <b>μεγάλο</b> (n)',
+    gym:{q:'ένα ___ σπίτι (σπίτι = house, neuter)',hint:'Agree with a neuter noun',opts:['μεγάλος','μεγάλη','μεγάλο'],a:'μεγάλο',why:'σπίτι is <b>neuter</b> → <b>μεγάλο</b>.'},
+    sent:{gr:'Έχουν ένα μεγάλο σπίτι στο χωριό.',en:'They have a big house in the village.'}},
+  {gr:'μικρός',tr:'mikrós',en:'small',pos:'adj',
+    hook:'MICRO = small.',
+    build:'<b>μικρός</b> (m) · <b>μικρή</b> (f) · <b>μικρό</b> (n)',
+    gym:{q:'μια ___ πόλη (πόλη = city, feminine)',hint:'Agree with a feminine noun',opts:['μικρός','μικρή','μικρό'],a:'μικρή',why:'πόλη is <b>feminine</b> → <b>μικρή</b>.'},
+    sent:{gr:'Μένω σε μια μικρή πόλη.',en:'I live in a small city.'}},
+  {gr:'ωραίος',tr:'oréos',en:'nice / beautiful',pos:'adj',
+    hook:'Sounds like OREO — a beautiful little cookie.',
+    build:'<b>ωραίος</b> (m) · <b>ωραία</b> (f) · <b>ωραίο</b> (n)',
+    gym:{q:'Τι ___ μέρα! (μέρα, feminine)',hint:'Agree with feminine',opts:['ωραίος','ωραία','ωραίο'],a:'ωραία',why:'μέρα is feminine → <b>ωραία</b> (note: fem. ends -α here, not -η).'},
+    sent:{gr:'Τι ωραία μέρα σήμερα!',en:'What a beautiful day today!'}},
+  {gr:'καινούριος',tr:'kenúrios',en:'new',pos:'adj',
+    hook:'CENO-/KAINO- = new, recent (Cenozoic).',
+    build:'<b>καινούριος</b> (m) · <b>καινούρια</b> (f) · <b>καινούριο</b> (n)',
+    gym:{q:'ένα ___ αυτοκίνητο (neuter)',hint:'Agree with a neuter noun',opts:['καινούριος','καινούρια','καινούριο'],a:'καινούριο',why:'αυτοκίνητο is <b>neuter</b> → <b>καινούριο</b>.'},
+    sent:{gr:'Αγόρασα ένα καινούριο τηλέφωνο.',en:'I bought a new phone.'}},
+  {gr:'δύσκολος',tr:'dhískolos',en:'difficult / hard',pos:'adj',
+    hook:'δυσ- = bad/hard (DYSfunction) + ease → not easy.',
+    build:'<b>δύσκολος</b> (m) · <b>δύσκολη</b> (f) · <b>δύσκολο</b> (n)',
+    gym:{q:'Η ελληνική γλώσσα είναι ___ (γλώσσα, fem.)',hint:'Agree with feminine',opts:['δύσκολος','δύσκολη','δύσκολο'],a:'δύσκολη',why:'γλώσσα is <b>feminine</b> → <b>δύσκολη</b>.'},
+    sent:{gr:'Τα ελληνικά είναι δύσκολα αλλά ωραία.',en:'Greek is hard but lovely.'}},
+  {gr:'εύκολος',tr:'éfkolos',en:'easy',pos:'adj',
+    hook:'EU (well) → it "goes well" = easy.',
+    build:'<b>εύκολος</b> (m) · <b>εύκολη</b> (f) · <b>εύκολο</b> (n)',
+    gym:{q:'ένα ___ μάθημα (μάθημα, neuter)',hint:'Agree with a neuter noun',opts:['εύκολος','εύκολη','εύκολο'],a:'εύκολο',why:'μάθημα is <b>neuter</b> → <b>εύκολο</b>.'},
+    sent:{gr:'Αυτό το μάθημα ήταν εύκολο.',en:'This lesson was easy.'}},
+  {gr:'χρήσιμος',tr:'khrísimos',en:'useful',pos:'adj',
+    hook:'A useful tool you CHERISH.',
+    build:'<b>χρήσιμος</b> (m) · <b>χρήσιμη</b> (f) · <b>χρήσιμο</b> (n)',
+    gym:{q:'μια ___ πληροφορία (πληροφορία = info, fem.)',hint:'Agree with feminine',opts:['χρήσιμος','χρήσιμη','χρήσιμο'],a:'χρήσιμη',why:'πληροφορία is <b>feminine</b> → <b>χρήσιμη</b>.'},
+    sent:{gr:'Αυτή είναι μια πολύ χρήσιμη συμβουλή.',en:'This is a very useful piece of advice.'}},
+  {gr:'σημαντικός',tr:'simandikós',en:'important',pos:'adj',
+    hook:'SEMANTIC = meaningful → full of meaning = important.',
+    build:'<b>σημαντικός</b> (m) · <b>σημαντική</b> (f) · <b>σημαντικό</b> (n)',
+    gym:{q:'μια ___ απόφαση (απόφαση = decision, fem.)',hint:'Agree with feminine',opts:['σημαντικός','σημαντική','σημαντικό'],a:'σημαντική',why:'απόφαση is <b>feminine</b> → <b>σημαντική</b>.'},
+    sent:{gr:'Πήρα μια σημαντική απόφαση.',en:'I made an important decision.'}},
+  {gr:'ελεύθερος',tr:'eléftheros',en:'free',pos:'adj',
+    hook:'ELEFTHERIA = Liberty (Greece\'s motto).',
+    build:'<b>ελεύθερος</b> (m) · <b>ελεύθερη</b> (f) · <b>ελεύθερο</b> (n)',
+    gym:{q:'Έχεις ___ χρόνο; (χρόνος = time, masc.)',hint:'Agree with a masculine noun (accusative)',opts:['ελεύθερος','ελεύθερη','ελεύθερο'],a:'ελεύθερο',why:'χρόνο is <b>masculine</b> accusative → <b>ελεύθερο</b> (masc. acc. drops the -ς).'},
+    sent:{gr:'Δεν έχω ελεύθερο χρόνο αυτή την εβδομάδα.',en:"I don't have free time this week."}},
+
+  /* ── PHRASES / structures ── */
+  {gr:'μου αρέσει',tr:'mu arési',en:'I like (it pleases me)',pos:'phrase',
+    hook:'"a-RES-i" ≈ "a YES!" — it pleases me.',
+    build:'the liked thing is the <b>subject</b> → it takes the <b>nominative</b>',
+    gym:{q:'"I like coffee" — Μου αρέσει ___',hint:'The coffee is what pleases — which case?',opts:['ο καφές','τον καφέ','του καφέ'],a:'ο καφές',why:'αρέσει = "is pleasing to me", so the coffee is the <b>subject</b> → nominative <b>ο καφές</b>. (Plural things → μου αρέσουν.)'},
+    sent:{gr:'Μου αρέσει πολύ ο ελληνικός καφές.',en:'I really like Greek coffee.'}},
+  {gr:'πρέπει να',tr:'prépi na',en:'I must / have to',pos:'phrase',
+    hook:'πρέπει never conjugates — only the second verb changes.',
+    build:'<b>πρέπει να</b> + verb (the person shows on the 2nd verb)',
+    gym:{q:'"We must leave" — Πρέπει να ___',hint:'Conjugate the 2nd verb for "we" (perfective of φεύγω)',opts:['φεύγω','φύγουμε','φύγω'],a:'φύγουμε',why:'πρέπει stays fixed; "we" + perfective of φεύγω → να <b>φύγουμε</b>.'},
+    sent:{gr:'Πρέπει να φύγουμε τώρα.',en:'We must leave now.'}},
+  {gr:'θέλω να',tr:'thélo na',en:'I want to',pos:'phrase',
+    hook:'θέλω + να links to a second verb in the perfective.',
+    build:'<b>θέλω να</b> + perfective verb',
+    gym:{q:'"I want to eat" — Θέλω να ___',hint:'Perfective of τρώω is irregular',opts:['τρώω','φάω','έφαγα'],a:'φάω',why:'θέλω να + perfective; τρώω\'s perfective is irregular → να <b>φάω</b>.'},
+    sent:{gr:'Θέλω να φάω κάτι ελληνικό.',en:'I want to eat something Greek.'}},
+  {gr:'εδώ και',tr:'edhó ke',en:'for (a period of time)',pos:'phrase',
+    hook:'Literally "here and" + a time span.',
+    build:'<b>εδώ και</b> + time → "for / since" (an ongoing stretch)',
+    gym:{q:'"I\'ve lived here for two years" — Μένω εδώ ___ δύο χρόνια.',hint:'Which little word completes the idiom?',opts:['και','για','σε'],a:'και',why:'The set phrase is <b>εδώ και</b> + time = "for / over the past…".'},
+    sent:{gr:'Μαθαίνω ελληνικά εδώ και δύο χρόνια.',en:"I've been learning Greek for two years."}}
+];
+
+/* ───────────────────────── SRS (Leitner, localStorage) ───────────────────────── */
+const SRS_KEY = 'wordWorkout_srs_v1';
+const BOX_DAYS = [0, 1, 2, 4, 9, 21]; // interval per box level
+function loadSrs(){ try{ return JSON.parse(localStorage.getItem(SRS_KEY)) || {}; }catch(e){ return {}; } }
+function saveSrs(s){ try{ localStorage.setItem(SRS_KEY, JSON.stringify(s)); }catch(e){} }
+function todayNum(){ return Math.floor(Date.now()/86400000); }
+function schedule(id, rating){ // rating: 'again' | 'good' | 'easy'
+  const s = loadSrs(); const cur = s[id] || {box:0};
+  let box = cur.box || 0;
+  if(rating==='again') box = 0;
+  else if(rating==='good') box = Math.min(box+1, BOX_DAYS.length-1);
+  else box = Math.min(box+2, BOX_DAYS.length-1);
+  s[id] = {box, due: todayNum() + BOX_DAYS[box], seen: (cur.seen||0)+1};
+  saveSrs(s);
+}
+function dueState(id){ const s = loadSrs(); const e = s[id]; if(!e) return 'new'; return (e.due <= todayNum()) ? 'due' : 'later'; }
+
+/* ───────────────────────── TTS ───────────────────────── */
+function warmVoices(){ if('speechSynthesis' in window){ try{window.speechSynthesis.getVoices();}catch(e){} } }
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged=warmVoices; }
+function speak(t){ if(!('speechSynthesis' in window)||!t) return;
+  try{ window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(t)); u.lang='el-GR'; u.rate=0.9;
+    const v=(window.speechSynthesis.getVoices()||[]).find(x=>/el([-_]?GR)?/i.test(x.lang)||/greek|ελλ/i.test(x.name));
+    if(v) u.voice=v; window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ───────────────────────── ENGINE ───────────────────────── */
+const SESSION_SIZE = 12;
+let posFilter='all', queue=[], qi=0, stage='encode', sessionStats={done:0, gymRight:0, gymTotal:0};
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function pool(){ return WORDS.filter(w => posFilter==='all' || w.pos===posFilter); }
+
+function buildQueue(){
+  const p = pool();
+  const due = p.filter(w => dueState(w.gr)==='due');
+  const fresh = p.filter(w => dueState(w.gr)==='new');
+  const later = p.filter(w => dueState(w.gr)==='later');
+  // due first, then new, then (if room) not-yet-due for extra practice
+  queue = shuffle(due).concat(shuffle(fresh)).concat(shuffle(later)).slice(0, SESSION_SIZE);
+  qi=0; stage='encode'; sessionStats={done:0, gymRight:0, gymTotal:0};
+}
+
+function setPos(p, btn){
+  posFilter=p;
+  document.querySelectorAll('#filters .fchip').forEach(b=>b.classList.toggle('active', b===btn));
+  buildQueue(); renderSession(); render();
+}
+
+function renderSession(){
+  const p = pool();
+  const dueN = p.filter(w=>dueState(w.gr)==='due').length;
+  const newN = p.filter(w=>dueState(w.gr)==='new').length;
+  document.getElementById('sessbar').innerHTML =
+    '<strong>'+queue.length+'</strong> in this set · '+dueN+' due · '+newN+' new · '+p.length+' total';
+}
+
+function setProgress(){
+  const pct = queue.length ? Math.round((qi)/queue.length*100) : 0;
+  document.getElementById('progress-bar').style.width = pct+'%';
+}
+
+const STAGES = ['encode','gym','sentence','recall'];
+const STAGE_LABEL = {encode:'🧠 Encode', gym:'⚙️ Gym', sentence:'🧱 Sentence', recall:'🎯 Recall'};
+
+function rail(){
+  return '<div class="stage-rail">' + STAGES.map(s=>{
+    const ci = STAGES.indexOf(stage), si = STAGES.indexOf(s);
+    const cls = s===stage ? 'active' : (si<ci ? 'done' : '');
+    return '<div class="stage-pip '+cls+'">'+STAGE_LABEL[s]+'</div>';
+  }).join('') + '</div>';
+}
+
+function render(){
+  const host=document.getElementById('card-host');
+  setProgress();
+  if(qi>=queue.length){ renderDone(); return; }
+  const w=queue[qi];
+  const posCls='pos-'+w.pos;
+  const posName={noun:'Noun',verb:'Verb',adj:'Adjective',phrase:'Phrase'}[w.pos];
+  let body='';
+
+  if(stage==='encode'){
+    body =
+      '<span class="pos-badge '+posCls+'">'+posName+'</span>'+
+      '<div class="stage-h">Meet the word</div>'+
+      '<div class="gr-big" onclick="speak(\''+w.gr.replace(/'/g,"\\'")+'\')">'+w.gr+' <button class="speak-inline">🔊</button></div>'+
+      '<div class="tr">['+w.tr+']</div>'+
+      '<div class="en">'+w.en+'</div>'+
+      '<div class="hook">💡 '+w.hook+'</div>'+
+      '<div class="build">🔧 '+w.build+'</div>'+
+      '<div class="actions"><button class="btn btn-primary" onclick="go(\'gym\')">Start workout →</button></div>';
+  }
+  else if(stage==='gym'){
+    const g=w.gym;
+    body =
+      '<span class="pos-badge '+posCls+'">'+posName+'</span>'+
+      '<div class="stage-h">⚙️ Grammar gym — produce the form</div>'+
+      '<div class="gym-q">'+g.q.replace('___','<span class="blank">___</span>')+'</div>'+
+      '<div class="gym-hint">'+g.hint+'</div>'+
+      '<div class="opts" id="opts">'+ g.opts.map(o=>'<button class="opt" onclick="answerGym(this,\''+o.replace(/'/g,"\\'")+'\')">'+o+'</button>').join('') +'</div>'+
+      '<div class="why-line" id="why-line"><b>Why:</b> '+g.why+'</div>'+
+      '<div class="actions" id="gym-next" style="display:none;"><button class="btn btn-primary" onclick="go(\'sentence\')">Next: in a sentence →</button></div>';
+  }
+  else if(stage==='sentence'){
+    body =
+      '<span class="pos-badge '+posCls+'">'+posName+'</span>'+
+      '<div class="stage-h">🧱 See it in a real sentence</div>'+
+      '<div class="sent-en">'+w.sent.en+'</div>'+
+      '<div class="sent-gr" id="sent-gr" onclick="speak(\''+w.sent.gr.replace(/'/g,"\\'")+'\')">'+w.sent.gr+' <button class="speak-inline">🔊</button></div>'+
+      '<div class="sent-tip" id="sent-tip">Read it aloud, then tap to hear it.</div>'+
+      '<div class="actions">'+
+        '<button class="btn btn-ghost" id="sent-reveal" onclick="revealSent()">Reveal Greek</button>'+
+        '<button class="btn btn-primary" id="sent-next" style="display:none;" onclick="go(\'recall\')">Next: recall →</button>'+
+      '</div>';
+  }
+  else if(stage==='recall'){
+    body =
+      '<span class="pos-badge '+posCls+'">'+posName+'</span>'+
+      '<div class="stage-h">🎯 Recall — say it in Greek</div>'+
+      '<div class="recall-en">'+w.en+'</div>'+
+      '<div class="recall-prompt">💡 '+w.hook+'</div>'+
+      '<div class="recall-ans" id="recall-ans" onclick="speak(\''+w.gr.replace(/'/g,"\\'")+'\')">'+w.gr+' <span class="tr">['+w.tr+']</span></div>'+
+      '<div class="actions" id="recall-reveal"><button class="btn btn-primary" onclick="revealRecall()">Reveal answer</button></div>'+
+      '<div class="rate-row" id="rate-row" style="display:none;">'+
+        '<button class="rate rate-again" onclick="rate(\'again\')">Again<small>missed it</small></button>'+
+        '<button class="rate rate-good" onclick="rate(\'good\')">Good<small>got it</small></button>'+
+        '<button class="rate rate-easy" onclick="rate(\'easy\')">Easy<small>instant</small></button>'+
+      '</div>';
+  }
+  host.innerHTML = '<div class="card">'+rail()+'<div class="card-body">'+body+'</div></div>';
+  if(stage==='encode') speak(w.gr);
+}
+
+function go(next){ stage=next; render(); if(next==='gym'){} }
+
+function answerGym(btn, choice){
+  const w=queue[qi]; const g=w.gym;
+  document.querySelectorAll('#opts .opt').forEach(b=>{ b.disabled=true;
+    if(b.textContent===g.a) b.classList.add('correct');
+  });
+  sessionStats.gymTotal++;
+  if(choice===g.a){ sessionStats.gymRight++; }
+  else { btn.classList.add('wrong'); }
+  document.getElementById('why-line').classList.add('show');
+  document.getElementById('gym-next').style.display='flex';
+}
+
+function revealSent(){
+  document.getElementById('sent-gr').classList.add('show');
+  document.getElementById('sent-tip').classList.add('show');
+  document.getElementById('sent-reveal').style.display='none';
+  document.getElementById('sent-next').style.display='';
+  speak(queue[qi].sent.gr);
+}
+
+function revealRecall(){
+  document.getElementById('recall-ans').classList.add('show');
+  document.getElementById('recall-reveal').style.display='none';
+  document.getElementById('rate-row').style.display='flex';
+  speak(queue[qi].gr);
+}
+
+function rate(r){
+  const w=queue[qi];
+  schedule(w.gr, r);
+  sessionStats.done++;
+  if(r==='again'){ queue.push(w); } // re-see it later this session
+  qi++; stage='encode';
+  renderSession(); render();
+}
+
+function renderDone(){
+  setProgress();
+  const acc = sessionStats.gymTotal ? Math.round(sessionStats.gymRight/sessionStats.gymTotal*100) : 0;
+  const p = pool();
+  const dueLeft = p.filter(w=>dueState(w.gr)==='due').length;
+  const newLeft = p.filter(w=>dueState(w.gr)==='new').length;
+  document.getElementById('card-host').innerHTML =
+    '<div class="done">'+
+      '<h2>💪 Workout complete!</h2>'+
+      '<p>You trained <strong>'+sessionStats.done+'</strong> words through all four stages.</p>'+
+      '<div class="stat">⚙️ Grammar gym accuracy: <strong>'+acc+'%</strong> ('+sessionStats.gymRight+'/'+sessionStats.gymTotal+')<br>'+
+        '📅 '+dueLeft+' due · '+newLeft+' still new in this focus</div>'+
+      '<div class="actions">'+
+        '<button class="btn btn-primary" onclick="restart()">Next set →</button>'+
+        '<button class="btn btn-ghost" onclick="setPos(\'all\',document.querySelector(\'#filters .fchip\'))">All words</button>'+
+      '</div>'+
+    '</div>';
+}
+
+function restart(){ buildQueue(); renderSession(); render(); }
+
+let whyOpen=false;
+function toggleWhy(){ whyOpen=!whyOpen;
+  document.getElementById('why-toggle').classList.toggle('open',whyOpen);
+  document.getElementById('why-body').classList.toggle('open',whyOpen);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===' '){
+    if(stage==='encode'){ e.preventDefault(); go('gym'); }
+    else if(stage==='sentence'){ e.preventDefault();
+      const nx=document.getElementById('sent-next');
+      if(nx && nx.style.display!=='none') go('recall'); else revealSent();
+    }
+    else if(stage==='recall'){ e.preventDefault();
+      const rr=document.getElementById('rate-row');
+      if(rr && rr.style.display==='none') revealRecall();
+    }
+  }
+});
+
+buildQueue();
+renderSession();
+render();
+</script>
+</body>
+</html>

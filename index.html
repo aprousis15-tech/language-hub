@@ -3733,6 +3733,7 @@
         <button class="grammar-mode-btn sh-btn" id="sh-pronouns" onclick="setGrammarMode('pronouns',this)">🧍 Object Pronouns<span class="sh-sub">μου/σου/του · before the verb</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-rootsdrill" onclick="setGrammarMode('rootsdrill',this)">🌱 Roots &amp; Word-Building<span class="sh-sub">decode meaning from prefix + root</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-keylexis" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab<span class="sh-sub">every word from the Lexis placement test</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-wordworkout" onclick="setGrammarMode('wordworkout',this)">🏋️ Word Workout<span class="sh-sub">learn + retain words through the grammar</span></button>
       </div>
       <button class="grammar-showall-toggle" id="grammar-showall-toggle" onclick="toggleAllDrills()">▸ Show all drills (everything else)</button>
     </div>
@@ -3784,6 +3785,7 @@
 
       <div class="grammar-mode-group-label">▸ 📒 Vocab</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab (Lexis placement test)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('wordworkout',this)">🏋️ Word Workout (vocab + grammar, SRS)</button>
 
       <div class="grammar-mode-group-label">▸ 💬 Conversation</div>
       <button class="grammar-mode-btn" onclick="setGrammarMode('convprep',this)">💬 Conversation Prep (pre-session study)</button>
@@ -4062,6 +4064,20 @@
                 title="Key Lexis Vocab — Lexis placement test words" loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="key-lexis-vocab.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Word Workout — iframe wrapper around the standalone /word-workout.html.
+         Same lazy-iframe pattern. Trains each word through a 4-stage workout
+         (encode → grammar gym → sentence → recall) with Leitner SRS, to build
+         retention AND correct grammar use. src set lazily (see initWordWorkoutFrame). -->
+    <div id="grammar-wordworkout" style="display:none;">
+      <div class="conjdrill-frame-wrap" style="max-width:700px;">
+        <iframe id="wordworkout-frame" class="conjdrill-frame" style="height:820px;"
+                title="Word Workout — vocab + grammar drill with spaced repetition" loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="word-workout.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -11154,6 +11170,7 @@
     document.getElementById('grammar-sentbuild').style.display = mode === 'sentbuild' ? '' : 'none';
     document.getElementById('grammar-rootsdrill').style.display = mode === 'rootsdrill' ? '' : 'none';
     document.getElementById('grammar-keylexis').style.display = mode === 'keylexis' ? '' : 'none';
+    document.getElementById('grammar-wordworkout').style.display = mode === 'wordworkout' ? '' : 'none';
     document.getElementById('grammar-gendagree').style.display = mode === 'gendagree' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
@@ -11187,6 +11204,7 @@
     if (mode === 'sentbuild') initSentBuildFrame();
     if (mode === 'rootsdrill') initRootsDrillFrame();
     if (mode === 'keylexis') initKeyLexisFrame();
+    if (mode === 'wordworkout') initWordWorkoutFrame();
     if (mode === 'gendagree') initGendAgreeFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'convprep') initConvPrepFrame();
@@ -12646,6 +12664,15 @@
   function initKeyLexisFrame() {
     const f = document.getElementById('keylexis-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'key-lexis-vocab.html');
+  }
+
+  // ── Word Workout (subpanel) ──
+  // Lazy-iframe wrapper around /word-workout.html — trains each word through a
+  // 4-stage workout (encode → grammar gym → sentence → recall) with Leitner SRS.
+  // src set on first open so it's free until visited.
+  function initWordWorkoutFrame() {
+    const f = document.getElementById('wordworkout-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'word-workout.html');
   }
 
   // ── Gender Agreement (subpanel) ──
