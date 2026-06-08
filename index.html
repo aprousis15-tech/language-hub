@@ -3732,6 +3732,7 @@
         <button class="grammar-mode-btn sh-btn" id="sh-conjdrill" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill<span class="sh-sub">type the 6 forms</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-pronouns" onclick="setGrammarMode('pronouns',this)">🧍 Object Pronouns<span class="sh-sub">μου/σου/του · before the verb</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-rootsdrill" onclick="setGrammarMode('rootsdrill',this)">🌱 Roots &amp; Word-Building<span class="sh-sub">decode meaning from prefix + root</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-tutorsessions" onclick="setGrammarMode('tutorsessions',this)">🗣️ Tutor Sessions<span class="sh-sub">vocab + phrases from your lessons</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-keylexis" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab<span class="sh-sub">every word from the Lexis placement test</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-wordworkout" onclick="setGrammarMode('wordworkout',this)">🏋️ Word Workout<span class="sh-sub">learn + retain words through the grammar</span></button>
       </div>
@@ -3784,6 +3785,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('impdrill',this)">❗ Imperative Drill (SRS)</button>
 
       <div class="grammar-mode-group-label">▸ 📒 Vocab</div>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('tutorsessions',this)">🗣️ Tutor Sessions (vocab from your lessons)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab (Lexis placement test)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('wordworkout',this)">🏋️ Word Workout (vocab + grammar, SRS)</button>
 
@@ -4093,6 +4095,21 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="gender-agreement-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutor Sessions — iframe wrapper around the standalone /tutor-sessions.html.
+         Same lazy-iframe pattern. Vocab + phrases captured from the user's 1-on-1
+         tutor lessons, tagged by session date, with browse + flashcards + Greek TTS.
+         The latest-lesson home — new sessions get appended to its VOCAB array.
+         src set lazily on first open (see initTutorSessionsFrame). -->
+    <div id="grammar-tutorsessions" style="display:none;">
+      <div class="conjdrill-frame-wrap" style="max-width:820px;">
+        <iframe id="tutorsessions-frame" class="conjdrill-frame" style="height:820px;"
+                title="Tutor Sessions — vocab from your 1-on-1 lessons" loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="tutor-sessions.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -11174,6 +11191,7 @@
     document.getElementById('grammar-gendagree').style.display = mode === 'gendagree' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
+    document.getElementById('grammar-tutorsessions').style.display = mode === 'tutorsessions' ? '' : 'none';
     document.getElementById('grammar-subjfirst').style.display = mode === 'subjfirst' ? '' : 'none';
     document.getElementById('grammar-pres2aor').style.display = mode === 'pres2aor' ? '' : 'none';
     document.getElementById('grammar-verbdrill').style.display = mode === 'verbdrill' ? '' : 'none';
@@ -11208,6 +11226,7 @@
     if (mode === 'gendagree') initGendAgreeFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'convprep') initConvPrepFrame();
+    if (mode === 'tutorsessions') initTutorSessionsFrame();
     if (mode === 'subjfirst') initSubjFirstDrill();
     if (mode === 'pres2aor') initPres2AorDrill();
     if (mode === 'verbdrill') initVerbDrill();
@@ -12702,6 +12721,15 @@
   function initConvPrepFrame() {
     const f = document.getElementById('convprep-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'conversation-prep.html');
+  }
+
+  // ── Tutor Sessions (subpanel) ──
+  // Same lazy-iframe pattern. /tutor-sessions.html holds vocab + phrases captured
+  // from the user's private 1-on-1 lessons, tagged by session date, browsable with
+  // flashcards + Greek TTS. The home for the latest lesson notes.
+  function initTutorSessionsFrame() {
+    const f = document.getElementById('tutorsessions-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'tutor-sessions.html');
   }
 
   // ── Verb Group Classifier ──

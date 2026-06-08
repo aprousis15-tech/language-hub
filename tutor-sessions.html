@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutor Sessions — vocab from your 1-on-1 lessons</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --white:#fdfaf6; --dark:#1e2a35; --greek-blue:#0d4f8b; --teal:#00695c; --plum:#6a1b9a; --olive:#5a7302; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Lato',sans-serif;background:var(--white);color:var(--dark);min-height:100vh;padding:22px 14px 64px;}
+  .wrap{max-width:780px;margin:0 auto;}
+  header.top{text-align:center;margin-bottom:14px;}
+  header.top h1{font-family:'Playfair Display',serif;color:var(--teal);font-size:clamp(1.4rem,4vw,2rem);margin-bottom:5px;}
+  header.top p{color:#5a7a72;font-size:0.92rem;}
+
+  .mode-toggle{display:flex;justify-content:center;gap:8px;margin:12px 0;}
+  .mode-btn{padding:8px 20px;border-radius:99px;border:1.5px solid var(--teal);background:white;color:var(--teal);font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Lato',sans-serif;}
+  .mode-btn.active{background:var(--teal);color:white;}
+
+  .filters{display:flex;flex-direction:column;gap:7px;align-items:center;margin-bottom:12px;}
+  .chip-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center;}
+  .chip-row .lbl{font-size:0.7rem;color:#9aa8b2;text-transform:uppercase;letter-spacing:0.08em;}
+  .fchip{padding:5px 12px;border-radius:99px;border:1.5px solid #b2dfdb;background:white;color:var(--teal);font-size:0.8rem;cursor:pointer;font-weight:600;}
+  .fchip:hover{background:#e0f2f1;}
+  .fchip.active{background:var(--teal);color:white;border-color:var(--teal);}
+  .fchip.pos.active{background:var(--plum);border-color:var(--plum);}
+  #search{padding:8px 14px;border:1.5px solid #b2dfdb;border-radius:99px;font-size:0.9rem;width:240px;max-width:80vw;font-family:'Lato',sans-serif;}
+  #search:focus{outline:none;border-color:var(--teal);}
+  .count{text-align:center;font-size:0.84rem;color:#5a7a72;margin-bottom:12px;}
+  .count strong{color:var(--teal);}
+
+  /* Browse */
+  .vlist{display:flex;flex-direction:column;gap:8px;}
+  .vrow{display:flex;align-items:flex-start;gap:12px;background:white;border:1px solid #dceee9;border-radius:11px;padding:11px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+  .vrow .lbadge{flex:0 0 auto;font-size:0.66rem;font-weight:700;color:#3f7d70;background:#e6f4f1;border-radius:6px;padding:3px 7px;margin-top:2px;letter-spacing:0.04em;white-space:nowrap;}
+  .vrow .vmain{flex:1 1 auto;min-width:0;}
+  .vrow .vgr{font-family:'Georgia',serif;font-size:1.25rem;color:var(--teal);cursor:pointer;}
+  .vrow .vgr:hover{text-decoration:underline;}
+  .vrow .vtr{font-size:0.8rem;color:#9aa8b2;font-style:italic;margin-left:6px;}
+  .vrow .ven{font-size:0.95rem;color:var(--dark);margin-top:2px;}
+  .vrow .vnote{font-size:0.78rem;color:#7a8a95;margin-top:2px;}
+  .vrow .vmem{font-size:0.82rem;color:#5e1a87;background:#f7eefb;border-left:3px solid #ce93d8;border-radius:0 7px 7px 0;padding:5px 9px;margin-top:6px;}
+  .vrow .vmem b{color:#4a116e;}
+  .postag{flex:0 0 auto;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-radius:6px;padding:3px 7px;margin-top:2px;}
+  .postag.verb{background:#e0f2f1;color:#00695c;} .postag.noun{background:#e3f0fb;color:#1565c0;}
+  .postag.adj{background:#fce4ec;color:#c2185b;} .postag.adv{background:#fff3e0;color:#b76e00;}
+  .postag.pron,.postag.prep,.postag.conj,.postag.particle,.postag.num,.postag.expression{background:#ede7f6;color:#5e35b1;}
+  .speak-btn{border:none;background:#e0f2f1;color:var(--teal);cursor:pointer;border-radius:99px;font-size:0.9rem;padding:2px 9px;margin-left:4px;vertical-align:middle;line-height:1;}
+  .speak-btn:hover{background:#b2dfdb;}
+
+  /* Flashcards */
+  .fc-wrap{max-width:460px;margin:0 auto;}
+  .fc-card{background:white;border:1px solid #dceee9;border-radius:16px;padding:34px 22px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.05);min-height:210px;display:flex;flex-direction:column;justify-content:center;}
+  .fc-lbadge{font-size:0.68rem;color:#3f7d70;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+  .fc-front{font-family:'Playfair Display',serif;font-size:2.1rem;color:var(--teal);}
+  .fc-front.en{color:var(--dark);font-size:1.6rem;}
+  .fc-tr{font-size:0.95rem;color:#9aa8b2;font-style:italic;margin-top:6px;}
+  .fc-back{margin-top:16px;padding-top:14px;border-top:1px solid #eef6f4;display:none;}
+  .fc-back.show{display:block;}
+  .fc-back .ans{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dark);}
+  .fc-back .ans.gr{color:var(--teal);}
+  .fc-back .note{font-size:0.84rem;color:#7a8a95;margin-top:8px;font-style:italic;}
+  .fc-back .mem{font-size:0.86rem;color:#5e1a87;background:#f7eefb;border-radius:9px;padding:8px 11px;margin-top:10px;text-align:left;}
+  .fc-back .mem b{color:#4a116e;}
+  .actions{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+  .btn{padding:10px 20px;border-radius:99px;font-weight:700;font-size:0.88rem;cursor:pointer;border:1.5px solid var(--teal);font-family:'Lato',sans-serif;}
+  .btn-primary{background:var(--teal);color:white;} .btn-primary:hover{background:#004d40;}
+  .btn-secondary{background:white;color:var(--teal);} .btn-secondary:hover{background:#e0f2f1;}
+  .fc-stats{text-align:center;font-size:0.84rem;color:#5a7a72;margin-top:14px;}
+  .footer-tip{text-align:center;font-size:0.78rem;color:#9aa8b2;margin-top:22px;}
+
+  /* Focus banner */
+  .focus{max-width:560px;margin:6px auto 14px;background:#fff8ec;border:1px solid #ffe2b0;border-radius:10px;padding:11px 14px;color:#8a6d3b;font-size:0.85rem;line-height:1.5;}
+  .focus b{color:#b76e00;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🗣️ Tutor Sessions</h1>
+    <p>Vocab &amp; phrases straight from your 1-on-1 lessons, by date. Tap any Greek word to hear it. 💡 = a memory hook.</p>
+  </header>
+
+  <div class="focus">
+    <b>Tutor's two focus drills:</b> sentence construction + verb conjugation (I do / you do / he does…), and matching articles to noun gender (καλός καιρός). The phrases below are tagged <i>phrase</i> / <i>verb</i> so you can drill exactly those.
+  </div>
+
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="mode-browse" onclick="setMode('browse')">📖 Browse</button>
+    <button class="mode-btn" id="mode-cards" onclick="setMode('cards')">🃏 Flashcards</button>
+  </div>
+
+  <div class="filters">
+    <div class="chip-row" id="date-filter"></div>
+    <div class="chip-row" id="pos-filter"></div>
+    <div class="chip-row" id="search-row"><input id="search" type="text" placeholder="🔍 search Greek or English…" oninput="render()"></div>
+    <div class="chip-row" id="cards-extra" style="display:none;">
+      <span class="lbl">Show</span>
+      <button class="fchip active" id="dir-gr" onclick="setDir('gr')">Greek first</button>
+      <button class="fchip" id="dir-en" onclick="setDir('en')">English first</button>
+      <button class="fchip" onclick="shuffleDeck()">🔀 Shuffle</button>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <div id="browse-view"><div class="vlist" id="vlist"></div></div>
+
+  <div id="cards-view" style="display:none;">
+    <div class="fc-wrap">
+      <div class="fc-card" id="fc-card">
+        <div class="fc-lbadge" id="fc-lbadge"></div>
+        <div class="fc-front" id="fc-front">…</div>
+        <div class="fc-tr" id="fc-tr"></div>
+        <div class="fc-back" id="fc-back"></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="speakCurrent()">🔊 Hear</button>
+        <button class="btn btn-primary" id="fc-reveal" onclick="revealCard()">Reveal</button>
+        <button class="btn btn-secondary" id="fc-next" onclick="nextCard()" style="display:none;">Next →</button>
+      </div>
+      <div class="fc-stats" id="fc-stats"></div>
+    </div>
+  </div>
+
+  <p class="footer-tip">From your private lessons. Greek voice quality depends on your device. iPhone: Settings → Accessibility → Spoken Content → Voices → Greek (download the enhanced voice).</p>
+  <p class="footer-tip"><a href="./index.html" style="color:var(--teal);font-weight:700;text-decoration:none;">← Back to Language Hub</a></p>
+</div>
+
+<script>
+/* Vocab & phrases captured from Anthony's 1-on-1 tutor sessions.
+   Each entry is tagged with the session "date" (DD/MM) it came from, newest first.
+   `mem` (optional) = a memory hook. Self-contained, offline. */
+const VOCAB = [
+  /* ════════════ SESSION 08/06 ════════════ */
+  /* — Telling the time — */
+  {"date":"08/06","greek":"το τέταρτο","translit":"to tétarto","en":"a quarter","pos":"noun","note":"neuter; used in clock times","mem":"A QUARTER = a fourth — 'TETARTo' shares the 'tetra-' (four) root (TETRApod)."},
+  {"date":"08/06","greek":"παρά","translit":"pará","en":"to / minus (in clock times)","pos":"prep","note":"7:45 = οχτώ παρά τέταρτο = a quarter TO eight","mem":"PARA = beside/short of → 'short of eight' = to eight."},
+  {"date":"08/06","greek":"οχτώ παρά τέταρτο","translit":"okhtó pará tétarto","en":"a quarter to eight (7:45)","pos":"expression","note":"lit. eight minus a quarter","mem":""},
+  {"date":"08/06","greek":"η διαφορά","translit":"i dhiaforá","en":"the difference","pos":"noun","note":"feminine","mem":"DIA (apart) + ferō (carry) → carried apart = the DIFFERence."},
+  /* — Exercise & the outdoors — */
+  {"date":"08/06","greek":"η άσκηση","translit":"i áskisi","en":"exercise","pos":"noun","note":"feminine; Έκανα πολλή άσκηση = I did a lot of exercise","mem":"ASCETIC discipline = exercise/training — áskisi."},
+  {"date":"08/06","greek":"κάνω άσκηση","translit":"káno áskisi","en":"I work out / do exercise","pos":"expression","note":"Έκανα πολλή άσκηση = I exercised a lot","mem":""},
+  {"date":"08/06","greek":"το μπάσκετ","translit":"to básket","en":"basketball","pos":"noun","note":"neuter, indeclinable","mem":"BASKET(ball) — borrowed straight in."},
+  {"date":"08/06","greek":"περπατάω","translit":"perpatáo","en":"I walk / I am walking","pos":"verb","note":"closed: περπατήσω","mem":"A PERIPATETIC philosopher walks while teaching — perpatáo = I walk."},
+  {"date":"08/06","greek":"να περπατήσω","translit":"na perpatíso","en":"to walk","pos":"verb","note":"subjunctive/closed form of περπατάω","mem":""},
+  {"date":"08/06","greek":"για πολλή ώρα","translit":"ya polí óra","en":"for a long time","pos":"expression","note":"πολλή ώρα = a long while","mem":""},
+  {"date":"08/06","greek":"η φύση","translit":"i físi","en":"nature","pos":"noun","note":"feminine; στη φύση = in nature","mem":"PHYSIS → PHYSICS, PHYSICAL — the natural world = fýsi."},
+  {"date":"08/06","greek":"στην ύπαιθρο","translit":"stin ípethro","en":"in the open / countryside","pos":"expression","note":"η ύπαιθρος = the outdoors / open country (not 'urban')","mem":"hypo (under) + aithír (sky, cf. ETHER) → under the open sky = outdoors."},
+  {"date":"08/06","greek":"ήσυχος","translit":"ísikhos","en":"quiet / calm","pos":"adj","note":"fem ήσυχη, neut ήσυχο","mem":"A HUSH-y room → ísychos = quiet."},
+  /* — Noise-cancelling / easy — */
+  {"date":"08/06","greek":"κάνει ηχομόνωση","translit":"káni ikhomónosi","en":"it noise-cancels / soundproofs","pos":"expression","note":"of headphones/walls","mem":""},
+  {"date":"08/06","greek":"η ηχομόνωση","translit":"i ikhomónosi","en":"noise-cancelling / soundproofing","pos":"noun","note":"feminine; ήχος + μόνωση","mem":"ÍCHOS (sound, cf. ECHO) + MÓNOSI (insulation, mono = alone) → isolating the sound."},
+  {"date":"08/06","greek":"εύκολος","translit":"éfkolos","en":"easy","pos":"adj","note":"fem εύκολη, neut εύκολο","mem":"EU (well, EUphoria) → 'goes well' = easy."},
+  {"date":"08/06","greek":"δύσκολος","translit":"dhískolos","en":"difficult","pos":"adj","note":"fem δύσκολη, neut δύσκολο","mem":"DYS- (bad, DYSfunction) → 'goes badly' = difficult."},
+  {"date":"08/06","greek":"όντως","translit":"óndos","en":"indeed / really","pos":"adv","note":"confirming agreement","mem":"From 'ón' (being) → 'in being / in fact' = indeed."},
+  /* — Weather & time spans — */
+  {"date":"08/06","greek":"πόσο καιρό","translit":"póso keró","en":"how long (for how much time)","pos":"expression","note":"Πόσο καιρό μένεις εδώ; = how long have you lived here?","mem":""},
+  {"date":"08/06","greek":"ο καιρός","translit":"o kerós","en":"weather / time","pos":"noun","note":"masculine","mem":"KAIROS = the opportune moment → also the day's weather — kairós."},
+  {"date":"08/06","greek":"Τι καιρό έχει;","translit":"ti keró ékhi?","en":"What's the weather like?","pos":"expression","note":"lit. what weather does it have?","mem":""},
+  {"date":"08/06","greek":"φυσάει πολύ","translit":"fisái polí","en":"it's very windy","pos":"expression","note":"φυσάω = to blow (the wind)","mem":"It PUFFs a lot — fysáo, same 'phys/puff' breath root."},
+  {"date":"08/06","greek":"την τελευταία φορά","translit":"tin teleftéa forá","en":"last time","pos":"expression","note":"τελευταίος = last","mem":"TELOS = end → the END time = last time."},
+  {"date":"08/06","greek":"πολλή ζέστη","translit":"polí zésti","en":"a lot of heat / very hot","pos":"expression","note":"η ζέστη = heat; κάνει ζέστη = it's hot","mem":""},
+  {"date":"08/06","greek":"άνω κάτω","translit":"áno káto","en":"messed up / upside down","pos":"expression","note":"lit. up-down; in a mess","mem":"ÁNO (up, cf. ANOde) + KÁTO (down, cf. CAThode) → all up-and-down = a mess."},
+  /* — Conjugating -άω verbs (you-form) — */
+  {"date":"08/06","greek":"αγαπάς","translit":"aghapás","en":"you love","pos":"verb","note":"2sg of αγαπάω (I love)","mem":"AGAPE = selfless love — agapó / agapás."},
+  {"date":"08/06","greek":"μιλάς","translit":"milás","en":"you speak / talk","pos":"verb","note":"2sg of μιλάω (I speak)","mem":""},
+  {"date":"08/06","greek":"ακριβώς","translit":"akrivós","en":"exactly","pos":"adv","note":"ακριβός = precise/expensive","mem":"With ACRIBIA (exactness) → akrivós = precisely, exactly."},
+  {"date":"08/06","greek":"φοράω","translit":"foráo","en":"I wear","pos":"verb","note":"closed: φορέσω","mem":"You 'FOR-wear' it / carry it on you (forá = a carrying) — foráo = I wear."},
+  {"date":"08/06","greek":"το καλοκαίρι","translit":"to kalokéri","en":"summer","pos":"noun","note":"neuter; το καλοκαίρι = in summer","mem":"kalós (good) + kairós (weather) → the good-weather season = summer."},
+  {"date":"08/06","greek":"η ισορροπία","translit":"i isoropía","en":"balance","pos":"noun","note":"feminine","mem":"ISO (equal) + ropí (a leaning) → equal-leaning = balance (ISObar, EQUI-librium)."},
+  {"date":"08/06","greek":"κάνεις","translit":"kánis","en":"you do / you make","pos":"verb","note":"2sg of κάνω","mem":""},
+  {"date":"08/06","greek":"Μπορείς να πας στην παραλία","translit":"borís na pas stin paralía","en":"You can go to the beach","pos":"expression","note":"η παραλία = beach","mem":"PARA (beside) + háls (sea) → beside the sea = the beach."},
+  {"date":"08/06","greek":"Έχεις δίκιο","translit":"ékhis dhíkio","en":"You're right","pos":"expression","note":"lit. you have the right; το δίκιο = the right","mem":"From díki (justice) → you 'hold the justice' = you're right."},
+  {"date":"08/06","greek":"μακριά","translit":"makriá","en":"far / far away","pos":"adv","note":"σαράντα λεπτά μακριά = forty minutes away","mem":"MACRO (long/large) → a long way off = far."},
+  {"date":"08/06","greek":"ξανά","translit":"ksaná","en":"again","pos":"adv","note":"= πάλι = άλλη μία φορά (once more)","mem":""},
+  {"date":"08/06","greek":"σαράντα λεπτά μακριά","translit":"saránda leptá makriá","en":"forty minutes away","pos":"expression","note":"σαράντα = 40, λεπτά = minutes","mem":""},
+  /* — Mountains, snow, cold — */
+  {"date":"08/06","greek":"το χιόνι","translit":"to khióni","en":"snow","pos":"noun","note":"neuter","mem":"CHIONo- = snow (CHIONosphere) — chióni = snow."},
+  {"date":"08/06","greek":"λιώνω","translit":"lióno","en":"I melt","pos":"verb","note":"closed: λιώσω; το χιόνι λιώνει","mem":"The snow goes 'LIO' — soft, runny — lióno = I melt."},
+  {"date":"08/06","greek":"για κολύμπι","translit":"ya kolíbi","en":"for swimming","pos":"expression","note":"το κολύμπι = swimming; πολύ κρύο για κολύμπι","mem":""},
+  {"date":"08/06","greek":"το βουνό","translit":"to vunó","en":"mountain","pos":"noun","note":"neuter; pl. τα βουνά","mem":"A 'BOON-o' lump rising up — vunó = mountain."},
+  {"date":"08/06","greek":"στον Όλυμπο","translit":"ston Ólibo","en":"on (Mount) Olympus","pos":"expression","note":"ο Όλυμπος → accusative τον Όλυμπο","mem":"OLYMPUS — home of the gods."},
+  {"date":"08/06","greek":"νομίζω","translit":"nomízo","en":"I think / I believe","pos":"verb","note":"closed: νομίσω","mem":"From nómos (rule/notion) → 'I hold the notion' = I think."},
+  {"date":"08/06","greek":"για το κεφάλι σου","translit":"ya to kefáli su","en":"for your head","pos":"expression","note":"το κεφάλι = head","mem":"CEPHALIC = of the head (en-CEPHALo-) — kefáli = head."},
+  {"date":"08/06","greek":"το σώμα","translit":"to sóma","en":"body","pos":"noun","note":"neuter","mem":"SOMA → SOMAtic, psychoSOMAtic — sóma = body."},
+  {"date":"08/06","greek":"ήρεμος","translit":"íremos","en":"calm / peaceful","pos":"adj","note":"fem ήρεμη, neut ήρεμο","mem":"A 'HERMIT-calm' stillness — íremos = calm (eremía = solitude)."},
+  /* — Reactions & opinions — */
+  {"date":"08/06","greek":"σοκαριστικός","translit":"sokaristikós","en":"shocking","pos":"adj","note":"neut σοκαριστικό","mem":"SHOCK → sokaristikós = shocking."},
+  {"date":"08/06","greek":"το σοκ","translit":"to sok","en":"shock","pos":"noun","note":"neuter, indeclinable","mem":"SHOCK — sok."},
+  {"date":"08/06","greek":"το άτομο","translit":"to átomo","en":"the person","pos":"noun","note":"neuter; pl. τα άτομα = the people","mem":"ATOM = indivisible unit → an individual = a person."},
+  {"date":"08/06","greek":"Δεν το κάνουν","translit":"dhen to kánun","en":"they don't do it","pos":"expression","note":"object pronoun το goes BEFORE the verb: δεν + το + κάνουν","mem":"'δεν κάνουν αυτό' → tighten to 'δεν το κάνουν'."},
+  {"date":"08/06","greek":"Γιατί πιστεύεις ότι οι άνθρωποι δεν το κάνουν αυτό;","translit":"yatí pistévis óti i ánthropi dhen to kánun aftó?","en":"Why do you think people don't do it?","pos":"expression","note":"full conversational sentence","mem":""},
+  {"date":"08/06","greek":"πιστεύω","translit":"pistévo","en":"I think / I believe","pos":"verb","note":"closed: πιστέψω","mem":"An EPISTle is sent in faith; pístis = faith → pistévo = I believe."},
+  {"date":"08/06","greek":"άβολος","translit":"ávolos","en":"uncomfortable","pos":"adj","note":"neut άβολο","mem":"a (not) + volikós (convenient) → not comfy = uncomfortable."},
+  {"date":"08/06","greek":"ένιωθα","translit":"éniotha","en":"I was feeling","pos":"verb","note":"imperfect (past continuous) of νιώθω = I feel","mem":""},
+  {"date":"08/06","greek":"Το να νιώθεις κρύο είναι άβολο","translit":"to na niótis krío íne ávolo","en":"Feeling cold is uncomfortable","pos":"expression","note":"'Το να + verb' = the act of …ing (a verbal noun)","mem":""},
+  {"date":"08/06","greek":"ο πανικός","translit":"o panikós","en":"panic","pos":"noun","note":"masculine","mem":"PANIC — from the god Pan who caused sudden terror — panikós."},
+  {"date":"08/06","greek":"Δεν ξέρω γιατί","translit":"dhen kséro yatí","en":"I don't know why","pos":"expression","note":"","mem":""},
+  {"date":"08/06","greek":"το άγχος","translit":"to ánghos","en":"stress / anxiety","pos":"noun","note":"neuter","mem":"ANGST / ANXiety / 'anch' = to choke/tighten — ánchos = stress."},
+  {"date":"08/06","greek":"ξαφνικά","translit":"ksafniká","en":"suddenly","pos":"adv","note":"","mem":""},
+  {"date":"08/06","greek":"βγάζει νόημα","translit":"vgházi nóima","en":"it makes sense / fair enough","pos":"expression","note":"το νόημα = meaning; lit. it 'gives out' meaning","mem":"NÓIMA → NOUS (mind), NOEtic → it yields meaning = makes sense."},
+  {"date":"08/06","greek":"σωστός","translit":"sostós","en":"right / correct / fair","pos":"adj","note":"neut σωστό","mem":"From sózo (save/keep whole) → 'sound, correct' = right."},
+  {"date":"08/06","greek":"να ακούσω","translit":"na akúso","en":"to hear","pos":"verb","note":"closed form of ακούω","mem":"ACOUSTIC = of hearing — akoúo = I hear."},
+  {"date":"08/06","greek":"ακόμα","translit":"akóma","en":"still / yet","pos":"adv","note":"also ακόμη","mem":""},
+  {"date":"08/06","greek":"ψηλά","translit":"psilá","en":"high / up high","pos":"adv","note":"opposite of χαμηλά","mem":"Tall/high — 'psi-LÁ' reaches up."},
+  {"date":"08/06","greek":"χαμηλά","translit":"khamilá","en":"low / low down","pos":"adv","note":"opposite of ψηλά","mem":"HUMBLE / brought low — chamilá (cf. chameleon, low to the ground)."},
+  /* — Work & teaching — */
+  {"date":"08/06","greek":"δουλεύεις","translit":"dhulévis","en":"you work","pos":"verb","note":"2sg of δουλεύω","mem":""},
+  {"date":"08/06","greek":"παντού","translit":"pandú","en":"everywhere","pos":"adv","note":"","mem":"PAN (all) → in all places = everywhere."},
+  {"date":"08/06","greek":"διδάσκω","translit":"dhidhásko","en":"I teach","pos":"verb","note":"διδάσκεις = you teach","mem":"DIDACTIC = meant to teach — didásko."},
+  {"date":"08/06","greek":"όλο το χρόνο","translit":"ólo to khróno","en":"all year round","pos":"expression","note":"ο χρόνος = year/time","mem":""},
+  {"date":"08/06","greek":"ειδικά","translit":"idhiká","en":"especially","pos":"adv","note":"","mem":"ESPECIALLY / 'idio-' (special, own) → idiká."},
+  {"date":"08/06","greek":"έξυπνος","translit":"éksipnos","en":"smart / clever","pos":"adj","note":"neut έξυπνο","mem":"ek (out of) + ýpnos (sleep, cf. HYPNOsis) → 'wide awake' = sharp, clever."},
+  {"date":"08/06","greek":"επίτηδες","translit":"epítidhes","en":"on purpose / deliberately","pos":"adv","note":"","mem":""},
+  {"date":"08/06","greek":"το μάθημα","translit":"to máthima","en":"lesson / class","pos":"noun","note":"neuter; pl. τα μαθήματα","mem":"MATHE- → MATHEmatics (the learned subject) — máthima = lesson."},
+  {"date":"08/06","greek":"κάνω εξάσκηση","translit":"káno eksáskisi","en":"to practise","pos":"expression","note":"η εξάσκηση = practice (ex- + áskisi)","mem":"Like áskisi (exercise) but 'thoroughly out' (ex-) = practising."},
+  {"date":"08/06","greek":"από κοντά","translit":"apó kondá","en":"in person / face to face","pos":"expression","note":"= διά ζώσης (formal)","mem":"κοντά = near → 'from up close' = in person."},
+  {"date":"08/06","greek":"διά ζώσης","translit":"dhiá zósis","en":"in person (formal)","pos":"expression","note":"lit. 'in the living'; = από κοντά","mem":"ZOË = life → 'in the flesh / live' = in person."},
+  {"date":"08/06","greek":"από στόμα σε στόμα","translit":"apó stóma se stóma","en":"by word of mouth","pos":"expression","note":"το στόμα = mouth","mem":"STOMA = mouth/opening (STOMAch, -STOME) → mouth to mouth = word of mouth."},
+  {"date":"08/06","greek":"οι περισσότεροι","translit":"i perisóteri","en":"most (people)","pos":"expression","note":"comparative of πολύς → 'the more/most'","mem":"PERISSO- = excess/more → the greater number = most."},
+  {"date":"08/06","greek":"σχεδόν","translit":"skhedhón","en":"almost / nearly","pos":"adv","note":"","mem":""},
+  {"date":"08/06","greek":"κανένας","translit":"kanénas","en":"no one / nobody (also 'anyone')","pos":"pron","note":"fem καμία, neut κανένα","mem":""},
+  {"date":"08/06","greek":"οι διακοπές","translit":"i dhiakopés","en":"vacation / holidays","pos":"noun","note":"feminine plural","mem":"dia + kopí (a cutting) → a break cut out of the routine = holidays."},
+  {"date":"08/06","greek":"λίγο απ' τα δύο","translit":"lígho ap' ta dhío","en":"a bit of both","pos":"expression","note":"lit. a little from the two","mem":""},
+  /* — Family & friends — */
+  {"date":"08/06","greek":"ο ξάδερφος","translit":"o ksádherfos","en":"cousin (male)","pos":"noun","note":"masculine; fem η ξαδέρφη","mem":"xe- (outside) + adelphós (brother) → an 'outer brother' = cousin."},
+  {"date":"08/06","greek":"ο αδερφός","translit":"o adherfós","en":"brother","pos":"noun","note":"masculine; also αδελφός","mem":"PhilADELPHia = brotherly love — adelphós = brother."},
+  {"date":"08/06","greek":"η αδερφή","translit":"i adherfí","en":"sister","pos":"noun","note":"feminine; also αδελφή","mem":"Same root as brother, feminine -ή ending → sister."},
+  {"date":"08/06","greek":"οι φίλες","translit":"i fíles","en":"female friends","pos":"noun","note":"sg η φίλη; masc ο φίλος / pl οι φίλοι","mem":"PHILO- = loving (PHILosophy) → a fíli is a loved one = friend."},
+
+  /* ════════════ SESSION 02/06 ════════════ */
+  /* — Greetings & adjective vs adverb — */
+  {"date":"02/06","greek":"Πώς είσαι;","translit":"pos íse?","en":"How are you?","pos":"expression","note":"answer: καλά = fine","mem":""},
+  {"date":"02/06","greek":"καλά","translit":"kalá","en":"fine / well","pos":"adv","note":"adverb (how you ARE/do)","mem":"Ο άντρας είναι καλά = the man is fine (adverb, not καλός)."},
+  {"date":"02/06","greek":"γρήγορος","translit":"ghríghoros","en":"fast (adjective)","pos":"adj","note":"fem γρήγορη, neut γρήγορο","mem":"Adjective: Το αυτοκίνητο είναι γρήγορο = the car is fast."},
+  {"date":"02/06","greek":"γρήγορα","translit":"ghríghora","en":"quickly (adverb)","pos":"adv","note":"adverb = adds info to a VERB","mem":"Ο άντρας τρέχει γρήγορα = the man runs quickly. Adverb = add-verb."},
+  {"date":"02/06","greek":"Το αυτοκίνητο είναι γρήγορο.","translit":"to aftokínito íne ghríghoro","en":"The car is fast.","pos":"expression","note":"adjective agrees with neuter αυτοκίνητο","mem":""},
+  {"date":"02/06","greek":"Ο άντρας τρέχει γρήγορα.","translit":"o ándras tréhi ghríghora","en":"The man runs quickly.","pos":"expression","note":"adverb modifies the verb τρέχει","mem":""},
+  {"date":"02/06","greek":"η αρχή","translit":"i archí","en":"beginning / start","pos":"noun","note":"feminine; careful: αρχή (ar-HÍ) ≠ αργή (ar-YÍ, slow-fem)","mem":"ARCH- = first/chief (ARCHetype, monARCH) → the beginning."},
+  {"date":"02/06","greek":"αργά","translit":"arghá","en":"slowly / late","pos":"adv","note":"αργός = slow; περπατάω αργά = I walk slowly","mem":"AR-GÁ drags → slowly (LETHARGIC = slow/sluggish)."},
+  {"date":"02/06","greek":"καλύτερα","translit":"kalítera","en":"better","pos":"adv","note":"comparative of καλά","mem":""},
+  /* — Article + noun gender agreement — */
+  {"date":"02/06","greek":"καλός καιρός","translit":"kalós kerós","en":"good weather","pos":"expression","note":"masc adj + masc noun agree; cf. το καλοκαίρι","mem":"GENDER MATCH: καλός (masc) ↔ καιρός (masc)."},
+  {"date":"02/06","greek":"καλή μέρα","translit":"kalí méra","en":"good day","pos":"expression","note":"fem adj + fem noun (η μέρα)","mem":"καλή (fem) ↔ μέρα (fem)."},
+  {"date":"02/06","greek":"καλό φαγητό","translit":"kaló fayitó","en":"good food","pos":"expression","note":"neut adj + neut noun (το φαγητό)","mem":"καλό (neut) ↔ φαγητό (neut)."},
+  {"date":"02/06","greek":"Πώς λέμε…","translit":"pos léme","en":"How do we say…","pos":"expression","note":"ask the tutor for a word","mem":""},
+  {"date":"02/06","greek":"το γάλα","translit":"to ghála","en":"milk","pos":"noun","note":"neuter; καφέ με γάλα, χωρίς ζάχαρη","mem":"GALA- = milk (GALAxy = the 'milky' way, lactose) — ghála."},
+  {"date":"02/06","greek":"χωρίς","translit":"khorís","en":"without","pos":"prep","note":"χωρίς ζάχαρη = without sugar","mem":""},
+  {"date":"02/06","greek":"η ζάχαρη","translit":"i zákhari","en":"sugar","pos":"noun","note":"feminine","mem":"SACCHARine / SUGAR — záchari."},
+  {"date":"02/06","greek":"περίπου","translit":"perípu","en":"around / approximately","pos":"adv","note":"περίπου μία ώρα = about an hour","mem":"PERI (around) → round about = approximately."},
+  {"date":"02/06","greek":"η ζέστη","translit":"i zésti","en":"heat","pos":"noun","note":"feminine; κάνει ζέστη = it's hot","mem":"ZESTy heat — zésti (cf. 'zeo' = to boil)."},
+  {"date":"02/06","greek":"Διαφωνείς;","translit":"dhiafonís?","en":"Do you disagree?","pos":"verb","note":"διαφωνώ = I disagree (opposite of συμφωνώ)","mem":"DIA (apart) + foní (voice) → voices apart = disagree."},
+  {"date":"02/06","greek":"πάρα πολύ","translit":"pára polí","en":"too much / very much","pos":"expression","note":"","mem":""},
+  {"date":"02/06","greek":"ο ανεμιστήρας","translit":"o anemistíras","en":"fan (electric)","pos":"noun","note":"masculine","mem":"ÁNEMOS = wind (ANEMOmeter, ANEMONE) → the wind-maker = a fan."},
+  {"date":"02/06","greek":"το κρεβάτι","translit":"to kreváti","en":"bed","pos":"noun","note":"neuter","mem":"A 'CRAVAT-i' you lie on — kreváti = bed."},
+  {"date":"02/06","greek":"το δωμάτιο","translit":"to dhomátio","en":"room / bedroom","pos":"noun","note":"neuter; Το δωμάτιό σου είναι ζεστό","mem":"A DOMicile's room (domus = house) — domátio."},
+  {"date":"02/06","greek":"τα Ελληνικά","translit":"ta eliniká","en":"Greek (the language)","pos":"noun","note":"neuter plural; η Ελλάδα = Greece","mem":"HELLENIC = Greek — Elliniká."},
+  {"date":"02/06","greek":"πρέπει","translit":"prépi","en":"I should / must / have to","pos":"verb","note":"impersonal; never conjugates; + να","mem":"It's 'PROPER' that you do it → prépei = one must."},
+  {"date":"02/06","greek":"Θεέ μου","translit":"theé mu","en":"my God!","pos":"expression","note":"ο Θεός = God; also Χριστέ μου = my Christ","mem":"THEO- = god (THEOlogy, aTHEism) — Theós."},
+  {"date":"02/06","greek":"Νιώθω σαν πατάτα","translit":"niótho san patáta","en":"I feel like a potato","pos":"expression","note":"νιώθω = I feel; η πατάτα = potato","mem":"POTATO — patáta."},
+  {"date":"02/06","greek":"οι άλλοι μήνες","translit":"i áli mínes","en":"the other months","pos":"expression","note":"ο μήνας = month; pl. οι μήνες","mem":"MEN- = month (MENstrual, 'moon') — mínas."},
+  {"date":"02/06","greek":"ο σκούφος","translit":"o skúfos","en":"beanie / woolly hat","pos":"noun","note":"masculine; φοράω σκούφο = I wear a beanie","mem":"A SCUFF-y soft cap — skoúfos."},
+  {"date":"02/06","greek":"ο σκύλος","translit":"o skílos","en":"dog","pos":"noun","note":"masculine","mem":"A SKULK-ing hound — skýlos = dog (cf. 'cynic' = dog-like, kýon)."},
+  {"date":"02/06","greek":"τα μαλλιά μου","translit":"ta maliá mu","en":"my hair","pos":"noun","note":"neuter plural (hair is plural in Greek)","mem":""},
+  {"date":"02/06","greek":"λοιπόοον…","translit":"lipón","en":"umm… / well… / so…","pos":"expression","note":"thinking fillers: εεεε… / εμμμ… / λοιπόν…","mem":""},
+  {"date":"02/06","greek":"τρελά","translit":"trelá","en":"crazily / crazy","pos":"adv","note":"τρελός = crazy; τρελά μαλλιά = crazy hair","mem":""},
+  {"date":"02/06","greek":"Δεν έχει κρύο, ε;","translit":"dhen éhi krío, e?","en":"It's not cold, huh?","pos":"expression","note":"tag question with ε; = right?/huh?","mem":""},
+  {"date":"02/06","greek":"Θα τα κόψω λίγο","translit":"tha ta kópso lígho","en":"I'll cut it (them) a little","pos":"expression","note":"κόβω = I cut; closed: κόψω; τα = my hair","mem":""},
+  {"date":"02/06","greek":"λογικά","translit":"loyiká","en":"probably / logically","pos":"adv","note":"","mem":"LOGICALly → it stands to reason = probably."},
+  {"date":"02/06","greek":"Έχουν πλάκα","translit":"éhun pláka","en":"They're fun","pos":"expression","note":"η πλάκα = fun/joke; έχει πλάκα = it's fun","mem":"A 'PLAQUE/lark' of fun — pláka."},
+  {"date":"02/06","greek":"Θα μπορούσε να φύγει","translit":"tha borúse na fíyi","en":"It could go away / be gone","pos":"expression","note":"μπορούσε = could (conditional of μπορώ); φεύγω = leave","mem":""},
+  {"date":"02/06","greek":"για πάντα","translit":"ya pánda","en":"forever","pos":"expression","note":"","mem":"PAN (all) → for all time = forever."},
+  {"date":"02/06","greek":"Ελπίζω όχι","translit":"elpízo óhi","en":"I hope not","pos":"expression","note":"ελπίζω = I hope; Ελπίζω ναι = I hope so","mem":""},
+  {"date":"02/06","greek":"κοιμάμαι","translit":"kimáme","en":"I sleep","pos":"verb","note":"don't confuse with θυμάμαι (I remember)","mem":"Lie in a COMA = sleep; CEMETERY (koimitírion) = 'sleeping place'."},
+  {"date":"02/06","greek":"θυμάμαι","translit":"thimáme","en":"I remember","pos":"verb","note":"rhymes with κοιμάμαι (I sleep) — keep them apart!","mem":"Hold it in your THYMUS/heart (thymós = spirit) → I remember."},
+  {"date":"02/06","greek":"χθες","translit":"khthes","en":"yesterday","pos":"adv","note":"also χτες","mem":"The day already gone — tuck 'yes(terday)' inside 'khthes'."},
+  /* — Unscramble drill sentence — */
+  {"date":"02/06","greek":"Βάζω το ψωμί στον φούρνο για να ψηθεί.","translit":"vázo to psomí ston fúrno ya na psithí","en":"I put the bread in the oven to bake.","pos":"expression","note":"word-order drill: Βάζω + το ψωμί + στον φούρνο + για να ψηθεί","mem":""},
+  {"date":"02/06","greek":"ο φούρνος","translit":"o fúrnos","en":"oven / bakery","pos":"noun","note":"masculine; στον φούρνο = in the oven","mem":"A FURNace / 'fournos' — the oven."},
+  {"date":"02/06","greek":"το ψωμί","translit":"to psomí","en":"bread","pos":"noun","note":"neuter","mem":"'so-MÍ' staple — psomí = bread."},
+  {"date":"02/06","greek":"για να ψηθεί","translit":"ya na psithí","en":"(so as) to bake / be baked","pos":"expression","note":"ψήνομαι = to be baked/roasted; ψήνω = I bake","mem":""}
+];
+
+const POS_LABEL = { verb:'verb', noun:'noun', adj:'adj', adv:'adv', pron:'pron', prep:'prep', conj:'conj', particle:'part', num:'num', expression:'phrase' };
+const DATE_RANGES = [
+  {key:'all', label:'All', test:()=>true},
+  {key:'08/06', label:'8 Jun', test:d=>d==='08/06'},
+  {key:'02/06', label:'2 Jun', test:d=>d==='02/06'},
+];
+const POS_GROUPS = [
+  {key:'all', label:'All'},
+  {key:'expression', label:'Phrases'},
+  {key:'verb', label:'Verbs'},
+  {key:'noun', label:'Nouns'},
+  {key:'adj', label:'Adjectives'},
+  {key:'adv', label:'Adverbs'},
+  {key:'other', label:'Other'},
+];
+const OTHER = new Set(['pron','prep','conj','particle','num']);
+
+let mode='browse', dateFilter='all', posFilter='all', dir='gr';
+let deck=[], deckPos=0, revealed=false, fcStats={seen:0};
+
+/* ── TTS ── */
+function warmVoices(){ if('speechSynthesis' in window){ try{window.speechSynthesis.getVoices();}catch(e){} } }
+if('speechSynthesis' in window){ warmVoices(); window.speechSynthesis.onvoiceschanged=warmVoices; }
+function speakGreek(t){
+  if(!('speechSynthesis' in window)||!t) return;
+  try{ window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(t)); u.lang='el-GR'; u.rate=0.9;
+    const v=(window.speechSynthesis.getVoices()||[]).find(x=>/el([-_]?GR)?/i.test(x.lang)||/greek|ελλ/i.test(x.name));
+    if(v) u.voice=v; window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function buildFilters(){
+  const lf=document.getElementById('date-filter');
+  lf.innerHTML='<span class="lbl">Session</span>';
+  DATE_RANGES.forEach(r=>{ const b=document.createElement('button');
+    b.className='fchip'+(r.key===dateFilter?' active':''); b.textContent=r.label;
+    b.onclick=()=>{dateFilter=r.key;buildFilters();onFilterChange();}; lf.appendChild(b); });
+  const pf=document.getElementById('pos-filter');
+  pf.innerHTML='<span class="lbl">Type</span>';
+  POS_GROUPS.forEach(g=>{ const b=document.createElement('button');
+    b.className='fchip pos'+(g.key===posFilter?' active':''); b.textContent=g.label;
+    b.onclick=()=>{posFilter=g.key;buildFilters();onFilterChange();}; pf.appendChild(b); });
+}
+
+function matchPos(p){ if(posFilter==='all')return true; if(posFilter==='other')return OTHER.has(p); return p===posFilter; }
+function currentList(){
+  const range=DATE_RANGES.find(r=>r.key===dateFilter);
+  const q=(document.getElementById('search').value||'').trim().toLowerCase();
+  return VOCAB.filter(v=> range.test(v.date) && matchPos(v.pos) &&
+    (!q || v.greek.toLowerCase().includes(q) || v.en.toLowerCase().includes(q) || (v.translit||'').toLowerCase().includes(q) || (v.mem||'').toLowerCase().includes(q)));
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('mode-browse').classList.toggle('active',m==='browse');
+  document.getElementById('mode-cards').classList.toggle('active',m==='cards');
+  document.getElementById('browse-view').style.display=m==='browse'?'':'none';
+  document.getElementById('cards-view').style.display=m==='cards'?'':'none';
+  document.getElementById('cards-extra').style.display=m==='cards'?'':'none';
+  document.getElementById('search-row').style.display=m==='browse'?'':'none';
+  if(m==='cards') startDeck(); else render();
+}
+function onFilterChange(){ if(mode==='browse') render(); else startDeck(); }
+function setDir(d){ dir=d; document.getElementById('dir-gr').classList.toggle('active',d==='gr'); document.getElementById('dir-en').classList.toggle('active',d==='en'); showCard(); }
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function render(){
+  const list=currentList();
+  document.getElementById('count').innerHTML='<strong>'+list.length+'</strong> entries';
+  const host=document.getElementById('vlist'); host.innerHTML='';
+  list.forEach(v=>{
+    const row=document.createElement('div'); row.className='vrow';
+    row.innerHTML=
+      '<span class="lbadge">'+v.date+'</span>'+
+      '<div class="vmain">'+
+        '<span class="vgr" onclick="speakGreek(\''+v.greek.replace(/'/g,"\\'")+'\')">'+v.greek+'</span>'+
+        '<span class="vtr">'+(v.translit?'['+v.translit+']':'')+'</span>'+
+        '<button class="speak-btn" title="Hear" onclick="speakGreek(\''+v.greek.replace(/'/g,"\\'")+'\')">🔊</button>'+
+        '<div class="ven">'+esc(v.en)+'</div>'+
+        (v.note?'<div class="vnote">'+esc(v.note)+'</div>':'')+
+        (v.mem?'<div class="vmem"><b>💡</b> '+esc(v.mem)+'</div>':'')+
+      '</div>'+
+      '<span class="postag '+v.pos+'">'+(POS_LABEL[v.pos]||v.pos)+'</span>';
+    host.appendChild(row);
+  });
+}
+
+/* ── Flashcards ── */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function startDeck(){ deck=shuffle(currentList().slice()); deckPos=0; fcStats={seen:0}; showCard(); }
+function shuffleDeck(){ startDeck(); }
+function showCard(){
+  revealed=false;
+  const c=deck[deckPos];
+  document.getElementById('count').innerHTML='<strong>'+deck.length+'</strong> cards in this set';
+  const front=document.getElementById('fc-front'), tr=document.getElementById('fc-tr'), back=document.getElementById('fc-back');
+  if(!c){ document.getElementById('fc-lbadge').textContent=''; front.textContent='No cards — widen the filter.'; front.className='fc-front en'; tr.textContent=''; back.className='fc-back'; return; }
+  document.getElementById('fc-lbadge').textContent='Session '+c.date+' · '+(POS_LABEL[c.pos]||c.pos);
+  if(dir==='gr'){ front.textContent=c.greek; front.className='fc-front'; tr.textContent=c.translit?'['+c.translit+']':''; }
+  else { front.textContent=c.en; front.className='fc-front en'; tr.textContent=''; }
+  back.className='fc-back'; back.innerHTML='';
+  document.getElementById('fc-reveal').style.display=''; document.getElementById('fc-next').style.display='none';
+  document.getElementById('fc-stats').textContent=(deckPos+1)+' / '+deck.length;
+}
+function revealCard(){
+  const c=deck[deckPos]; if(!c) return; revealed=true;
+  const back=document.getElementById('fc-back');
+  back.className='fc-back show';
+  back.innerHTML = (dir==='gr'
+      ? '<div class="ans">'+esc(c.en)+'</div>'
+      : '<div class="ans gr">'+c.greek+'</div>'+(c.translit?'<div class="fc-tr">['+c.translit+']</div>':''))
+    + (c.note?'<div class="note">'+esc(c.note)+'</div>':'')
+    + (c.mem?'<div class="mem"><b>💡</b> '+esc(c.mem)+'</div>':'');
+  document.getElementById('fc-reveal').style.display='none';
+  document.getElementById('fc-next').style.display='';
+  if(dir==='en') speakGreek(c.greek);
+}
+function nextCard(){ deckPos=(deckPos+1)%Math.max(deck.length,1); fcStats.seen++; showCard(); }
+function speakCurrent(){ const c=deck[deckPos]; if(c) speakGreek(c.greek); }
+
+document.addEventListener('keydown',e=>{ if(mode!=='cards')return;
+  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(revealed) nextCard(); else revealCard(); }
+});
+
+buildFilters();
+render();
+</script>
+</body>
+</html>
