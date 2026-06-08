@@ -101,11 +101,11 @@
 <div class="wrap">
   <header class="top">
     <h1>🗣️ Tutor Sessions</h1>
-    <p>Vocab &amp; phrases straight from your 1-on-1 lessons, by date. Tap any Greek word to hear it. 💡 = a memory hook.</p>
+    <p>Vocab from your 1-on-1 lessons, plus small-talk &amp; travel packs for your Greece trip. Tap any Greek word to hear it. 💡 = a memory hook.</p>
   </header>
 
   <div class="focus">
-    <b>Tutor's two focus drills:</b> sentence construction + verb conjugation (I do / you do / he does…), and matching articles to noun gender (καλός καιρός). The phrases below are tagged <i>phrase</i> / <i>verb</i> so you can drill exactly those.
+    <b>Tutor's two focus drills:</b> sentence construction + verb conjugation (I do / you do / he does…), and matching articles to noun gender (καλός καιρός). <b>Heading to Greece?</b> Filter to <b>✈️ Trip packs</b> (or a single pack like 🍽️ Eating Out) and run the 👂 Listen drill on just that set.
   </div>
 
   <div class="mode-toggle">
@@ -331,14 +331,174 @@ const VOCAB = [
   {"date":"02/06","greek":"Βάζω το ψωμί στον φούρνο για να ψηθεί.","translit":"vázo to psomí ston fúrno ya na psithí","en":"I put the bread in the oven to bake.","pos":"expression","note":"word-order drill: Βάζω + το ψωμί + στον φούρνο + για να ψηθεί","mem":""},
   {"date":"02/06","greek":"ο φούρνος","translit":"o fúrnos","en":"oven / bakery","pos":"noun","note":"masculine; στον φούρνο = in the oven","mem":"A FURNace / 'fournos' — the oven."},
   {"date":"02/06","greek":"το ψωμί","translit":"to psomí","en":"bread","pos":"noun","note":"neuter","mem":"'so-MÍ' staple — psomí = bread."},
-  {"date":"02/06","greek":"για να ψηθεί","translit":"ya na psithí","en":"(so as) to bake / be baked","pos":"expression","note":"ψήνομαι = to be baked/roasted; ψήνω = I bake","mem":""}
+  {"date":"02/06","greek":"για να ψηθεί","translit":"ya na psithí","en":"(so as) to bake / be baked","pos":"expression","note":"ψήνομαι = to be baked/roasted; ψήνω = I bake","mem":""},
+
+  /* ════════════ 🗣️ SMALL TALK — greetings, courtesy, fillers ════════════ */
+  {"date":"Small Talk","greek":"Γεια σου","translit":"yá su","en":"hi / bye (informal)","pos":"expression","note":"Γεια σας = formal or to several people","mem":"The all-purpose 'YA-su' — both hello and goodbye."},
+  {"date":"Small Talk","greek":"Γεια σας","translit":"yá sas","en":"hello / goodbye (formal/plural)","pos":"expression","note":"polite or to more than one person","mem":""},
+  {"date":"Small Talk","greek":"Καλημέρα","translit":"kaliméra","en":"good morning","pos":"expression","note":"καλή + μέρα; until ~noon","mem":""},
+  {"date":"Small Talk","greek":"Καλησπέρα","translit":"kalispéra","en":"good evening / good afternoon","pos":"expression","note":"greeting from afternoon on","mem":"καλή + εσπέρα (evening, cf. VESPERS)."},
+  {"date":"Small Talk","greek":"Καληνύχτα","translit":"kaliníkhta","en":"good night","pos":"expression","note":"on parting at night","mem":"καλή + νύχτα (night)."},
+  {"date":"Small Talk","greek":"Τι κάνεις;","translit":"ti kánis?","en":"how are you? (informal)","pos":"expression","note":"lit. what are you doing?; formal Τι κάνετε;","mem":""},
+  {"date":"Small Talk","greek":"Τι κάνετε;","translit":"ti kánete?","en":"how are you? (formal/plural)","pos":"expression","note":"polite form","mem":""},
+  {"date":"Small Talk","greek":"Πώς σε λένε;","translit":"pos se léne?","en":"what's your name? (informal)","pos":"expression","note":"formal Πώς σας λένε;","mem":"lit. how do they call you?"},
+  {"date":"Small Talk","greek":"Με λένε…","translit":"me léne","en":"my name is…","pos":"expression","note":"lit. they call me…","mem":""},
+  {"date":"Small Talk","greek":"Χαίρω πολύ","translit":"khéro polí","en":"pleased to meet you","pos":"expression","note":"on being introduced","mem":"CHAIRo = I rejoice (cf. 'chaire!' = greetings)."},
+  {"date":"Small Talk","greek":"Χάρηκα","translit":"khárika","en":"nice to meet you (on leaving)","pos":"expression","note":"lit. I was glad","mem":""},
+  {"date":"Small Talk","greek":"Από πού είσαι;","translit":"apó pu íse?","en":"where are you from?","pos":"expression","note":"formal Από πού είστε;","mem":""},
+  {"date":"Small Talk","greek":"Είμαι από την Αμερική","translit":"íme apó tin Amerikí","en":"I'm from America","pos":"expression","note":"swap in your country","mem":""},
+  {"date":"Small Talk","greek":"Μιλάς αγγλικά;","translit":"milás angliká?","en":"do you speak English?","pos":"expression","note":"formal Μιλάτε αγγλικά;","mem":"ANGLO → angliká = English."},
+  {"date":"Small Talk","greek":"Δεν μιλάω καλά ελληνικά","translit":"dhen miláo kalá eliniká","en":"I don't speak Greek well","pos":"expression","note":"handy disclaimer","mem":""},
+  {"date":"Small Talk","greek":"Μιλάτε πιο αργά, παρακαλώ","translit":"miláte pio arghá, parakaló","en":"please speak more slowly","pos":"expression","note":"πιο αργά = more slowly","mem":""},
+  {"date":"Small Talk","greek":"Δεν καταλαβαίνω","translit":"dhen katalavéno","en":"I don't understand","pos":"expression","note":"Καταλαβαίνεις; = do you understand?","mem":""},
+  {"date":"Small Talk","greek":"Τι σημαίνει αυτό;","translit":"ti siméni aftó?","en":"what does this mean?","pos":"expression","note":"σημαίνει = it means","mem":"SEMA = sign/meaning (SEMANTIC)."},
+  {"date":"Small Talk","greek":"Πώς το λένε στα ελληνικά;","translit":"pos to léne sta eliniká?","en":"how do you say it in Greek?","pos":"expression","note":"point + ask","mem":""},
+  {"date":"Small Talk","greek":"Συγγνώμη","translit":"sighnómi","en":"sorry / excuse me","pos":"expression","note":"apology AND getting past someone","mem":"syn + gnómi (mind/opinion) → 'I'm with your view' = pardon."},
+  {"date":"Small Talk","greek":"Με συγχωρείτε","translit":"me sinkhoríte","en":"excuse me (to get attention)","pos":"expression","note":"polite, to flag a waiter/stranger","mem":""},
+  {"date":"Small Talk","greek":"Παρακαλώ","translit":"parakaló","en":"please / you're welcome","pos":"expression","note":"also 'go ahead'","mem":"lit. I plead/request."},
+  {"date":"Small Talk","greek":"Ευχαριστώ πολύ","translit":"efkharistó polí","en":"thank you very much","pos":"expression","note":"ευχαριστώ = thanks","mem":"EUCHARIST = thanksgiving."},
+  {"date":"Small Talk","greek":"Τίποτα","translit":"típota","en":"you're welcome / nothing","pos":"pron","note":"reply to ευχαριστώ; also 'nothing'","mem":""},
+  {"date":"Small Talk","greek":"Εντάξει","translit":"endáksi","en":"OK / alright","pos":"expression","note":"lit. in order (εν τάξει)","mem":"'in TAXIs' = in order/arrangement."},
+  {"date":"Small Talk","greek":"Κανένα πρόβλημα","translit":"kanéna próvlima","en":"no problem","pos":"expression","note":"","mem":""},
+  {"date":"Small Talk","greek":"Δεν πειράζει","translit":"dhen pirázi","en":"never mind / it's fine","pos":"expression","note":"πειράζει = it bothers","mem":""},
+  {"date":"Small Talk","greek":"Φυσικά","translit":"fisiká","en":"of course / naturally","pos":"adv","note":"","mem":"PHYSIS = nature → naturally, of course."},
+  {"date":"Small Talk","greek":"Ίσως","translit":"ísos","en":"maybe / perhaps","pos":"adv","note":"","mem":""},
+  {"date":"Small Talk","greek":"Βεβαίως","translit":"vevéos","en":"certainly / sure","pos":"adv","note":"more emphatic yes","mem":"From vévaios = certain/sure."},
+  {"date":"Small Talk","greek":"Ωραία","translit":"oréa","en":"nice / great / lovely","pos":"adj","note":"all-purpose approval","mem":"Sounds like OREO — a lovely little thing."},
+  {"date":"Small Talk","greek":"Τέλεια","translit":"télia","en":"perfect / great!","pos":"adv","note":"enthusiastic agreement","mem":"TELOS = completion → flawless = perfect."},
+  {"date":"Small Talk","greek":"Πώς πάει;","translit":"pos pái?","en":"how's it going?","pos":"expression","note":"casual","mem":""},
+  {"date":"Small Talk","greek":"Όλα καλά","translit":"óla kalá","en":"all good / everything's fine","pos":"expression","note":"handy reply","mem":""},
+  {"date":"Small Talk","greek":"Τα λέμε","translit":"ta léme","en":"see you / talk soon","pos":"expression","note":"casual goodbye","mem":"lit. we'll say (things) = catch up later."},
+  {"date":"Small Talk","greek":"Αντίο","translit":"andío","en":"goodbye","pos":"expression","note":"more final than Γεια","mem":""},
+  {"date":"Small Talk","greek":"Καλώς ήρθατε","translit":"kalós írthate","en":"welcome!","pos":"expression","note":"reply: Καλώς σας βρήκαμε","mem":"lit. you've come well."},
+  {"date":"Small Talk","greek":"Μπορείτε να με βοηθήσετε;","translit":"boríte na me voithísete?","en":"can you help me?","pos":"expression","note":"βοηθάω = I help","mem":""},
+
+  /* ════════════ 🍽️ EATING OUT — ordering, food, drinks ════════════ */
+  {"date":"Eating Out","greek":"το εστιατόριο","translit":"to estiatório","en":"restaurant","pos":"noun","note":"neuter","mem":"RESTAURANT — estiatório."},
+  {"date":"Eating Out","greek":"η ταβέρνα","translit":"i tavérna","en":"tavern / casual eatery","pos":"noun","note":"feminine","mem":"TAVERN — tavérna."},
+  {"date":"Eating Out","greek":"η καφετέρια","translit":"i kafetéria","en":"café","pos":"noun","note":"feminine","mem":"CAFETERIA — kafetéria."},
+  {"date":"Eating Out","greek":"ο σερβιτόρος","translit":"o servitóros","en":"waiter","pos":"noun","note":"fem η σερβιτόρα","mem":"SERVER / SERVITOR — servitóros."},
+  {"date":"Eating Out","greek":"ο κατάλογος","translit":"o katáloghos","en":"the menu","pos":"noun","note":"masculine; also το μενού","mem":"CATALOGUE — katálogos (a list)."},
+  {"date":"Eating Out","greek":"Θα ήθελα…","translit":"tha íthela","en":"I would like…","pos":"expression","note":"polite order opener","mem":"conditional of θέλω = I want."},
+  {"date":"Eating Out","greek":"Ένα τραπέζι για δύο","translit":"éna trapézi ya dhío","en":"a table for two","pos":"expression","note":"το τραπέζι = table","mem":"TRAPEZ-oid table — trapézi."},
+  {"date":"Eating Out","greek":"Τι μας προτείνετε;","translit":"ti mas protínete?","en":"what do you recommend?","pos":"expression","note":"προτείνω = I suggest","mem":""},
+  {"date":"Eating Out","greek":"το νερό","translit":"to neró","en":"water","pos":"noun","note":"neuter; ένα μπουκάλι νερό = a bottle of water","mem":""},
+  {"date":"Eating Out","greek":"ελληνικός καφές","translit":"elinikós kafés","en":"Greek coffee","pos":"expression","note":"order σκέτο/μέτριο/γλυκό = plain/medium/sweet","mem":""},
+  {"date":"Eating Out","greek":"ο φραπές","translit":"o frapés","en":"frappé (iced coffee)","pos":"noun","note":"masculine; the classic Greek summer coffee","mem":"FRAPPÉ — frapés."},
+  {"date":"Eating Out","greek":"η μπίρα","translit":"i bíra","en":"beer","pos":"noun","note":"feminine","mem":"BEER / 'birra' — bíra."},
+  {"date":"Eating Out","greek":"το κρασί","translit":"to krasí","en":"wine","pos":"noun","note":"neuter; λευκό = white, κόκκινο = red","mem":"A CARAFE of CRAZY wine — krasí."},
+  {"date":"Eating Out","greek":"το ούζο","translit":"to úzo","en":"ouzo","pos":"noun","note":"neuter; anise spirit","mem":"OUZO — úzo."},
+  {"date":"Eating Out","greek":"η χωριάτικη","translit":"i khoriátiki","en":"Greek (village) salad","pos":"noun","note":"feminine; χωριάτικη σαλάτα","mem":"From χωριό (village) → 'village-style' salad."},
+  {"date":"Eating Out","greek":"οι μεζέδες","translit":"i mezédhes","en":"mezze / small sharing plates","pos":"noun","note":"masc plural; sg ο μεζές","mem":"MEZZE — mezédes."},
+  {"date":"Eating Out","greek":"ο γύρος","translit":"o yíros","en":"gyros","pos":"noun","note":"masculine","mem":"GYRO — it turns (γυρίζω) on the spit."},
+  {"date":"Eating Out","greek":"το σουβλάκι","translit":"to suvláki","en":"souvlaki (skewer)","pos":"noun","note":"neuter; pl. σουβλάκια","mem":"From σούβλα = skewer/spit."},
+  {"date":"Eating Out","greek":"οι τηγανητές πατάτες","translit":"i tighanités patátes","en":"fries / fried potatoes","pos":"expression","note":"τηγανητός = fried","mem":""},
+  {"date":"Eating Out","greek":"η φέτα","translit":"i féta","en":"feta cheese","pos":"noun","note":"feminine","mem":"FETA — féta (lit. a 'slice')."},
+  {"date":"Eating Out","greek":"χορτοφάγος","translit":"khortofághos","en":"vegetarian","pos":"noun","note":"masc/fem","mem":"χόρτο (greens) + φάγος (eater) → plant-eater."},
+  {"date":"Eating Out","greek":"Είμαι αλλεργικός σε…","translit":"íme aleryikós se","en":"I'm allergic to…","pos":"expression","note":"fem αλλεργική; key safety phrase","mem":"ALLERGIC — aleryikós."},
+  {"date":"Eating Out","greek":"Νόστιμο!","translit":"nóstimo!","en":"tasty / delicious!","pos":"adj","note":"neut; νόστιμος = tasty","mem":""},
+  {"date":"Eating Out","greek":"Καλή όρεξη","translit":"kalí óreksi","en":"enjoy your meal / bon appétit","pos":"expression","note":"η όρεξη = appetite","mem":"good + appetite (cf. an-OREXia = no appetite)."},
+  {"date":"Eating Out","greek":"Τον λογαριασμό, παρακαλώ","translit":"ton loghariazmó, parakaló","en":"the bill, please","pos":"expression","note":"ο λογαριασμός = bill/account","mem":"From λόγος (reckoning) → the account."},
+  {"date":"Eating Out","greek":"Κερνάω εγώ","translit":"kernáo eghó","en":"it's my treat / I'm buying","pos":"expression","note":"κερνάω = I treat/buy a round","mem":""},
+  {"date":"Eating Out","greek":"Στην υγειά σου","translit":"stin iyá su","en":"cheers! (to your health)","pos":"expression","note":"also Γεια μας = cheers (to us)","mem":"η υγεία = health (HYGIENE)."},
+
+  /* ════════════ 🧭 GETTING AROUND — directions & transport ════════════ */
+  {"date":"Getting Around","greek":"Πού είναι…;","translit":"pu íne?","en":"where is…?","pos":"expression","note":"the workhorse question","mem":""},
+  {"date":"Getting Around","greek":"Πού είναι η τουαλέτα;","translit":"pu íne i tualéta?","en":"where's the toilet?","pos":"expression","note":"η τουαλέτα = toilet","mem":"TOILET — tualéta."},
+  {"date":"Getting Around","greek":"αριστερά","translit":"aristerá","en":"left","pos":"adv","note":"στρίψτε αριστερά = turn left","mem":""},
+  {"date":"Getting Around","greek":"δεξιά","translit":"dheksiá","en":"right","pos":"adv","note":"στρίψτε δεξιά = turn right","mem":"DEXTERous = right-handed → dexiá = right."},
+  {"date":"Getting Around","greek":"ευθεία","translit":"efthía","en":"straight ahead","pos":"adv","note":"also ίσια","mem":"euthýs = straight."},
+  {"date":"Getting Around","greek":"το λεωφορείο","translit":"to leoforío","en":"bus","pos":"noun","note":"neuter","mem":"It FERRIES the people (lao-foreío)."},
+  {"date":"Getting Around","greek":"το μετρό","translit":"to metró","en":"metro / underground","pos":"noun","note":"neuter, indeclinable","mem":"METRO — metró."},
+  {"date":"Getting Around","greek":"το ταξί","translit":"to taksí","en":"taxi","pos":"noun","note":"neuter, indeclinable","mem":"TAXI — taksí."},
+  {"date":"Getting Around","greek":"το αεροδρόμιο","translit":"to aerodhrómio","en":"airport","pos":"noun","note":"neuter","mem":"AERO (air) + DROMOS (course, cf. hippoDROME) → airport."},
+  {"date":"Getting Around","greek":"το αεροπλάνο","translit":"to aeropláno","en":"airplane","pos":"noun","note":"neuter","mem":"AEROPLANE — aeropláno."},
+  {"date":"Getting Around","greek":"το πλοίο","translit":"to plío","en":"ship / ferry","pos":"noun","note":"neuter; the way to the islands","mem":"You PLY the seas in a ploío."},
+  {"date":"Getting Around","greek":"το εισιτήριο","translit":"to isitírio","en":"ticket","pos":"noun","note":"neuter; Ένα εισιτήριο για… = one ticket to…","mem":""},
+  {"date":"Getting Around","greek":"η στάση","translit":"i stási","en":"the (bus) stop","pos":"noun","note":"feminine","mem":"STASIS = standing still → where the bus stands."},
+  {"date":"Getting Around","greek":"Πόσο απέχει;","translit":"póso apékhi?","en":"how far is it?","pos":"expression","note":"απέχω = I'm distant","mem":""},
+  {"date":"Getting Around","greek":"Έχω χαθεί","translit":"ékho khathí","en":"I'm lost","pos":"expression","note":"from χάνομαι = I get lost","mem":""},
+  {"date":"Getting Around","greek":"ο χάρτης","translit":"o khártis","en":"map","pos":"noun","note":"masculine","mem":"CHART — chártis."},
+  {"date":"Getting Around","greek":"η διεύθυνση","translit":"i dhiéfthinsi","en":"address","pos":"noun","note":"feminine; also 'management'","mem":"euthýs = straight → 'directing' → a direction/address."},
+  {"date":"Getting Around","greek":"Πάμε στο…","translit":"páme sto","en":"take me to / let's go to…","pos":"expression","note":"useful in a taxi","mem":""},
+  {"date":"Getting Around","greek":"Σταματήστε εδώ, παρακαλώ","translit":"stamatíste edhó, parakaló","en":"stop here, please","pos":"expression","note":"σταματάω = I stop","mem":""},
+  {"date":"Getting Around","greek":"το διαβατήριο","translit":"to dhiavatírio","en":"passport","pos":"noun","note":"neuter","mem":"From διαβαίνω = to cross over → a crossing document."},
+  {"date":"Getting Around","greek":"οι αποσκευές","translit":"i aposkevés","en":"luggage / baggage","pos":"noun","note":"feminine plural","mem":""},
+
+  /* ════════════ 🛍️ SHOPPING & MONEY ════════════ */
+  {"date":"Shopping","greek":"Πόσο κάνει;","translit":"póso káni?","en":"how much is it?","pos":"expression","note":"also Πόσο κοστίζει;","mem":""},
+  {"date":"Shopping","greek":"Πόσο κάνουν όλα;","translit":"póso kánun óla?","en":"how much altogether?","pos":"expression","note":"asking the total","mem":""},
+  {"date":"Shopping","greek":"ακριβό","translit":"akrivó","en":"expensive","pos":"adj","note":"ακριβός; opposite of φτηνό","mem":""},
+  {"date":"Shopping","greek":"φτηνό","translit":"ftinó","en":"cheap","pos":"adj","note":"φτηνός","mem":"Cheap things don't quite FIT-nó."},
+  {"date":"Shopping","greek":"τα ρέστα","translit":"ta résta","en":"the change (money back)","pos":"noun","note":"neuter plural","mem":"the REST of your money — résta."},
+  {"date":"Shopping","greek":"Δέχεστε κάρτα;","translit":"dhékheste kárta?","en":"do you accept card?","pos":"expression","note":"δέχομαι = I accept","mem":""},
+  {"date":"Shopping","greek":"μετρητά","translit":"metritá","en":"cash","pos":"noun","note":"neuter plural; 'counted' money","mem":"From μετρώ = I count → counted-out money = cash."},
+  {"date":"Shopping","greek":"η απόδειξη","translit":"i apódhiksi","en":"receipt","pos":"noun","note":"feminine","mem":"apo + deíknymi (show, cf. 'deixis') → a proof shown = receipt."},
+  {"date":"Shopping","greek":"Μπορώ να το δοκιμάσω;","translit":"boró na to dhokimáso?","en":"can I try it (on)?","pos":"expression","note":"δοκιμάζω = I try/test","mem":""},
+  {"date":"Shopping","greek":"Απλώς κοιτάω","translit":"aplós kitáo","en":"I'm just looking","pos":"expression","note":"to a hovering shopkeeper","mem":""},
+  {"date":"Shopping","greek":"Έχετε…;","translit":"éhete?","en":"do you have…?","pos":"expression","note":"+ the thing you want","mem":""},
+  {"date":"Shopping","greek":"ανοιχτά","translit":"anikhtá","en":"open","pos":"adv","note":"opposite κλειστά = closed","mem":""},
+  {"date":"Shopping","greek":"το φαρμακείο","translit":"to farmakío","en":"pharmacy","pos":"noun","note":"neuter","mem":"PHARMACY — farmakío."},
+  {"date":"Shopping","greek":"το περίπτερο","translit":"to períptero","en":"kiosk (street stall)","pos":"noun","note":"neuter; sells drinks, snacks, tickets","mem":"peri (around) → a little stand you walk around."},
+  {"date":"Shopping","greek":"το αναμνηστικό","translit":"to anamnistikó","en":"souvenir","pos":"noun","note":"neuter","mem":"ANAMNESIS = a remembering (cf. amnesia) → a keepsake."},
+
+  /* ════════════ 🏨 HOTEL & STAY ════════════ */
+  {"date":"Hotel","greek":"το ξενοδοχείο","translit":"to ksenodhohío","en":"hotel","pos":"noun","note":"neuter","mem":"ξένος (guest/stranger) + δοχείο (container) → a guest-house."},
+  {"date":"Hotel","greek":"Έχω κράτηση","translit":"ékho krátisi","en":"I have a reservation","pos":"expression","note":"η κράτηση = booking","mem":"From κρατάω = I hold → a held spot."},
+  {"date":"Hotel","greek":"Έχετε ελεύθερο δωμάτιο;","translit":"éhete eléonthero dhomátio?","en":"do you have a room available?","pos":"expression","note":"ελεύθερο = free/vacant","mem":""},
+  {"date":"Hotel","greek":"το κλειδί","translit":"to klidhí","en":"key","pos":"noun","note":"neuter","mem":"From κλείνω = to close/lock → the locker = key (cf. CLEF)."},
+  {"date":"Hotel","greek":"το πρωινό","translit":"to proinó","en":"breakfast","pos":"noun","note":"neuter; Τι ώρα είναι το πρωινό; = what time is breakfast?","mem":"From πρωί = morning → the morning meal."},
+  {"date":"Hotel","greek":"η παραλία","translit":"i paralía","en":"beach","pos":"noun","note":"feminine","mem":"PARA (beside) + háls (sea) → beside the sea."},
+  {"date":"Hotel","greek":"η πισίνα","translit":"i pisína","en":"swimming pool","pos":"noun","note":"feminine","mem":"PISCINE / 'piscina' — pisína."},
+  {"date":"Hotel","greek":"ο κλιματισμός","translit":"o klimatizmós","en":"air conditioning","pos":"noun","note":"masculine; 'έχει A/C;'","mem":"CLIMATE control — klimatismós."},
+  {"date":"Hotel","greek":"ο κωδικός","translit":"o kodhikós","en":"password / code (wifi)","pos":"noun","note":"masculine; ο κωδικός του wifi","mem":"CODE — kodikós."},
+
+  /* ════════════ 🆘 HELP & HEALTH ════════════ */
+  {"date":"Help & Health","greek":"Βοήθεια!","translit":"voíthia!","en":"help!","pos":"noun","note":"feminine; shout-for-help","mem":""},
+  {"date":"Help & Health","greek":"Καλέστε γιατρό","translit":"kaléste yatró","en":"call a doctor","pos":"expression","note":"ο γιατρός = doctor","mem":"-IATRO- = healer (pedIATRician)."},
+  {"date":"Help & Health","greek":"Καλέστε την αστυνομία","translit":"kaléste tin astinomía","en":"call the police","pos":"expression","note":"η αστυνομία = police","mem":"From άστυ (city) + nómos (law) → city-law = police."},
+  {"date":"Help & Health","greek":"το νοσοκομείο","translit":"to nosokomío","en":"hospital","pos":"noun","note":"neuter","mem":"NOSO- (disease) + komeío (care-place) → hospital."},
+  {"date":"Help & Health","greek":"Είμαι άρρωστος","translit":"íme árostos","en":"I'm sick / ill","pos":"expression","note":"fem άρρωστη","mem":""},
+  {"date":"Help & Health","greek":"Πονάω εδώ","translit":"ponáo edhó","en":"it hurts here","pos":"expression","note":"πονάω = I'm in pain; point as you say it","mem":"PÓNOS = pain."},
+  {"date":"Help & Health","greek":"Χρειάζομαι…","translit":"khriázome","en":"I need…","pos":"verb","note":"+ noun: Χρειάζομαι βοήθεια = I need help","mem":""},
+  {"date":"Help & Health","greek":"Έχασα το πορτοφόλι μου","translit":"éhasa to portofóli mu","en":"I lost my wallet","pos":"expression","note":"το πορτοφόλι = wallet; χάνω = I lose","mem":""},
+  {"date":"Help & Health","greek":"Πρόσεχε!","translit":"prósekhe!","en":"careful! / watch out!","pos":"verb","note":"Προσοχή! = caution/attention","mem":"pros + écho → 'hold your mind toward' = pay attention."},
+
+  /* ════════════ 🔢 NUMBERS & TIME ════════════ */
+  {"date":"Numbers","greek":"ένα","translit":"éna","en":"one","pos":"num","note":"masc ένας, fem μία","mem":""},
+  {"date":"Numbers","greek":"δύο","translit":"dhío","en":"two","pos":"num","note":"","mem":"DUO — dhío."},
+  {"date":"Numbers","greek":"τρία","translit":"tría","en":"three","pos":"num","note":"masc τρεις, fem τρεις","mem":"TRIO / TRI- — tría."},
+  {"date":"Numbers","greek":"τέσσερα","translit":"téssera","en":"four","pos":"num","note":"","mem":"cf. τέταρτο = a quarter."},
+  {"date":"Numbers","greek":"πέντε","translit":"pénde","en":"five","pos":"num","note":"","mem":"PENTAgon = 5 sides — pénde."},
+  {"date":"Numbers","greek":"έξι","translit":"éksi","en":"six","pos":"num","note":"","mem":"HEXAgon = 6 — éxi."},
+  {"date":"Numbers","greek":"εφτά","translit":"eftá","en":"seven","pos":"num","note":"also επτά","mem":"HEPTAthlon = 7 — eftá."},
+  {"date":"Numbers","greek":"οχτώ","translit":"okhtó","en":"eight","pos":"num","note":"also οκτώ","mem":"OCTOpus = 8 — ochtó."},
+  {"date":"Numbers","greek":"εννιά","translit":"eniá","en":"nine","pos":"num","note":"also εννέα","mem":""},
+  {"date":"Numbers","greek":"δέκα","translit":"dhéka","en":"ten","pos":"num","note":"","mem":"DECimal / DECAthlon = 10 — dhéka."},
+  {"date":"Numbers","greek":"είκοσι","translit":"íkosi","en":"twenty","pos":"num","note":"","mem":""},
+  {"date":"Numbers","greek":"εκατό","translit":"ekató","en":"a hundred","pos":"num","note":"","mem":"HECTO- / 'cent' — ekató = 100."},
+  {"date":"Numbers","greek":"Τι ώρα είναι;","translit":"ti óra íne?","en":"what time is it?","pos":"expression","note":"η ώρα = hour/time","mem":""},
+  {"date":"Numbers","greek":"σήμερα","translit":"símera","en":"today","pos":"adv","note":"","mem":""},
+  {"date":"Numbers","greek":"αύριο","translit":"ávrio","en":"tomorrow","pos":"adv","note":"","mem":"AURORA (dawn) of the next day."},
+  {"date":"Numbers","greek":"τώρα","translit":"tóra","en":"now","pos":"adv","note":"","mem":""},
+  {"date":"Numbers","greek":"το πρωί","translit":"to proí","en":"(in the) morning","pos":"noun","note":"neuter","mem":"PRO- = early."},
+  {"date":"Numbers","greek":"το βράδυ","translit":"to vrádhi","en":"(in the) evening","pos":"noun","note":"neuter; καλό βράδυ = good evening","mem":""}
 ];
 
 const POS_LABEL = { verb:'verb', noun:'noun', adj:'adj', adv:'adv', pron:'pron', prep:'prep', conj:'conj', particle:'part', num:'num', expression:'phrase' };
 const DATE_RANGES = [
   {key:'all', label:'All', test:()=>true},
+  {key:'sessions', label:'📒 My lessons', test:d=>d==='08/06'||d==='02/06'},
   {key:'08/06', label:'8 Jun', test:d=>d==='08/06'},
   {key:'02/06', label:'2 Jun', test:d=>d==='02/06'},
+  {key:'travel', label:'✈️ Trip packs', test:d=>['Small Talk','Eating Out','Getting Around','Shopping','Hotel','Help & Health','Numbers'].includes(d)},
+  {key:'Small Talk', label:'🗣️ Small Talk', test:d=>d==='Small Talk'},
+  {key:'Eating Out', label:'🍽️ Eating Out', test:d=>d==='Eating Out'},
+  {key:'Getting Around', label:'🧭 Getting Around', test:d=>d==='Getting Around'},
+  {key:'Shopping', label:'🛍️ Shopping', test:d=>d==='Shopping'},
+  {key:'Hotel', label:'🏨 Hotel', test:d=>d==='Hotel'},
+  {key:'Help & Health', label:'🆘 Help & Health', test:d=>d==='Help & Health'},
+  {key:'Numbers', label:'🔢 Numbers & Time', test:d=>d==='Numbers'},
 ];
 const POS_GROUPS = [
   {key:'all', label:'All'},
@@ -370,7 +530,7 @@ function speakGreek(t, rate){
 
 function buildFilters(){
   const lf=document.getElementById('date-filter');
-  lf.innerHTML='<span class="lbl">Session</span>';
+  lf.innerHTML='<span class="lbl">Set</span>';
   DATE_RANGES.forEach(r=>{ const b=document.createElement('button');
     b.className='fchip'+(r.key===dateFilter?' active':''); b.textContent=r.label;
     b.onclick=()=>{dateFilter=r.key;buildFilters();onFilterChange();}; lf.appendChild(b); });
