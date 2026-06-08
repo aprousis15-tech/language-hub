@@ -76,6 +76,20 @@
   .ln-replays{font-size:0.76rem;color:#9aa8b2;margin-top:10px;letter-spacing:0.03em;}
   .ln-note-listen{max-width:560px;margin:6px auto 14px;background:#e6f4f1;border:1px solid #b2dfdb;border-radius:10px;padding:10px 14px;color:#3f7d70;font-size:0.84rem;line-height:1.5;text-align:center;}
   .ln-note-listen b{color:var(--teal);}
+  /* Listening multiple-choice options */
+  .ln-options{display:flex;flex-direction:column;gap:8px;max-width:460px;margin:14px auto 0;}
+  .ln-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 15px;border-radius:11px;border:1.5px solid #b2dfdb;background:white;color:var(--dark);font-family:'Lato',sans-serif;font-size:1.05rem;cursor:pointer;transition:background 0.12s,border-color 0.12s;}
+  .ln-opt:hover:not(:disabled){background:#e0f2f1;}
+  .ln-opt:disabled{cursor:default;}
+  .ln-opt .ln-opt-key{flex:0 0 auto;font-size:0.72rem;font-weight:700;color:#9aa8b2;background:#f1f6f5;border-radius:6px;padding:3px 8px;}
+  .ln-opt .ln-opt-txt{flex:1 1 auto;}
+  .ln-opt.ln-gr .ln-opt-txt{font-family:'Georgia',serif;color:var(--teal);font-size:1.18rem;}
+  .ln-opt.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+  .ln-opt.correct .ln-opt-txt{color:#1b5e20;}
+  .ln-opt.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+  .ln-opt.wrong .ln-opt-txt{color:#b71c1c;}
+  .ln-opt .ln-opt-mark{flex:0 0 auto;font-size:1rem;}
+  .ln-score{text-align:center;font-size:0.82rem;color:#3f7d70;margin-top:10px;font-weight:700;}
   .footer-tip{text-align:center;font-size:0.78rem;color:#9aa8b2;margin-top:22px;}
 
   /* Focus banner */
@@ -110,6 +124,12 @@
       <button class="fchip" id="dir-en" onclick="setDir('en')">English first</button>
       <button class="fchip" onclick="shuffleDeck()">🔀 Shuffle</button>
     </div>
+    <div class="chip-row" id="listen-extra" style="display:none;">
+      <span class="lbl">Answer in</span>
+      <button class="fchip active" id="ans-gr" onclick="setAnswerMode('greek')">Greek</button>
+      <button class="fchip" id="ans-en" onclick="setAnswerMode('meaning')">Meaning</button>
+      <button class="fchip" onclick="startListen()">🔀 Reshuffle</button>
+    </div>
   </div>
 
   <div class="count" id="count"></div>
@@ -134,21 +154,23 @@
   </div>
 
   <div id="listen-view" style="display:none;">
-    <div class="ln-note-listen">🎧 <b>Ears only.</b> The Greek is hidden — listen, work out the meaning in your head, then Reveal. Tip: set <b>Type → Phrases</b> for full-sentence listening.</div>
+    <div class="ln-note-listen">🎧 <b>Ears only.</b> Listen, then pick what you heard. Greek options test sound→spelling; switch to <b>Meaning</b> for pure comprehension. Set <b>Type → Phrases</b> for full sentences.</div>
     <div class="fc-wrap">
       <div class="fc-card" id="ln-card">
         <div class="fc-lbadge" id="ln-lbadge"></div>
         <div class="ln-ear" id="ln-ear">🎧</div>
-        <div class="ln-hint" id="ln-hint">Listen and understand…</div>
+        <div class="ln-hint" id="ln-hint">Listen…</div>
         <div class="ln-replays" id="ln-replays"></div>
+        <div class="ln-options" id="ln-options"></div>
         <div class="fc-back" id="ln-back"></div>
       </div>
       <div class="actions">
         <button class="btn btn-secondary" onclick="listenReplay()">🔊 Again</button>
         <button class="btn btn-secondary" onclick="listenSlow()">🐢 Slower</button>
-        <button class="btn btn-primary" id="ln-reveal" onclick="listenReveal()">Reveal</button>
-        <button class="btn btn-secondary" id="ln-next" onclick="listenNext()" style="display:none;">Next →</button>
+        <button class="btn btn-secondary" id="ln-skip" onclick="listenSkip()">🤷 Skip</button>
+        <button class="btn btn-primary" id="ln-next" onclick="listenNext()" style="display:none;">Next →</button>
       </div>
+      <div class="ln-score" id="ln-score"></div>
       <div class="fc-stats" id="ln-stats"></div>
     </div>
   </div>
@@ -331,7 +353,8 @@ const OTHER = new Set(['pron','prep','conj','particle','num']);
 
 let mode='browse', dateFilter='all', posFilter='all', dir='gr';
 let deck=[], deckPos=0, revealed=false, fcStats={seen:0};
-let lnDeck=[], lnPos=0, lnRevealed=false, lnReplays=0;
+let lnDeck=[], lnPos=0, lnReplays=0;
+let lnAnswerMode='greek', lnAnswered=false, lnOptions=[], lnCorrect=null, lnScore={right:0,total:0};
 
 /* ── TTS ── */
 function warmVoices(){ if('speechSynthesis' in window){ try{window.speechSynthesis.getVoices();}catch(e){} } }
@@ -375,6 +398,7 @@ function setMode(m){
   document.getElementById('cards-view').style.display=m==='cards'?'':'none';
   document.getElementById('listen-view').style.display=m==='listen'?'':'none';
   document.getElementById('cards-extra').style.display=m==='cards'?'':'none';
+  document.getElementById('listen-extra').style.display=m==='listen'?'':'none';
   document.getElementById('search-row').style.display=m==='browse'?'':'none';
   if(m==='cards') startDeck(); else if(m==='listen') startListen(); else render();
 }
@@ -437,38 +461,96 @@ function revealCard(){
 function nextCard(){ deckPos=(deckPos+1)%Math.max(deck.length,1); fcStats.seen++; showCard(); }
 function speakCurrent(){ const c=deck[deckPos]; if(c) speakGreek(c.greek); }
 
-/* ── Listening (ears only — no Greek shown until reveal) ── */
-function startListen(){ lnDeck=shuffle(currentList().slice()); lnPos=0; showListen(); }
+/* ── Listening (ears only — hear the audio, then pick from multiple choice) ── */
+function setAnswerMode(m){
+  lnAnswerMode=m;
+  document.getElementById('ans-gr').classList.toggle('active',m==='greek');
+  document.getElementById('ans-en').classList.toggle('active',m==='meaning');
+  if(mode==='listen') showListen();   // rebuild options in the new language (same card)
+}
+
+// Build the answer set for a card: the correct entry + up to 3 plausible
+// distractors drawn from the current filtered deck (same part-of-speech first).
+function buildListenOptions(card){
+  const want=Math.min(4, lnDeck.length);
+  const pool=lnDeck.filter(v=>v!==card);
+  const same=shuffle(pool.filter(v=>v.pos===card.pos));
+  const rest=shuffle(pool.filter(v=>v.pos!==card.pos));
+  const seenEn=new Set([card.en]), seenGr=new Set([card.greek]), picks=[];
+  for(const v of same.concat(rest)){
+    if(picks.length>=want-1) break;
+    if(seenEn.has(v.en)||seenGr.has(v.greek)) continue;
+    seenEn.add(v.en); seenGr.add(v.greek); picks.push(v);
+  }
+  return shuffle(picks.concat([card]));
+}
+
+function startListen(){ lnDeck=shuffle(currentList().slice()); lnPos=0; lnScore={right:0,total:0}; showListen(); }
 function showListen(){
-  lnRevealed=false; lnReplays=0;
+  lnAnswered=false; lnReplays=0;
   const c=lnDeck[lnPos];
   document.getElementById('count').innerHTML='<strong>'+lnDeck.length+'</strong> in this listening set';
   const lbadge=document.getElementById('ln-lbadge'), hint=document.getElementById('ln-hint'),
-        back=document.getElementById('ln-back'), replays=document.getElementById('ln-replays');
-  back.className='fc-back'; back.innerHTML=''; replays.textContent='';
-  document.getElementById('ln-reveal').style.display=''; document.getElementById('ln-next').style.display='none';
+        back=document.getElementById('ln-back'), replays=document.getElementById('ln-replays'),
+        opts=document.getElementById('ln-options');
+  back.className='fc-back'; back.innerHTML=''; replays.textContent=''; opts.innerHTML='';
+  document.getElementById('ln-skip').style.display=''; document.getElementById('ln-next').style.display='none';
+  updateScore();
   if(!c){ lbadge.textContent=''; hint.textContent='No cards — widen the filter.'; document.getElementById('ln-stats').textContent=''; return; }
   lbadge.textContent='Session '+c.date+' · '+(POS_LABEL[c.pos]||c.pos);
-  hint.textContent='Listen and understand…';
+  hint.textContent = lnAnswerMode==='greek' ? 'Which Greek did you hear?' : 'What does it mean?';
   document.getElementById('ln-stats').textContent=(lnPos+1)+' / '+lnDeck.length;
+  // Build + render the multiple-choice options
+  lnOptions=buildListenOptions(c); lnCorrect=c;
+  lnOptions.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='ln-opt'+(lnAnswerMode==='greek'?' ln-gr':'');
+    b.innerHTML='<span class="ln-opt-key">'+(i+1)+'</span>'+
+                '<span class="ln-opt-txt">'+(lnAnswerMode==='greek'?o.greek:esc(o.en))+'</span>'+
+                '<span class="ln-opt-mark"></span>';
+    b.onclick=()=>answerListen(i);
+    opts.appendChild(b);
+  });
   speakGreek(c.greek);            // auto-play on each card (follows a user gesture)
   lnReplays=1; updateReplays();
 }
 function updateReplays(){ document.getElementById('ln-replays').textContent = lnReplays>1 ? ('▶ played '+lnReplays+'×') : ''; }
+function updateScore(){ const s=lnScore; document.getElementById('ln-score').textContent = s.total ? ('Score: '+s.right+' / '+s.total+' ('+Math.round(100*s.right/s.total)+'%)') : ''; }
 function listenReplay(){ const c=lnDeck[lnPos]; if(!c)return; speakGreek(c.greek); lnReplays++; updateReplays(); }
 function listenSlow(){ const c=lnDeck[lnPos]; if(!c)return; speakGreek(c.greek, 0.55); lnReplays++; updateReplays(); }
-function listenReveal(){
-  const c=lnDeck[lnPos]; if(!c) return; lnRevealed=true;
+
+function answerListen(idx){
+  if(lnAnswered) return; lnAnswered=true;
+  const chosen=lnOptions[idx], isRight=(chosen===lnCorrect);
+  const btns=document.querySelectorAll('#ln-options .ln-opt');
+  btns.forEach((b,i)=>{
+    b.disabled=true;
+    if(lnOptions[i]===lnCorrect){ b.classList.add('correct'); b.querySelector('.ln-opt-mark').textContent='✓'; }
+    else if(i===idx){ b.classList.add('wrong'); b.querySelector('.ln-opt-mark').textContent='✗'; }
+  });
+  lnScore.total++; if(isRight) lnScore.right++;
+  updateScore();
+  revealListenAnswer(isRight ? '✓ Right' : '✗ Not quite');
+}
+function listenSkip(){
+  if(lnAnswered) return; lnAnswered=true;
+  const btns=document.querySelectorAll('#ln-options .ln-opt');
+  btns.forEach((b,i)=>{ b.disabled=true; if(lnOptions[i]===lnCorrect){ b.classList.add('correct'); b.querySelector('.ln-opt-mark').textContent='✓'; } });
+  lnScore.total++; updateScore();
+  revealListenAnswer('Skipped');
+}
+function revealListenAnswer(headline){
+  const c=lnCorrect;
+  document.getElementById('ln-hint').textContent=headline;
   const back=document.getElementById('ln-back');
   back.className='fc-back show';
-  back.innerHTML = '<div class="ans">'+esc(c.en)+'</div>'
-    + '<div class="ans gr" style="font-size:1.25rem;margin-top:8px;">'+c.greek+'</div>'
+  back.innerHTML = '<div class="ans gr">'+c.greek+'</div>'
     + (c.translit?'<div class="fc-tr">['+c.translit+']</div>':'')
+    + '<div class="ans" style="font-size:1.15rem;margin-top:6px;">'+esc(c.en)+'</div>'
     + (c.note?'<div class="note">'+esc(c.note)+'</div>':'')
     + (c.mem?'<div class="mem"><b>💡</b> '+esc(c.mem)+'</div>':'');
-  document.getElementById('ln-reveal').style.display='none';
+  document.getElementById('ln-skip').style.display='none';
   document.getElementById('ln-next').style.display='';
-  document.getElementById('ln-hint').textContent='Now match what you heard to the spelling:';
   speakGreek(c.greek);            // replay once on reveal to bind sound ↔ text
 }
 function listenNext(){ lnPos=(lnPos+1)%Math.max(lnDeck.length,1); showListen(); }
@@ -477,7 +559,8 @@ document.addEventListener('keydown',e=>{
   if(mode==='cards'){
     if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(revealed) nextCard(); else revealCard(); }
   } else if(mode==='listen'){
-    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(lnRevealed) listenNext(); else listenReveal(); }
+    if(e.key>='1'&&e.key<='9'){ const i=+e.key-1; if(!lnAnswered && i<lnOptions.length){ e.preventDefault(); answerListen(i); } }
+    else if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(lnAnswered) listenNext(); }
     else if(e.key==='r'||e.key==='R'){ e.preventDefault(); listenReplay(); }
     else if(e.key==='s'||e.key==='S'){ e.preventDefault(); listenSlow(); }
   }
