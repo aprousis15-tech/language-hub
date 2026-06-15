@@ -8527,10 +8527,14 @@
           ? '<span class="story-sentence-speaker spk-' + (line.speaker === 'Α' ? 'A' : 'B') + '">' +
             line.speaker + '</span> '
           : '';
-        // Render text + inline 🔊 button so the user can hear native-voice Greek.
-        // Tap-to-toggle-English target excludes the button (delegated handler
-        // stops propagation), so the 🔊 doesn't accidentally reveal the English.
-        greek.innerHTML = speakerHtml + escHtml(greekText) + ' ' + speakBtnHtml(greekText, { small: true });
+        // Render text + two playback buttons so the user can hear native-voice
+        // Greek at a decipherable pace: 🔊 = slowed-normal (0.75), 🐢 = turtle
+        // (0.5, very slow for word-by-word). Tap-to-toggle-English target
+        // excludes the buttons (delegated handler stops propagation), so they
+        // don't accidentally reveal the English.
+        greek.innerHTML = speakerHtml + escHtml(greekText) + ' ' +
+          speakBtnHtml(greekText, { small: true, rate: 0.75, title: 'Hear it — slower' }) + ' ' +
+          speakBtnHtml(greekText, { small: true, rate: 0.5, glyph: '🐢', title: 'Hear it — very slow (turtle)' });
         const english = document.createElement('div');
         english.className = 'story-sentence-english';
         english.id = 'story-sent-en-' + idx;
@@ -16067,11 +16071,20 @@
   // given Greek text. Uses data-speak attribute so a single delegated
   // listener handles all of them (set up at the end of the script). The
   // text is JSON-escaped to keep quotes safe inside attribute values.
+  // opts: { small, rate, glyph, title }
+  //   rate  — playback speed; emitted as data-speak-rate so the delegated
+  //           handler reads it (omit → speakGreek's default 0.92).
+  //   glyph — button face (default 🔊; pass 🐢 for a slow/turtle variant).
+  //   title — tooltip + aria-label.
   function speakBtnHtml(greekText, opts) {
     if (!greekText) return '';
+    opts = opts || {};
     const enc = String(greekText).replace(/"/g, '&quot;');
-    const cls = (opts && opts.small) ? 'speak-btn-inline small' : 'speak-btn-inline';
-    return `<button type="button" class="${cls}" data-speak="${enc}" title="Hear it in Greek" aria-label="Hear in Greek">🔊</button>`;
+    const cls = opts.small ? 'speak-btn-inline small' : 'speak-btn-inline';
+    const glyph = opts.glyph || '🔊';
+    const title = (opts.title || 'Hear it in Greek').replace(/"/g, '&quot;');
+    const rateAttr = (typeof opts.rate === 'number') ? ` data-speak-rate="${opts.rate}"` : '';
+    return `<button type="button" class="${cls}" data-speak="${enc}"${rateAttr} title="${title}" aria-label="${title}">${glyph}</button>`;
   }
 
   // Delegated click handler — wired once at script load time. Any element
@@ -16083,8 +16096,10 @@
     e.stopPropagation();
     const text = t.getAttribute('data-speak');
     if (!text) return;
+    const r = parseFloat(t.getAttribute('data-speak-rate'));
     t.classList.add('speaking');
     speakGreek(text, {
+      rate: isNaN(r) ? undefined : r,
       onend: () => t.classList.remove('speaking'),
       onerror: () => t.classList.remove('speaking'),
       onmissing: () => {
