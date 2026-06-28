@@ -14,41 +14,76 @@
 // permissive RLS policy. No service-role key needed.
 //
 // LEVEL: B1 (upgraded from A2 on 2026-06-01).
-// TYPES: rotate weekly through 6 styles so every day brings a different
-// shape of Greek (narrative, anecdote, dialogue, scenario, reflection,
-// cultural). Helps the learner adapt to varied input rather than only
-// flat-narrative prose.
+// TYPES: cycle through 6 styles so every day brings a different shape of
+// Greek (narrative, anecdote, dialogue, scenario, reflection, cultural).
+// SETTINGS: each day also gets a rotating scene/topic hint, on a longer
+// cycle than the type rotation, so the type×setting pairing keeps shifting
+// and stories don't cluster around cafes and tavernas. Helps the learner
+// adapt to varied input rather than the same handful of scenes.
 
 const MODEL = 'claude-sonnet-4-6';
 const MAX_TOKENS = 4096;
 const SUPABASE_URL = 'https://bdfjddzwvudqictvuvtr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xeos4qw6hQuiyb9GS6oPuQ_LnOK9SJj';
 
-// Weekly type rotation. Day-of-week (UTC of noon-of-date) → type.
-//   Sun=narrative · Mon=anecdote · Tue=dialogue · Wed=scenario
-//   Thu=reflection · Fri=cultural · Sat=narrative
-// Same day-of-week always gives the same type, so the user can build
-// expectations ("Wednesday means a scenario prompt").
-const TYPE_ROTATION = ['narrative', 'anecdote', 'dialogue', 'scenario', 'reflection', 'cultural', 'narrative'];
+// The full set of distinct styles. The daily type advances by date so
+// consecutive days always differ and all six get equal airtime (the old
+// day-of-week mapping locked each weekday to one type and gave narrative
+// twice as often).
+const ALL_TYPES = ['narrative', 'anecdote', 'dialogue', 'scenario', 'reflection', 'cultural'];
+
+// A broad pool of scenes/topics to steer each day's piece somewhere fresh.
+// Length is coprime-ish with ALL_TYPES (29 vs 6) so the type×setting combo
+// effectively never repeats across a sensible span of days.
+const SETTINGS = [
+  'a ferry crossing to an island', 'a mountain village in summer',
+  'a λαϊκή (open-air street market)', 'a pharmacy with a minor problem',
+  'a bakery at dawn', 'a football match on TV with friends',
+  'a name-day (γιορτή) celebration', 'a summer power cut in the heat',
+  'an early bus to the airport', "a grandmother's kitchen",
+  'a second-hand bookshop', 'a swim at a rocky beach',
+  'a taxi stuck in Athens traffic', 'a περίπτερο (street kiosk)',
+  'an olive harvest in the countryside', 'a rooftop on a hot night',
+  'a wedding in the χωριό (village)', 'a long hospital waiting room',
+  'a hike up a gorge', 'a phone call with a parent',
+  'a rainy afternoon in Thessaloniki', 'a flea market full of junk and treasure',
+  'learning to cook a family dish', 'a dispute with a noisy neighbour',
+  'a missed train and a change of plans', 'an archaeological museum visit',
+  'a fishing trip at sunrise', 'a school reunion after many years',
+  'a cat that adopts the narrator',
+];
+
+function epochDay(date) {
+  // date is YYYY-MM-DD; anchor at noon UTC to avoid DST edge cases.
+  return Math.floor(Date.parse(date + 'T12:00:00Z') / 86400000);
+}
+function mod(n, m) { return ((n % m) + m) % m; }
 
 function pickTypeForDate(date) {
-  // date is YYYY-MM-DD. Anchor at noon UTC to avoid DST edge cases.
-  const d = new Date(date + 'T12:00:00Z');
-  return TYPE_ROTATION[d.getUTCDay()];
+  return ALL_TYPES[mod(epochDay(date), ALL_TYPES.length)];
+}
+function pickSettingForDate(date) {
+  return SETTINGS[mod(epochDay(date), SETTINGS.length)];
 }
 
-// The full set of distinct styles, for on-demand "another story" requests
-// where we deliberately want variety rather than the day's fixed rotation.
-const ALL_TYPES = ['narrative', 'anecdote', 'dialogue', 'scenario', 'reflection', 'cultural'];
 function pickRandomType(avoid) {
   const pool = avoid ? ALL_TYPES.filter(t => t !== avoid) : ALL_TYPES;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function pickRandomSetting(avoid) {
+  const pool = avoid ? SETTINGS.filter(s => s !== avoid) : SETTINGS;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
 const STORY_SYSTEM_PROMPT = `You write daily Greek-learning short pieces for an English-speaking adult learner preparing for a Greece trip. Target proficiency: B1 (intermediate). Read time: 60-90 seconds.
 
 You will receive a JSON payload:
-{ "date": "YYYY-MM-DD", "level": "B1", "type": "<one of: narrative | anecdote | dialogue | scenario | reflection | cultural>" }
+{ "date": "YYYY-MM-DD", "level": "B1", "type": "<one of: narrative | anecdote | dialogue | scenario | reflection | cultural>", "setting": "<a scene/topic hint, e.g. 'a ferry crossing to an island'>" }
+
+VARIETY (important — the learner reads one of these every day):
+- Build the piece around the "setting" hint when one is given. Don't drift back to the default cafe/taverna/ordering-coffee scene unless the setting actually calls for it.
+- Rotate names and characters widely. Draw on the full range of Greek names (Νίκος, Ελένη, Θανάσης, Δέσποινα, Κωστής, Αγγελική, Σταύρος, Φωτεινή, Μανώλης, Βάσω, ο παππούς, η γιαγιά, ένας ξένος…), not always Μαρία and Γιάννης.
+- Vary the emotional register and outcome: not every piece is pleasant — some can be awkward, funny, frustrating, bittersweet, or surprising.
 
 Generate a FRESH original piece matching the specified TYPE:
 
@@ -190,7 +225,7 @@ async function insertStory(date, story) {
   return Array.isArray(rows) ? rows[0] : rows;
 }
 
-async function generateStoryViaClaude(date, type) {
+async function generateStoryViaClaude(date, type, setting) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('server_missing_api_key');
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
@@ -204,7 +239,7 @@ async function generateStoryViaClaude(date, type) {
       model: MODEL,
       max_tokens: MAX_TOKENS,
       system: STORY_SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: JSON.stringify({ date, level: 'B1', type }) }],
+      messages: [{ role: 'user', content: JSON.stringify({ date, level: 'B1', type, setting }) }],
     }),
   });
   if (!upstream.ok) {
@@ -244,12 +279,14 @@ module.exports = async function handler(req, res) {
     // feels different), generate, return ephemeral — never cached.
     if (fresh) {
       const type = overrideType || pickRandomType(pickTypeForDate(date));
-      const generated = await generateStoryViaClaude(date, type);
+      const setting = pickRandomSetting(pickSettingForDate(date));
+      const generated = await generateStoryViaClaude(date, type, setting);
       res.status(200).json({ ok: true, story: { ...generated, story_date: date }, cached: false, fresh: true, type });
       return;
     }
 
     const type = overrideType || pickTypeForDate(date);
+    const setting = pickSettingForDate(date);
     if (!force) {
       const cached = await readCachedStory(date);
       if (cached) {
@@ -260,7 +297,7 @@ module.exports = async function handler(req, res) {
       await deleteCachedStory(date);
     }
 
-    const generated = await generateStoryViaClaude(date, type);
+    const generated = await generateStoryViaClaude(date, type, setting);
     const inserted = await insertStory(date, generated);
     res.status(200).json({ ok: true, story: inserted, cached: false, type });
   } catch (e) {
