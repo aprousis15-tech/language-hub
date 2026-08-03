@@ -3735,6 +3735,7 @@
         <button class="grammar-mode-btn sh-btn" id="sh-tutorsessions" onclick="setGrammarMode('tutorsessions',this)">🗣️ Tutor Sessions<span class="sh-sub">vocab + phrases from your lessons</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-keylexis" onclick="setGrammarMode('keylexis',this)">🔑 Key Lexis Vocab<span class="sh-sub">every word from the Lexis placement test</span></button>
         <button class="grammar-mode-btn sh-btn" id="sh-wordworkout" onclick="setGrammarMode('wordworkout',this)">🏋️ Word Workout<span class="sh-sub">learn + retain words through the grammar</span></button>
+        <button class="grammar-mode-btn sh-btn" id="sh-tensesprint" onclick="setGrammarMode('tensesprint',this)">⚡ Tense Sprint<span class="sh-sub">hear the cue · say the tense · auto-reveal + audio</span></button>
       </div>
       <button class="grammar-showall-toggle" id="grammar-showall-toggle" onclick="toggleAllDrills()">▸ Show all drills (everything else)</button>
     </div>
@@ -4022,6 +4023,21 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="sentence-builder-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tense Sprint — iframe wrapper around the standalone /aspect-drill.html.
+         Spoken-automaticity drill: hears a verb + time cue (built-in free Greek
+         TTS), 2.5s countdown, then auto-reveals + speaks the target tense form.
+         Same lazy-iframe pattern (src set on first open — see initTenseSprintFrame). -->
+    <div id="grammar-tensesprint" style="display:none;">
+      <div class="conjdrill-frame-wrap">
+        <iframe id="tensesprint-frame" class="conjdrill-frame" style="height:720px;"
+                title="Greek Tense Sprint — spoken automaticity (aspect + tense switch)"
+                loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="aspect-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -9419,6 +9435,8 @@
     // If leaving Speak while recording, stop the mic so it doesn't keep
     // capturing in the background after the tab is hidden.
     if (lang !== 'speak' && typeof stopSpeakRecord === 'function') stopSpeakRecord();
+    // Leaving the Grammar tab entirely must also silence the Tense Sprint TTS loop.
+    if (lang !== 'grammar' && typeof stopTenseSprintFrame === 'function') stopTenseSprintFrame();
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
@@ -11356,6 +11374,7 @@
     document.getElementById('grammar-vgroup').style.display = mode === 'vgroup' ? '' : 'none';
     document.getElementById('grammar-conjdrill').style.display = mode === 'conjdrill' ? '' : 'none';
     document.getElementById('grammar-sentbuild').style.display = mode === 'sentbuild' ? '' : 'none';
+    document.getElementById('grammar-tensesprint').style.display = mode === 'tensesprint' ? '' : 'none';
     document.getElementById('grammar-rootsdrill').style.display = mode === 'rootsdrill' ? '' : 'none';
     document.getElementById('grammar-keylexis').style.display = mode === 'keylexis' ? '' : 'none';
     document.getElementById('grammar-wordworkout').style.display = mode === 'wordworkout' ? '' : 'none';
@@ -11391,6 +11410,8 @@
     if (mode === 'vgroup') initVgroupDrill();
     if (mode === 'conjdrill') initConjDrillFrame();
     if (mode === 'sentbuild') initSentBuildFrame();
+    if (mode === 'tensesprint') initTenseSprintFrame();
+    else stopTenseSprintFrame();   // silence looping TTS when switching away
     if (mode === 'rootsdrill') initRootsDrillFrame();
     if (mode === 'keylexis') initKeyLexisFrame();
     if (mode === 'wordworkout') initWordWorkoutFrame();
@@ -12838,6 +12859,19 @@
   function initSentBuildFrame() {
     const f = document.getElementById('sentbuild-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'sentence-builder-drill.html');
+  }
+
+  // Lazy-iframe wrapper around /aspect-drill.html (Tense Sprint). Unlike the
+  // other drills this one auto-plays looping Greek TTS, so leaving the mode must
+  // silence it — stopTenseSprintFrame() blanks the src (cheapest hard stop; the
+  // page re-inits fresh on next open).
+  function initTenseSprintFrame() {
+    const f = document.getElementById('tensesprint-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'aspect-drill.html');
+  }
+  function stopTenseSprintFrame() {
+    const f = document.getElementById('tensesprint-frame');
+    if (f && f.getAttribute('src')) f.removeAttribute('src');
   }
 
   // ── Roots & Word-Building (subpanel) ──

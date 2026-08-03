@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Tense Sprint — spoken automaticity (aspect + tense switch)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #1a5f7a;
+    --sky: #2e86ab;
+    --sand: #f4e9d8;
+    --white: #fdfaf6;
+    --dark: #1e2a35;
+    --greek-blue: #0d4f8b;
+    --terracotta: #c1693c;
+    --present: #0d4f8b;
+    --past: #8e24aa;      /* παρατατικός — past continuous */
+    --aorist: #c1693c;    /* αόριστος — simple past */
+    --future: #00897b;    /* μέλλοντας — simple future */
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Lato', sans-serif; background: var(--white); color: var(--dark);
+    min-height: 100vh; padding: 22px 16px 56px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header.top { text-align: center; margin-bottom: 12px; }
+  header.top h1 {
+    font-family: 'Playfair Display', serif; color: var(--greek-blue);
+    font-size: clamp(1.4rem, 4vw, 2rem); margin-bottom: 5px;
+  }
+  header.top p { color: #4a6f8a; font-size: 0.9rem; }
+
+  .filter-row {
+    display: flex; gap: 7px; flex-wrap: wrap; justify-content: center;
+    align-items: center; margin-bottom: 8px;
+  }
+  .filter-row .lbl {
+    font-size: 0.68rem; color: #9aa8b2; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-right: 2px;
+  }
+  .chip {
+    padding: 6px 13px; border-radius: 99px; border: 1.5px solid #cfe0ec;
+    background: white; color: var(--greek-blue); font-size: 0.8rem;
+    cursor: pointer; font-family: 'Lato', sans-serif; font-weight: 600;
+  }
+  .chip:hover { background: #eef5fa; }
+  .chip.active { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
+  .chip.t-past.active   { background: var(--past);   border-color: var(--past); }
+  .chip.t-aorist.active { background: var(--aorist); border-color: var(--aorist); }
+  .chip.t-future.active { background: var(--future); border-color: var(--future); }
+
+  .stats {
+    text-align: center; font-size: 0.85rem; color: #4a6f8a;
+    margin-bottom: 14px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+  }
+  .stats strong { color: #0d47a1; font-size: 1.05rem; }
+
+  .card {
+    max-width: 520px; margin: 0 auto; background: white; border-radius: 16px;
+    padding: 26px 22px 24px; box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    border: 1px solid #e1ecf4; text-align: center;
+  }
+  .pill {
+    display: inline-block; padding: 3px 12px; border-radius: 99px; font-weight: 700;
+    font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .pill.tense-past   { background: #f3e5f5; color: var(--past); }
+  .pill.tense-aorist { background: #f6e7dd; color: var(--aorist); }
+  .pill.tense-future { background: #e0f2f1; color: var(--future); }
+
+  .lemma { font-size: clamp(2rem, 7vw, 2.9rem); color: var(--greek-blue); font-weight: 700; line-height: 1.1; }
+  .lemma-en { color: #8aa0b0; font-size: 0.9rem; margin-top: 2px; }
+  .cue {
+    margin-top: 14px; font-size: 1.05rem; color: var(--dark);
+  }
+  .cue .cue-word { font-weight: 700; color: var(--terracotta); }
+  .cue .cue-en { color: #9aa8b2; font-size: 0.85rem; }
+
+  /* Countdown */
+  .cd-wrap { margin: 20px auto 4px; max-width: 340px; }
+  .cd-num { font-size: 1.3rem; font-weight: 700; color: var(--ocean); margin-bottom: 6px; height: 26px; }
+  .cd-track { height: 8px; background: #edf3f7; border-radius: 99px; overflow: hidden; }
+  .cd-bar { height: 100%; width: 100%; background: var(--terracotta); border-radius: 99px; }
+
+  /* Answer reveal */
+  .answer { margin-top: 18px; min-height: 60px; }
+  .answer.hidden { visibility: hidden; }
+  .answer .ans-word {
+    font-size: clamp(1.8rem, 6vw, 2.5rem); color: var(--aorist); font-weight: 700;
+  }
+  .answer .ans-full { color: #6a7d88; font-size: 0.92rem; margin-top: 4px; }
+
+  .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+  .btn {
+    padding: 11px 20px; border-radius: 12px; border: none; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.95rem;
+  }
+  .btn.primary { background: var(--terracotta); color: white; }
+  .btn.primary:active { transform: scale(0.98); }
+  .btn.ghost { background: #eef5fa; color: var(--ocean); }
+  .btn.ghost:active { transform: scale(0.98); }
+
+  .hint {
+    text-align: center; color: #9aa8b2; font-size: 0.8rem; margin-top: 16px; line-height: 1.5;
+  }
+  .novoice {
+    display: none; text-align: center; background: #fff4e5; color: #9a5b00;
+    border: 1px solid #ffd8a8; border-radius: 10px; padding: 10px 14px;
+    font-size: 0.85rem; margin: 0 auto 14px; max-width: 520px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>⚡ Tense Sprint</h1>
+    <p>Hear the verb + a time cue. Say the right tense out loud before the timer reveals it.</p>
+  </header>
+
+  <div id="novoice" class="novoice">
+    ⚠️ No Greek voice found. Install a Greek (el-GR) voice in your OS speech settings for audio prompts. The drill still works silently.
+  </div>
+
+  <div class="filter-row">
+    <span class="lbl">Tense</span>
+    <button class="chip active" data-tense="all" onclick="setTense('all',this)">All</button>
+    <button class="chip t-past"   data-tense="imperfect" onclick="setTense('imperfect',this)">Past Continuous</button>
+    <button class="chip t-aorist" data-tense="aorist"    onclick="setTense('aorist',this)">Simple Past</button>
+    <button class="chip t-future" data-tense="future"    onclick="setTense('future',this)">Simple Future</button>
+  </div>
+  <div class="filter-row">
+    <span class="lbl">Think time</span>
+    <button class="chip active" data-ms="2500" onclick="setTime(2500,this)">2.5s</button>
+    <button class="chip" data-ms="4000" onclick="setTime(4000,this)">4s</button>
+    <button class="chip" data-ms="6000" onclick="setTime(6000,this)">6s</button>
+  </div>
+
+  <div class="stats">
+    <span>reviewed <strong id="stat-reviewed">0</strong></span>
+    <span>in deck <strong id="stat-deck">0</strong></span>
+  </div>
+
+  <div class="card">
+    <div id="pill" class="pill tense-aorist">Simple Past</div>
+    <div id="lemma" class="lemma">—</div>
+    <div id="lemma-en" class="lemma-en"></div>
+    <div id="cue" class="cue"></div>
+
+    <div class="cd-wrap">
+      <div id="cd-num" class="cd-num"></div>
+      <div class="cd-track"><div id="cd-bar" class="cd-bar"></div></div>
+    </div>
+
+    <div id="answer" class="answer hidden">
+      <div id="ans-word" class="ans-word"></div>
+      <div id="ans-full" class="ans-full"></div>
+    </div>
+
+    <div class="controls">
+      <button id="btn-run" class="btn primary" onclick="toggleRun()">▶ Start</button>
+      <button class="btn ghost" onclick="replayPrompt()">🔊 Replay</button>
+      <button class="btn ghost" onclick="revealNow()">⏭ Reveal</button>
+      <button class="btn ghost" onclick="nextCard()">→ Next</button>
+    </div>
+  </div>
+
+  <p class="hint">
+    Built for spoken automaticity: don't type — <strong>say the form aloud</strong>. When the bar empties,
+    the answer appears and is spoken so you can self-correct. Uses your device's free built-in Greek voice — $0 to run.
+  </p>
+</div>
+
+<script>
+  // ── Verb dataset (1st-person singular). Present is the base cue; each drill
+  //    switches it to one of three target tenses. Forms verified by hand. ──
+  const VERBS = [
+    { lemma:'βλέπω',    en:'see',        imperfect:'έβλεπα',   aorist:'είδα',    future:'θα δω' },
+    { lemma:'πίνω',     en:'drink',      imperfect:'έπινα',    aorist:'ήπια',    future:'θα πιω' },
+    { lemma:'φεύγω',    en:'leave',      imperfect:'έφευγα',   aorist:'έφυγα',   future:'θα φύγω' },
+    { lemma:'τρώω',     en:'eat',        imperfect:'έτρωγα',   aorist:'έφαγα',   future:'θα φάω' },
+    { lemma:'λέω',      en:'say',        imperfect:'έλεγα',    aorist:'είπα',    future:'θα πω' },
+    { lemma:'πάω',      en:'go',         imperfect:'πήγαινα',  aorist:'πήγα',    future:'θα πάω' },
+    { lemma:'έρχομαι',  en:'come',       imperfect:'ερχόμουν', aorist:'ήρθα',    future:'θα έρθω' },
+    { lemma:'δίνω',     en:'give',       imperfect:'έδινα',    aorist:'έδωσα',   future:'θα δώσω' },
+    { lemma:'παίρνω',   en:'take',       imperfect:'έπαιρνα',  aorist:'πήρα',    future:'θα πάρω' },
+    { lemma:'μπορώ',    en:'can',        imperfect:'μπορούσα', aorist:'μπόρεσα', future:'θα μπορέσω' },
+    { lemma:'θέλω',     en:'want',       imperfect:'ήθελα',    aorist:'θέλησα',  future:'θα θελήσω' },
+    { lemma:'γράφω',    en:'write',      imperfect:'έγραφα',   aorist:'έγραψα',  future:'θα γράψω' },
+    { lemma:'μένω',     en:'stay/live',  imperfect:'έμενα',    aorist:'έμεινα',  future:'θα μείνω' },
+    { lemma:'βρίσκω',   en:'find',       imperfect:'έβρισκα',  aorist:'βρήκα',   future:'θα βρω' },
+    { lemma:'μαθαίνω',  en:'learn',      imperfect:'μάθαινα',  aorist:'έμαθα',   future:'θα μάθω' },
+    { lemma:'φέρνω',    en:'bring',      imperfect:'έφερνα',   aorist:'έφερα',   future:'θα φέρω' },
+  ];
+
+  // Tense metadata: visual label, spoken Greek time-cue, English gloss, css key.
+  const TENSES = {
+    imperfect: { key:'imperfect', tag:'past',   label:'Past Continuous', cue:'παλιά',  cueEn:'used to / was …-ing' },
+    aorist:    { key:'aorist',    tag:'aorist', label:'Simple Past',     cue:'χθες',   cueEn:'yesterday' },
+    future:    { key:'future',    tag:'future', label:'Simple Future',   cue:'αύριο',  cueEn:'tomorrow' },
+  };
+
+  // Build the full drill list (one object per verb × target tense).
+  const ALL_DRILLS = [];
+  let n = 0;
+  VERBS.forEach(v => {
+    ['imperfect','aorist','future'].forEach(t => {
+      const T = TENSES[t];
+      ALL_DRILLS.push({
+        id: 'drill_' + String(++n).padStart(2,'0'),
+        tense: t,
+        lemma: v.lemma,
+        en: v.en,
+        cueWord: T.cue,
+        spoken_prompt: v.lemma + ' — ' + T.cue,   // spoken aloud
+        correct_answer: v[t],
+        answer_spoken: v[t]
+      });
+    });
+  });
+
+  // ── Web Speech API (free, built-in). Reused pattern: pick an el-GR voice,
+  //    handle the async getVoices() population, cancel before each utterance. ──
+  let elVoice = null;
+  function pickVoice() {
+    const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    elVoice = vs.find(v => /el[-_]?gr/i.test(v.lang)) ||
+              vs.find(v => /\bel\b/i.test(v.lang)) ||
+              vs.find(v => /greek|ελλ/i.test(v.name)) || null;
+    document.getElementById('novoice').style.display =
+      (('speechSynthesis' in window) && !elVoice) ? 'block' : 'none';
+  }
+  if ('speechSynthesis' in window) {
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  } else {
+    document.getElementById('novoice').style.display = 'block';
+  }
+  function speakGreek(text, rate) {
+    if (!('speechSynthesis' in window) || !text) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(String(text));
+      u.lang = 'el-GR';
+      if (elVoice) u.voice = elVoice;
+      u.rate = rate || 0.9;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  // ── Drill state / controller ──
+  let deck = [];
+  let idx = 0;
+  let reviewed = 0;
+  let running = false;
+  let token = 0;            // bumped to cancel any in-flight countdown/timeout
+  let tenseFilter = 'all';
+  let responseMs = 2500;
+  let revealPauseMs = 1900;
+
+  function shuffle(a) { const b = a.slice(); for (let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
+
+  function buildDeck() {
+    const pool = tenseFilter === 'all' ? ALL_DRILLS : ALL_DRILLS.filter(d => d.tense === tenseFilter);
+    deck = shuffle(pool);
+    idx = 0;
+    document.getElementById('stat-deck').textContent = deck.length;
+  }
+
+  function setTense(t, btn) {
+    tenseFilter = t;
+    document.querySelectorAll('.chip[data-tense]').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    stop();
+    buildDeck();
+    renderPrompt(deck[0]);
+  }
+  function setTime(ms, btn) {
+    responseMs = ms;
+    document.querySelectorAll('.chip[data-ms]').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function renderPrompt(d) {
+    if (!d) return;
+    const T = TENSES[d.tense];
+    const pill = document.getElementById('pill');
+    pill.className = 'pill tense-' + T.tag;
+    pill.textContent = T.label;
+    document.getElementById('lemma').textContent = d.lemma;
+    document.getElementById('lemma-en').textContent = d.en;
+    document.getElementById('cue').innerHTML =
+      '→ <span class="cue-word">' + d.cueWord + '</span> <span class="cue-en">(' + T.cueEn + ')</span>';
+    // hide answer
+    document.getElementById('answer').classList.add('hidden');
+    document.getElementById('cd-num').textContent = '';
+    resetBar();
+  }
+
+  function resetBar() {
+    const bar = document.getElementById('cd-bar');
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+  }
+
+  function revealAnswer(d) {
+    document.getElementById('ans-word').textContent = d.correct_answer;
+    document.getElementById('ans-full').textContent = d.lemma + ' → ' + d.correct_answer;
+    document.getElementById('answer').classList.remove('hidden');
+    document.getElementById('cd-num').textContent = '';
+    speakGreek(d.answer_spoken);
+    reviewed++;
+    document.getElementById('stat-reviewed').textContent = reviewed;
+  }
+
+  function startCountdown(ms, my, done) {
+    const bar = document.getElementById('cd-bar');
+    const num = document.getElementById('cd-num');
+    resetBar();
+    // Kick the CSS width transition on the next frame so it animates.
+    requestAnimationFrame(() => {
+      if (my !== token) return;
+      bar.style.transition = 'width ' + ms + 'ms linear';
+      bar.style.width = '0%';
+    });
+    const start = performance.now();
+    const tick = () => {
+      if (my !== token) return;
+      const remain = Math.max(0, ms - (performance.now() - start));
+      num.textContent = (remain / 1000).toFixed(1) + 's';
+      if (remain <= 0) done();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // Play one card: speak prompt → countdown → reveal + speak → (if running) next.
+  function runOne() {
+    if (!deck.length) buildDeck();
+    const my = token;
+    const d = deck[idx % deck.length];
+    renderPrompt(d);
+    speakGreek(d.spoken_prompt);
+    startCountdown(responseMs, my, () => {
+      if (my !== token) return;
+      revealAnswer(d);
+      if (!running) return;
+      setTimeout(() => {
+        if (my !== token || !running) return;
+        idx++;
+        runOne();
+      }, revealPauseMs);
+    });
+  }
+
+  function toggleRun() {
+    if (running) stop();
+    else start();
+  }
+  function start() {
+    if (!deck.length) buildDeck();
+    running = true;
+    token++;
+    document.getElementById('btn-run').textContent = '⏸ Pause';
+    runOne();
+  }
+  function stop() {
+    running = false;
+    token++;   // cancels any pending countdown/timeout
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    const b = document.getElementById('btn-run');
+    if (b) b.textContent = '▶ Start';
+    document.getElementById('cd-num').textContent = '';
+  }
+
+  // Manual controls (work whether or not the auto-loop is running).
+  function replayPrompt() {
+    const d = deck[idx % deck.length];
+    if (d) speakGreek(d.spoken_prompt);
+  }
+  function revealNow() {
+    token++;                       // cancel countdown
+    const d = deck[idx % deck.length];
+    if (d) revealAnswer(d);
+  }
+  function nextCard() {
+    token++;
+    idx++;
+    const d = deck[idx % deck.length];
+    renderPrompt(d);
+    if (running) { start(); }      // restart loop cleanly from new card
+  }
+
+  // Init
+  buildDeck();
+  renderPrompt(deck[0]);
+</script>
+</body>
+</html>
