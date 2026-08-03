@@ -10345,6 +10345,173 @@
     }, 5000);
   }
 
+  // ── SRS FORCING GATE ─────────────────────────────────────────────
+  // Single-user habit layer that FORCES the spaced-repetition review.
+  // Zero server/LLM cost: the streak lives in localStorage and the only
+  // network hit is one count query (head:true — no rows transfer) on load.
+  // If Greek vocab is due and you haven't cleared it today, a blocking
+  // overlay makes you start the Due review before using the rest of the
+  // app (a humane 5-min snooze is the only escape). Clearing the due deck
+  // bumps a streak — the loss-aversion cue is what builds the daily habit.
+  const SRS_GATE_KEY = 'srsGate.v1';
+
+  function srsGateToday() {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date());
+  }
+  function srsGateYesterday() {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(d);
+  }
+  function srsGateLoad() {
+    try { return JSON.parse(localStorage.getItem(SRS_GATE_KEY)) || {}; }
+    catch { return {}; }
+  }
+  function srsGateSave(s) {
+    try { localStorage.setItem(SRS_GATE_KEY, JSON.stringify(s)); } catch {}
+  }
+
+  // Count due Greek vocab. head:true → server returns only the count, no rows.
+  async function srsGateDueCount() {
+    if (!window._supabase) return 0;
+    try {
+      const nowIso = new Date().toISOString();
+      const res = await window._supabase
+        .from('vocab').select('id', { count: 'exact', head: true })
+        .eq('lang', 'greek').lte('srs_due_at', nowIso);
+      return res.count || 0;
+    } catch { return 0; }
+  }
+
+  // Mark today's review as satisfied and advance the streak. Consecutive-day
+  // logic: reviewed yesterday → +1, otherwise reset to 1.
+  function srsGateMarkDone(silent) {
+    const state = srsGateLoad();
+    const today = srsGateToday();
+    if (state.lastReviewDate === today) return; // already counted today
+    const streak = (state.lastReviewDate === srsGateYesterday()) ? (state.streak || 0) + 1 : 1;
+    state.streak = streak;
+    state.longest = Math.max(streak, state.longest || 0);
+    state.lastReviewDate = today;
+    delete state.snoozeUntil;
+    srsGateSave(state);
+    if (!silent) srsGateToast(streak);
+  }
+
+  function srsGateEnsureStyles() {
+    if (document.getElementById('srs-gate-css')) return;
+    const st = document.createElement('style');
+    st.id = 'srs-gate-css';
+    st.textContent = `
+      #srs-gate { position: fixed; inset: 0; z-index: 9999;
+        background: rgba(26,95,122,0.94); display: flex; align-items: center;
+        justify-content: center; padding: 24px; backdrop-filter: blur(3px); }
+      #srs-gate .srs-gate-card { background: var(--white); border-radius: 20px;
+        max-width: 400px; width: 100%; padding: 32px 28px; text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.35); font-family: 'Lato', sans-serif; }
+      #srs-gate .srs-gate-flame { display: inline-block; background: var(--sand);
+        color: var(--terracotta); font-weight: 700; border-radius: 24px;
+        padding: 6px 18px; font-size: 1rem; letter-spacing: 0.03em; margin-bottom: 18px; }
+      #srs-gate h2 { font-family: 'Playfair Display', serif; color: var(--ocean);
+        font-size: 2rem; margin-bottom: 8px; }
+      #srs-gate p { color: var(--dark); opacity: 0.8; font-size: 0.98rem;
+        line-height: 1.5; margin-bottom: 24px; }
+      #srs-gate button { display: block; width: 100%; border: none; cursor: pointer;
+        border-radius: 12px; font-family: 'Lato', sans-serif; font-weight: 700; }
+      #srs-gate .srs-gate-start { background: var(--terracotta); color: #fff;
+        font-size: 1.1rem; padding: 15px; margin-bottom: 12px; }
+      #srs-gate .srs-gate-start:active { transform: scale(0.98); }
+      #srs-gate .srs-gate-snooze { background: transparent; color: var(--ocean);
+        opacity: 0.6; font-weight: 400; font-size: 0.85rem; padding: 6px; }
+      .srs-gate-toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 24px);
+        background: var(--ocean); color: #fff; padding: 12px 22px; border-radius: 24px;
+        font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.95rem; z-index: 10000;
+        box-shadow: 0 8px 28px rgba(0,0,0,0.3); opacity: 0; transition: all 0.35s ease; }
+      .srs-gate-toast.show { opacity: 1; transform: translate(-50%, 0); }`;
+    document.head.appendChild(st);
+  }
+
+  function srsGateToast(streak) {
+    srsGateEnsureStyles();
+    const t = document.createElement('div');
+    t.className = 'srs-gate-toast';
+    t.textContent = `🔥 ${streak}-day streak — review cleared!`;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+  }
+
+  function srsGateHide() { const e = document.getElementById('srs-gate'); if (e) e.remove(); }
+
+  async function srsGateStart() {
+    srsGateHide();
+    switchLang('practice');
+    const flashBtn = document.querySelector('.practice-mode-btn[onclick*="\'flash\'"]');
+    if (flashBtn) setPracticeMode('flash', flashBtn);
+    const dueChip = document.querySelector('.practice-topic-chip[onclick*="\'due\'"]');
+    await setPracticeTopic('due', dueChip);
+  }
+
+  function srsGateShow(due, state) {
+    if (document.getElementById('srs-gate')) return;
+    srsGateEnsureStyles();
+    const streak = state.streak || 0;
+    const flame = streak > 0
+      ? `🔥 ${streak} day${streak === 1 ? '' : 's'}`
+      : 'Start your streak';
+    const el = document.createElement('div');
+    el.id = 'srs-gate';
+    el.innerHTML =
+      `<div class="srs-gate-card">
+        <div class="srs-gate-flame">${flame}</div>
+        <h2>${due} card${due === 1 ? '' : 's'} due</h2>
+        <p>${streak > 0 ? 'Clear your review to keep the streak alive.' : 'Clear your review to build the habit.'}</p>
+        <button class="srs-gate-start">Start review →</button>
+        <button class="srs-gate-snooze">Later (5 min)</button>
+      </div>`;
+    document.body.appendChild(el);
+    el.querySelector('.srs-gate-start').onclick = srsGateStart;
+    el.querySelector('.srs-gate-snooze').onclick = () => {
+      const s = srsGateLoad(); s.snoozeUntil = Date.now() + 5 * 60000; srsGateSave(s);
+      srsGateHide(); setTimeout(srsGateInit, 5 * 60000 + 500);
+    };
+  }
+
+  // Called after every SRS rating (from updateSrsState). When no due cards
+  // remain in the loaded pool, the day is cleared — bump the streak. Reads
+  // only the in-memory cache, so this costs nothing.
+  function srsGateOnReview() {
+    try {
+      const state = srsGateLoad();
+      if (state.lastReviewDate === srsGateToday()) return;
+      const pool = (typeof gPracticeVocab !== 'undefined' && gPracticeVocab) ? gPracticeVocab : [];
+      if (!pool.length) return;
+      const nowIso = new Date().toISOString();
+      if (!pool.some(v => v.srs_due_at && v.srs_due_at <= nowIso)) srsGateMarkDone(false);
+    } catch {}
+  }
+
+  async function srsGateInit() {
+    const state = srsGateLoad();
+    if (state.lastReviewDate === srsGateToday()) return;         // already cleared today
+    if (state.snoozeUntil && Date.now() < state.snoozeUntil) {    // honour active snooze
+      setTimeout(srsGateInit, Math.min(state.snoozeUntil - Date.now() + 500, 600000));
+      return;
+    }
+    const due = await srsGateDueCount();
+    if (due <= 0) { srsGateMarkDone(true); return; }              // nothing due → day satisfied
+    srsGateShow(due, state);
+  }
+
+  if (window._supabaseReady) {
+    srsGateInit();
+  } else {
+    document.addEventListener('supabase-ready', srsGateInit, { once: true });
+  }
+
   // ── SESSIONS TAB ──
   // 20 trip scenarios from the brief (Section 9.3)
   const SCENARIOS = [
@@ -17701,6 +17868,8 @@
     if (window._supabase) {
       try { await window._supabase.from('vocab').update(next).eq('id', card.id); } catch {}
     }
+    // Habit gate: if this rating cleared the last due card, advance the streak.
+    srsGateOnReview();
   }
 
   // ──────────────────────────────────────────────────────────────
