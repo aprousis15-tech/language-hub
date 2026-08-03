@@ -179,8 +179,9 @@
 
   <p class="hint">
     Built for spoken automaticity: don't type — <strong>say the form aloud</strong>. When the bar empties, the answer
-    appears and is spoken. Tap <strong>❌ Missed</strong> if you hesitated — that verb feeds the 🎯 Weak Stems list in
-    your Review tab. Uses your device's free built-in Greek voice — $0 to run.
+    appears and is spoken, then it auto-advances. <strong>Touch the card to hold it</strong> — the loop waits so you can
+    tap <strong>❌ Missed</strong> (feeds the 🎯 Weak Stems list in your Review tab and forces that verb back into your
+    Due review) or <strong>✅ Got it</strong>, no rush. Uses your device's free built-in Greek voice — $0 to run.
   </p>
 </div>
 
@@ -318,8 +319,9 @@
   // ── Drill state / controller ──
   let deck = [], idx = 0, reviewed = 0, missed = 0;
   let running = false, token = 0;
-  let tenseFilter = 'all', responseMs = 2500, revealPauseMs = 2600;
-  let rated = false;   // has the current revealed card been rated / advanced?
+  let tenseFilter = 'all', responseMs = 2500, revealPauseMs = 3200;
+  let rated = false;         // has the current revealed card been rated / advanced?
+  let heldForReview = false; // user reached in during a reveal → loop waits, no auto-advance
 
   function shuffle(a){ const b=a.slice(); for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
 
@@ -356,6 +358,7 @@
     document.getElementById('rate').classList.remove('show');
     document.getElementById('cd-num').textContent = '';
     rated = false;
+    heldForReview = false;
     resetBar();
   }
   function resetBar() {
@@ -451,6 +454,18 @@
     renderPrompt(d);
     if (running) start();
   }
+
+  // Remove dexterity pressure: the moment you touch the card during a revealed,
+  // unrated card while auto-running, cancel the pending auto-advance so the
+  // ✅/❌ buttons wait for you indefinitely. Tapping a button then advances.
+  document.querySelector('.card').addEventListener('pointerdown', function(){
+    const revealed = !document.getElementById('answer').classList.contains('hidden');
+    if (running && revealed && !rated && !heldForReview) {
+      heldForReview = true;
+      token++;   // cancel the pending auto-advance timeout
+      document.getElementById('cd-num').textContent = 'paused — ✅ / ❌ to continue';
+    }
+  });
 
   // Init — restore prior settings/score, then show first card.
   (function init(){

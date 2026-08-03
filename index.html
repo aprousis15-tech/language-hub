@@ -7308,20 +7308,37 @@
   }
 
   // Bridge: the Tense Sprint drill (aspect-drill.html iframe) posts a message
-  // when you self-flag a miss. Route it through recordMistake so it lands in the
-  // same mistakes store the Review tab reads, tagged source:'tensesprint' (see the
-  // Weak Stems pattern in analyzePatterns). Best-effort vocab_id match on the
-  // lemma so the miss also feeds the Practice "mistakes" SRS chip when possible.
-  window.addEventListener('message', function (e) {
-    if (e.origin !== window.location.origin) return;
-    const d = e.data;
-    if (!d || d.type !== 'tensesprint:miss') return;
+  // when you self-flag a miss. This does two things so the miss actually drives
+  // retention, not just reporting:
+  //   1. Reschedules that verb's SRS to due-now (interval/reps reset, SM-2 "fail"
+  //      semantics) via a direct lemma lookup — so the exact stem re-enters your
+  //      daily Due gate regardless of whether the Practice pool is loaded. The
+  //      update returns the row id, which becomes the mistake's vocab_id.
+  //   2. Logs it via recordMistake (source:'tensesprint') so it shows in the
+  //      Review tab's 🎯 Weak Stems grouping and the Practice "mistakes" chip.
+  // All 16 Tense Sprint lemmas already exist as verbs in public.vocab, so the
+  // word-equality match is reliable; no seeding needed.
+  async function handleTenseSprintMiss(d) {
     let vocabId = null;
     try {
-      const pool = (typeof gPracticeVocab !== 'undefined' && gPracticeVocab) ? gPracticeVocab : [];
-      const strip = w => String(w || '').replace(/^(ο |η |το |οι |τα )/, '').trim();
-      const hit = pool.find(v => strip(v.word) === strip(d.lemma));
-      if (hit && hit.id) vocabId = hit.id;
+      if (window._supabase) {
+        const { data } = await window._supabase
+          .from('vocab')
+          .update({ srs_due_at: new Date().toISOString(), srs_interval_days: 0, srs_reps: 0 })
+          .eq('lang', 'greek').eq('word', d.lemma)
+          .select('id');
+        if (data && data[0]) {
+          vocabId = data[0].id;
+          // keep the in-memory Practice pool in sync so the Due chip reflects it
+          if (typeof gPracticeVocab !== 'undefined' && gPracticeVocab) {
+            const nowIso = new Date().toISOString();
+            data.forEach(r => {
+              const c = gPracticeVocab.find(v => v.id === r.id);
+              if (c) { c.srs_due_at = nowIso; c.srs_interval_days = 0; c.srs_reps = 0; }
+            });
+          }
+        }
+      }
     } catch {}
     recordMistake({
       drill_type: 'tensesprint',
@@ -7331,6 +7348,12 @@
       vocab_id: vocabId,
       metadata: { source: 'tensesprint', lemma: d.lemma, en: d.en, tense: d.tense, tense_label: d.tenseLabel }
     });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.origin !== window.location.origin) return;
+    const d = e.data;
+    if (!d || d.type !== 'tensesprint:miss') return;
+    handleTenseSprintMiss(d);
   });
 
   // Logs every Speak attempt (fail / note / clean) with structured weakness
