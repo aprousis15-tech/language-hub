@@ -7307,6 +7307,32 @@
     } catch {}
   }
 
+  // Bridge: the Tense Sprint drill (aspect-drill.html iframe) posts a message
+  // when you self-flag a miss. Route it through recordMistake so it lands in the
+  // same mistakes store the Review tab reads, tagged source:'tensesprint' (see the
+  // Weak Stems pattern in analyzePatterns). Best-effort vocab_id match on the
+  // lemma so the miss also feeds the Practice "mistakes" SRS chip when possible.
+  window.addEventListener('message', function (e) {
+    if (e.origin !== window.location.origin) return;
+    const d = e.data;
+    if (!d || d.type !== 'tensesprint:miss') return;
+    let vocabId = null;
+    try {
+      const pool = (typeof gPracticeVocab !== 'undefined' && gPracticeVocab) ? gPracticeVocab : [];
+      const strip = w => String(w || '').replace(/^(ο |η |το |οι |τα )/, '').trim();
+      const hit = pool.find(v => strip(v.word) === strip(d.lemma));
+      if (hit && hit.id) vocabId = hit.id;
+    } catch {}
+    recordMistake({
+      drill_type: 'tensesprint',
+      prompt: d.prompt || (d.lemma + ' → ' + d.tenseLabel),
+      correct: d.correct,
+      picked: '(missed — self-flagged)',
+      vocab_id: vocabId,
+      metadata: { source: 'tensesprint', lemma: d.lemma, en: d.en, tense: d.tense, tense_label: d.tenseLabel }
+    });
+  });
+
   // Logs every Speak attempt (fail / note / clean) with structured weakness
   // detail to the speak_observations table. Independent of recordMistake — the
   // Review tab still reads only `mistakes` so its UX is unaffected. Falls back
@@ -9435,8 +9461,9 @@
     // If leaving Speak while recording, stop the mic so it doesn't keep
     // capturing in the background after the tab is hidden.
     if (lang !== 'speak' && typeof stopSpeakRecord === 'function') stopSpeakRecord();
-    // Leaving the Grammar tab entirely must also silence the Tense Sprint TTS loop.
-    if (lang !== 'grammar' && typeof stopTenseSprintFrame === 'function') stopTenseSprintFrame();
+    // Leaving the Grammar tab entirely must also silence the Tense Sprint TTS
+    // loop (paused, not unloaded — score/position survive the round-trip).
+    if (lang !== 'grammar' && typeof pauseTenseSprintFrame === 'function') pauseTenseSprintFrame();
     if (lang === 'translate') renderTransHistory();
     if (lang === 'notes') renderNotes();
     if (lang === 'sessions') renderSessions();
@@ -11411,7 +11438,7 @@
     if (mode === 'conjdrill') initConjDrillFrame();
     if (mode === 'sentbuild') initSentBuildFrame();
     if (mode === 'tensesprint') initTenseSprintFrame();
-    else stopTenseSprintFrame();   // silence looping TTS when switching away
+    else pauseTenseSprintFrame();   // silence looping TTS (keeps state) when switching away
     if (mode === 'rootsdrill') initRootsDrillFrame();
     if (mode === 'keylexis') initKeyLexisFrame();
     if (mode === 'wordworkout') initWordWorkoutFrame();
@@ -12863,15 +12890,18 @@
 
   // Lazy-iframe wrapper around /aspect-drill.html (Tense Sprint). Unlike the
   // other drills this one auto-plays looping Greek TTS, so leaving the mode must
-  // silence it — stopTenseSprintFrame() blanks the src (cheapest hard stop; the
-  // page re-inits fresh on next open).
+  // silence it. We keep the iframe loaded and postMessage a 'pause' instead of
+  // blanking the src — that stops the audio while preserving the drill's
+  // score/position state, so returning resumes cleanly with no reload.
   function initTenseSprintFrame() {
     const f = document.getElementById('tensesprint-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'aspect-drill.html');
   }
-  function stopTenseSprintFrame() {
+  function pauseTenseSprintFrame() {
     const f = document.getElementById('tensesprint-frame');
-    if (f && f.getAttribute('src')) f.removeAttribute('src');
+    if (f && f.getAttribute('src') && f.contentWindow) {
+      try { f.contentWindow.postMessage({ type: 'tensesprint:pause' }, window.location.origin); } catch {}
+    }
   }
 
   // ── Roots & Word-Building (subpanel) ──
@@ -18534,7 +18564,8 @@
     listen: { label: 'Listen', tag: 'review-tag-listen' },
     type: { label: 'Type', tag: 'review-tag-type' },
     flash: { label: 'Flashcard', tag: 'review-tag-flash' },
-    antipattern: { label: 'Anti-pattern', tag: 'review-tag-antipattern' }
+    antipattern: { label: 'Anti-pattern', tag: 'review-tag-antipattern' },
+    tensesprint: { label: 'Tense Sprint', tag: 'review-tag-verbs' }
   };
 
   const VERB_PERSON_LABELS_REVIEW = {
@@ -18614,6 +18645,26 @@
         top: `${aspectMistakes.length} miss${aspectMistakes.length === 1 ? '' : 'es'}`,
         detail: `Imperfective vs perfective is the single biggest Greek grammar concept for English speakers. Drill the 🎭 Aspect mode in Grammar Drill.`,
         ratio: aspectMistakes.length / Math.max(mistakes.length, 1),
+      });
+    }
+
+    // 0b2. Weak stems from Tense Sprint — verbs you self-flagged as missed when
+    // switching a lemma into a target tense. Grouped by lemma so the stems that
+    // make you hesitate float to the top. Low threshold (2) so it surfaces early.
+    const tsMistakes = mistakes.filter(m => m.metadata && m.metadata.source === 'tensesprint');
+    if (tsMistakes.length >= 2) {
+      const stemCounts = {};
+      tsMistakes.forEach(m => {
+        const k = (m.metadata && m.metadata.lemma) || m.correct || '?';
+        stemCounts[k] = (stemCounts[k] || 0) + 1;
+      });
+      const sorted = Object.entries(stemCounts).sort((a, b) => b[1] - a[1]);
+      const breakdown = sorted.slice(0, 6).map(([w, c]) => `${w} ×${c}`).join(' · ');
+      patterns.push({
+        title: '🎯 Weak stems / tense mistakes',
+        top: sorted[0][0],
+        detail: `Verbs you missed in Tense Sprint: ${breakdown}. Re-run ⚡ Tense Sprint in Grammar Drill, or clear them in your Due review.`,
+        ratio: tsMistakes.length / Math.max(mistakes.length, 1),
       });
     }
 

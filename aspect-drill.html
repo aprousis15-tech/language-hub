@@ -14,10 +14,12 @@
     --dark: #1e2a35;
     --greek-blue: #0d4f8b;
     --terracotta: #c1693c;
-    --present: #0d4f8b;
-    --past: #8e24aa;      /* παρατατικός — past continuous */
-    --aorist: #c1693c;    /* αόριστος — simple past */
-    --future: #00897b;    /* μέλλοντας — simple future */
+    --past: #8e24aa;        /* παρατατικός — past continuous */
+    --aorist: #c1693c;      /* αόριστος — simple past */
+    --future: #00897b;      /* στιγμιαίος μέλλοντας — simple future */
+    --futurecont: #5c6bc0;  /* εξακολουθητικός μέλλοντας — continuous future */
+    --miss: #c62828;
+    --got: #2e7d32;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -47,15 +49,17 @@
   }
   .chip:hover { background: #eef5fa; }
   .chip.active { background: var(--greek-blue); color: white; border-color: var(--greek-blue); }
-  .chip.t-past.active   { background: var(--past);   border-color: var(--past); }
-  .chip.t-aorist.active { background: var(--aorist); border-color: var(--aorist); }
-  .chip.t-future.active { background: var(--future); border-color: var(--future); }
+  .chip.t-past.active       { background: var(--past);       border-color: var(--past); }
+  .chip.t-aorist.active     { background: var(--aorist);     border-color: var(--aorist); }
+  .chip.t-future.active     { background: var(--future);     border-color: var(--future); }
+  .chip.t-futurecont.active { background: var(--futurecont); border-color: var(--futurecont); }
 
   .stats {
     text-align: center; font-size: 0.85rem; color: #4a6f8a;
     margin-bottom: 14px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
   }
   .stats strong { color: #0d47a1; font-size: 1.05rem; }
+  .stats .miss-stat strong { color: var(--miss); }
 
   .card {
     max-width: 520px; margin: 0 auto; background: white; border-radius: 16px;
@@ -66,17 +70,16 @@
     display: inline-block; padding: 3px 12px; border-radius: 99px; font-weight: 700;
     font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px;
   }
-  .pill.tense-past   { background: #f3e5f5; color: var(--past); }
-  .pill.tense-aorist { background: #f6e7dd; color: var(--aorist); }
-  .pill.tense-future { background: #e0f2f1; color: var(--future); }
+  .pill.tense-past       { background: #f3e5f5; color: var(--past); }
+  .pill.tense-aorist     { background: #f6e7dd; color: var(--aorist); }
+  .pill.tense-future     { background: #e0f2f1; color: var(--future); }
+  .pill.tense-futurecont { background: #e8eaf6; color: var(--futurecont); }
 
   .lemma { font-size: clamp(2rem, 7vw, 2.9rem); color: var(--greek-blue); font-weight: 700; line-height: 1.1; }
   .lemma-en { color: #8aa0b0; font-size: 0.9rem; margin-top: 2px; }
-  .cue {
-    margin-top: 14px; font-size: 1.05rem; color: var(--dark);
-  }
+  .cue { margin-top: 14px; font-size: 1.1rem; color: var(--dark); }
   .cue .cue-word { font-weight: 700; color: var(--terracotta); }
-  .cue .cue-en { color: #9aa8b2; font-size: 0.85rem; }
+  .cue .cue-en { display: block; color: #9aa8b2; font-size: 0.82rem; margin-top: 3px; }
 
   /* Countdown */
   .cd-wrap { margin: 20px auto 4px; max-width: 340px; }
@@ -87,29 +90,30 @@
   /* Answer reveal */
   .answer { margin-top: 18px; min-height: 60px; }
   .answer.hidden { visibility: hidden; }
-  .answer .ans-word {
-    font-size: clamp(1.8rem, 6vw, 2.5rem); color: var(--aorist); font-weight: 700;
-  }
+  .answer .ans-word { font-size: clamp(1.8rem, 6vw, 2.5rem); color: var(--aorist); font-weight: 700; }
   .answer .ans-full { color: #6a7d88; font-size: 0.92rem; margin-top: 4px; }
 
-  .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
-  .btn {
-    padding: 11px 20px; border-radius: 12px; border: none; cursor: pointer;
-    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.95rem;
-  }
+  /* Self-check rating (feeds the Review tab's Weak Stems list) */
+  .rate { display: none; gap: 10px; justify-content: center; margin-top: 16px; }
+  .rate.show { display: flex; }
+  .rate button { padding: 9px 18px; border-radius: 11px; border: none; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.9rem; }
+  .rate .got  { background: #e6f4ea; color: var(--got); }
+  .rate .miss { background: #fdeaea; color: var(--miss); }
+  .rate button:active { transform: scale(0.97); }
+
+  .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .btn { padding: 11px 20px; border-radius: 12px; border: none; cursor: pointer;
+    font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.95rem; }
   .btn.primary { background: var(--terracotta); color: white; }
   .btn.primary:active { transform: scale(0.98); }
   .btn.ghost { background: #eef5fa; color: var(--ocean); }
   .btn.ghost:active { transform: scale(0.98); }
 
-  .hint {
-    text-align: center; color: #9aa8b2; font-size: 0.8rem; margin-top: 16px; line-height: 1.5;
-  }
-  .novoice {
-    display: none; text-align: center; background: #fff4e5; color: #9a5b00;
+  .hint { text-align: center; color: #9aa8b2; font-size: 0.8rem; margin-top: 16px; line-height: 1.5; }
+  .novoice { display: none; text-align: center; background: #fff4e5; color: #9a5b00;
     border: 1px solid #ffd8a8; border-radius: 10px; padding: 10px 14px;
-    font-size: 0.85rem; margin: 0 auto 14px; max-width: 520px;
-  }
+    font-size: 0.85rem; margin: 0 auto 14px; max-width: 520px; }
 </style>
 </head>
 <body>
@@ -126,9 +130,10 @@
   <div class="filter-row">
     <span class="lbl">Tense</span>
     <button class="chip active" data-tense="all" onclick="setTense('all',this)">All</button>
-    <button class="chip t-past"   data-tense="imperfect" onclick="setTense('imperfect',this)">Past Continuous</button>
-    <button class="chip t-aorist" data-tense="aorist"    onclick="setTense('aorist',this)">Simple Past</button>
-    <button class="chip t-future" data-tense="future"    onclick="setTense('future',this)">Simple Future</button>
+    <button class="chip t-past"       data-tense="imperfect"   onclick="setTense('imperfect',this)">Past Continuous</button>
+    <button class="chip t-aorist"     data-tense="aorist"      onclick="setTense('aorist',this)">Simple Past</button>
+    <button class="chip t-future"     data-tense="future"      onclick="setTense('future',this)">Simple Future</button>
+    <button class="chip t-futurecont" data-tense="future_cont" onclick="setTense('future_cont',this)">Continuous Future</button>
   </div>
   <div class="filter-row">
     <span class="lbl">Think time</span>
@@ -139,6 +144,7 @@
 
   <div class="stats">
     <span>reviewed <strong id="stat-reviewed">0</strong></span>
+    <span class="miss-stat">missed <strong id="stat-missed">0</strong></span>
     <span>in deck <strong id="stat-deck">0</strong></span>
   </div>
 
@@ -158,6 +164,11 @@
       <div id="ans-full" class="ans-full"></div>
     </div>
 
+    <div id="rate" class="rate">
+      <button class="got"  onclick="rate(true)">✅ Got it</button>
+      <button class="miss" onclick="rate(false)">❌ Missed → Weak Stems</button>
+    </div>
+
     <div class="controls">
       <button id="btn-run" class="btn primary" onclick="toggleRun()">▶ Start</button>
       <button class="btn ghost" onclick="replayPrompt()">🔊 Replay</button>
@@ -167,61 +178,72 @@
   </div>
 
   <p class="hint">
-    Built for spoken automaticity: don't type — <strong>say the form aloud</strong>. When the bar empties,
-    the answer appears and is spoken so you can self-correct. Uses your device's free built-in Greek voice — $0 to run.
+    Built for spoken automaticity: don't type — <strong>say the form aloud</strong>. When the bar empties, the answer
+    appears and is spoken. Tap <strong>❌ Missed</strong> if you hesitated — that verb feeds the 🎯 Weak Stems list in
+    your Review tab. Uses your device's free built-in Greek voice — $0 to run.
   </p>
 </div>
 
 <script>
   // ── Verb dataset (1st-person singular). Present is the base cue; each drill
-  //    switches it to one of three target tenses. Forms verified by hand. ──
+  //    switches it to one of four target tenses. Forms verified by hand.
+  //    future = perfective (στιγμιαίος): θα + dependent. future_cont =
+  //    imperfective (εξακολουθητικός): θα + present stem. ──
   const VERBS = [
-    { lemma:'βλέπω',    en:'see',        imperfect:'έβλεπα',   aorist:'είδα',    future:'θα δω' },
-    { lemma:'πίνω',     en:'drink',      imperfect:'έπινα',    aorist:'ήπια',    future:'θα πιω' },
-    { lemma:'φεύγω',    en:'leave',      imperfect:'έφευγα',   aorist:'έφυγα',   future:'θα φύγω' },
-    { lemma:'τρώω',     en:'eat',        imperfect:'έτρωγα',   aorist:'έφαγα',   future:'θα φάω' },
-    { lemma:'λέω',      en:'say',        imperfect:'έλεγα',    aorist:'είπα',    future:'θα πω' },
-    { lemma:'πάω',      en:'go',         imperfect:'πήγαινα',  aorist:'πήγα',    future:'θα πάω' },
-    { lemma:'έρχομαι',  en:'come',       imperfect:'ερχόμουν', aorist:'ήρθα',    future:'θα έρθω' },
-    { lemma:'δίνω',     en:'give',       imperfect:'έδινα',    aorist:'έδωσα',   future:'θα δώσω' },
-    { lemma:'παίρνω',   en:'take',       imperfect:'έπαιρνα',  aorist:'πήρα',    future:'θα πάρω' },
-    { lemma:'μπορώ',    en:'can',        imperfect:'μπορούσα', aorist:'μπόρεσα', future:'θα μπορέσω' },
-    { lemma:'θέλω',     en:'want',       imperfect:'ήθελα',    aorist:'θέλησα',  future:'θα θελήσω' },
-    { lemma:'γράφω',    en:'write',      imperfect:'έγραφα',   aorist:'έγραψα',  future:'θα γράψω' },
-    { lemma:'μένω',     en:'stay/live',  imperfect:'έμενα',    aorist:'έμεινα',  future:'θα μείνω' },
-    { lemma:'βρίσκω',   en:'find',       imperfect:'έβρισκα',  aorist:'βρήκα',   future:'θα βρω' },
-    { lemma:'μαθαίνω',  en:'learn',      imperfect:'μάθαινα',  aorist:'έμαθα',   future:'θα μάθω' },
-    { lemma:'φέρνω',    en:'bring',      imperfect:'έφερνα',   aorist:'έφερα',   future:'θα φέρω' },
+    { lemma:'βλέπω',    en:'see',       imperfect:'έβλεπα',   aorist:'είδα',    future:'θα δω',       future_cont:'θα βλέπω' },
+    { lemma:'πίνω',     en:'drink',     imperfect:'έπινα',    aorist:'ήπια',    future:'θα πιω',      future_cont:'θα πίνω' },
+    { lemma:'φεύγω',    en:'leave',     imperfect:'έφευγα',   aorist:'έφυγα',   future:'θα φύγω',     future_cont:'θα φεύγω' },
+    { lemma:'τρώω',     en:'eat',       imperfect:'έτρωγα',   aorist:'έφαγα',   future:'θα φάω',      future_cont:'θα τρώω' },
+    { lemma:'λέω',      en:'say',       imperfect:'έλεγα',    aorist:'είπα',    future:'θα πω',       future_cont:'θα λέω' },
+    { lemma:'πάω',      en:'go',        imperfect:'πήγαινα',  aorist:'πήγα',    future:'θα πάω',      future_cont:'θα πηγαίνω' },
+    { lemma:'έρχομαι',  en:'come',      imperfect:'ερχόμουν', aorist:'ήρθα',    future:'θα έρθω',     future_cont:'θα έρχομαι' },
+    { lemma:'δίνω',     en:'give',      imperfect:'έδινα',    aorist:'έδωσα',   future:'θα δώσω',     future_cont:'θα δίνω' },
+    { lemma:'παίρνω',   en:'take',      imperfect:'έπαιρνα',  aorist:'πήρα',    future:'θα πάρω',     future_cont:'θα παίρνω' },
+    { lemma:'μπορώ',    en:'can',       imperfect:'μπορούσα', aorist:'μπόρεσα', future:'θα μπορέσω',  future_cont:'θα μπορώ' },
+    { lemma:'θέλω',     en:'want',      imperfect:'ήθελα',    aorist:'θέλησα',  future:'θα θελήσω',   future_cont:'θα θέλω' },
+    { lemma:'γράφω',    en:'write',     imperfect:'έγραφα',   aorist:'έγραψα',  future:'θα γράψω',    future_cont:'θα γράφω' },
+    { lemma:'μένω',     en:'stay/live', imperfect:'έμενα',    aorist:'έμεινα',  future:'θα μείνω',    future_cont:'θα μένω' },
+    { lemma:'βρίσκω',   en:'find',      imperfect:'έβρισκα',  aorist:'βρήκα',   future:'θα βρω',      future_cont:'θα βρίσκω' },
+    { lemma:'μαθαίνω',  en:'learn',     imperfect:'μάθαινα',  aorist:'έμαθα',   future:'θα μάθω',     future_cont:'θα μαθαίνω' },
+    { lemma:'φέρνω',    en:'bring',     imperfect:'έφερνα',   aorist:'έφερα',   future:'θα φέρω',     future_cont:'θα φέρνω' },
   ];
 
-  // Tense metadata: visual label, spoken Greek time-cue, English gloss, css key.
+  // Tense metadata. The cue no longer relies on the time word alone — it also
+  // pins DURATION/HABIT vs a SINGLE completed action, so imperfective vs
+  // perfective is unambiguous (e.g. «χθες (όλη μέρα)» vs «χθες (μία φορά)»).
+  // cueSpoken is what the voice reads; cueShown is the on-screen text.
   const TENSES = {
-    imperfect: { key:'imperfect', tag:'past',   label:'Past Continuous', cue:'παλιά',  cueEn:'used to / was …-ing' },
-    aorist:    { key:'aorist',    tag:'aorist', label:'Simple Past',     cue:'χθες',   cueEn:'yesterday' },
-    future:    { key:'future',    tag:'future', label:'Simple Future',   cue:'αύριο',  cueEn:'tomorrow' },
+    imperfect:   { key:'imperfect',   tag:'past',       label:'Past Continuous',
+      cueShown:'χθες (όλη μέρα)',   cueSpoken:'χθες, όλη μέρα',   cueEn:'yesterday, all day — ongoing / habitual' },
+    aorist:      { key:'aorist',      tag:'aorist',     label:'Simple Past',
+      cueShown:'χθες (μία φορά)',   cueSpoken:'χθες, μία φορά',   cueEn:'yesterday, once — single completed action' },
+    future:      { key:'future',      tag:'future',     label:'Simple Future',
+      cueShown:'αύριο (μία φορά)',  cueSpoken:'αύριο, μία φορά',  cueEn:'tomorrow, once — single action' },
+    future_cont: { key:'future_cont', tag:'futurecont', label:'Continuous Future',
+      cueShown:'αύριο (κάθε μέρα)', cueSpoken:'αύριο, κάθε μέρα', cueEn:'from now on — repeatedly / ongoing' },
   };
+  const TARGET_TENSES = ['imperfect','aorist','future','future_cont'];
 
   // Build the full drill list (one object per verb × target tense).
   const ALL_DRILLS = [];
-  let n = 0;
+  let _n = 0;
   VERBS.forEach(v => {
-    ['imperfect','aorist','future'].forEach(t => {
+    TARGET_TENSES.forEach(t => {
       const T = TENSES[t];
       ALL_DRILLS.push({
-        id: 'drill_' + String(++n).padStart(2,'0'),
+        id: 'drill_' + String(++_n).padStart(2,'0'),
         tense: t,
         lemma: v.lemma,
         en: v.en,
-        cueWord: T.cue,
-        spoken_prompt: v.lemma + ' — ' + T.cue,   // spoken aloud
-        correct_answer: v[t],
-        answer_spoken: v[t]
+        cueShown: T.cueShown,
+        spoken_prompt: v.lemma + ' — ' + T.cueSpoken,
+        correct_answer: v[t]
       });
     });
   });
 
-  // ── Web Speech API (free, built-in). Reused pattern: pick an el-GR voice,
-  //    handle the async getVoices() population, cancel before each utterance. ──
+  // ── Web Speech API (free, built-in): pick an el-GR voice, handle async
+  //    getVoices() population, cancel before each utterance. ──
   let elVoice = null;
   function pickVoice() {
     const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
@@ -231,12 +253,8 @@
     document.getElementById('novoice').style.display =
       (('speechSynthesis' in window) && !elVoice) ? 'block' : 'none';
   }
-  if ('speechSynthesis' in window) {
-    pickVoice();
-    speechSynthesis.onvoiceschanged = pickVoice;
-  } else {
-    document.getElementById('novoice').style.display = 'block';
-  }
+  if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  else { document.getElementById('novoice').style.display = 'block'; }
   function speakGreek(text, rate) {
     if (!('speechSynthesis' in window) || !text) return;
     try {
@@ -249,22 +267,66 @@
     } catch (e) {}
   }
 
-  // ── Drill state / controller ──
-  let deck = [];
-  let idx = 0;
-  let reviewed = 0;
-  let running = false;
-  let token = 0;            // bumped to cancel any in-flight countdown/timeout
-  let tenseFilter = 'all';
-  let responseMs = 2500;
-  let revealPauseMs = 1900;
+  // ── Persistence: score + settings survive an iframe reload (belt-and-braces;
+  //    the parent normally just pauses us, keeping state in memory anyway). ──
+  const STATE_KEY = 'tenseSprint.state.v1';
+  function saveState() {
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({
+      reviewed, missed, tenseFilter, responseMs, idx
+    })); } catch {}
+  }
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; } catch { return {}; }
+  }
 
-  function shuffle(a) { const b = a.slice(); for (let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
+  // ── Mistake reporting. Embedded in the hub → postMessage up so the parent
+  //    logs via recordMistake (Supabase). Standalone → localStorage fallback in
+  //    the same shape/key the hub's recordMistake uses. ──
+  const embedded = window.parent && window.parent !== window;
+  const MISTAKES_LS_KEY = 'langHub_mistakes_v1';
+  function reportMiss(d) {
+    const payload = {
+      type: 'tensesprint:miss',
+      lemma: d.lemma, en: d.en, tense: d.tense,
+      tenseLabel: TENSES[d.tense].label, correct: d.correct_answer,
+      prompt: d.lemma + ' → ' + TENSES[d.tense].label
+    };
+    if (embedded) {
+      try { window.parent.postMessage(payload, window.location.origin); } catch {}
+      return;
+    }
+    try {
+      const arr = JSON.parse(localStorage.getItem(MISTAKES_LS_KEY) || '[]');
+      arr.unshift({
+        drill_type: 'tensesprint', prompt: payload.prompt, correct: payload.correct,
+        picked: '(missed — self-flagged)', vocab_id: null,
+        metadata: { source: 'tensesprint', lemma: d.lemma, en: d.en, tense: d.tense, tense_label: payload.tenseLabel },
+        id: 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2,8),
+        created_at: new Date().toISOString()
+      });
+      if (arr.length > 500) arr.length = 500;
+      localStorage.setItem(MISTAKES_LS_KEY, JSON.stringify(arr));
+    } catch {}
+  }
+
+  // Parent can pause us (tab/mode switch) without a reload → state preserved.
+  window.addEventListener('message', function(e){
+    if (e.origin !== window.location.origin) return;
+    if (e.data && e.data.type === 'tensesprint:pause') stop();
+  });
+
+  // ── Drill state / controller ──
+  let deck = [], idx = 0, reviewed = 0, missed = 0;
+  let running = false, token = 0;
+  let tenseFilter = 'all', responseMs = 2500, revealPauseMs = 2600;
+  let rated = false;   // has the current revealed card been rated / advanced?
+
+  function shuffle(a){ const b=a.slice(); for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
 
   function buildDeck() {
     const pool = tenseFilter === 'all' ? ALL_DRILLS : ALL_DRILLS.filter(d => d.tense === tenseFilter);
     deck = shuffle(pool);
-    idx = 0;
+    if (idx >= deck.length) idx = 0;
     document.getElementById('stat-deck').textContent = deck.length;
   }
 
@@ -272,14 +334,12 @@
     tenseFilter = t;
     document.querySelectorAll('.chip[data-tense]').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
-    stop();
-    buildDeck();
-    renderPrompt(deck[0]);
+    stop(); idx = 0; buildDeck(); renderPrompt(deck[0]); saveState();
   }
   function setTime(ms, btn) {
     responseMs = ms;
     document.querySelectorAll('.chip[data-ms]').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
+    btn.classList.add('active'); saveState();
   }
 
   function renderPrompt(d) {
@@ -291,34 +351,34 @@
     document.getElementById('lemma').textContent = d.lemma;
     document.getElementById('lemma-en').textContent = d.en;
     document.getElementById('cue').innerHTML =
-      '→ <span class="cue-word">' + d.cueWord + '</span> <span class="cue-en">(' + T.cueEn + ')</span>';
-    // hide answer
+      '→ <span class="cue-word">' + d.cueShown + '</span><span class="cue-en">' + T.cueEn + '</span>';
     document.getElementById('answer').classList.add('hidden');
+    document.getElementById('rate').classList.remove('show');
     document.getElementById('cd-num').textContent = '';
+    rated = false;
     resetBar();
   }
-
   function resetBar() {
     const bar = document.getElementById('cd-bar');
-    bar.style.transition = 'none';
-    bar.style.width = '100%';
+    bar.style.transition = 'none'; bar.style.width = '100%';
   }
 
   function revealAnswer(d) {
     document.getElementById('ans-word').textContent = d.correct_answer;
     document.getElementById('ans-full').textContent = d.lemma + ' → ' + d.correct_answer;
     document.getElementById('answer').classList.remove('hidden');
+    document.getElementById('rate').classList.add('show');
     document.getElementById('cd-num').textContent = '';
-    speakGreek(d.answer_spoken);
+    speakGreek(d.correct_answer);
     reviewed++;
     document.getElementById('stat-reviewed').textContent = reviewed;
+    saveState();
   }
 
   function startCountdown(ms, my, done) {
     const bar = document.getElementById('cd-bar');
     const num = document.getElementById('cd-num');
     resetBar();
-    // Kick the CSS width transition on the next frame so it animates.
     requestAnimationFrame(() => {
       if (my !== token) return;
       bar.style.transition = 'width ' + ms + 'ms linear';
@@ -329,13 +389,11 @@
       if (my !== token) return;
       const remain = Math.max(0, ms - (performance.now() - start));
       num.textContent = (remain / 1000).toFixed(1) + 's';
-      if (remain <= 0) done();
-      else requestAnimationFrame(tick);
+      if (remain <= 0) done(); else requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   }
 
-  // Play one card: speak prompt → countdown → reveal + speak → (if running) next.
   function runOne() {
     if (!deck.length) buildDeck();
     const my = token;
@@ -346,55 +404,71 @@
       if (my !== token) return;
       revealAnswer(d);
       if (!running) return;
+      // Auto-advance after a pause; the pause is long enough to tap ❌ Missed.
       setTimeout(() => {
         if (my !== token || !running) return;
-        idx++;
-        runOne();
+        if (!rated) { idx++; runOne(); }
       }, revealPauseMs);
     });
   }
 
-  function toggleRun() {
-    if (running) stop();
-    else start();
-  }
+  function toggleRun(){ running ? stop() : start(); }
   function start() {
     if (!deck.length) buildDeck();
-    running = true;
-    token++;
+    running = true; token++;
     document.getElementById('btn-run').textContent = '⏸ Pause';
     runOne();
   }
   function stop() {
-    running = false;
-    token++;   // cancels any pending countdown/timeout
+    running = false; token++;
     if ('speechSynthesis' in window) speechSynthesis.cancel();
-    const b = document.getElementById('btn-run');
-    if (b) b.textContent = '▶ Start';
+    const b = document.getElementById('btn-run'); if (b) b.textContent = '▶ Start';
     document.getElementById('cd-num').textContent = '';
   }
 
-  // Manual controls (work whether or not the auto-loop is running).
-  function replayPrompt() {
+  // Self-check: logs a miss to the Weak Stems list, then advances.
+  function rate(got) {
+    if (rated) return;
+    rated = true;
     const d = deck[idx % deck.length];
-    if (d) speakGreek(d.spoken_prompt);
-  }
-  function revealNow() {
-    token++;                       // cancel countdown
-    const d = deck[idx % deck.length];
-    if (d) revealAnswer(d);
-  }
-  function nextCard() {
-    token++;
+    if (!got && d) {
+      missed++;
+      document.getElementById('stat-missed').textContent = missed;
+      reportMiss(d);
+      saveState();
+    }
+    document.getElementById('rate').classList.remove('show');
+    token++;                 // cancel any pending auto-advance
     idx++;
-    const d = deck[idx % deck.length];
-    renderPrompt(d);
-    if (running) { start(); }      // restart loop cleanly from new card
+    if (running) start(); else renderPrompt(deck[idx % deck.length]);
   }
 
-  // Init
-  buildDeck();
-  renderPrompt(deck[0]);
+  function replayPrompt(){ const d = deck[idx % deck.length]; if (d) speakGreek(d.spoken_prompt); }
+  function revealNow(){ token++; const d = deck[idx % deck.length]; if (d) revealAnswer(d); }
+  function nextCard() {
+    token++; idx++; saveState();
+    const d = deck[idx % deck.length];
+    renderPrompt(d);
+    if (running) start();
+  }
+
+  // Init — restore prior settings/score, then show first card.
+  (function init(){
+    const s = loadState();
+    if (s.tenseFilter) tenseFilter = s.tenseFilter;
+    if (s.responseMs) responseMs = s.responseMs;
+    if (typeof s.reviewed === 'number') reviewed = s.reviewed;
+    if (typeof s.missed === 'number') missed = s.missed;
+    if (typeof s.idx === 'number') idx = s.idx;
+    document.querySelectorAll('.chip[data-tense]').forEach(c =>
+      c.classList.toggle('active', c.getAttribute('data-tense') === tenseFilter));
+    document.querySelectorAll('.chip[data-ms]').forEach(c =>
+      c.classList.toggle('active', Number(c.getAttribute('data-ms')) === responseMs));
+    document.getElementById('stat-reviewed').textContent = reviewed;
+    document.getElementById('stat-missed').textContent = missed;
+    buildDeck();
+    renderPrompt(deck[idx % deck.length]);
+  })();
 </script>
 </body>
 </html>
