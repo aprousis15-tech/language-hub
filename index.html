@@ -3745,6 +3745,7 @@
       <button class="grammar-mode-btn" onclick="setGrammarMode('typea',this)">🗣️ Type A Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('verbs',this)">🗣️ Type B Verbs</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('conjdrill',this)">⌨️ Conjugation Drill (type 6 forms)</button>
+      <button class="grammar-mode-btn" onclick="setGrammarMode('verbforms',this)">🔤 Verb Forms (tap the right conjugation)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('sentbuild',this)">🧱 Sentence Builder (construction + conjugation)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('aspect',this)">🎭 Aspect (imperfective/perfective)</button>
       <button class="grammar-mode-btn" onclick="setGrammarMode('pres2aor',this)">🔄 Present → Aorist</button>
@@ -4111,6 +4112,21 @@
                 loading="lazy"></iframe>
         <div class="conjdrill-frame-link">
           <a href="gender-agreement-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verb Forms — iframe wrapper around the standalone /verb-drill.html.
+         Same lazy-iframe pattern. Multiple-choice conjugation: shows an English verb +
+         a target form (Present / one-time να / Past aorist) + person, tap the correct
+         Greek form. 75 verbs, distractors are real forms of the same/other verbs, with
+         Greek TTS and a full conjugation grid. src set lazily (see initVerbFormsFrame). -->
+    <div id="grammar-verbforms" style="display:none;">
+      <div class="conjdrill-frame-wrap" style="max-width:520px;">
+        <iframe id="verbforms-frame" class="conjdrill-frame" style="height:760px;"
+                title="Greek Verb Forms — tap the right conjugation" loading="lazy"></iframe>
+        <div class="conjdrill-frame-link">
+          <a href="verb-drill.html" target="_blank" rel="noopener">↗ Open full-screen</a>
         </div>
       </div>
     </div>
@@ -11541,6 +11557,7 @@
     document.getElementById('grammar-keylexis').style.display = mode === 'keylexis' ? '' : 'none';
     document.getElementById('grammar-wordworkout').style.display = mode === 'wordworkout' ? '' : 'none';
     document.getElementById('grammar-gendagree').style.display = mode === 'gendagree' ? '' : 'none';
+    document.getElementById('grammar-verbforms').style.display = mode === 'verbforms' ? '' : 'none';
     document.getElementById('grammar-prepdrill').style.display = mode === 'prepdrill' ? '' : 'none';
     document.getElementById('grammar-convprep').style.display = mode === 'convprep' ? '' : 'none';
     document.getElementById('grammar-tutorsessions').style.display = mode === 'tutorsessions' ? '' : 'none';
@@ -11578,6 +11595,7 @@
     if (mode === 'keylexis') initKeyLexisFrame();
     if (mode === 'wordworkout') initWordWorkoutFrame();
     if (mode === 'gendagree') initGendAgreeFrame();
+    if (mode === 'verbforms') initVerbFormsFrame();
     if (mode === 'prepdrill') initPrepDrillFrame();
     if (mode === 'convprep') initConvPrepFrame();
     if (mode === 'tutorsessions') initTutorSessionsFrame();
@@ -11594,7 +11612,7 @@
 
   // Grammar drills grouped by part-of-speech (mirrors the Foundations tab).
   const GRAMMAR_MODE_GROUPS = {
-    verbs: ['typea','verbs','aspect','pres2aor','vgroup','subjfirst','aorist','future','neg'],
+    verbs: ['typea','verbs','verbforms','aspect','pres2aor','vgroup','subjfirst','aorist','future','neg'],
     nouns: ['articles','secontract','gtap','preps','prepdrill'],
     pronouns: ['pronouns'],
     adj:   ['adj'],
@@ -13071,6 +13089,16 @@
   function initGendAgreeFrame() {
     const f = document.getElementById('gendagree-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', 'gender-agreement-drill.html');
+  }
+
+  // ── Verb Forms (subpanel) ──
+  // Lazy-iframe wrapper around the standalone /verb-drill.html (React + Tailwind via
+  // CDN, self-contained in the iframe). Multiple-choice conjugation across present,
+  // one-time (να) and past (aorist). src set on first open so the ~70KB page isn't
+  // fetched until the user visits the mode.
+  function initVerbFormsFrame() {
+    const f = document.getElementById('verbforms-frame');
+    if (f && !f.getAttribute('src')) f.setAttribute('src', 'verb-drill.html');
   }
 
   // ── Preposition Drill (subpanel) ──
